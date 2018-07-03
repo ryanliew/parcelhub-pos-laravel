@@ -28,6 +28,7 @@ class CreateItemsTable extends Migration
             $table->float('price', 15, 2);
             $table->unsignedInteger('courier_id');
             $table->unsignedInteger('invoice_id');
+            $table->unsignedInteger('product_id');
             $table->unsignedInteger('product_type_id');
             $table->float('total_price');
             $table->integer('unit');
