@@ -1,6 +1,9 @@
 
 // Fonts
-@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+// Font awesome
+@import url('https://use.fontawesome.com/releases/v5.1.0/css/all.css');
 
 // Variables
 @import "variables";
@@ -8,7 +11,24 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+// Css for toast notification
+@import '~vuejs-noty/dist/vuejs-noty.css';
+
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.dt-buttons {
+	margin-bottom: 10px;
+}
+
+.dataTables_length {
+	width: 80%;
+	float: left;
+}
+
+.dataTables_filter {
+	width: 20%;
+	float: right;
 }

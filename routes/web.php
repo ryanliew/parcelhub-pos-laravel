@@ -18,3 +18,14 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['prefix' => 'admin'], function(){
+	
+	Route::group(['prefix' => 'branches'], function(){
+		Route::get('/', "BranchController@page")->name('branches.page');
+		Route::post("/", "BranchController@store");
+		Route::get("/index", "BranchController@index")->name('branches.index');
+		Route::post("/{branch}", "BranchController@update");
+	});
+
+});

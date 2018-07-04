@@ -10,15 +10,14 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"> 
 
     <!-- Styles -->
+    @yield('styles')
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
 </head>
 <body>
     <div id="app">
@@ -34,7 +33,9 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li class="nav-item"><a class="nav-link" href="{{ route('branches.page') }}">Branches</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Vendors</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">SKU</a></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -73,7 +74,13 @@
 
         <main class="py-4">
             @yield('content')
+
+            <flash></flash>
         </main>
     </div>
+
+    <script src="{{ asset('js/form.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    @yield('js')
 </body>
 </html>
