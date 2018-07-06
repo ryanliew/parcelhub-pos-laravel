@@ -71,13 +71,13 @@
                 </div>
             </div>
         </nav>
-
+        @if(auth()->check())
         <div class="branch-selector inset-shadow">
             <div class="container">
                 <branch-selector :branches="{{ json_encode(Auth::user()->branches) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}"  :userId="{{ auth()->user()->id }}"></branch-selector>
             </div>
         </div>
-
+        @endif
         <main class="py-4 main-content inset-shadow">
             @yield('content')
 

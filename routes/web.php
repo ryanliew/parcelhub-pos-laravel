@@ -43,6 +43,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/{zone}", "ZoneController@update");
 	});
 
+	Route::group(['prefix' => 'users'], function(){
+		Route::get('/', "UserController@page")->name('users.page');
+		Route::post("/", "UserController@store");
+		Route::get("/index", "UserController@index")->name('users.index');
+		Route::post("/{user}", "UserController@update");
+	});
+
 });
 
 // Users route
@@ -50,6 +57,7 @@ Route::group(['middleware' => 'auth'], function(){
 	
 	Route::group(['prefix' => 'data'], function(){
 		Route::get("/zonetypes", "ZoneTypeController@list");
+		Route::get("/branches", "BranchController@list");
 	});
 
 	Route::group(['prefix' => 'user'], function(){

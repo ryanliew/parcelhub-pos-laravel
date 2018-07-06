@@ -29,7 +29,7 @@
 							<div class="col">
 								<selector-input :potentialData="zonetypes"
 									v-model="selectedZoneType" 
-									:defaultValue="selectedZoneType"
+									:defaultData="selectedZoneType"
 									placeholder="Select zone type"
 									:required="true"
 									label="Zone Type"
@@ -75,7 +75,7 @@
 			return {
 				isActive: false,
 				selectedVendor: '',
-				selectedZoneType: '',
+				selectedZoneType: {},
 				isEdit: false,
 				zonetypes: [],
 				form: new Form({
@@ -89,6 +89,10 @@
 		mounted() {
 			window.events.$on('createVendor', evt => this.createVendor(evt));
 			window.events.$on('editVendor', evt => this.editVendor(evt));
+
+			$("#vendor-dialog").on("hide.bs.modal", function(e){
+				this.closeDialog();
+			}.bind(this));
 
 			this.getZoneType();
 		},
@@ -132,14 +136,19 @@
 			},
 
 			closeDialog() {
-				$("#vendor-dialog").modal('hide');
 				this.isActive = false;
+				this.form.reset();
+				this.selectedVendor = '';
 			},
 
 			setForm() {
 				this.form.name = this.selectedVendor.name; 
-				this.form.formula = this.selectedVendor.code;
+				this.form.formula = this.selectedVendor.formula;
 				this.form.zone_type_id = this.selectedVendor.zone_type_id;
+
+				if(this.form.zone_type_id) {
+					this.selectedZoneType = _.filter(this.zonetypes, function(type){ return this.form.zone_type_id == type.value; }.bind(this))[0];
+				}
 			},
 
 			submit() {
@@ -148,6 +157,8 @@
 			},
 
 			onSuccess(response) {
+				$("#vendor-dialog").modal('hide');
+
 				this.closeDialog();
 
 				window.events.$emit("reload-table");

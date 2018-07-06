@@ -38,6 +38,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('branches.page') }}">Branches</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('vendors.page') }}">Vendors</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('zones.page') }}">Zones</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('users.page') }}">Users</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">SKU</a></li>
                     </ul>
 

@@ -102,6 +102,10 @@
 		mounted() {
 			window.events.$on('createZone', evt => this.createZone(evt));
 			window.events.$on('editZone', evt => this.editZone(evt));
+
+			$("#vendor-dialog").on("hide.bs.modal", function(e){
+				this.closeDialog();
+			}.bind(this));
 		},
 
 		methods: {
@@ -123,8 +127,9 @@
 			},
 
 			closeDialog() {
-				$("#zone-dialog").modal('hide');
 				this.isActive = false;
+				this.form.reset();
+				this.selectedZone = '';
 			},
 
 			setForm() {
@@ -140,6 +145,8 @@
 			},
 
 			onSuccess(response) {
+				$("#zone-dialog").modal('hide');
+
 				this.closeDialog();
 
 				window.events.$emit("reload-table");

@@ -254,6 +254,10 @@
 		mounted() {
 			window.events.$on('createBranch', evt => this.createBranch(evt));
 			window.events.$on('editBranch', evt => this.editBranch(evt));
+
+			$("#branch-dialog").on("hide.bs.modal", function(e){
+				this.closeDialog();
+			}.bind(this));
 		},
 
 		methods: {
@@ -275,8 +279,9 @@
 			},
 
 			closeDialog() {
-				$("#branch-dialog").modal('hide');
 				this.isActive = false;
+				this.selectedBranch = '';
+				this.form.reset();
 			},
 
 			setForm() {
@@ -301,6 +306,8 @@
 			},
 
 			onSuccess(response) {
+				$("#branch-dialog").modal('hide');
+
 				this.closeDialog();
 
 				window.events.$emit("reload-table");
