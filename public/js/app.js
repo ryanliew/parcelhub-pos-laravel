@@ -30402,8 +30402,10 @@ window.flash = function (message) {
  */
 Vue.component('flash', __webpack_require__(165));
 Vue.component('text-input', __webpack_require__(168));
+Vue.component('textarea-input', __webpack_require__(181));
 
 Vue.component('branches-dialog', __webpack_require__(172));
+Vue.component('branch-selector', __webpack_require__(184));
 
 var app = new Vue({
   el: '#app'
@@ -64464,6 +64466,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: [''],
@@ -64471,6 +64499,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		return {
 			isActive: false,
 			selectedBranch: '',
+			isEdit: false,
 			form: new Form({
 				name: '',
 				code: '',
@@ -64502,17 +64531,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	methods: {
 		createBranch: function createBranch(evt) {
-			console.log(evt);
 			this.openDialog();
 		},
 		editBranch: function editBranch(evt) {
 			this.selectedBranch = evt[0];
+			this.isEdit = true;
 			this.setForm();
 			this.openDialog();
 		},
 		openDialog: function openDialog() {
 			$("#branch-dialog").modal();
 			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			$("#branch-dialog").modal('hide');
+			this.isActive = false;
 		},
 		setForm: function setForm() {
 			this.form.name = this.selectedBranch.name;
@@ -64536,7 +64569,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return _this2.onSuccess(response);
 			});
 		},
-		onSuccess: function onSuccess(response) {}
+		onSuccess: function onSuccess(response) {
+			this.closeDialog();
+
+			setTimeout(function () {
+				location.reload();
+			}, 3000);
+		}
 	},
 
 	computed: {
@@ -64616,7 +64655,8 @@ var render = function() {
                             name: "name",
                             editable: true,
                             focus: true,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("name")
                           },
                           model: {
                             value: _vm.form.name,
@@ -64641,9 +64681,10 @@ var render = function() {
                             type: "text",
                             label: "Code",
                             name: "code",
-                            editable: true,
+                            editable: !_vm.isEdit,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("code")
                           },
                           model: {
                             value: _vm.form.code,
@@ -64672,7 +64713,8 @@ var render = function() {
                             name: "address",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("address")
                           },
                           model: {
                             value: _vm.form.address,
@@ -64701,7 +64743,8 @@ var render = function() {
                             name: "registration_no",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("registration_no")
                           },
                           model: {
                             value: _vm.form.registration_no,
@@ -64728,7 +64771,8 @@ var render = function() {
                             name: "gst_no",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("gst_no")
                           },
                           model: {
                             value: _vm.form.gst_no,
@@ -64736,6 +64780,34 @@ var render = function() {
                               _vm.$set(_vm.form, "gst_no", $$v)
                             },
                             expression: "form.gst_no"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.terminal_count,
+                            required: true,
+                            type: "number",
+                            label: "Number of terminal",
+                            name: "terminal_count",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("terminal_count")
+                          },
+                          model: {
+                            value: _vm.form.terminal_count,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "terminal_count", $$v)
+                            },
+                            expression: "form.terminal_count"
                           }
                         })
                       ],
@@ -64757,7 +64829,8 @@ var render = function() {
                             name: "fax",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("fax")
                           },
                           model: {
                             value: _vm.form.fax,
@@ -64784,7 +64857,8 @@ var render = function() {
                             name: "tollfree",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("tollfree")
                           },
                           model: {
                             value: _vm.form.tollfree,
@@ -64813,7 +64887,8 @@ var render = function() {
                             name: "website",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("website")
                           },
                           model: {
                             value: _vm.form.website,
@@ -64846,7 +64921,8 @@ var render = function() {
                             name: "owner",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("owner")
                           },
                           model: {
                             value: _vm.form.owner,
@@ -64873,7 +64949,8 @@ var render = function() {
                             name: "contact",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("contact")
                           },
                           model: {
                             value: _vm.form.contact,
@@ -64902,7 +64979,8 @@ var render = function() {
                             name: "email",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("email")
                           },
                           model: {
                             value: _vm.form.email,
@@ -64935,7 +65013,8 @@ var render = function() {
                             name: "payment_bank",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("payment_bank")
                           },
                           model: {
                             value: _vm.form.payment_bank,
@@ -64962,7 +65041,8 @@ var render = function() {
                             name: "payment_acc_no",
                             editable: true,
                             focus: false,
-                            hideLabel: false
+                            hideLabel: false,
+                            error: _vm.form.errors.get("payment_acc_no")
                           },
                           model: {
                             value: _vm.form.payment_acc_no,
@@ -65036,6 +65116,418 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 176 */,
+/* 177 */,
+/* 178 */,
+/* 179 */,
+/* 180 */,
+/* 181 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+/* script */
+var __vue_script__ = __webpack_require__(182)
+/* template */
+var __vue_template__ = __webpack_require__(183)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\TextAreaInput.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-09a962ae", Component.options)
+  } else {
+    hotAPI.reload("data-v-09a962ae", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 182 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'rows', 'cols'],
+	data: function data() {
+		return {
+			localValue: ''
+		};
+	},
+	mounted: function mounted() {
+		if (this.focus) {
+			this.$refs.input.focus();
+		}
+	},
+
+
+	methods: {
+		updateValue: function updateValue(value) {
+			this.localValue = value;
+			this.$emit('input', value);
+		}
+	},
+
+	computed: {
+		className: function className() {
+			if (this.error) {
+				return 'input__label--hoshi-color-3';
+			} else if (!this.editable) {
+				return 'input__label--hoshi-color-transparent';
+			}
+
+			return 'input__label--hoshi-color-1';
+		},
+		inputClass: function inputClass() {
+			var theClass = [];
+			if (this.value !== '' && this.value !== null && this.value || this.type == 'date' || !this.editable) {
+				theClass.push('input--filled');
+			}
+
+			if (this.hideLabel) {
+				theClass.push('input--nolabel');
+			}
+
+			return theClass;
+		},
+		value: function value() {
+			if (this.defaultValue === undefined) {
+				return this.localValue;
+			}
+
+			return !this.editable && this.type == 'date' ? __WEBPACK_IMPORTED_MODULE_0_moment___default()(this.defaultValue).fromNow() : this.defaultValue;
+		}
+	},
+
+	filters: {
+		ago: function ago(value) {
+			if (!this.editable && this.type == 'date') return __WEBPACK_IMPORTED_MODULE_0_moment___default()(value).fromNow();
+			return value;
+		}
+	}
+});
+
+/***/ }),
+/* 183 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "form-group" }, [
+    !_vm.hideLabel
+      ? _c("div", [
+          _c("label", {
+            attrs: { for: _vm.name },
+            domProps: { textContent: _vm._s(_vm.label) }
+          }),
+          _vm._v(" "),
+          _vm.required && _vm.editable
+            ? _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
+            : _vm._e()
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _c("textarea", {
+      staticClass: "form-control",
+      attrs: {
+        name: _vm.name,
+        id: _vm.name,
+        rows: _vm.rows,
+        cols: _vm.cols,
+        required: _vm.required
+      },
+      on: {
+        input: function($event) {
+          _vm.updateValue($event.target.value)
+        }
+      }
+    }),
+    _vm._v(" "),
+    _vm.error
+      ? _c("span", { staticClass: "text-danger" }, [
+          _c("strong", [_vm._v(_vm._s(_vm._f("trans")(_vm.error)))])
+        ])
+      : _vm._e()
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-09a962ae", module.exports)
+  }
+}
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+/* script */
+var __vue_script__ = __webpack_require__(185)
+/* template */
+var __vue_template__ = __webpack_require__(186)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\branches\\Selector.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2e6690c4", Component.options)
+  } else {
+    hotAPI.reload("data-v-2e6690c4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 185 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['branches', 'terminal', 'default', 'userid'],
+	data: function data() {
+		return {
+			current: this.default,
+			current_terminal: this.terminal,
+			current_branch: ''
+		};
+	},
+	mounted: function mounted() {
+		this.setCurrentBranch();
+	},
+
+
+	methods: {
+		branchChanged: function branchChanged(response) {
+			flash("Branch changed, reloading");
+
+			setTimeout(function () {
+				location.reload();
+			}, 3000);
+		},
+		terminalChanged: function terminalChanged() {
+			flash("Terminal changed, reloading");
+
+			setTimeout(function () {
+				location.reload();
+			}, 3000);
+		},
+		setCurrentBranch: function setCurrentBranch() {
+			this.current_branch = _.filter(this.branches, function (branch) {
+				return this.current == branch.id;
+			}.bind(this))[0];
+		}
+	},
+
+	watch: {
+		current: function current(newCurrent, oldCurrent) {
+			var _this = this;
+
+			axios.post('/user/' + this.userid + '/branch/change', { branch: newCurrent }).then(function (response) {
+				return _this.branchChanged(response);
+			});
+		},
+		current_terminal: function current_terminal(newVal, oldVal) {
+			var _this2 = this;
+
+			axios.post('/user/' + this.userid + '/terminal/change', { terminal: newVal }).then(function (response) {
+				return _this2.terminalChanged(response);
+			});
+		}
+	}
+});
+
+/***/ }),
+/* 186 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "form-inline" }, [
+    _c("label", { staticClass: "mr-1", attrs: { for: "branch-selector" } }, [
+      _vm._v("Branch:")
+    ]),
+    _vm._v(" "),
+    _c(
+      "select",
+      {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.current,
+            expression: "current"
+          }
+        ],
+        staticClass: "custom-select",
+        attrs: { id: "branch-selector" },
+        on: {
+          change: function($event) {
+            var $$selectedVal = Array.prototype.filter
+              .call($event.target.options, function(o) {
+                return o.selected
+              })
+              .map(function(o) {
+                var val = "_value" in o ? o._value : o.value
+                return val
+              })
+            _vm.current = $event.target.multiple
+              ? $$selectedVal
+              : $$selectedVal[0]
+          }
+        }
+      },
+      _vm._l(_vm.branches, function(branch) {
+        return _c("option", { domProps: { value: branch.id } }, [
+          _vm._v(_vm._s(branch.name))
+        ])
+      })
+    ),
+    _vm._v(" "),
+    _c(
+      "label",
+      { staticClass: "mr-1 ml-3", attrs: { for: "terminal-selector" } },
+      [_vm._v("Terminal:")]
+    ),
+    _vm._v(" "),
+    _c(
+      "select",
+      {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.current_terminal,
+            expression: "current_terminal"
+          }
+        ],
+        staticClass: "custom-select",
+        attrs: { id: "terminal-selector" },
+        on: {
+          changed: _vm.terminalChanged,
+          change: function($event) {
+            var $$selectedVal = Array.prototype.filter
+              .call($event.target.options, function(o) {
+                return o.selected
+              })
+              .map(function(o) {
+                var val = "_value" in o ? o._value : o.value
+                return val
+              })
+            _vm.current_terminal = $event.target.multiple
+              ? $$selectedVal
+              : $$selectedVal[0]
+          }
+        }
+      },
+      _vm._l(_vm.current_branch.terminal_count, function(n) {
+        return _c("option", { domProps: { value: n } }, [
+          _vm._v("Drawer " + _vm._s(n))
+        ])
+      })
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2e6690c4", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

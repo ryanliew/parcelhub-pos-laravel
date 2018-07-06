@@ -213,10 +213,10 @@ class Form {
 
         if(errors.status == 500) { error = 'Something went wrong with the server, please try again'; }
         else {
-            if(errors.data.message) error = errors.message;
             
-            //console.log(errors);
-            this.errors.record(errors.data);
+            if(errors.data.message) error = errors.data.message;
+            
+            this.errors.record(errors.data.errors);
         }
 
         flash(error, 'danger');

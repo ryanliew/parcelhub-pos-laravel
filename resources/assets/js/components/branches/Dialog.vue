@@ -22,7 +22,8 @@
 									name="name"
 									:editable="true"
 									:focus="true"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('name')">
 								</text-input>
 							</div>
 							<div class="col">
@@ -32,9 +33,10 @@
 									type="text"
 									label="Code"
 									name="code"
-									:editable="true"
+									:editable="!isEdit"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('code')">
 								</text-input>
 							</div>
 						</div>
@@ -48,7 +50,8 @@
 									name="address"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('address')">
 								</text-input>
 							</div>
 						</div>
@@ -62,7 +65,8 @@
 									name="registration_no"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('registration_no')">
 								</text-input>
 							</div>
 							<div class="col">
@@ -74,7 +78,21 @@
 									name="gst_no"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('gst_no')">
+								</text-input>
+							</div>
+							<div class="col">
+								<text-input v-model="form.terminal_count" 
+									:defaultValue="form.terminal_count"
+									:required="true"
+									type="number"
+									label="Number of terminal"
+									name="terminal_count"
+									:editable="true"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('terminal_count')">
 								</text-input>
 							</div>
 						</div>	
@@ -88,7 +106,8 @@
 									name="fax"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('fax')">
 								</text-input>
 							</div>
 							<div class="col">
@@ -100,7 +119,8 @@
 									name="tollfree"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('tollfree')">
 								</text-input>
 							</div>
 						</div>
@@ -114,7 +134,8 @@
 									name="website"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('website')">
 								</text-input>
 							</div>
 						</div>
@@ -130,7 +151,8 @@
 									name="owner"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('owner')">
 								</text-input>
 							</div>
 							<div class="col">
@@ -142,7 +164,8 @@
 									name="contact"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('contact')">
 								</text-input>
 							</div>
 						</div>
@@ -156,7 +179,8 @@
 									name="email"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('email')">
 								</text-input>
 							</div>
 						</div>
@@ -172,7 +196,8 @@
 									name="payment_bank"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('payment_bank')">
 								</text-input>
 							</div>
 							<div class="col">
@@ -184,7 +209,8 @@
 									name="payment_acc_no"
 									:editable="true"
 									:focus="false"
-									:hideLabel="false">
+									:hideLabel="false"
+									:error="form.errors.get('payment_acc_no')">
 								</text-input>
 							</div>
 						</div>
@@ -206,6 +232,7 @@
 			return {
 				isActive: false,
 				selectedBranch: '',
+				isEdit: false,
 				form: new Form({
 					name: '',
 					code: '',
@@ -231,13 +258,13 @@
 
 		methods: {
 			createBranch(evt) {
-				console.log(evt);
 				this.openDialog();
 				
 			},
 
 			editBranch(evt) {
 				this.selectedBranch = evt[0];
+				this.isEdit = true;
 				this.setForm();
 				this.openDialog();
 			},
@@ -245,6 +272,11 @@
 			openDialog() {
 				$("#branch-dialog").modal();
 				this.isActive = true;
+			},
+
+			closeDialog() {
+				$("#branch-dialog").modal('hide');
+				this.isActive = false;
 			},
 
 			setForm() {
@@ -269,7 +301,11 @@
 			},
 
 			onSuccess(response) {
+				this.closeDialog();
 
+				setTimeout(function(){
+					location.reload();
+				}, 3000);
 			}
 		},
 

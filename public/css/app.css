@@ -11064,6 +11064,19 @@ a.text-dark:focus {
   }
 }
 
+body {
+  background: #00a2e0;
+}
+
+.main-content {
+  height: 100vh;
+}
+
+.inset-shadow {
+  -webkit-box-shadow: inset 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
 .navbar-laravel {
   background-color: #fff;
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
@@ -11082,5 +11095,23 @@ a.text-dark:focus {
 .dataTables_filter {
   width: 20%;
   float: right;
+}
+
+.navbar-brand img {
+  max-width: 250px;
+}
+
+.label-small {
+  font-size: 80%;
+  font-weight: bold;
+}
+
+.branch-selector {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 10px;
+  background: #f47920;
+  color: white;
 }
 

@@ -24,7 +24,7 @@
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="{{ asset('img/logo.png') }}" alt="{{ config('app.name', 'Laravel') }}" />
+                    {{ config('app.name', 'Laravel') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -33,14 +33,21 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-                        
+                        <li class="nav-item"><a class="nav-link" href="{{ route('branches.page') }}">Branches</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Vendors</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">SKU</a></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
                         @guest
-                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            </li>
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -65,13 +72,7 @@
             </div>
         </nav>
 
-        <div class="branch-selector inset-shadow">
-            <div class="container">
-                <branch-selector :branches="{{ json_encode(Auth::user()->branches) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}"  :userId="{{ auth()->user()->id }}"></branch-selector>
-            </div>
-        </div>
-
-        <main class="py-4 main-content inset-shadow">
+        <main class="py-4">
             @yield('content')
 
             <flash></flash>

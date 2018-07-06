@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('styles')
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.css"/>
@@ -15,6 +15,7 @@
 					<th>Contact</th>
 					<th>Email</th>
 					<th>Registration No.</th>
+					<th>Terminal</th>
 					<th>Payment Bank</th>
 					<th>Payment Account</th>
 					<th>GST No.</th>
@@ -60,14 +61,7 @@
 						},
 						enabled: false
 					},
-					{
-						text: 'Delete',
-						action: function( e, dt, node, config ) {
-							window.events.$emit('deleteBranch');
-						},
-						enabled: false
-					},
-					'copy', 'excel', 'pdf', 'print', 'colvis'
+					'excel', 'colvis'
 				],
 				ajax: '{!! route("branches.index") !!}',
 				columns: [
@@ -77,6 +71,7 @@
 					{data: 'contact'},
 					{data: 'email'},
 					{data: 'registration_no'},
+					{data: 'terminal_count'},
 					{data: 'payment_bank'},
 					{data: 'payment_acc_no'},
 					{data: 'gst_no'},

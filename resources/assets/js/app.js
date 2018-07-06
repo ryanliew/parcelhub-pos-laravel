@@ -27,9 +27,11 @@ window.flash = function(message, level = 'success'){
  */
 Vue.component('flash', require('./components/Flash.vue'));
 Vue.component('text-input', require('./components/TextInput.vue'));
+Vue.component('textarea-input', require('./components/TextAreaInput.vue'));
 
 
 Vue.component('branches-dialog', require('./components/branches/Dialog.vue'));
+Vue.component('branch-selector', require('./components/branches/Selector.vue'));
 
 
 const app = new Vue({
