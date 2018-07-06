@@ -25,13 +25,23 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function branch()
+    public function branches()
     {
-        return $this->belongsTo('App\Branch');
+        return $this->belongsToMany('App\Branch', 'permissions')->as('permission')->withPivot('type')->withTimestamps();
     }
 
     public function invoices()
     {
         return $this->hasMany("App\Invoice", "created_by");
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
+
+    public function getDefaultBranchAttribute()
+    {
+        return $this->branches()->wherePivot('type', 'write')->first();
     }
 }

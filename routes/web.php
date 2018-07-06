@@ -12,9 +12,31 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+// Admins route
+Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
+	
+	Route::group(['prefix' => 'branches'], function(){
+		Route::get('/', "BranchController@page")->name('branches.page');
+		Route::post("/", "BranchController@store");
+		Route::get("/index", "BranchController@index")->name('branches.index');
+		Route::post("/{branch}", "BranchController@update");
+	});
+
+});
+
+// Users route
+Route::group(['middleware' => 'auth'], function(){
+	
+	Route::group(['prefix' => 'user'], function(){
+		Route::post("{user}/branch/change", "UserController@change_branch");
+		Route::post("{user}/terminal/change", "UserController@change_terminal");
+	});
+
+});
