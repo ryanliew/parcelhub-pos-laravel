@@ -303,9 +303,7 @@
 			onSuccess(response) {
 				this.closeDialog();
 
-				setTimeout(function(){
-					location.reload();
-				}, 3000);
+				window.events.$emit("reload-table");
 			}
 		},
 

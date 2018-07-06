@@ -12,4 +12,9 @@ class ZoneType extends Model
     {
     	return $this->hasMany("App\Zone");
     }
+
+    public function vendor()
+    {
+    	return $this->hasMany("App\Vendor");
+    }
 }
