@@ -14,6 +14,8 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"> 
 
+    <link rel="icon" href="/img/favicon.png">
+
     <!-- Styles -->
     @yield('styles')
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -48,6 +50,11 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    @if(auth()->user()->is_admin)
+                                        <a class="dropdown-item" href="{{ route('branches.page') }}">
+                                            Admin panel
+                                        </a>
+                                    @endif
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -64,13 +71,13 @@
                 </div>
             </div>
         </nav>
-
+        @if(auth()->check())
         <div class="branch-selector inset-shadow">
             <div class="container">
                 <branch-selector :branches="{{ json_encode(Auth::user()->branches) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}"  :userId="{{ auth()->user()->id }}"></branch-selector>
             </div>
         </div>
-
+        @endif
         <main class="py-4 main-content inset-shadow">
             @yield('content')
 

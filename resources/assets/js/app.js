@@ -28,11 +28,20 @@ window.flash = function(message, level = 'success'){
 Vue.component('flash', require('./components/Flash.vue'));
 Vue.component('text-input', require('./components/TextInput.vue'));
 Vue.component('textarea-input', require('./components/TextAreaInput.vue'));
+Vue.component('selector-input', require('./components/SelectorInput.vue'));
 
 
 Vue.component('branches-dialog', require('./components/branches/Dialog.vue'));
 Vue.component('branch-selector', require('./components/branches/Selector.vue'));
 
+
+Vue.component('vendors-dialog', require('./components/vendors/Dialog.vue'));
+// Vue.component('vendors-selector', require('./components/vendors/Selector.vue'));
+
+Vue.component('zones-dialog', require('./components/zones/Dialog.vue'));
+
+
+Vue.component('users-dialog', require('./components/users/Dialog.vue'));
 
 const app = new Vue({
     el: '#app'

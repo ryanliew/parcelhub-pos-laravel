@@ -25,6 +25,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function current_branch()
+    {
+        return $this->belongsTo('App\Branch', 'current_branch');
+    }
+
     public function branches()
     {
         return $this->belongsToMany('App\Branch', 'permissions')->as('permission')->withPivot('type')->withTimestamps();

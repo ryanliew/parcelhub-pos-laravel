@@ -8,33 +8,23 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Branches</b>
+				<b>Zones</b>
 			</div>
 			<div class="card-body">
-				<table class="table table-bordered" id="branches-table">
+				<table class="table table-bordered" id="zones-table">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Code</th>
-							<th>Owner</th>
-							<th>Contact</th>
-							<th>Email</th>
-							<th>Registration No.</th>
-							<th>Terminal</th>
-							<th>Payment Bank</th>
-							<th>Payment Account</th>
-							<th>GST No.</th>
-							<th>Fax</th>
-							<th>Toll Free</th>
-							<th>Website</th>
-							<th>Address</th>
+							<th>State</th>
+							<th>Postcode Start</th>
+							<th>Postcode End</th>
+							<th>Zone</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<branches-dialog></branches-dialog>
+		<zones-dialog></zones-dialog>
 	</div>
 
 @endsection
@@ -45,7 +35,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
-			var table = $("#branches-table").DataTable({
+			var table = $("#zones-table").DataTable({
 				processing: true,
 				serverSide: true,
 				responsive: true,
@@ -58,34 +48,32 @@
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('createBranch');
+							window.events.$emit('createZone');
 						}
 					},
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editBranch', table.rows({selected: true}).data().toArray());
+							window.events.$emit('editZone', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},
+					// Enable the following if delete is allowed
+					// {
+					// 	text: 'Delete',
+					// 	action: function( e, dt, node, config ) {
+					// 		window.events.$emit('deleteZone', table.rows({selected: true}).data().toArray());
+					// 	},
+					// 	enabled: false
+					// },
 					'excel', 'colvis'
 				],
-				ajax: '{!! route("branches.index") !!}',
+				ajax: '{!! route("zones.index") !!}',
 				columns: [
-					{data: 'name'},
-					{data: 'code'},
-					{data: 'owner'},
-					{data: 'contact'},
-					{data: 'email'},
-					{data: 'registration_no'},
-					{data: 'terminal_count'},
-					{data: 'payment_bank'},
-					{data: 'payment_acc_no'},
-					{data: 'gst_no'},
-					{data: 'fax'},
-					{data: 'tollfree'},
-					{data: 'website'},
-					{data: 'address'}
+					{data: 'state'},
+					{data: 'postcode_start'},
+					{data: 'postcode_end'},
+					{data: 'zone'}
 				]
 			});
 
@@ -93,7 +81,8 @@
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
 		        table.button( 1 ).enable( selectedRows === 1 );
-		        table.button( 2 ).enable( selectedRows > 0 );
+		        // Enable if delete is allowed
+		        // table.button( 2 ).enable( selectedRows > 0 );
 		    });
 
 		    window.events.$on("reload-table", function(){

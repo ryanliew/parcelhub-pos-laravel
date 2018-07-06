@@ -52,4 +52,9 @@ class BranchController extends Controller
     	
     	return json_encode(['message' => "Branch updated"]);
     }
+
+    public function list()
+    {
+        return Branch::all();
+    }
 }
