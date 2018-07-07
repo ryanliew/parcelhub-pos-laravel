@@ -10,4 +10,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function returnValidationErrorResponse($array)
+    {
+    	return response(json_encode(['message' => 'The given data was invalid', 
+                'errors' => $array]), 422);
+    }
 }

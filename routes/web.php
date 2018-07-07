@@ -50,6 +50,28 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/{user}", "UserController@update");
 	});
 
+	Route::group(['prefix' => 'types'], function(){
+		Route::get('/', "ProductTypeController@page")->name('product-types.page');
+		Route::post("/", "ProductTypeController@store");
+		Route::get("/index", "ProductTypeController@index")->name('product-types.index');
+		Route::post("/{producttype}", "ProductTypeController@update");
+	});
+
+	Route::group(['prefix' => 'taxes'], function(){
+		Route::get('/', "TaxController@page")->name('taxes.page');
+		Route::post("/", "TaxController@store");
+		Route::get("/index", "TaxController@index")->name('taxes.index');
+		Route::post("/{tax}", "TaxController@update");
+	});
+
+	Route::group(['prefix' => 'products'], function(){
+		Route::get('/', "ProductController@page")->name('products.page');
+		Route::post("/", "ProductController@store");
+		Route::get("/index", "ProductController@index")->name('products.index');
+		Route::post("/import", "ProductController@import");
+		Route::post("/{sku}", "ProductController@update");
+	});
+
 });
 
 // Users route
@@ -58,6 +80,9 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'data'], function(){
 		Route::get("/zonetypes", "ZoneTypeController@list");
 		Route::get("/branches", "BranchController@list");
+		Route::get("/vendors", "VendorController@list");
+		Route::get("/producttypes", "ProductTypeController@list");
+		Route::get("/taxes", "TaxController@list");
 	});
 
 	Route::group(['prefix' => 'user'], function(){

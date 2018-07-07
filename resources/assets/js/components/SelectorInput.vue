@@ -18,7 +18,7 @@
 <script>
 	import vSelect from 'vue-select';
 	export default {
-		props: { potentialData: Array, label: String, defaultData: Object, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}},
+		props: { potentialData: Array, label: String, defaultData: {default: ''}, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}},
 
 		components: { vSelect },
 

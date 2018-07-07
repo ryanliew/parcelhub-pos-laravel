@@ -28,19 +28,13 @@
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <img src="{{ asset('img/logo.png') }}" alt="{{ config('app.name', 'Laravel') }}" />
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse" id="topNavbar">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item"><a class="nav-link" href="{{ route('branches.page') }}">Branches</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('vendors.page') }}">Vendors</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('zones.page') }}">Zones</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('users.page') }}">Users</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">SKU</a></li>
-                    </ul>
+                    
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -73,6 +67,21 @@
 
         <div class="branch-selector inset-shadow">
             <div class="container">
+                <nav class="navbar navbar-expand-md navbar-light navbar-admin">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                <div class="collapse navbar-collapse" id="adminNavbar">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" href="{{ route('branches.page') }}">Branches</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('vendors.page') }}">Vendors</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('zones.page') }}">Zones</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('taxes.page') }}">Taxes</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('users.page') }}">Users</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
+                    </ul>
+                </div>
                 <span class="badge badge-danger">You are in Admin panel</span>
             </div>
         </div>

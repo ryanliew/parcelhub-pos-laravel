@@ -262,6 +262,7 @@
 
 		methods: {
 			createBranch(evt) {
+				this.isEdit = false;
 				this.openDialog();
 				
 			},

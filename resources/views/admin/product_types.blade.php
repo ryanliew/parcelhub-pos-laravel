@@ -8,33 +8,22 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Branches</b>
+				<b>SKU Types</b>
 			</div>
 			<div class="card-body">
-				<table class="table table-bordered" id="branches-table">
+				<table class="table table-bordered" id="product-types-table">
 					<thead>
 						<tr>
 							<th>Name</th>
-							<th>Code</th>
-							<th>Owner</th>
-							<th>Contact</th>
-							<th>Email</th>
-							<th>Registration No.</th>
-							<th>Terminal</th>
-							<th>Payment Bank</th>
-							<th>Payment Account</th>
-							<th>GST No.</th>
-							<th>Fax</th>
-							<th>Toll Free</th>
-							<th>Website</th>
-							<th>Address</th>
+							<th>Is merchandise</th>
+							<th>Is document</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<branches-dialog></branches-dialog>
+		<product-types-dialog></product-types-dialog>
 	</div>
 
 @endsection
@@ -45,7 +34,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
-			var table = $("#branches-table").DataTable({
+			var table = $("#product-types-table").DataTable({
 				processing: true,
 				serverSide: true,
 				responsive: true,
@@ -58,41 +47,53 @@
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('createBranch');
+							window.events.$emit('createProductType');
 						}
 					},
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editBranch', table.rows({selected: true}).data().toArray());
+							window.events.$emit('editProductType', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},
+					// Enable the following if delete is allowed
+					// {
+					// 	text: 'Delete',
+					// 	action: function( e, dt, node, config ) {
+					// 		window.events.$emit('deleteProductType', table.rows({selected: true}).data().toArray());
+					// 	},
+					// 	enabled: false
+					// },
 					'excel', 'colvis'
 				],
-				ajax: '{!! route("branches.index") !!}',
+				ajax: '{!! route("product-types.index") !!}',
 				columns: [
 					{data: 'name'},
-					{data: 'code'},
-					{data: 'owner'},
-					{data: 'contact'},
-					{data: 'email'},
-					{data: 'registration_no'},
-					{data: 'terminal_count'},
-					{data: 'payment_bank'},
-					{data: 'payment_acc_no'},
-					{data: 'gst_no'},
-					{data: 'fax'},
-					{data: 'tollfree'},
-					{data: 'website'},
-					{data: 'address'}
-				]
+					{data: 'is_merchandise', render: function(data,type,row){
+							if(type === 'display' || type === 'filter') {
+								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
+							}
+
+							return data;
+						}
+					},
+					{data: 'is_document', render: function(data,type,row){
+							if(type === 'display' || type === 'filter') {
+								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
+							}
+
+							return data;
+						}
+					}
+				],
 			});
 
 			table.on( 'select deselect', function () {
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
 		        table.button( 1 ).enable( selectedRows === 1 );
+		        // Enable if delete is allowed
 		        // table.button( 2 ).enable( selectedRows > 0 );
 		    });
 
