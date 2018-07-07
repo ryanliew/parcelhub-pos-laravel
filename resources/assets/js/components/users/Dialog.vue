@@ -127,7 +127,7 @@
 		data() {
 			return {
 				isActive: false,
-				selectedBranch: {},
+				selectedBranch: '',
 				selectedUser: '',
 				branches: [],
 				isEdit: false,

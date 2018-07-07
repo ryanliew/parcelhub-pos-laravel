@@ -11116,3 +11116,23 @@ body {
   color: white;
 }
 
+.navbar-admin {
+  background-color: transparent;
+  -webkit-box-shadow: unset;
+          box-shadow: unset;
+  padding: 0;
+}
+
+.navbar-admin .nav-item:hover {
+  color: #f47920;
+  background: white;
+  border-radius: 5px;
+  -webkit-transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out;
+}
+
+.navbar-admin .nav-item:hover .nav-link {
+  color: #f47920;
+  font-weight: bold;
+}
+

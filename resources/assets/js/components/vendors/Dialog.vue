@@ -75,7 +75,7 @@
 			return {
 				isActive: false,
 				selectedVendor: '',
-				selectedZoneType: {},
+				selectedZoneType: '',
 				isEdit: false,
 				zonetypes: [],
 				form: new Form({

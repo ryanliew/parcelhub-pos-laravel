@@ -103,7 +103,7 @@
 			window.events.$on('createZone', evt => this.createZone(evt));
 			window.events.$on('editZone', evt => this.editZone(evt));
 
-			$("#vendor-dialog").on("hide.bs.modal", function(e){
+			$("#zone-dialog").on("hide.bs.modal", function(e){
 				this.closeDialog();
 			}.bind(this));
 		},

@@ -29,6 +29,8 @@ Vue.component('flash', require('./components/Flash.vue'));
 Vue.component('text-input', require('./components/TextInput.vue'));
 Vue.component('textarea-input', require('./components/TextAreaInput.vue'));
 Vue.component('selector-input', require('./components/SelectorInput.vue'));
+Vue.component('checkbox-input', require('./components/CheckboxInput.vue'));
+Vue.component('file-input', require('./components/FileInput.vue'));
 
 
 Vue.component('branches-dialog', require('./components/branches/Dialog.vue'));
@@ -40,8 +42,14 @@ Vue.component('vendors-dialog', require('./components/vendors/Dialog.vue'));
 
 Vue.component('zones-dialog', require('./components/zones/Dialog.vue'));
 
-
 Vue.component('users-dialog', require('./components/users/Dialog.vue'));
+
+Vue.component('product-types-dialog', require('./components/product-types/Dialog.vue'));
+
+Vue.component('taxes-dialog', require('./components/taxes/Dialog.vue'));
+
+Vue.component('products-dialog', require('./components/products/Dialog.vue'));
+Vue.component('products-importer', require('./components/products/Importer.vue'));
 
 const app = new Vue({
     el: '#app'

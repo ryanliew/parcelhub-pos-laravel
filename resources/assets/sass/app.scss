@@ -63,3 +63,26 @@ body {
 	background: #f47920;
 	color: white;
 }
+
+.navbar-admin {
+	background-color: transparent;
+	box-shadow: unset;
+	padding: 0;
+}
+
+.navbar-admin .nav-item:hover {
+	color: #f47920;
+	background: white;
+	border-radius: 5px;
+	-webkit-transition: all 0.5s ease-out;
+	-moz-transition: all 0.5s ease-out;
+	-ms-transition: all 0.5s ease-out;
+	-o-transition: all 0.5s ease-out;
+	transition: all 0.5s ease-out;
+
+}
+
+.navbar-admin .nav-item:hover .nav-link {
+	color: #f47920;
+	font-weight: bold;
+}
