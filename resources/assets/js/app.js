@@ -51,6 +51,8 @@ Vue.component('taxes-dialog', require('./components/taxes/Dialog.vue'));
 Vue.component('products-dialog', require('./components/products/Dialog.vue'));
 Vue.component('products-importer', require('./components/products/Importer.vue'));
 
+Vue.component('payments-dialog', require('./components/payments/Dialog.vue'));
+
 const app = new Vue({
     el: '#app'
 });

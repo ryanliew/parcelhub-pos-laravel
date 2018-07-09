@@ -22,4 +22,14 @@ class Invoice extends Model
     {
     	return $this->belongsTo("App\User", "created_by");
     }
+
+    public function customer()
+    {
+        return $this->belongsTo("App\User", "customer_id");
+    }
+
+    public function payment()
+    {
+        return $this->hasMany('App\Payment', "invoice_no");
+    }
 }
