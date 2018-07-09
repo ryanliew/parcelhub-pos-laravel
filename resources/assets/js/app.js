@@ -43,6 +43,8 @@ Vue.component('zones-dialog', require('./components/zones/Dialog.vue'));
 
 Vue.component('users-dialog', require('./components/users/Dialog.vue'));
 
+Vue.component('payments-dialog', require('./components/payments/Dialog.vue'));
+
 const app = new Vue({
     el: '#app'
 });

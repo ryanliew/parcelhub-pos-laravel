@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +63,17 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'user'], function(){
 		Route::post("{user}/branch/change", "UserController@change_branch");
 		Route::post("{user}/terminal/change", "UserController@change_terminal");
+	});
+
+	Route::group(['prefix' => 'invoices'], function(){
+		Route::get("/", "InvoiceController@page")->name('invoices.page');
+		Route::get("/index", "InvoiceController@index")->name('invoices.index');
+	});
+
+	Route::group(['prefix' => 'payments'], function(){
+		Route::get('/', "PaymentController@page")->name('payments.page');
+		Route::get("/index", "PaymentController@index")->name('payments.index');
+		Route::post("/", "PaymentController@store");
 	});
 
 });
