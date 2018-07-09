@@ -30,6 +30,4 @@ class InvoiceController extends Controller
                 })
     			->toJson();   
     }
-
-
 }

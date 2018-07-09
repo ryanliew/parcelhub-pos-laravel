@@ -91,7 +91,9 @@ Route::group(['middleware' => 'auth'], function(){
 	});
 
 	Route::group(['prefix' => 'invoices'], function(){
+
 		Route::get("/", "InvoiceController@page")->name('invoices.page');
+		Route::post("/", "InvoiceController@store");
 		Route::get("/index", "InvoiceController@index")->name('invoices.index');
 	});
 

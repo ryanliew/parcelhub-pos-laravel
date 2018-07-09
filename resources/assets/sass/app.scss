@@ -19,7 +19,7 @@ body {
 }
 
 .main-content {
-	height: 100vh;	
+	min-height: 100vh;	
 }
 
 .inset-shadow {
@@ -84,5 +84,9 @@ body {
 
 .navbar-admin .nav-item:hover .nav-link {
 	color: #f47920;
+}
+
+.navbar-admin .navbar-nav .nav-link {
+	color: white;
 	font-weight: bold;
 }
