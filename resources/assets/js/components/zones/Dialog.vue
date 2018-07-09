@@ -60,7 +60,7 @@
 									:defaultValue="form.postcode_end"
 									:required="true"
 									type="number"
-									label="Postcode start"
+									label="Postcode end"
 									name="postcode_end"
 									:editable="true"
 									:focus="false"

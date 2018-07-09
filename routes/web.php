@@ -90,4 +90,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("{user}/terminal/change", "UserController@change_terminal");
 	});
 
+	Route::group(['prefix' => 'invoices'], function(){
+		Route::post("/", "InvoiceController@store");
+	});
+
 });
