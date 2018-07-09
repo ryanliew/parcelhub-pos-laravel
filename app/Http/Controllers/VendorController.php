@@ -43,4 +43,9 @@ class VendorController extends Controller
     	
     	return json_encode(['message' => "Vendor updated"]);
     }
+
+    public function list()
+    {
+        return Vendor::all();
+    }
 }
