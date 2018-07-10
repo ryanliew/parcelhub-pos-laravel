@@ -90,3 +90,26 @@ body {
 	color: white;
 	font-weight: bold;
 }
+
+.invoice-left {
+	background: white;
+	padding: 15px;
+	padding-right: 30px;
+	border-radius: 15px;
+	-webkit-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.75);
+	-moz-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.75);
+	box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.75);
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+.invoice-right {
+	background: white;
+	border-radius: 15px;
+	-webkit-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.75);
+	-moz-box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.75);
+	box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.75);
+	margin-left: -15px;
+	padding:15px;
+	z-index: 1;
+}

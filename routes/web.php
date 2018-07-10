@@ -83,6 +83,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/vendors", "VendorController@list");
 		Route::get("/producttypes", "ProductTypeController@list");
 		Route::get("/taxes", "TaxController@list");
+		Route::get("/products", "ProductController@list");
+		Route::get("/customers", "CustomerController@list");
 	});
 
 	Route::group(['prefix' => 'user'], function(){
@@ -95,6 +97,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/", "InvoiceController@page")->name('invoices.page');
 		Route::post("/", "InvoiceController@store");
 		Route::get("/index", "InvoiceController@index")->name('invoices.index');
+		Route::get("/create", "InvoiceController@create")->name('invoices.create');
 	});
 
 	Route::group(['prefix' => 'payments'], function(){

@@ -30362,7 +30362,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138);
-module.exports = __webpack_require__(212);
+module.exports = __webpack_require__(218);
 
 
 /***/ }),
@@ -30395,6 +30395,8 @@ window.flash = function (message) {
   window.events.$emit('flash', { message: message, level: level });
 };
 
+__webpack_require__(227);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -30406,6 +30408,7 @@ Vue.component('textarea-input', __webpack_require__(172));
 Vue.component('selector-input', __webpack_require__(175));
 Vue.component('checkbox-input', __webpack_require__(179));
 Vue.component('file-input', __webpack_require__(182));
+Vue.component('modal', __webpack_require__(224));
 
 Vue.component('branches-dialog', __webpack_require__(185));
 Vue.component('branch-selector', __webpack_require__(188));
@@ -30424,8 +30427,21 @@ Vue.component('taxes-dialog', __webpack_require__(203));
 Vue.component('products-dialog', __webpack_require__(206));
 Vue.component('products-importer', __webpack_require__(209));
 
+Vue.component('payments-dialog', __webpack_require__(212));
+
+Vue.component('invoices-create', __webpack_require__(215));
+
 var app = new Vue({
-  el: '#app'
+  el: '#app',
+
+  mounted: function mounted() {
+    window.addEventListener('keyup', function (event) {
+      console.log(event);
+      if (event.key == "F9") {
+        window.open("/invoices/create", "_blank");
+      }
+    });
+  }
 });
 
 /***/ }),
@@ -63860,10 +63876,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass'],
+	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon'],
 	data: function data() {
 		return {
 			localValue: ''
@@ -63880,6 +63901,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		updateValue: function updateValue(value) {
 			this.localValue = value;
 			this.$emit('input', value);
+		},
+		addonAction: function addonAction() {
+			this.$emit('addon');
 		}
 	},
 
@@ -64191,31 +64215,46 @@ var render = function() {
       : _vm._e(),
     _vm._v(" "),
     _vm.editable
-      ? _c("input", {
-          ref: "input",
-          staticClass: "form-control",
-          attrs: {
-            name: _vm.name,
-            id: _vm.name,
-            type: _vm.type || "text",
-            placeholder: _vm.placeholder
-          },
-          domProps: { value: _vm.value },
-          on: {
-            input: function($event) {
-              _vm.updateValue($event.target.value)
+      ? _c("div", { staticClass: "input-group" }, [
+          _c("input", {
+            ref: "input",
+            staticClass: "form-control",
+            attrs: {
+              name: _vm.name,
+              id: _vm.name,
+              type: _vm.type || "text",
+              step: ".001",
+              placeholder: _vm.placeholder
+            },
+            domProps: { value: _vm.value },
+            on: {
+              input: function($event) {
+                _vm.updateValue($event.target.value)
+              }
             }
-          }
-        })
+          }),
+          _vm._v(" "),
+          _vm.addon
+            ? _c("div", { staticClass: "input-group-append" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-secondary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.addonAction }
+                  },
+                  [_vm._v(_vm._s(_vm.addon))]
+                )
+              ])
+            : _vm._e()
+        ])
       : _c("p", {
           staticClass: "input__field input__field--hoshi",
           domProps: { innerHTML: _vm._s(_vm.value) }
         }),
     _vm._v(" "),
     _vm.error
-      ? _c("span", { staticClass: "text-danger" }, [
-          _c("strong", [_vm._v(_vm._s(_vm.error))])
-        ])
+      ? _c("span", { staticClass: "text-danger" }, [_vm._v(_vm._s(_vm.error))])
       : _vm._e()
   ])
 }
@@ -64499,6 +64538,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		updateValue: function updateValue(value) {
 			this.$emit('input', value);
+		},
+		focus: function focus() {
+			this.$refs.selector.open = true;
+			this.$refs.selector.$refs.search.focus();
 		}
 	},
 
@@ -64526,7 +64569,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
+  return _c("div", { staticClass: "mb-3" }, [
     !_vm.hideLabel
       ? _c("label", { staticClass: "select-label" }, [
           _c("span", { domProps: { textContent: _vm._s(_vm.label) } }),
@@ -64543,6 +64586,7 @@ var render = function() {
           { staticClass: "control", class: _vm.canClearCss },
           [
             _c("v-select", {
+              ref: "selector",
               attrs: {
                 multiple: _vm.multiple,
                 options: _vm.potentialData,
@@ -69614,9 +69658,2391 @@ if (false) {
 
 /***/ }),
 /* 212 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(213)
+/* template */
+var __vue_template__ = __webpack_require__(214)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\payments\\Dialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-b935f920", Component.options)
+  } else {
+    hotAPI.reload("data-v-b935f920", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 213 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: [''],
+	data: function data() {
+		return {
+			isActive: false,
+			selectedPayment: '',
+			isEdit: false,
+			form: new Form({
+				invoice_no: '',
+				total: '',
+				paid_amount: '',
+				remaining: '',
+				outstanding: '',
+				amount: ''
+
+			})
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('createPayment', function (evt) {
+			return _this.createPayment(evt);
+		});
+		window.events.$on('editPayment', function (evt) {
+			return _this.editPayment(evt);
+		});
+
+		$("#payment-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+	},
+
+
+	methods: {
+		createPayment: function createPayment(evt) {
+			this.selectedPayment = evt[0];
+			this.setForm();
+			this.openDialog();
+		},
+		editPayment: function editPayment(evt) {
+			this.selectedPayment = evt[0];
+			this.isEdit = true;
+			this.setForm();
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#payment-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.selectedPayment = '';
+			this.form.reset();
+		},
+		setForm: function setForm() {
+			this.form.invoice_no = this.selectedPayment.id;
+			this.form.total = this.selectedPayment.total;
+			this.form.paid_amount = this.selectedPayment.payment;
+			this.form.remaining = this.selectedPayment.remaining;
+			this.form.outstanding = this.selectedPayment.outstanding;
+			this.form.amount = this.selectedPayment.amount;
+		},
+		submit: function submit() {
+			var _this2 = this;
+
+			this.form.post(this.url).then(function (response) {
+				return _this2.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			$("#payment-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.selectedPayment ? "Edit payment - " + this.selectedPayment.invoice_no : "Create payment";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.selectedPayment ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.selectedPayment ? "/admin/branches/" + this.selectedPayment.id : "/payments";
+		}
+	}
+
+});
+
+/***/ }),
+/* 214 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "payment-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.invoice_no,
+                            required: true,
+                            type: "text",
+                            label: "Invoice No.",
+                            name: "invoice_no",
+                            editable: false,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("invoice_no")
+                          },
+                          model: {
+                            value: _vm.form.invoice_no,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "invoice_no", $$v)
+                            },
+                            expression: "form.invoice_no"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.total,
+                            required: true,
+                            type: "text",
+                            label: "Total",
+                            name: "total",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("total")
+                          },
+                          model: {
+                            value: _vm.form.total,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "total", $$v)
+                            },
+                            expression: "form.total"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.paid_amount,
+                            required: true,
+                            type: "text",
+                            label: "Paid amount",
+                            name: "paid_amount",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("paid_amount")
+                          },
+                          model: {
+                            value: _vm.form.paid_amount,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "paid_amount", $$v)
+                            },
+                            expression: "form.paid_amount"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.outstanding,
+                            required: false,
+                            type: "number",
+                            label: "Outstanding",
+                            name: "outstanding",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("outstanding")
+                          },
+                          model: {
+                            value: _vm.form.outstanding,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "outstanding", $$v)
+                            },
+                            expression: "form.outstanding"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.remaining,
+                            required: true,
+                            type: "text",
+                            label: "Remaining",
+                            name: "remaining",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("remaining")
+                          },
+                          model: {
+                            value: _vm.form.remaining,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "remaining", $$v)
+                            },
+                            expression: "form.remaining"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.amount,
+                            required: true,
+                            type: "number",
+                            label: "Amount",
+                            name: "amount",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("amount")
+                          },
+                          model: {
+                            value: _vm.form.amount,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "amount", $$v)
+                            },
+                            expression: "form.amount"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-b935f920", module.exports)
+  }
+}
+
+/***/ }),
+/* 215 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(216)
+/* template */
+var __vue_template__ = __webpack_require__(217)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\invoices\\Create.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2dae3bcb", Component.options)
+  } else {
+    hotAPI.reload("data-v-2dae3bcb", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 216 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['created_by'],
+	data: function data() {
+		return {
+			form: new Form(_defineProperty({
+				items: [],
+				remarks: '',
+				subtotal: '',
+				discount: 0,
+				discount_mode: '%',
+				tax: '',
+				total: '',
+				paid: 0,
+				created_by: this.created_by,
+				customer_id: '',
+				type: 'Cash',
+				payment_type: 'Cash'
+			}, 'type', 'Cash')),
+
+			product_types: [],
+			zone_types: [],
+			couriers: [],
+			products: [],
+			types: [{ label: 'Customer', value: 'Customer' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }],
+			payment_types: [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }],
+			modes: [{ label: "%", value: "%" }, { label: "RM", value: "RM" }],
+			customers: [],
+
+			selectedCustomer: '',
+			selectedPaymentType: { label: 'Cash', value: 'Cash' },
+			selectedDiscountMode: { label: "%", value: "%" },
+			selectedType: { label: 'Cash', value: 'Cash' },
+
+			isCalculatingDimWeight: false,
+			tracking_no: '',
+			selectedProductType: '',
+			selectedZoneType: '',
+			zone: '',
+			weight: '',
+			dimension_weight: 0,
+			selectedCourier: '',
+			selectedProduct: '',
+			description: '',
+			price: '',
+			unit: 1,
+			width: 0,
+			length: 0,
+			height: 0,
+			total_price: '',
+
+			tracking_no_error: '',
+			selectedProductType_error: '',
+			selectedZoneType_error: '',
+			zone_error: '',
+			weight_error: '',
+			dimension_weight_error: '',
+			selectedCourier_error: '',
+			selectedProduct_error: '',
+			description_error: '',
+			price_error: '',
+			unit_error: '',
+
+			currentTime: ''
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		this.getProductTypes();
+		this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
+		setInterval(function () {
+			return _this.updateCurrentTime();
+		}, 1000);
+	},
+
+
+	methods: {
+		moveToNext: function moveToNext() {
+			this.$refs.producttypes.focus();
+		},
+		getProductTypes: function getProductTypes() {
+			var _this2 = this;
+
+			axios.get("/data/producttypes").then(function (response) {
+				return _this2.setProductTypes(response);
+			}).catch(function (error) {
+				return _this2.getProductTypes();
+			});
+		},
+		setProductTypes: function setProductTypes(response) {
+			this.product_types = response.data.map(function (type) {
+				var obj = {};
+
+				obj['label'] = type.name;
+				obj['value'] = type.id;
+
+				return obj;
+			});
+
+			this.selectedProductType = { label: 'Packaging', value: 4 };
+			this.getZoneType();
+		},
+		getZoneType: function getZoneType() {
+			var _this3 = this;
+
+			axios.get("/data/zonetypes").then(function (response) {
+				return _this3.setZoneType(response);
+			}).catch(function (error) {
+				return _this3.getZoneType();
+			});
+		},
+		setZoneType: function setZoneType(response) {
+			this.zone_types = response.data.map(function (type) {
+				var obj = {};
+
+				obj['label'] = type.name;
+				obj['value'] = type.id;
+
+				return obj;
+			});
+
+			this.getCourier();
+		},
+		getCourier: function getCourier() {
+			var _this4 = this;
+
+			axios.get("/data/vendors").then(function (response) {
+				return _this4.setCourier(response);
+			}).catch(function (error) {
+				return _this4.getCourier();
+			});
+		},
+		setCourier: function setCourier(response) {
+			this.couriers = response.data.map(function (type) {
+				var obj = {};
+
+				obj['label'] = type.name;
+				obj['value'] = type.id;
+				obj['formula'] = type.formula;
+
+				return obj;
+			});
+
+			this.getCustomers();
+		},
+		getCustomers: function getCustomers() {
+			var _this5 = this;
+
+			axios.get("/data/customers?user=" + this.created_by).then(function (response) {
+				return _this5.setCustomers(response);
+			}).catch(function (error) {
+				return _this5.getCustomers();
+			});
+		},
+		setCustomers: function setCustomers(response) {
+			this.customers = response.data.map(function (customer) {
+				var obj = {};
+
+				obj['value'] = customer.id;
+				obj['label'] = customer.name;
+
+				return obj;
+			});
+		},
+		getRelatedProduct: function getRelatedProduct() {
+			var _this6 = this;
+
+			this.selectedZoneType = '';
+			this.zone = '';
+			this.weight = '';
+			this.dimension_weight = '';
+			this.selectedCourier = '';
+			this.selectedProduct = '';
+			this.description = '';
+			this.price = '';
+			this.unit = 1;
+			this.height = '';
+			this.width = '';
+			this.length = '';
+			this.total_price = '';
+
+			if (this.selectedProductType) {
+				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
+					return _this6.setProduct(response);
+				}).catch(function (error) {
+					return _this6.getRelatedProduct();
+				});
+			}
+		},
+		getFilteredProduct: function getFilteredProduct() {
+			var _this7 = this;
+
+			if (this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
+				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
+
+				if (this.weight) url += "&weight=" + this.weight;
+
+				if (this.dimension_weight) url += "&dimension=" + this.dimension_weight;
+
+				if (this.selectedCourier) url += "&vendor=" + this.selectedCourier.value;
+
+				axios.get(url).then(function (response) {
+					return _this7.setProduct(response);
+				}).catch(function (error) {
+					return _this7.getFilteredProduct();
+				});
+			}
+		},
+		setProduct: function setProduct(response) {
+			this.products = response.data.map(function (product) {
+				var obj = {};
+
+				obj['value'] = product.id;
+				obj['label'] = product.sku;
+				obj['description'] = product.description;
+				obj['corporate_price'] = product.corporate_price;
+				obj['walk_in_price'] = product.walk_in_price;
+				obj['walk_in_price_special'] = product.walk_in_price_special;
+
+				return obj;
+			});
+
+			// If we only have 1 product, set it as default
+			if (this.products.length == 1) {
+				this.selectedProduct = this.products[0];
+			}
+
+			// If selected product type = Document or Parcel
+			if (this.selectedProductType.value == 2 || this.selectedProductType.value == 5) {
+				this.selectedZoneType = { label: 'Domestic', value: 1 };
+			}
+		},
+		productChange: function productChange() {
+			this.description = "";
+			this.price = "";
+			this.total_price = "";
+			if (this.selectedProduct) {
+				this.description = this.selectedProduct.description;
+				var price = this.selectedProduct.walk_in_price;
+
+				if (this.selectedType.label == "Customer") price = this.selectedProduct.corporate_price;
+
+				this.price = price.toFixed(2);
+				this.total_price = price.toFixed(2);
+			}
+		},
+		calculateDimWeight: function calculateDimWeight() {
+			var formula = this.selectedCourier.formula;
+
+			var expression = formula.replace("l", this.length);
+			expression = expression.replace("w", this.width);
+			expression = expression.replace("h", this.height);
+
+			this.dimension_weight = eval(expression);
+			this.isCalculatingDimWeight = false;
+		},
+		add_item: function add_item() {
+			if (this.validateInputs()) {
+				var item = {};
+
+				item['tracking_code'] = this.tracking_no;
+				item['description'] = this.description;
+				item['zone'] = this.zone;
+				item['weight'] = this.weight ? this.weight : 0;
+				item['dimension_weight'] = this.dimension_weight ? this.dimension_weight : 0;
+				item['height'] = this.height ? this.height : 0;
+				item['length'] = this.length ? this.length : 0;
+				item['width'] = this.width ? this.width : 0;
+				item['sku'] = this.selectedProduct.label;
+				item['tax'] = this.tax;
+				item['price'] = this.price;
+				item['courier_id'] = this.selectedCourier.value;
+				item['product_id'] = this.selectedProduct.value;
+				item['product_type_id'] = this.selectedProductType.value;
+				item['total_price'] = this.total_price;
+				item['unit'] = this.unit;
+
+				this.form.items.push(item);
+
+				this.selectedZoneType = '';
+				this.zone = '';
+				this.weight = '';
+				this.dimension_weight = 0;
+				this.selectedCourier = '';
+				this.selectedProduct = '';
+				this.description = '';
+				this.price = '';
+				this.unit = 1;
+				this.height = 0;
+				this.width = 0;
+				this.length = 0;
+				this.total_price = '';
+				this.tracking_no = '';
+				this.$refs.tracking.focus();
+			}
+		},
+		deleteItem: function deleteItem(index) {
+			this.form.items.splice(index, 1);
+		},
+		validateInputs: function validateInputs() {
+			this.tracking_no_error = this.tracking_no ? '' : 'This field is required';
+			this.selectedProductType_error = this.selectedProductType ? '' : 'This field is required';
+			this.selectedZoneType_error = this.selectedZoneType || !this.isParcelOrDocument ? '' : 'This field is required';
+			this.zone_error = this.zone || !this.isParcelOrDocument ? '' : 'This field is required';
+			this.weight_error = this.weight || !this.isParcelOrDocument ? '' : 'This field is required';
+			this.dimension_weight_error = this.dimension_weight || !this.isParcelOrDocument ? '' : 'This field is required';
+			this.selectedCourier_error = this.selectedCourier || !this.isParcelOrDocument ? '' : 'This field is required';
+			this.selectedProduct_error = this.selectedProduct ? '' : 'This field is required';
+
+			return this.tracking_no_error == "" && this.selectedProductType_error == "" && this.selectedZoneType_error == "" && this.zone_error == "" && this.weight_error == "" && this.dimension_weight_error == "" && this.selectedCourier_error == "" && this.selectedProduct_error == "" && this.description_error == "" && this.price_error == "" && this.unit_error == "";
+		},
+		updateCurrentTime: function updateCurrentTime() {
+			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
+		},
+		submit: function submit() {
+			var _this8 = this;
+
+			this.form.total = this.total;
+			this.form.subtotal = this.subtotal;
+			this.form.tax = this.tax;
+
+			this.form.post("/invoices").then(function (response) {
+				return _this8.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			window.open('/invoices/receipt/' + response.id, '_blank');
+			window.location.href = "/invoices";
+		}
+	},
+
+	computed: {
+		total: function total() {
+			return parseFloat(this.subtotal) - parseFloat(this.discount_value);
+		},
+		subtotal: function subtotal() {
+			if (this.form.items.length > 0) return _.sumBy(this.form.items, function (item) {
+				return parseFloat(item.total_price);
+			}) + parseFloat(this.tax);
+
+			return 0;
+		},
+		discount_value: function discount_value() {
+			var value = this.form.discount ? this.form.discount : 0;
+
+			if (this.form.discount_mode == "%" && this.form.discount) value = this.subtotal * parseFloat(this.form.discount) / 100;
+
+			return parseFloat(value);
+		},
+		tax: function tax() {
+			return 0.00;
+		},
+		isParcelOrDocument: function isParcelOrDocument() {
+			return this.selectedProductType.value == 2 || this.selectedProductType.value == 5;
+		},
+		change: function change() {
+			if (this.form.paid && this.total) return parseFloat(this.form.paid) - parseFloat(this.total);
+
+			return 0.00;
+		}
+	},
+
+	watch: {
+		selectedType: function selectedType(newVal, oldVal) {
+			this.form.type = newVal.value;
+		},
+		zone: function zone(newVal, oldVal) {
+			this.getFilteredProduct();
+		},
+		weight: function weight(newVal, oldVal) {
+			this.getFilteredProduct();
+		},
+		dimension_weight: function dimension_weight(newVal, oldVal) {
+			this.getFilteredProduct();
+		},
+		selectedDiscountMode: function selectedDiscountMode(newVal, oldVal) {
+			this.form.discount_mode = newVal.value;
+		},
+		selectedPaymentType: function selectedPaymentType(newVal, oldVal) {
+			this.form.payment_type = newVal.value;
+		},
+		selectedCustomer: function selectedCustomer(newVal, oldVal) {
+			this.form.customer_id = newVal.value;
+		}
+	}
+});
+
+/***/ }),
+/* 217 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "form",
+      {
+        on: {
+          submit: function($event) {
+            $event.preventDefault()
+            return _vm.submit($event)
+          },
+          keydown: function($event) {
+            _vm.form.errors.clear($event.target.name)
+          },
+          input: function($event) {
+            _vm.form.errors.clear($event.target.name)
+          },
+          keyup: function($event) {
+            if (
+              !("button" in $event) &&
+              _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+            ) {
+              return null
+            }
+            return _vm.moveToNext($event)
+          }
+        }
+      },
+      [
+        _c("div", { staticClass: "row" }, [
+          _c(
+            "div",
+            { staticClass: "col-7 invoice-left" },
+            [
+              _c("text-input", {
+                ref: "tracking",
+                attrs: {
+                  defaultValue: _vm.tracking_no,
+                  required: true,
+                  type: "text",
+                  label: "Tracking no",
+                  name: "tracking_no",
+                  editable: true,
+                  focus: true,
+                  hideLabel: false,
+                  error: _vm.tracking_no_error
+                },
+                model: {
+                  value: _vm.tracking_no,
+                  callback: function($$v) {
+                    _vm.tracking_no = $$v
+                  },
+                  expression: "tracking_no"
+                }
+              }),
+              _vm._v(" "),
+              _c("selector-input", {
+                ref: "producttypes",
+                attrs: {
+                  potentialData: _vm.product_types,
+                  defaultData: _vm.selectedProductType,
+                  placeholder: "Select product type",
+                  required: true,
+                  label: "Product type",
+                  name: "product_type",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  error: _vm.selectedProductType_error
+                },
+                on: { input: _vm.getRelatedProduct },
+                model: {
+                  value: _vm.selectedProductType,
+                  callback: function($$v) {
+                    _vm.selectedProductType = $$v
+                  },
+                  expression: "selectedProductType"
+                }
+              }),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _vm.isParcelOrDocument
+                      ? _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.zone_types,
+                            defaultData: _vm.selectedZoneType,
+                            placeholder: "Select zone type",
+                            required: false,
+                            label: "Zone type",
+                            name: "zone_type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.selectedZoneType_error
+                          },
+                          model: {
+                            value: _vm.selectedZoneType,
+                            callback: function($$v) {
+                              _vm.selectedZoneType = $$v
+                            },
+                            expression: "selectedZoneType"
+                          }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _vm.isParcelOrDocument
+                      ? _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.couriers,
+                            defaultData: _vm.selectedCourier,
+                            placeholder: "Select courier",
+                            required: false,
+                            label: "Courier",
+                            name: "courier",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.selectedCourier_error
+                          },
+                          model: {
+                            value: _vm.selectedCourier,
+                            callback: function($$v) {
+                              _vm.selectedCourier = $$v
+                            },
+                            expression: "selectedCourier"
+                          }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _vm.isParcelOrDocument
+                      ? _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.zone,
+                            required: true,
+                            type: "number",
+                            label: "Zone",
+                            name: "zone",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.zone_error
+                          },
+                          model: {
+                            value: _vm.zone,
+                            callback: function($$v) {
+                              _vm.zone = $$v
+                            },
+                            expression: "zone"
+                          }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _vm.isParcelOrDocument
+                      ? _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.weight,
+                            required: true,
+                            type: "number",
+                            label: "Weight (KG)",
+                            name: "weight",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.weight_error
+                          },
+                          model: {
+                            value: _vm.weight,
+                            callback: function($$v) {
+                              _vm.weight = $$v
+                            },
+                            expression: "weight"
+                          }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _vm.isParcelOrDocument
+                      ? _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.dimension_weight,
+                            required: true,
+                            type: "number",
+                            label: "Dimension weight (KG)",
+                            name: "dimension_weight",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.dimension_weight_error,
+                            addon: "Calculate"
+                          },
+                          on: {
+                            addon: function($event) {
+                              _vm.isCalculatingDimWeight = true
+                            }
+                          },
+                          model: {
+                            value: _vm.dimension_weight,
+                            callback: function($$v) {
+                              _vm.dimension_weight = $$v
+                            },
+                            expression: "dimension_weight"
+                          }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                )
+              ]),
+              _vm._v(" "),
+              _c("selector-input", {
+                attrs: {
+                  potentialData: _vm.products,
+                  defaultData: _vm.selectedProduct,
+                  placeholder: "Select SKU",
+                  required: true,
+                  label: "SKU",
+                  name: "product",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  error: _vm.selectedProduct_error
+                },
+                on: { input: _vm.productChange },
+                model: {
+                  value: _vm.selectedProduct,
+                  callback: function($$v) {
+                    _vm.selectedProduct = $$v
+                  },
+                  expression: "selectedProduct"
+                }
+              }),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col-4" },
+                  [
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.description,
+                        required: false,
+                        type: "text",
+                        label: "Description",
+                        name: "description",
+                        editable: false,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.description_error
+                      },
+                      model: {
+                        value: _vm.description,
+                        callback: function($$v) {
+                          _vm.description = $$v
+                        },
+                        expression: "description"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.unit,
+                        required: true,
+                        type: "number",
+                        label: "Unit",
+                        name: "unit",
+                        editable: false,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.unit_error
+                      },
+                      model: {
+                        value: _vm.unit,
+                        callback: function($$v) {
+                          _vm.unit = $$v
+                        },
+                        expression: "unit"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.price,
+                        required: true,
+                        type: "number",
+                        label: "Price",
+                        name: "price",
+                        editable: false,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.price_error
+                      },
+                      model: {
+                        value: _vm.price,
+                        callback: function($$v) {
+                          _vm.price = $$v
+                        },
+                        expression: "price"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.total_price,
+                        required: true,
+                        type: "number",
+                        label: "Total price",
+                        name: "total_price",
+                        editable: false,
+                        focus: false,
+                        hideLabel: false
+                      },
+                      model: {
+                        value: _vm.total_price,
+                        callback: function($$v) {
+                          _vm.total_price = $$v
+                        },
+                        expression: "total_price"
+                      }
+                    })
+                  ],
+                  1
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: { type: "button" },
+                  on: { click: _vm.add_item }
+                },
+                [_vm._v("Add Item")]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "col-5 invoice-right" },
+            [
+              _c("p", [
+                _c("b", [_vm._v("Current time")]),
+                _vm._v(": " + _vm._s(_vm.currentTime))
+              ]),
+              _vm._v(" "),
+              _c("selector-input", {
+                attrs: {
+                  potentialData: _vm.types,
+                  defaultData: _vm.selectedType,
+                  placeholder: "Select type",
+                  required: true,
+                  label: "Type",
+                  name: "type",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("type")
+                },
+                model: {
+                  value: _vm.selectedType,
+                  callback: function($$v) {
+                    _vm.selectedType = $$v
+                  },
+                  expression: "selectedType"
+                }
+              }),
+              _vm._v(" "),
+              _vm.form.type == "Customer"
+                ? _c("selector-input", {
+                    attrs: {
+                      potentialData: _vm.customers,
+                      defaultData: _vm.selectedCustomer,
+                      placeholder: "Select customer",
+                      required: true,
+                      label: "Customer",
+                      name: "customer_id",
+                      editable: true,
+                      focus: false,
+                      hideLabel: false,
+                      error: _vm.form.errors.get("customer_id")
+                    },
+                    model: {
+                      value: _vm.selectedCustomer,
+                      callback: function($$v) {
+                        _vm.selectedCustomer = $$v
+                      },
+                      expression: "selectedCustomer"
+                    }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.remarks,
+                  required: false,
+                  type: "text",
+                  label: "Remarks",
+                  name: "remarks",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("remarks")
+                },
+                model: {
+                  value: _vm.form.remarks,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "remarks", $$v)
+                  },
+                  expression: "form.remarks"
+                }
+              }),
+              _vm._v(" "),
+              _c("div", { staticClass: "table-responsive" }, [
+                _c("table", { staticClass: "table table-striped" }, [
+                  _vm._m(0),
+                  _vm._v(" "),
+                  _c(
+                    "tbody",
+                    _vm._l(_vm.form.items, function(item, index) {
+                      return _c("tr", [
+                        _c("td", [_vm._v(_vm._s(item.tracking_code))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(item.description))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(item.unit))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(item.total_price))]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _c("i", {
+                            staticClass: "fas fa-times text-danger",
+                            on: {
+                              click: function($event) {
+                                _vm.deleteItem(index)
+                              }
+                            }
+                          })
+                        ])
+                      ])
+                    })
+                  ),
+                  _vm._v(" "),
+                  _vm.form.items.length > 0
+                    ? _c("tfoot", [
+                        _c("tr", [
+                          _vm._m(1),
+                          _vm._v(" "),
+                          _c("td", [
+                            _vm._v(_vm._s(_vm._f("price")(_vm.subtotal)))
+                          ]),
+                          _vm._v(" "),
+                          _c("td")
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _vm._m(2),
+                          _vm._v(" "),
+                          _c("td", [_vm._v(_vm._s(_vm._f("price")(_vm.tax)))]),
+                          _vm._v(" "),
+                          _c("td")
+                        ])
+                      ])
+                    : _vm._e()
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.form.discount,
+                        required: false,
+                        type: "number",
+                        label: "Discount",
+                        name: "discount",
+                        editable: true,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("discount")
+                      },
+                      model: {
+                        value: _vm.form.discount,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "discount", $$v)
+                        },
+                        expression: "form.discount"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.modes,
+                        defaultData: _vm.selectedDiscountMode,
+                        placeholder: "Select discount mode",
+                        required: false,
+                        label: "Discount mode",
+                        name: "discount_mode",
+                        editable: true,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("discount_mode")
+                      },
+                      model: {
+                        value: _vm.selectedDiscountMode,
+                        callback: function($$v) {
+                          _vm.selectedDiscountMode = $$v
+                        },
+                        expression: "selectedDiscountMode"
+                      }
+                    })
+                  ],
+                  1
+                )
+              ]),
+              _vm._v(" "),
+              _vm.form.type !== "Customer"
+                ? _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col-7" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.payment_types,
+                            defaultData: _vm.selectedPaymentType,
+                            placeholder: "Select payment type",
+                            required: true,
+                            label: "Payment type",
+                            name: "payment_type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("payment_type")
+                          },
+                          model: {
+                            value: _vm.selectedPaymentType,
+                            callback: function($$v) {
+                              _vm.selectedPaymentType = $$v
+                            },
+                            expression: "selectedPaymentType"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.paid,
+                            required: true,
+                            type: "number",
+                            label: "Paid",
+                            name: "paid",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("paid")
+                          },
+                          model: {
+                            value: _vm.form.paid,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "paid", $$v)
+                            },
+                            expression: "form.paid"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("h4", { staticClass: "text-right" }, [
+                _vm._v(
+                  "Discount: RM" + _vm._s(_vm._f("price")(_vm.discount_value))
+                )
+              ]),
+              _vm._v(" "),
+              _c("h4", { staticClass: "text-right" }, [
+                _vm._v("Total: RM" + _vm._s(_vm._f("price")(_vm.total)))
+              ]),
+              _vm._v(" "),
+              _vm.form.type !== "Customer"
+                ? _c("h4", { staticClass: "text-right" }, [
+                    _vm._v("Change: RM" + _vm._s(_vm._f("price")(_vm.change)))
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm._m(3)
+            ],
+            1
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "modal",
+          {
+            attrs: {
+              active: _vm.isCalculatingDimWeight,
+              id: "dim-weight-calculator"
+            },
+            on: {
+              close: function($event) {
+                _vm.isCalculatingDimWeight = false
+              }
+            }
+          },
+          [
+            _c("span", { attrs: { slot: "header" }, slot: "header" }, [
+              _vm._v("Calculate dimension weight")
+            ]),
+            _vm._v(" "),
+            _c("text-input", {
+              attrs: {
+                defaultValue: _vm.height,
+                required: true,
+                type: "number",
+                label: "Height (cm)",
+                name: "height",
+                editable: true,
+                focus: false,
+                hideLabel: false,
+                error: _vm.form.errors.get("height")
+              },
+              model: {
+                value: _vm.height,
+                callback: function($$v) {
+                  _vm.height = $$v
+                },
+                expression: "height"
+              }
+            }),
+            _vm._v(" "),
+            _c("text-input", {
+              attrs: {
+                defaultValue: _vm.width,
+                required: true,
+                type: "number",
+                label: "Width (cm)",
+                name: "width",
+                editable: true,
+                focus: false,
+                hideLabel: false,
+                error: _vm.form.errors.get("width")
+              },
+              model: {
+                value: _vm.width,
+                callback: function($$v) {
+                  _vm.width = $$v
+                },
+                expression: "width"
+              }
+            }),
+            _vm._v(" "),
+            _c("text-input", {
+              attrs: {
+                defaultValue: _vm.length,
+                required: true,
+                type: "number",
+                label: "Length (cm)",
+                name: "length",
+                editable: true,
+                focus: false,
+                hideLabel: false,
+                error: _vm.form.errors.get("length")
+              },
+              model: {
+                value: _vm.length,
+                callback: function($$v) {
+                  _vm.length = $$v
+                },
+                expression: "length"
+              }
+            }),
+            _vm._v(" "),
+            _c("template", { slot: "footer" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      _vm.isCalculatingDimWeight = false
+                    }
+                  }
+                },
+                [_vm._v("Cancel")]
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: { type: "button" },
+                  on: { click: _vm.calculateDimWeight }
+                },
+                [_vm._v("Confirm")]
+              )
+            ])
+          ],
+          2
+        )
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Tracking code")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Item")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Unit")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Price")]),
+        _vm._v(" "),
+        _c("th")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { staticClass: "text-right", attrs: { colspan: "3" } }, [
+      _c("b", [_vm._v("Subtotal:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { staticClass: "text-right", attrs: { colspan: "3" } }, [
+      _c("b", [_vm._v("Tax:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "d-flex justify-content-end" }, [
+      _c(
+        "button",
+        { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+        [_vm._v("Confirm")]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2dae3bcb", module.exports)
+  }
+}
+
+/***/ }),
+/* 218 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 219 */,
+/* 220 */,
+/* 221 */,
+/* 222 */,
+/* 223 */,
+/* 224 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(225)
+/* template */
+var __vue_template__ = __webpack_require__(226)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\Modal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2c928174", Component.options)
+  } else {
+    hotAPI.reload("data-v-2c928174", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 225 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['active', 'id', 'size'],
+	data: function data() {
+		return {};
+	},
+	mounted: function mounted() {
+		$("#" + this.id).on("hide.bs.modal", function (e) {
+			this.close();
+		}.bind(this));
+	},
+
+
+	methods: {
+		close: function close() {
+			this.$emit('close');
+		}
+	},
+
+	watch: {
+		active: function active(newVal, oldval) {
+			if (newVal) $("#" + this.id).modal();else $("#" + this.id).modal("hide");
+		}
+	}
+});
+
+/***/ }),
+/* 226 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "modelLabel",
+        id: _vm.id,
+        "aria-hidden": "true"
+      }
+    },
+    [
+      _c(
+        "div",
+        {
+          staticClass: "modal-dialog",
+          class: _vm.size,
+          attrs: { role: "document" }
+        },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [_vm._t("header")], 2),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [_vm._t("default")], 2),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [_vm._t("footer")], 2)
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2c928174", module.exports)
+  }
+}
+
+/***/ }),
+/* 227 */
+/***/ (function(module, exports) {
+
+Vue.filter('price', function (value) {
+	return value.toFixed(2);
+});
 
 /***/ })
 /******/ ]);

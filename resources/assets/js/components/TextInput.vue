@@ -1,27 +1,32 @@
 <template>
 	<div class="form-group" :class="extraClass">
 		<label v-if="!hideLabel ":for="name" :class="labelClass">{{ label }} <span v-if="required && editable" class="text-danger">*</span></label>
-		<input :name="name" 
+		<div class="input-group" v-if="editable">
+			<input :name="name" 
 				:id="name" 
 				class="form-control" 
 				:type="type || 'text'" 
 				:value="value" 
 				@input="updateValue($event.target.value)"
-				v-if="editable"
 				ref="input"
+				step=".001"
 				:placeholder="placeholder" />
+			<div class="input-group-append" v-if="addon">
+				<button class="btn btn-secondary" type="button" @click="addonAction">{{ addon }}</button>
+			</div>
+		</div>
 		<p class="input__field input__field--hoshi"
 				v-html="value"
 				v-else>	
 		</p>
-		<span class="text-danger" v-if="error"><strong>{{ error }}</strong></span>
+		<span class="text-danger" v-if="error">{{ error }}</span>
 	</div>
 </template>
 
 <script>
 	import moment from 'moment';
 	export default {
-		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass'],
+		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon'],
 		data() {
 			return {
 				localValue: ''
@@ -39,6 +44,10 @@
 			updateValue(value) {
 				this.localValue = value;
 				this.$emit('input', value);
+			},
+
+			addonAction() {
+				this.$emit('addon');
 			}
 		},
 

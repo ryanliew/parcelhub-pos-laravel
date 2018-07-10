@@ -17,12 +17,12 @@ class CreateItemsTable extends Migration
             $table->increments('id');
             $table->string('tracking_code');
             $table->string('description');
-            $table->string('zone');
+            $table->string('zone')->nullable();
             $table->float('weight', 30, 3);
-            $table->float('dimension_weight', 30, 3);
-            $table->float('height', 30, 3);
-            $table->float('length', 30, 3);
-            $table->float('width', 30, 3);
+            $table->float('dimension_weight', 30, 3)->nullable();
+            $table->float('height', 30, 3)->nullable();
+            $table->float('length', 30, 3)->nullable();
+            $table->float('width', 30, 3)->nullable();
             $table->string('sku');
             $table->float('tax', 15, 2);
             $table->float('price', 15, 2);
