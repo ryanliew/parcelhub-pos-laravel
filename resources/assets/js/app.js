@@ -19,6 +19,8 @@ window.flash = function(message, level = 'success'){
 };
 
 
+require('./filters');
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -31,6 +33,8 @@ Vue.component('textarea-input', require('./components/TextAreaInput.vue'));
 Vue.component('selector-input', require('./components/SelectorInput.vue'));
 Vue.component('checkbox-input', require('./components/CheckboxInput.vue'));
 Vue.component('file-input', require('./components/FileInput.vue'));
+Vue.component('modal', require('./components/Modal.vue'));
+
 
 
 Vue.component('branches-dialog', require('./components/branches/Dialog.vue'));
@@ -53,6 +57,17 @@ Vue.component('products-importer', require('./components/products/Importer.vue')
 
 Vue.component('payments-dialog', require('./components/payments/Dialog.vue'));
 
+Vue.component('invoices-create', require('./components/invoices/Create.vue'));
+
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+
+    mounted() {
+    	window.addEventListener('keyup', function(event){
+    		console.log(event);
+    		if(event.key == "F9") {
+    			window.open("/invoices/create", "_blank");
+    		}
+    	})
+    }
 });

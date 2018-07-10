@@ -144,4 +144,31 @@ class ProductController extends Controller
 
         return ["message" => "Processed " . $count . " records"];
     }
+
+    public function list()
+    {
+        $query = Product::query();
+
+        if(request()->has('type')) 
+            $query->where('product_type_id', request()->type);
+
+        if(request()->has('zone'))
+            $query->where('zone', request()->zone);
+
+        if(request()->has('vendor'))
+            $query->where('vendor_id', request()->vendor);
+        
+        $weight = 0;
+        if(request()->has('weight'))
+            $weight = request()->weight;
+
+        if(request()->has('dimension'))
+            $weight = max($weight, request()->dimension);
+
+        if(request()->has('weight') || request()->has('dimension'))
+            $query->where('weight_start', "<=", $weight)
+                ->where('weight_end', ">=", $weight);
+
+        return $query->get();
+    }
 }

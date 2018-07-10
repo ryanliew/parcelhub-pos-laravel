@@ -1,11 +1,11 @@
 <template>
-	<div>
+	<div class="mb-3">
 		<label class="select-label" v-if="!hideLabel">
 			<span v-text="label"></span>
 			<span v-if="required" class="text-danger">*</span>
 		</label>
 		<div class="control" :class="canClearCss" v-if="editable">
-			<v-select :multiple="multiple" :options="potentialData" :value="this.defaultData" @input="updateValue" :name="name" :placeholder="placeholder" :closeOnSelect="!multiple || true">
+			<v-select :multiple="multiple" :options="potentialData" :value="this.defaultData" @input="updateValue" :name="name" :placeholder="placeholder" :closeOnSelect="!multiple || true" ref="selector">
 			</v-select>
 		</div>
 		<div v-else>
@@ -31,6 +31,11 @@
 		methods: {
 			updateValue(value) {
 				this.$emit('input', value);
+			}, 
+
+			focus() {
+				this.$refs.selector.open = true;
+				this.$refs.selector.$refs.search.focus();
 			}
 		},	
 
