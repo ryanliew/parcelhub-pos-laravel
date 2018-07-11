@@ -57,17 +57,16 @@ Vue.component('products-importer', require('./components/products/Importer.vue')
 
 Vue.component('payments-dialog', require('./components/payments/Dialog.vue'));
 
-Vue.component('invoices-create', require('./components/invoices/Create.vue'));
+Vue.component('invoices-create', require('./components/invoices/Form.vue'));
 
 const app = new Vue({
     el: '#app',
 
     mounted() {
     	window.addEventListener('keyup', function(event){
-    		console.log(event);
     		if(event.key == "F9") {
     			window.open("/invoices/create", "_blank");
     		}
-    	})
+    	});
     }
 });

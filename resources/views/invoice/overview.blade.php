@@ -14,16 +14,18 @@
 				<table class="table table-bordered" id="invoice-table">
 					<thead>
 						<tr>
+							<th>Datetime</th>
 							<th>Invoice No.</th>
 							<th>Customer</th>
-							<th>Remarks</th>
 							<th>Subtotal</th>
 							<th>Discount(RM)</th>
 							<th>GST</th>
 							<th>Total</th>
+							<th>Payment</th>
 							<th>Last update</th>
 							<th>Terminal</th>
 							<th>Outstanding</th>  
+							<th>Remarks</th>
 							<!-- <th>Payment</th>   -->
 						</tr>
 					</thead>
@@ -61,7 +63,7 @@
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editPayment', table.rows({selected: true}).data().toArray());
+							location.href = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
 						},
 						enabled: false
 					},
@@ -76,16 +78,74 @@
 				],
 				ajax: '{!! route("invoices.index") !!}',
 				columns: [
-					{data: 'id'},
-					{data: 'customer.name'},
-					{data: 'remarks'},
-					{data: 'subtotal'},
-					{data: 'discount'},
-					{data: 'tax'},
-					{data: 'total'},
+					{data: 'created_at'},
+					{data: 'display_id'},
+					{data: 'customer', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data.name : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'subtotal', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}
+					},
+					{data: 'discount', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}
+					},
+					{data: 'tax', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}
+					},
+					{data: 'total', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}
+					},
+					{data: 'paid', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}
+					},
 					{data: 'updated_at'},
 					{data: 'terminal_no'},
-					{data: 'outstanding'},
+					{data: 'outstanding', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}
+					},
+					{data: 'remarks', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					}
 				]
 
 				

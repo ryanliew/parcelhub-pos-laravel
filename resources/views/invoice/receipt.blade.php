@@ -126,18 +126,18 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="2" class="border-top"><b>Sub Total</b></td>
-					<td class="border-top">RM</td>
+					<td colspan="2" class="border-top text-right"><b>Sub Total</b></td>
+					<td class="border-top text-right">RM</td>
 					<td class="text-right border-top">{{ number_format($invoice->subtotal, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
-					<td colspan="2"><b>Discount</b></td>
-					<td>RM</td>
+					<td class="text-right" colspan="2"><b>Discount</b></td>
+					<td class="text-right">RM</td>
 					<td class="text-right">{{ number_format($invoice->discount, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
-					<td colspan="2"><b>Total</b></td>
-					<td>RM</td>
+					<td class="text-right" colspan="2"><b>Total</b></td>
+					<td class="text-right">RM</td>
 					<td class="text-right">{{ number_format($invoice->total, 2, '.', ',') }}</td>
 				</tr>
 			</tfoot>
@@ -149,7 +149,7 @@
 		<table class="outer-border">
 			<tbody>
 				<tr>
-					<td class="text-center" style="width: 203px;">Received:</td>
+					<td class="text-center" style="width: 215px;">Received:</td>
 					<td>RM</td>
 					<td class="text-right">{{ number_format($invoice->paid, 2, '.', ',') }}</td>
 				</tr>

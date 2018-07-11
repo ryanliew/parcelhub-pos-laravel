@@ -34,6 +34,30 @@
 
                 <div class="collapse navbar-collapse" id="topNavbar">
                     <!-- Left Side Of Navbar -->
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a id="invoice-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                Invoices <span class="caret"></span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="invoice-dropdown">
+                                <a class="dropdown-item" href="{{ route('invoices.page') }}">
+                                    View invoices
+                                </a>
+                                <a class="dropdown-item" href="{{ route('invoices.create') }}">
+                                    Create invoice (F9)
+                                </a>
+                            </div>
+                        </li>
+                        @if(auth()-check() && auth()->user()->is_admin)
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('invoices.page') }}">
+                                    User panel
+                                </a>
+                            </li>
+                        @endif
+                        <!-- <li class="nav-item"><a class="nav-link" href="{{ route('payments.page') }}">Payment</a></li> -->
+                    </ul>
                     
 
                     <!-- Right Side Of Navbar -->

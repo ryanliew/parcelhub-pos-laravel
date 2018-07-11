@@ -32,4 +32,9 @@ class Invoice extends Model
     {
         return $this->hasMany('App\Payment', "invoice_no");
     }
+
+    public function getDisplayTextAttribute()
+    {
+        return $this->branch->code . sprintf("%05d", $this->id);
+    }
 }
