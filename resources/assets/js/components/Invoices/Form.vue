@@ -5,7 +5,156 @@
 			@input="form.errors.clear($event.target.name)"
 			@keyup.enter="moveToNext">
 			<div class="row">
-				<div class="col-7 invoice-left">
+				<div class="col-5 invoice-right">
+					<p><b>Current time</b>: {{ currentTime }}</p>
+					<selector-input :potentialData="types"
+						v-model="selectedType" 
+						:defaultData="selectedType"
+						placeholder="Select type"
+						:required="true"
+						label="Type"
+						name="type"
+						:editable="true"
+						:focus="false"
+						:hideLabel="false"
+						:error="form.errors.get('type')">
+					</selector-input>
+					<selector-input :potentialData="customers"
+						v-model="selectedCustomer" 
+						:defaultData="selectedCustomer"
+						placeholder="Select customer"
+						:required="true"
+						label="Customer"
+						name="customer_id"
+						:editable="true"
+						:focus="false"
+						:hideLabel="false"
+						:error="form.errors.get('customer_id')"
+						 v-if="form.type == 'Customer'">
+					</selector-input>
+					<text-input v-model="form.remarks" 
+						:defaultValue="form.remarks"
+						:required="false"
+						type="text"
+						label="Remarks"
+						name="remarks"
+						:editable="true"
+						:focus="false"
+						:hideLabel="false"
+						:error="form.errors.get('remarks')">
+					</text-input>
+
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Tracking code</th>
+									<th>Item</th>
+									<th>Unit</th>
+									<th>Price</th>
+									<th>
+										<span class="fa-stack pointer transition-ease" :class="add_button_class" :title="tooltip_add" @click="toggleAddItem">
+											<i class="fas fa-circle fa-stack-2x"></i>
+											<i class="fas fa-plus fa-stack-1x fa-inverse text-white"></i>
+										</span>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(item, index) in form.items" class="transition-ease" :class="getItemRowClass(index)">
+									<td>{{ item.tracking_code }}</td>
+									<td>{{ item.description }}</td>
+									<td>{{ item.unit }}</td>
+									<td>{{ item.total_price }}</td>
+									<td><i class="fas fa-edit text-primary pointer" @click="editItem(index)"></i> <i class="fas fa-times text-danger pointer" @click="deleteItem(index)"></i></td>
+								</tr>
+							</tbody>
+							<tfoot v-if="form.items.length > 0">
+								<tr>
+									<td colspan="3" class="text-right"><b>Subtotal:</b></td>
+									<td>{{ subtotal | price }}</td>
+									<td></td>
+								</tr>
+								<tr>
+									<td colspan="3" class="text-right"><b>Tax:</b></td>
+									<td>{{ tax | price }}</td>
+									<td></td>
+								</tr>
+							</tfoot>	
+						</table>
+					</div>
+
+					<div class="row">
+						<div class="col">
+							<text-input v-model="form.discount" 
+								:defaultValue="form.discount"
+								:required="false"
+								type="number"
+								label="Discount"
+								name="discount"
+								:editable="true"
+								:focus="false"
+								:hideLabel="false"
+								:error="form.errors.get('discount')">
+							</text-input>
+						</div>
+						<div class="col">
+							<selector-input :potentialData="modes"
+								v-model="selectedDiscountMode" 
+								:defaultData="selectedDiscountMode"
+								placeholder="Select discount mode"
+								:required="false"
+								label="Discount mode"
+								name="discount_mode"
+								:editable="true"
+								:focus="false"
+								:hideLabel="false"
+								:error="form.errors.get('discount_mode')">
+							</selector-input>
+						</div>
+					</div>
+					<div class="row" v-if="form.type !== 'Customer'">
+						<div class="col-7">
+							<selector-input :potentialData="payment_types"
+								v-model="selectedPaymentType" 
+								:defaultData="selectedPaymentType"
+								placeholder="Select payment type"
+								:required="true"
+								label="Payment type"
+								name="payment_type"
+								:editable="true"
+								:focus="false"
+								:hideLabel="false"
+								:error="form.errors.get('payment_type')">
+							</selector-input>
+						</div>
+						<div class="col">
+							<text-input v-model="form.paid" 
+								:defaultValue="form.paid"
+								:required="true"
+								type="number"
+								label="Paid"
+								name="paid"
+								:editable="true"
+								:focus="false"
+								:hideLabel="false"
+								:error="form.errors.get('paid')">
+							</text-input>
+						</div>
+					</div>
+
+					<h4 class="text-right">Discount: RM{{ discount_value | price }}</h4>
+
+					<h4 class="text-right">Total: RM{{ total | price }}</h4>
+
+					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
+
+					<div class="d-flex justify-content-end">
+						<button type="submit" class="btn btn-primary">Confirm</button>
+					</div>
+				</div>
+				<transition name="left-slide">
+					<div class="col-7 invoice-left" v-if="isAddingItem">
 					<text-input v-model="tracking_no" 
 						:defaultValue="tracking_no"
 						:required="true"
@@ -16,7 +165,7 @@
 						:focus="true"
 						:hideLabel="false"
 						:error="tracking_no_error"
-						ref="tracking">
+						ref="tracking_input">
 					</text-input>
 					<selector-input :potentialData="product_types"
 						v-model="selectedProductType" 
@@ -178,151 +327,10 @@
 						</div>
 					</div>
 
-					<button type="button" class="btn btn-primary" @click="add_item">Add Item</button>
-				</div>
-				<div class="col-5 invoice-right">
-					<p><b>Current time</b>: {{ currentTime }}</p>
-					<selector-input :potentialData="types"
-						v-model="selectedType" 
-						:defaultData="selectedType"
-						placeholder="Select type"
-						:required="true"
-						label="Type"
-						name="type"
-						:editable="true"
-						:focus="false"
-						:hideLabel="false"
-						:error="form.errors.get('type')">
-					</selector-input>
-					<selector-input :potentialData="customers"
-						v-model="selectedCustomer" 
-						:defaultData="selectedCustomer"
-						placeholder="Select customer"
-						:required="true"
-						label="Customer"
-						name="customer_id"
-						:editable="true"
-						:focus="false"
-						:hideLabel="false"
-						:error="form.errors.get('customer_id')"
-						 v-if="form.type == 'Customer'">
-					</selector-input>
-					<text-input v-model="form.remarks" 
-						:defaultValue="form.remarks"
-						:required="false"
-						type="text"
-						label="Remarks"
-						name="remarks"
-						:editable="true"
-						:focus="false"
-						:hideLabel="false"
-						:error="form.errors.get('remarks')">
-					</text-input>
-
-					<div class="table-responsive">
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th>Tracking code</th>
-									<th>Item</th>
-									<th>Unit</th>
-									<th>Price</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-for="(item, index) in form.items">
-									<td>{{ item.tracking_code }}</td>
-									<td>{{ item.description }}</td>
-									<td>{{ item.unit }}</td>
-									<td>{{ item.total_price }}</td>
-									<td><i class="fas fa-times text-danger" @click="deleteItem(index)"></i></td>
-								</tr>
-							</tbody>
-							<tfoot v-if="form.items.length > 0">
-								<tr>
-									<td colspan="3" class="text-right"><b>Subtotal:</b></td>
-									<td>{{ subtotal | price }}</td>
-									<td></td>
-								</tr>
-								<tr>
-									<td colspan="3" class="text-right"><b>Tax:</b></td>
-									<td>{{ tax | price }}</td>
-									<td></td>
-								</tr>
-							</tfoot>	
-						</table>
+					<button type="button" class="btn btn-primary" @click="add_item">Confirm</button>
+					<button type="button" class="btn btn-secondary" @click="toggleAddItem">Cancel</button>
 					</div>
-
-					<div class="row">
-						<div class="col">
-							<text-input v-model="form.discount" 
-								:defaultValue="form.discount"
-								:required="false"
-								type="number"
-								label="Discount"
-								name="discount"
-								:editable="true"
-								:focus="false"
-								:hideLabel="false"
-								:error="form.errors.get('discount')">
-							</text-input>
-						</div>
-						<div class="col">
-							<selector-input :potentialData="modes"
-								v-model="selectedDiscountMode" 
-								:defaultData="selectedDiscountMode"
-								placeholder="Select discount mode"
-								:required="false"
-								label="Discount mode"
-								name="discount_mode"
-								:editable="true"
-								:focus="false"
-								:hideLabel="false"
-								:error="form.errors.get('discount_mode')">
-							</selector-input>
-						</div>
-					</div>
-					<div class="row" v-if="form.type !== 'Customer'">
-						<div class="col-7">
-							<selector-input :potentialData="payment_types"
-								v-model="selectedPaymentType" 
-								:defaultData="selectedPaymentType"
-								placeholder="Select payment type"
-								:required="true"
-								label="Payment type"
-								name="payment_type"
-								:editable="true"
-								:focus="false"
-								:hideLabel="false"
-								:error="form.errors.get('payment_type')">
-							</selector-input>
-						</div>
-						<div class="col">
-							<text-input v-model="form.paid" 
-								:defaultValue="form.paid"
-								:required="true"
-								type="number"
-								label="Paid"
-								name="paid"
-								:editable="true"
-								:focus="false"
-								:hideLabel="false"
-								:error="form.errors.get('paid')">
-							</text-input>
-						</div>
-					</div>
-
-					<h4 class="text-right">Discount: RM{{ discount_value | price }}</h4>
-
-					<h4 class="text-right">Total: RM{{ total | price }}</h4>
-
-					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
-
-					<div class="d-flex justify-content-end">
-						<button type="submit" class="btn btn-primary">Confirm</button>
-					</div>
-				</div>	
+				</transition>	
 			</div>
 
 			<modal :active="isCalculatingDimWeight"
@@ -377,7 +385,7 @@
 <script>
 	import moment from 'moment';
 	export default {
-		props: ['created_by'],
+		props: ['created_by', 'invoice'],
 		data() {
 			return {
 				form: new Form({
@@ -397,6 +405,10 @@
 					payment_type: 'Cash',
 					type: 'Cash'
 				}),
+
+				isAddingItem: false,
+				isEditing: false,
+				editingIndex: '',
 
 				product_types: [],
 				zone_types: [],
@@ -459,12 +471,44 @@
 		},
 
 		mounted() {
+			if(this.invoice) {
+				this.getInvoice();
+			}
+
 			this.getProductTypes();
 			this.currentTime = moment().format('LL LTS');
 			setInterval(() => this.updateCurrentTime(), 1000);
+
+			window.addEventListener('keyup', function(event){
+	    		if(event.key == "F8") {
+	    			this.toggleAddItem();
+	    		}
+	    	}.bind(this));
 		},
 
 		methods: {
+			getInvoice() {
+				axios.get("/invoices/" + this.invoice)
+					.then(response => this.setInvoice(response));
+			},
+
+			setInvoice(response) {
+				let invoice = response.data;
+
+				console.log(invoice.items);
+
+				this.form.items = invoice.items;
+				this.selectedType = {label: invoice.type, value: invoice.type};
+				this.selectedDiscountMode = {label: invoice.discount_mode, value: invoice.discount_mode};
+				this.selectedPaymentType = {label: invoice.payment_type, value: invoice.payment_type};
+				this.form.discount_value = invoice.discount_value;
+				this.form.paid = invoice.paid;
+				this.form.tax = invoice.tax;
+				this.form.total = invoice.total;
+				this.form.discount = invoice.discount;
+				this.form.remarks = invoice.remarks;
+			},
+
 			moveToNext() {
 				this.$refs.producttypes.focus();
 			},
@@ -546,19 +590,7 @@
 			},
 
 			getRelatedProduct(){
-				this.selectedZoneType = '';
-				this.zone = '';
-				this.weight = '';
-				this.dimension_weight = '';
-				this.selectedCourier = '';
-				this.selectedProduct = '';
-				this.description = '';
-				this.price = '';
-				this.unit = 1;
-				this.height = '';
-				this.width = '';
-				this.length = '';
-				this.total_price = '';
+				console.log("Getting related product and clearing input");
 
 				if(this.selectedProductType) {
 					axios.get('/data/products?type=' + this.selectedProductType.value)
@@ -568,6 +600,7 @@
 			},
 
 			getFilteredProduct() {
+				console.log("Getting filtered product");
 				if(this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
 					let url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
 
@@ -661,14 +694,21 @@
 					item['total_price'] = this.total_price;
 					item['unit'] = this.unit;
 
-					this.form.items.push(item);
+					if(this.isEditing) {
+						this.form.items[this.editingIndex] = item;
+						this.editingIndex = '';
+					}
+					else {
+						this.form.items.push(item);
+					}
 
 					this.selectedZoneType = '';
 					this.zone = '';
 					this.weight = '';
 					this.dimension_weight = 0;
 					this.selectedCourier = '';
-					this.selectedProduct = '';
+					this.selectedProduct = {label: 'Packaging', value: 4};
+					this.selectedProductType = 
 					this.description = '';
 					this.price = '';
 					this.unit = 1;
@@ -677,8 +717,37 @@
 					this.length = 0;
 					this.total_price = '';
 					this.tracking_no = '';
-					this.$refs.tracking.focus();
+
+					this.toggleAddItem();
 				}
+			},
+
+			editItem(index) {
+
+				this.isEditing = true;
+				this.editingIndex = index;
+
+				this.toggleAddItem();
+
+				let item = this.form.items[index];
+
+
+				this.selectedZoneType = this.zone_types[0];
+				this.selectedCourier = item.courier_id ? _.filter(this.couriers, function(courier){ return item.courier_id == courier.value; }.bind(item))[0] : '';
+				this.selectedProduct = _.filter(this.products, function(product){ return item.product_id == product.value; }.bind(item))[0];
+				this.selectedProductType = _.filter(this.product_types, function(type){ return item.product_type_id == type.value; }.bind(item))[0];
+				this.zone = item.zone;
+				this.weight = item.weight;
+				this.dimension_weight = item.dimension_weight;
+				this.description = item.description;
+				this.price = item.price;
+				this.unit = item.unit;
+				this.height = item.height;
+				this.width = item.width;
+				this.length = item.length;
+				this.total_price = item.total_price;
+				this.tracking_no = item.tracking_code;
+
 			},
 
 			deleteItem(index) {
@@ -707,13 +776,48 @@
 				this.form.subtotal = this.subtotal;
 				this.form.tax = this.tax;
 
-				this.form.post("/invoices")
+				let url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
+				this.form.post(url)
 					.then(response => this.onSuccess(response));
 			},
 
 			onSuccess(response) {
+
 				window.open('/invoices/receipt/' + response.id, '_blank');
-				window.location.href = "/invoices";
+
+
+				setInterval(function(){
+					window.location.href = "/invoices";
+				}, 3000);
+			},
+
+			toggleAddItem() {
+				this.selectedZoneType = '';
+				this.zone = '';
+				this.weight = '';
+				this.dimension_weight = 0;
+				this.selectedCourier = '';
+				this.selectedProduct = '';
+				this.description = '';
+				this.price = '';
+				this.unit = 1;
+				this.height = '';
+				this.width = '';
+				this.length = '';
+				this.total_price = '';
+
+				this.isAddingItem = !this.isAddingItem;
+
+				if(!this.isAddingItem && this.isEditing) 
+				{
+					this.isEditing = false;
+					this.editingIndex = '';
+				}
+
+			},
+
+			getItemRowClass(index) {
+				return this.editingIndex == index && this.isEditing ? "item-editing" : '';
 			}
 
 		},
@@ -752,6 +856,20 @@
 					return parseFloat(this.form.paid) - parseFloat(this.total);
 
 				return 0.00;
+			},
+
+			tooltip_add() {
+				return this.isAddingItem ? "Cancel add item (F8)" : "Add new item (F8)";
+			},
+
+			add_button_class() {
+				let value = ['text-primary'];
+
+				if(this.isAddingItem) {
+					value = ['rotate-45', 'text-danger'];
+				}
+
+				return value;
 			}
 		},
 
