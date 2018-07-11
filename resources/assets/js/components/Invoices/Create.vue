@@ -549,7 +549,7 @@
 				this.selectedZoneType = '';
 				this.zone = '';
 				this.weight = '';
-				this.dimension_weight = '';
+				this.dimension_weight = 0;
 				this.selectedCourier = '';
 				this.selectedProduct = '';
 				this.description = '';
@@ -713,7 +713,9 @@
 
 			onSuccess(response) {
 				window.open('/invoices/receipt/' + response.id, '_blank');
-				window.location.href = "/invoices";
+				// setInterval(function(){
+				// 	window.location.href = "/invoices";
+				// }, 2000);
 			}
 
 		},

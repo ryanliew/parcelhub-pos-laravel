@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Invoice;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
 
 class InvoiceController extends Controller
 {
@@ -91,5 +95,54 @@ class InvoiceController extends Controller
         //$invoice->items()->create($items);
 
         return json_encode(['message' => "Invoice created successfully", "id" => $invoice->id]);
+    }
+
+    public function update()
+    {
+        
+    }
+
+    public function receipt(Invoice $invoice)
+    {
+        // return view('invoice.receipt', ["invoice" => $invoice]);
+        $defaultConfig = (new ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $html = View::make('invoice.receipt', ["invoice" => $invoice])->render();
+        
+        $mPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
+                        "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
+                        "fontdata" => $fontData + [
+                            'monaco' => [
+                                'R' => 'monaco.ttf'
+                            ]
+                        ],
+                        'defaul_font' => 'monaco' ));
+
+        $p = 'P';
+        $mPDF->_setPageSize(array(80, 1000), $p);
+        $mPDF->WriteHTML($html);
+        $pageHeight = $mPDF->y + 5;
+        // dd($pageHeight);
+        $mPDF->page   = 0;
+        $mPDF->state  = 0;
+        unset($mPDF->pages[0]);
+
+        $newPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
+                        "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
+                        "fontdata" => $fontData + [
+                            'monaco' => [
+                                'R' => 'monaco.ttf'
+                            ]
+                        ],
+                        'defaul_font' => 'monaco' ));
+        $newPDF->_setPageSize(array(80, $pageHeight), $p);
+        $newPDF->WriteHTML($html);
+
+
+        return $newPDF->Output('invoices.pdf', 'I');
     }
 }
