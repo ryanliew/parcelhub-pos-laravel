@@ -70811,6 +70811,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -71660,7 +71661,31 @@ var render = function() {
                     ])
                   : _vm._e(),
                 _vm._v(" "),
-                _vm._m(2)
+                _c("div", { staticClass: "d-flex justify-content-end" }, [
+                  this.invoice
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-success mr-2",
+                          attrs: {
+                            target: "_blank",
+                            href: "/invoices/receipt/" + this.invoice,
+                            type: "button"
+                          }
+                        },
+                        [_vm._v("Print receipt")]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "submit" }
+                    },
+                    [_vm._v("Confirm")]
+                  )
+                ])
               ],
               1
             ),
@@ -72172,18 +72197,6 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("td", { staticClass: "text-right", attrs: { colspan: "3" } }, [
       _c("b", [_vm._v("Tax:")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "d-flex justify-content-end" }, [
-      _c(
-        "button",
-        { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-        [_vm._v("Confirm")]
-      )
     ])
   }
 ]

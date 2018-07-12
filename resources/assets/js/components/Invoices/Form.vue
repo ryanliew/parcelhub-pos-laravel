@@ -150,6 +150,7 @@
 					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
 
 					<div class="d-flex justify-content-end">
+						<a v-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 						<button type="submit" class="btn btn-primary">Confirm</button>
 					</div>
 				</div>
