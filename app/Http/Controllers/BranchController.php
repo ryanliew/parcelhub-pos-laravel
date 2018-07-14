@@ -57,4 +57,11 @@ class BranchController extends Controller
     {
         return Branch::all();
     }
+
+    public function get($branch)
+    {
+        $result = Branch::where('id', $branch)->get();
+
+        return $result;
+    }
 }

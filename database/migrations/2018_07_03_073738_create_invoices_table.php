@@ -22,7 +22,7 @@ class CreateInvoicesTable extends Migration
             $table->string('discount_mode')->default("%");
             $table->float('tax', 15, 2)->default(0.00);
             $table->float('total', 15, 2);
-            $table->float('paid', 15, 2);
+            $table->float('paid', 15, 2)->default(0.00);
             $table->unsignedInteger('branch_id');
             $table->unsignedInteger('created_by');
             $table->unsignedInteger('customer_id')->nullable();

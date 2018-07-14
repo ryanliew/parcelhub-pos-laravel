@@ -25,7 +25,7 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function current_branch()
+    public function current()
     {
         return $this->belongsTo('App\Branch', 'current_branch');
     }

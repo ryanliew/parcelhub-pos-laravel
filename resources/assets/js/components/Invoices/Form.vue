@@ -150,7 +150,7 @@
 					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
 
 					<div class="d-flex justify-content-end">
-						<a v-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
+						<a v-if="this.invoice" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 						<button type="submit" class="btn btn-primary">Confirm</button>
 					</div>
 				</div>
@@ -574,7 +574,7 @@
 			},
 
 			getCustomers() {
-				axios.get("/data/customers?user=" + this.created_by)
+				axios.get("/customers/list")
 					.then(response => this.setCustomers(response))
 					.catch(error => this.getCustomers());
 			},
@@ -588,6 +588,7 @@
 
 					return obj;
 				});
+
 			},
 
 			getRelatedProduct(){
@@ -655,7 +656,10 @@
 					let price = this.selectedProduct.walk_in_price;
 
 					if(this.selectedType.label == "Customer")
+					{
+						//this.getCustomers;
 						price = this.selectedProduct.corporate_price;
+					}
 
 					this.price = price.toFixed(2);
 					this.total_price = price.toFixed(2);

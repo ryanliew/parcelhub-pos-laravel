@@ -37,7 +37,7 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $branch = auth()->user()->current_branch()->first();
+        $branch = auth()->user()->current()->first();
 
     	return datatables()
 			->of($branch->invoices()->with(['customer','payment', 'branch']))

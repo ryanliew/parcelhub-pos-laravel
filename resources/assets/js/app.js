@@ -59,6 +59,8 @@ Vue.component('payments-dialog', require('./components/payments/Dialog.vue'));
 
 Vue.component('invoices-create', require('./components/invoices/Form.vue'));
 
+Vue.component('customers-dialog', require('./components/customers/Dialog.vue'));
+ 
 const app = new Vue({
     el: '#app',
 
@@ -69,4 +71,6 @@ const app = new Vue({
     		}
     	});
     }
+
+
 });

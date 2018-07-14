@@ -85,6 +85,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/taxes", "TaxController@list");
 		Route::get("/products", "ProductController@list");
 		Route::get("/customers", "CustomerController@list");
+		Route::get('/branch/{branch}', "BranchController@get");
 	});
 
 	Route::group(['prefix' => 'user'], function(){
@@ -101,13 +102,25 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/edit/{invoice}", "InvoiceController@edit")->name('invoices.edit');
 		Route::post("/update/{invoice}", "InvoiceController@update")->name('invoices.edit');
 		Route::get("/receipt/{invoice}", "InvoiceController@receipt")->name("invoices.receipt");
+		Route::get("/do/{invoice}","InvoiceController@delivery_order")->name("invoices.delivery_order");
 		Route::get("/{invoice}", "InvoiceController@get");
+		
 	});
 
 	Route::group(['prefix' => 'payments'], function(){
 		Route::get('/', "PaymentController@page")->name('payments.page');
 		Route::get("/index", "PaymentController@index")->name('payments.index');
 		Route::post("/", "PaymentController@store");
+	});
+
+	Route::group(['prefix' => 'customers'], function(){
+		Route::get('/', "CustomerController@page")->name('customers.page');
+		Route::get("/index", "CustomerController@index")->name('customers.index');
+		Route::get("/list", "CustomerController@list");
+		Route::get("/create", "CustomerController@create")->name('customers.create');
+		Route::post("/", "CustomerController@store");
+		Route::post("/{customer}", "CustomerController@update");
+		Route::get("/{customer}","CustomerController@get");
 	});
 
 });

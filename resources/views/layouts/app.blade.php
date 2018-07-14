@@ -50,6 +50,8 @@
                                     </a>
                                 </div>
                             </li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
+                            
                             @if(auth()->user()->is_admin)
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('branches.page') }}">

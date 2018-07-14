@@ -49,7 +49,7 @@
                                 </a>
                             </div>
                         </li>
-                        @if(auth()-check() && auth()->user()->is_admin)
+                        @if(auth()->check() && auth()->user()->is_admin)
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('invoices.page') }}">
                                     User panel
@@ -104,6 +104,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('users.page') }}">Users</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
                     </ul>
                 </div>
                 <span class="badge badge-danger">You are in Admin panel</span>
