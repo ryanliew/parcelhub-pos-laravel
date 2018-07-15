@@ -67376,7 +67376,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.name = this.selectedUser.name;
 			this.form.email = this.selectedUser.email;
 			this.form.username = this.selectedUser.username;
-			this.form.current_branch = this.selectedUser.current_branch.id;
+			this.form.current_branch = this.selectedUser.current.id;
 			this.form.current_terminal = this.selectedUser.current_terminal;
 
 			if (this.branches.length > 0) {

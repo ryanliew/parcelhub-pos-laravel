@@ -41,7 +41,7 @@ class UserController extends Controller
 
     public function index()
     {
-    	return datatables()->of(User::with('current_branch'))->toJson();	
+    	return datatables()->of(User::with('current'))->toJson();	
     }
 
     public function store()

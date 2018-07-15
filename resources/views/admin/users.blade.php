@@ -78,7 +78,7 @@
 					{data: 'name'},
 					{data: 'username'},
 					{data: 'email'},
-					{data: 'current_branch.name'},
+					{data: 'current.name'},
 					{data: 'current_terminal'}
 				]
 			});
