@@ -77,6 +77,9 @@
 					},
 				],
 				ajax: '{!! route("invoices.index") !!}',
+				columnDefs: [
+  					{ searchable: false, targets: 2 }, 
+  				],
 				columns: [
 					{data: 'created_at'},
 					{data: 'display_id'},

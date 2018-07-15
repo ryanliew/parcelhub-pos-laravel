@@ -67,8 +67,8 @@ class InvoiceController extends Controller
         $user = User::find(request()->created_by);
 
         $invoice = Invoice::create([
-            'subtotal' => request()->subtotal,
-            'total' => request()->total,
+            'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
+            'total' =>  request()->has('total') ? request()->total : 0.00,
             'tax' => request()->has('tax') ? request()->tax : 0.00,
             'paid' => request()->has('paid') ? request()->paid : 0.00,
             'type' => request()->type,
