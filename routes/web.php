@@ -102,6 +102,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/edit/{invoice}", "InvoiceController@edit")->name('invoices.edit');
 		Route::post("/update/{invoice}", "InvoiceController@update")->name('invoices.edit');
 		Route::get("/receipt/{invoice}", "InvoiceController@receipt")->name("invoices.receipt");
+		Route::get("/preview/{invoice}", "InvoiceController@preview")->name("invoices.preview");
 		Route::get("/do/{invoice}","InvoiceController@delivery_order")->name("invoices.delivery_order");
 		Route::get("/{invoice}", "InvoiceController@get");
 		

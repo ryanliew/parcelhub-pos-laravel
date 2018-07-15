@@ -8,7 +8,7 @@
 		body { font: 10px/1.4 Georgia, serif; }
 		#page-wrap { width: 800px; margin: 0 auto; }
 
-		textarea { border: 0; font: 14px Georgia, Serif; }
+		textarea { border: 0; font: 14px Georgia, Serif; text-align: center; }
 		table { border-collapse: collapse; }
 		table td, table th { border: 1px solid black;  }
 
@@ -33,7 +33,7 @@
 	    }
 
 	    .header-center {
-	    	text-align: center; vertical-align: middle; line-height: 200px;height: 200px; font-size: 30px; font-weight: bold; float: left;
+	    	text-align: center; vertical-align: middle; line-height: 100px;height: 100px; font-size: 30px; font-weight: bold; float: left;
 	    }
 
 	    .font-header{
@@ -45,7 +45,11 @@
 	    }
 
 	    .meta-head {
-	    	text-align: left; background: #eee; width: 150px; font-size: 16px;
+	    	text-align: left; background: #eee; width: 150px; font-size: 16px; font-weight: bold;
+	    }
+
+	    .meta-detail{
+	    	text-align: left; background: #eee; width: 140px; font-size: 14px;
 	    }
 
 	    .header-note {
@@ -86,7 +90,7 @@
 
 	</style>
 	
-	<title>Delivery order - {{ $invoice->display_text }}</title>
+	<title>Invoice - {{ $invoice->display_text }}</title>
 	
 </head>
 
@@ -105,15 +109,11 @@
 		</div>
 		<div><img id="image" src="img/logo.png" alt="logo"></div>
 	
-		<div class="header-left header-center ">Delivery Note</div>
+		<div class="header-left header-center ">Invoice</div>
 
 		<div>
 			<table cellpadding="3">
                 <tbody>
-                <tr>
-                    <td class="meta-head">Type</td>
-                    <td><textarea>Account sale</textarea></td>
-                </tr>
                 <tr>
                     <td class="meta-head">Invoice #</td>
                     <td><textarea>{{$invoice->display_text}}</textarea></td>
@@ -121,14 +121,6 @@
                 <tr>
                     <td class="meta-head">Invoice date</td>
                     <td><textarea>{{$invoice->created_at->format('Y-m-d')}}</textarea></td>
-                </tr>
-                <tr>
-                    <td class="meta-head">Printed date</td>
-                    <td><textarea><?php echo date('Y-m-d');?></textarea></td>
-                </tr>
-                <tr>
-                    <td class="meta-head">Served by</td>
-                    <td><textarea>{{$invoice->user->name}}</textarea></td>
                 </tr>
                 </tbody>
             </table>
@@ -154,25 +146,29 @@
 		<div style="clear:both"></div>
 
 		<div style="height: 200px">
-			<table id="items" cellpadding="5" height=100% >
+			<table id="items" cellpadding="5" >
 			  <tbody>
 				  <tr>
 				    <th>SKU code</th>
 				    <th>Description</th>
-			      	<th>Ordered</th>
-			      	<th>Delivered</th>
+			      	<th>Tax</th>
+			      	<th>Price RM</th>
+			      	<th>Qty</th>
+			      	<th>Total RM</th>
 				  </tr>
 
 				  @foreach($invoice->items as $item)
 					<tr class="item-row">
 					  <td class="text-center">{{$item->sku}}</td>
 					  <td class="text-center">{{$item->description}}</td>
+					  <td class="text-center">{{$item->tax}}</td>
+					  <td class="text-center">{{number_format((float)$item->total_price,2,'.','')}}</td>
 					  <td class="text-center">1</td>
-					  <td class="text-center">1</td>
+					  <td class="text-center">{{number_format((float)$item->total_price,2,'.','')}}</td>
 					</tr>
 				  @endforeach
-
-				  @for($x=0; $x < max( 16 - count($invoice->items), 0 ); $x++  )
+				  
+				  @for($x=0; $x < max( 20 - count($invoice->items), 0 ); $x++  )
 				  {
 				  	<tr class="item-row"><td style="height: 20px"></td></tr>
 				  }
@@ -182,28 +178,51 @@
 			</table> 
 		</div>
 
-		<br>
+		<br><br><br>
 
-		<div>
-			<p class='bottom-left font-header'>Received by:</p>
-			<p class='font-header'>Received on:</p>
+		<div class="header-left">
+			<table>
+				<tbody>
+				<tr class="item-row">
+					<td class="meta-head text-center" colspan='2'>Invoice &amp; Attendant details</td>
+				</tr>
+				<tr class="item-row">
+					<td class="meta-detail">Invoice #</td>
+					<td><textarea>{{$invoice->display_text}}</textarea></td>
+				</tr>
+				<tr class="item-row">
+					<td class="meta-detail">Payment due</td>
+					<td><textarea>{{number_format((float)$invoice->total - $invoice->paid,2,'.','')}}</textarea></td>
+				</tr>
+				<tr class="item-row">
+					<td class="meta-detail">Attendant</td>
+					<td><textarea>{{$invoice->user->name}}</textarea></td>
+				</tr>
+				<tr class="item-row">
+					<td style="text-align: left; width: 150px; height:80px; font-size: 14px;" rowspan '3' colspan='2'>
+						<p>All cheque must be crossed &amp; made payable to:</p><br>
+						<p>{{$invoice->branch->name}}</p>
+						<p>{{$invoice->branch->payment_bank}} A/C No: {{$invoice->branch->payment_acc_no}}</p>
+					
+					</td>
+				</tr>
+				</tbody>
+			</table>
 		</div>
 
-		<br><br>
-
-		<div class='bottom-left-1'>
-			<p class="bottom-left-1 border-top">name</p>
-		</div>
-
-		<div class="bottom-right">
-			<p class="border-top">date</p>
+		<div >
+			<table>
+				<tbody>
+				<tr class="item-row"><td class="meta-head text-center" colspan='2'>Invoice Totals (RM )</td></tr>
+				<tr class="item-row"><td class="meta-detail">Subtotal</td><td ><textarea >{{number_format((float)$invoice->subtotal,2,'.','')}}</textarea></td></tr>
+				<tr class="item-row"><td class="meta-detail">Discount</td><td><textarea>{{number_format((float)$invoice->discount,2,'.','')}}</textarea></td></tr>
+				<tr class="item-row"><td class="meta-detail">Rounding</td><td><textarea>0.00</textarea></td></tr>
+				<tr class="item-row"><td class="meta-detail">Total</td><td><textarea>{{number_format((float)$invoice->total,2,'.','')}}</textarea></td></tr>
+				</tbody>
+			</table>
 		</div>
 
 	</div>
 	
-	<br>	
-
-	<textarea class='instructions'>Instructions: 
-	{{$invoice->remarks}}</textarea>
 
 </body></html>

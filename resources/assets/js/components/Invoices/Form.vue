@@ -150,8 +150,9 @@
 					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
 
 					<div class="d-flex justify-content-end">
-						<a v-if="this.selectedCustomer" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
+						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
 						<a v-else-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
+						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/preview/' + this.invoice" type="button" class="btn btn-success mr-2">Preview</a>
 						<button type="submit" class="btn btn-primary">Confirm</button>
 					</div>
 				</div>
@@ -792,9 +793,8 @@
 
 				window.open('/invoices/receipt/' + response.id, '_blank');
 
-
 				setInterval(function(){
-					window.location.href = "/invoices";
+					window.location.href = "/invoices/edit/" + response.id;
 				}, 3000);
 			},
 

@@ -21,7 +21,7 @@
 									:required="true"
 									label="Branch"
 									name="branch"
-									:editable="true"
+									:editable="data.is_admin"
 									:focus="false"
 									:hideLabel="false"
 									:error="selectedBranch_error"
