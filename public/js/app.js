@@ -30362,7 +30362,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138);
-module.exports = __webpack_require__(222);
+module.exports = __webpack_require__(225);
 
 
 /***/ }),
@@ -30430,6 +30430,8 @@ Vue.component('products-importer', __webpack_require__(213));
 Vue.component('payments-dialog', __webpack_require__(216));
 
 Vue.component('invoices-create', __webpack_require__(219));
+
+Vue.component('customers-dialog', __webpack_require__(222));
 
 var app = new Vue({
   el: '#app',
@@ -70812,6 +70814,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -70919,6 +70922,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			this.form.items = invoice.items;
 			this.selectedType = { label: invoice.type, value: invoice.type };
+			this.selectedCustomer = invoice.customer ? { label: invoice.customer.name, value: invoice.customer.id } : '';
 			this.selectedDiscountMode = { label: invoice.discount_mode, value: invoice.discount_mode };
 			this.selectedPaymentType = { label: invoice.payment_type, value: invoice.payment_type };
 			this.form.discount_value = invoice.discount_value;
@@ -70999,7 +71003,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		getCustomers: function getCustomers() {
 			var _this6 = this;
 
-			axios.get("/data/customers?user=" + this.created_by).then(function (response) {
+			axios.get("/customers/list").then(function (response) {
 				return _this6.setCustomers(response);
 			}).catch(function (error) {
 				return _this6.getCustomers();
@@ -71080,7 +71084,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.description = this.selectedProduct.description;
 				var price = this.selectedProduct.walk_in_price;
 
-				if (this.selectedType.label == "Customer") price = this.selectedProduct.corporate_price;
+				if (this.selectedType.label == "Customer") {
+					//this.getCustomers;
+					price = this.selectedProduct.corporate_price;
+				}
 
 				this.price = price.toFixed(2);
 				this.total_price = price.toFixed(2);
@@ -71662,20 +71669,33 @@ var render = function() {
                   : _vm._e(),
                 _vm._v(" "),
                 _c("div", { staticClass: "d-flex justify-content-end" }, [
-                  this.invoice
+                  this.selectedCustomer
                     ? _c(
                         "a",
                         {
                           staticClass: "btn btn-success mr-2",
                           attrs: {
                             target: "_blank",
-                            href: "/invoices/receipt/" + this.invoice,
+                            href: "/invoices/do/" + this.invoice,
                             type: "button"
                           }
                         },
-                        [_vm._v("Print receipt")]
+                        [_vm._v("Print delivery note")]
                       )
-                    : _vm._e(),
+                    : this.invoice
+                      ? _c(
+                          "a",
+                          {
+                            staticClass: "btn btn-success mr-2",
+                            attrs: {
+                              target: "_blank",
+                              href: "/invoices/receipt/" + this.invoice,
+                              type: "button"
+                            }
+                          },
+                          [_vm._v("Print receipt")]
+                        )
+                      : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "button",
@@ -72211,6 +72231,799 @@ if (false) {
 
 /***/ }),
 /* 222 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(223)
+/* template */
+var __vue_template__ = __webpack_require__(224)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\customers\\Dialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1dce7ab4", Component.options)
+  } else {
+    hotAPI.reload("data-v-1dce7ab4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 223 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: {
+		data: {
+			type: Object
+		}
+	},
+	data: function data() {
+		return {
+			isActive: false,
+			selectedCustomer: '',
+			isEdit: false,
+			form: new Form({
+				type: '',
+				name: '',
+				email: '',
+				contact: '',
+				fax: '',
+				registration_no: '',
+				address1: '',
+				address2: '',
+				address3: '',
+				address4: '',
+				branch: ''
+
+			}),
+			types: [{ label: 'Corporate', value: 'Corporate' }, { label: 'Walk-in', value: 'walk_in' }, { label: 'Walk-in special', value: 'walk_in_sepcial' }],
+
+			selectedType: '',
+			selectedBranch: '',
+			selectedBranch_error: '',
+			branches: []
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		this.getBranches();
+
+		window.events.$on('createCustomer', function (evt) {
+			return _this.createCustomer(evt);
+		});
+		window.events.$on('editCustomer', function (evt) {
+			return _this.editCustomer(evt);
+		});
+
+		$("#customer-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+	},
+
+
+	methods: {
+		createCustomer: function createCustomer(evt) {
+			this.openDialog();
+		},
+		editCustomer: function editCustomer(evt) {
+			this.selectedCustomer = evt[0];
+			this.isEdit = true;
+			this.setForm();
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#customer-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.selectedCustomer = '';
+			this.form.reset();
+		},
+		setForm: function setForm() {
+			this.form.type = this.selectedCustomer.type;
+			this.form.name = this.selectedCustomer.name;
+			this.form.email = this.selectedCustomer.email;
+			this.form.fax = this.selectedCustomer.fax;
+			this.form.contact = this.selectedCustomer.contact;
+			this.form.registration_no = this.selectedCustomer.registration_no;
+			this.form.address1 = this.selectedCustomer.address1;
+			this.form.address2 = this.selectedCustomer.address2;
+			this.form.address3 = this.selectedCustomer.address3;
+			this.form.address4 = this.selectedCustomer.address4;
+			this.selectedBranch = { label: this.selectedCustomer.branch.name, value: this.selectedCustomer.branch.id };
+			this.selectedType = { label: this.selectedCustomer.type, value: this.selectedCustomer.type };
+		},
+		submit: function submit() {
+			var _this2 = this;
+
+			this.form.post(this.url).then(function (response) {
+				return _this2.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			$("#customer-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		},
+		getBranches: function getBranches() {
+			var _this3 = this;
+
+			axios.get(this.branch_url).then(function (response) {
+				return _this3.setBranch(response);
+			}).catch(function (error) {
+				return _this3.getBranches();
+			});
+		},
+		setBranch: function setBranch(response) {
+
+			this.branches = response.data.map(function (branch) {
+				var obj = {};
+
+				obj['value'] = branch.id;
+				obj['label'] = branch.name;
+
+				return obj;
+			});
+
+			if (this.branches.length == 1) {
+				this.selectedBranch = { label: this.branches[0].label, value: this.branches[0].value };
+			}
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.selectedCustomer ? "Edit customer - " + this.selectedCustomer.name : "Create customer";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.selectedCustomer ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.selectedCustomer ? "/customers/" + this.selectedCustomer.id : "/customers";
+		},
+		branch_url: function branch_url() {
+			return this.data.is_admin ? '/data/branches/' : '/data/branch/' + this.data.current_branch;
+		}
+	},
+
+	watch: {
+		selectedType: function selectedType(newVal, oldVal) {
+			this.form.type = newVal.value;
+		},
+		selectedBranch: function selectedBranch(newVal, oldVal) {
+			this.form.branch = newVal.value;
+		}
+	}
+
+});
+
+/***/ }),
+/* 224 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "customer-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          ref: "branches",
+                          attrs: {
+                            potentialData: _vm.branches,
+                            defaultData: _vm.selectedBranch,
+                            placeholder: "Select branch",
+                            required: true,
+                            label: "Branch",
+                            name: "branch",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.selectedBranch_error
+                          },
+                          on: { input: _vm.getBranches },
+                          model: {
+                            value: _vm.selectedBranch,
+                            callback: function($$v) {
+                              _vm.selectedBranch = $$v
+                            },
+                            expression: "selectedBranch"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.types,
+                            defaultData: _vm.selectedType,
+                            placeholder: "Select type",
+                            required: true,
+                            label: "Type",
+                            name: "type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("type")
+                          },
+                          model: {
+                            value: _vm.selectedType,
+                            callback: function($$v) {
+                              _vm.selectedType = $$v
+                            },
+                            expression: "selectedType"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.name,
+                            required: true,
+                            type: "text",
+                            label: "Name",
+                            name: "name",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("name")
+                          },
+                          model: {
+                            value: _vm.form.name,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "name", $$v)
+                            },
+                            expression: "form.name"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.contact,
+                                  required: true,
+                                  type: "string",
+                                  label: "Contact",
+                                  name: "contact",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("contact")
+                                },
+                                model: {
+                                  value: _vm.form.contact,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "contact", $$v)
+                                  },
+                                  expression: "form.contact"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.registration_no,
+                                  required: false,
+                                  type: "string",
+                                  label: "Registration/IC No",
+                                  name: "registration_no",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("registration_no")
+                                },
+                                model: {
+                                  value: _vm.form.registration_no,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "registration_no", $$v)
+                                  },
+                                  expression: "form.registration_no"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.email,
+                                  required: false,
+                                  type: "string",
+                                  label: "Email",
+                                  name: "email",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("email")
+                                },
+                                model: {
+                                  value: _vm.form.email,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "email", $$v)
+                                  },
+                                  expression: "form.email"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.fax,
+                                  required: false,
+                                  type: "string",
+                                  label: "Fax",
+                                  name: "fax",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("fax")
+                                },
+                                model: {
+                                  value: _vm.form.fax,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "fax", $$v)
+                                  },
+                                  expression: "form.fax"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.address1,
+                                  required: false,
+                                  type: "string",
+                                  label: "Address line 1",
+                                  name: "address1",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("address1")
+                                },
+                                model: {
+                                  value: _vm.form.address1,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "address1", $$v)
+                                  },
+                                  expression: "form.address1"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.address2,
+                                  required: false,
+                                  type: "string",
+                                  label: "Address line 2",
+                                  name: "address2",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("address2")
+                                },
+                                model: {
+                                  value: _vm.form.address2,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "address2", $$v)
+                                  },
+                                  expression: "form.address2"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.address3,
+                                  required: false,
+                                  type: "string",
+                                  label: "Address line 3",
+                                  name: "address3",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("address3")
+                                },
+                                model: {
+                                  value: _vm.form.address3,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "address3", $$v)
+                                  },
+                                  expression: "form.address3"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.form.address4,
+                                  required: false,
+                                  type: "string",
+                                  label: "Address line 4",
+                                  name: "address4",
+                                  editable: true,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.form.errors.get("address4")
+                                },
+                                model: {
+                                  value: _vm.form.address4,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.form, "address4", $$v)
+                                  },
+                                  expression: "form.address4"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ])
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1dce7ab4", module.exports)
+  }
+}
+
+/***/ }),
+/* 225 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
