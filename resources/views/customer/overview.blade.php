@@ -72,14 +72,63 @@
 					{data: 'type'},
 					{data: 'name'},
 					{data: 'contact'},
-					{data: 'email'},
-					{data: 'fax'},
-					{data: 'registration_no'},
-					{data: 'address1'},
-					{data: 'address2'},
-					{data: 'address3'},
-					{data: 'address4'},
-					{data: 'branch'},
+					{data: 'email', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'fax', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'registration_no', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'address1', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'address2', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'address3', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'address4', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data ? data : "---";
+							}
+
+							return data;
+						}
+					},
+					{data: 'branch.name'} ,
 				]
 			});
 

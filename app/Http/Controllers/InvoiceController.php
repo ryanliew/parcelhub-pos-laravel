@@ -70,7 +70,7 @@ class InvoiceController extends Controller
             'subtotal' => request()->subtotal,
             'total' => request()->total,
             'tax' => request()->has('tax') ? request()->tax : 0.00,
-            'paid' => request()->paid,
+            'paid' => request()->has('paid') ? request()->paid : 0.00,
             'type' => request()->type,
             'payment_type' => request()->payment_type,
             'branch_id' => $user->current_branch,
@@ -203,6 +203,33 @@ class InvoiceController extends Controller
         $newPDF->WriteHTML($html);
 
         $path = storage_path('receipts\receipt_' . $invoice->id . '.pdf');
+        $newPDF->Output($path, Destination::FILE);
+
+        return response()->file($path);
+    }
+
+    public function delivery_order(Invoice $invoice)
+    {
+        $defaultConfig = (new ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $html = View::make('invoice.delivery', ["invoice" => $invoice])->render();
+
+        // $mPDF = new mPDF(['format' => 'Legal']);
+
+        // $p = 'P';
+        // $mPDF->_setPageSize(array(500, 1000), $p);
+        // $mPDF->WriteHTML($html);
+        // $mPDF->setFooter('{PAGENO}/{nbpg}');
+
+        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF->WriteHTML($html);
+        $newPDF->setFooter('{PAGENO}/{nbpg}');
+
+        $path = storage_path('receipts\delivery_note_' . $invoice->id . '.pdf');
         $newPDF->Output($path, Destination::FILE);
 
         return response()->file($path);

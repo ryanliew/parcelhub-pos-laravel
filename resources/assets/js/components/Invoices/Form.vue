@@ -150,7 +150,8 @@
 					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
 
 					<div class="d-flex justify-content-end">
-						<a v-if="this.invoice" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
+						<a v-if="this.selectedCustomer" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
+						<a v-else-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 						<button type="submit" class="btn btn-primary">Confirm</button>
 					</div>
 				</div>
@@ -500,6 +501,7 @@
 
 				this.form.items = invoice.items;
 				this.selectedType = {label: invoice.type, value: invoice.type};
+				this.selectedCustomer = invoice.customer? {label: invoice.customer.name, value : invoice.customer.id } : '';
 				this.selectedDiscountMode = {label: invoice.discount_mode, value: invoice.discount_mode};
 				this.selectedPaymentType = {label: invoice.payment_type, value: invoice.payment_type};
 				this.form.discount_value = invoice.discount_value;

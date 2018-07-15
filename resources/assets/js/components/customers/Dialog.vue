@@ -53,6 +53,19 @@
 								</text-input>
 								<div class="row">
 									<div class="col">
+										<text-input v-model="form.contact" 
+											:defaultValue="form.contact"
+											:required="true"
+											type="string"
+											label="Contact"
+											name="contact"
+											:editable="true"
+											:focus="false"
+											:hideLabel="false"
+											:error="form.errors.get('contact')">
+										</text-input>
+									</div>
+									<div class="col">
 										<text-input v-model="form.registration_no" 
 											:defaultValue="form.registration_no"
 											:required="false"
@@ -78,21 +91,6 @@
 											:focus="false"
 											:hideLabel="false"
 											:error="form.errors.get('email')">
-										</text-input>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col">
-										<text-input v-model="form.contact" 
-											:defaultValue="form.contact"
-											:required="true"
-											type="string"
-											label="Contact"
-											name="contact"
-											:editable="true"
-											:focus="false"
-											:hideLabel="false"
-											:error="form.errors.get('contact')">
 										</text-input>
 									</div>
 									<div class="col">
@@ -210,7 +208,7 @@
 						{label: 'Walk-in special', value: 'walk_in_sepcial'},
 						],
 
-				selectedType: {label: 'Corporate', value: 'Corporate'},
+				selectedType: '',
 				selectedBranch: '',
 				selectedBranch_error: '',
 				branches: [],
@@ -253,7 +251,7 @@
 			},
 
 			setForm() {
-				this.form.type 	 = this.selectedCustomer.type;
+				this.form.type   = this.selectedCustomer.type;
 				this.form.name	 = this.selectedCustomer.name;
 				this.form.email	 = this.selectedCustomer.email;
 				this.form.fax	 = this.selectedCustomer.fax;
@@ -263,7 +261,8 @@
 				this.form.address2 = this.selectedCustomer.address2;
 				this.form.address3 = this.selectedCustomer.address3;
 				this.form.address4 = this.selectedCustomer.address4;
-				this.form.branch = this.selectedCustomer.branch;
+				this.selectedBranch = {label: this.selectedCustomer.branch.name, value: this.selectedCustomer.branch.id};
+				this.selectedType   = {label: this.selectedCustomer.type, value: this.selectedCustomer.type };
 			},
 
 			submit() {
@@ -325,6 +324,7 @@
 				return this.data.is_admin ? '/data/branches/': '/data/branch/' + this.data.current_branch ;
 			} 
 		},
+
 		watch: {
 			selectedType(newVal, oldVal) {
 				this.form.type = newVal.value;

@@ -27,7 +27,7 @@ class CustomerController extends Controller
 
         if(auth()->user()->is_admin)
         {
-            $obj  = datatables()->of(Customer::all())->toJson(); 
+            $obj  = datatables()->of(Customer::with('branch'))->toJson(); 
         }
         else
         {
@@ -48,7 +48,7 @@ class CustomerController extends Controller
     public function validate_input()
     {
         request()->validate([
-            //"branch" => 'required',
+            "branch" => 'required',
             "name" => "required",
             "type" => "required",
             "contact" => "required",
