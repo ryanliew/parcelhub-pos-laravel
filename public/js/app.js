@@ -70815,6 +70815,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -71212,10 +71213,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		onSuccess: function onSuccess(response) {
 
-			window.open('/invoices/receipt/' + response.id, '_blank');
+			window.open(response.redirect_url, '_blank');
 
 			setInterval(function () {
-				window.location.href = "/invoices";
+				window.location.href = "/invoices/edit/" + response.id;
 			}, 3000);
 		},
 		toggleAddItem: function toggleAddItem() {
@@ -71669,7 +71670,7 @@ var render = function() {
                   : _vm._e(),
                 _vm._v(" "),
                 _c("div", { staticClass: "d-flex justify-content-end" }, [
-                  this.selectedCustomer
+                  this.selectedCustomer && this.invoice
                     ? _c(
                         "a",
                         {
@@ -71696,6 +71697,21 @@ var render = function() {
                           [_vm._v("Print receipt")]
                         )
                       : _vm._e(),
+                  _vm._v(" "),
+                  this.selectedCustomer && this.invoice
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-success mr-2",
+                          attrs: {
+                            target: "_blank",
+                            href: "/invoices/preview/" + this.invoice,
+                            type: "button"
+                          }
+                        },
+                        [_vm._v("Preview")]
+                      )
+                    : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "button",
@@ -72674,7 +72690,7 @@ var render = function() {
                             required: true,
                             label: "Branch",
                             name: "branch",
-                            editable: true,
+                            editable: _vm.data.is_admin,
                             focus: false,
                             hideLabel: false,
                             error: _vm.selectedBranch_error

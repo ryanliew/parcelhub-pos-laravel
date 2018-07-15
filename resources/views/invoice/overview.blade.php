@@ -57,7 +57,7 @@
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('createPayment');
+							location.href="/invoices/create";
 						}
 					},
 					{
@@ -77,20 +77,10 @@
 					},
 				],
 				ajax: '{!! route("invoices.index") !!}',
-				columnDefs: [
-  					{ searchable: false, targets: 2 }, 
-  				],
 				columns: [
 					{data: 'created_at'},
-					{data: 'display_id'},
-					{data: 'customer', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return data ? data.name : "---";
-							}
-
-							return data;
-						}
-					},
+					{data: 'display_id', name:'id'},
+					{data: 'customer', name:'customer.name'},
 					{data: 'subtotal', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);

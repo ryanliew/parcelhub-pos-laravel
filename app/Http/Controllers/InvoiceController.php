@@ -40,7 +40,7 @@ class InvoiceController extends Controller
         $branch = auth()->user()->current()->first();
 
     	return datatables()
-			->of($branch->invoices()->with(['customer','payment', 'branch']))
+			->of($branch->invoices()->with(['customer','payment', 'branch'])->select('invoices.*'))
                 ->addColumn('display_id', function(Invoice $invoice) {
                     return $invoice->display_text;
                 })
@@ -49,6 +49,9 @@ class InvoiceController extends Controller
                 })
     			->addColumn('outstanding', function(Invoice $invoice) {
                     return $invoice->total - $invoice->payment->sum();
+                })
+                ->addColumn('customer', function(Invoice $invoice){ 
+                    return $invoice->customer ? $invoice->customer->name : "---";
                 })
     			->toJson();   
     }
@@ -106,7 +109,9 @@ class InvoiceController extends Controller
         }
         //$invoice->items()->create($items);
 
-        return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id]);
+        $url = $invoice->customer_id ? "/invoices/preview/" . $invoice->id : "/invoices/receipt/" . $invoice->id;
+
+        return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
     }
 
     public function update(Invoice $invoice)
@@ -118,8 +123,8 @@ class InvoiceController extends Controller
         $user = User::find(request()->created_by);
 
         $invoice->update([
-            'subtotal' => request()->subtotal,
-            'total' => request()->total,
+            'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
+            'total' =>  request()->has('total') ? request()->total : 0.00,
             'tax' => request()->has('tax') ? request()->tax : 0.00,
             'paid' => request()->has('paid') ? request()->paid : 0.00,
             'type' => request()->type,
@@ -158,8 +163,9 @@ class InvoiceController extends Controller
             ]);
         }
         //$invoice->items()->create($items);
-
-        return json_encode(['message' => "Invoice updated successfully, redirecting to invoice list page", "id" => $invoice->id]);
+        $url = $invoice->customer_id ? "/invoices/preview/" . $invoice->id : "/invoices/receipt/" . $invoice->id;
+        
+        return json_encode(['message' => "Invoice updated successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
     }
 
     public function receipt(Invoice $invoice)

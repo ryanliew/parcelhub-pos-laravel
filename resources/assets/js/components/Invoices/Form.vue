@@ -791,7 +791,8 @@
 
 			onSuccess(response) {
 
-				window.open('/invoices/receipt/' + response.id, '_blank');
+
+				window.open(response.redirect_url, '_blank');
 
 				setInterval(function(){
 					window.location.href = "/invoices/edit/" + response.id;
