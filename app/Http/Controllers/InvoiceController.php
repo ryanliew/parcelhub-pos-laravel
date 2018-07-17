@@ -37,10 +37,10 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $branch = auth()->user()->current()->first();
+        $terminal = auth()->user()->terminal()->first();
 
     	return datatables()
-			->of($branch->invoices()->with(['customer','payment', 'branch'])->select('invoices.*'))
+			->of($terminal->invoices()->with(['customer','payment', 'branch', 'terminal'])->select('invoices.*'))
                 ->addColumn('display_id', function(Invoice $invoice) {
                     return $invoice->display_text;
                 })

@@ -23,8 +23,7 @@ class BranchController extends Controller
             "registration_no" => "required",
             "payment_bank" => "required",
             "payment_acc_no" => "required",
-            "address" => "required",
-            "terminal_count" => "required" 
+            "address" => "required"
         ]);
 	}
 
@@ -40,6 +39,8 @@ class BranchController extends Controller
         $branch = Branch::create(request()->all());
 
         $branch->create_default_user();
+
+        $branch->create_default_terminal();
 
     	return json_encode(['message' => "New branch created. User " . $branch->code . " has been assigned to the branch."]);
     }

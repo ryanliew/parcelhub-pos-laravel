@@ -11081,6 +11081,7 @@ body {
   background-color: #fff;
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  z-index: 1;
 }
 
 .dt-buttons {
@@ -11114,6 +11115,24 @@ body {
   padding: 10px;
   background: #f47920;
   color: white;
+  -webkit-transition: all .5s ease;
+  transition: all .5s ease;
+}
+
+.branch-selector .form-inline {
+  position: relative;
+}
+
+.expand-button {
+  position: absolute;
+  right: -60px;
+  bottom: -25px;
+  color: #f47920;
+  background: white;
+  border-radius: 50%;
+  border: 2px solid #f47920;
+  font-size: 15px;
+  z-index: 2;
 }
 
 .navbar-admin {
@@ -11227,5 +11246,13 @@ tr.item-editing {
 .item-editing td {
   color: white;
   font-weight: bold;
+}
+
+.hide-selector {
+  margin-top: -52px;
+}
+
+.show-selector {
+  margin-top: 0px;
 }
 

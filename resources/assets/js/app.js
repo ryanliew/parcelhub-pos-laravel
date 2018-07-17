@@ -60,6 +60,8 @@ Vue.component('payments-dialog', require('./components/payments/Dialog.vue'));
 Vue.component('invoices-create', require('./components/invoices/Form.vue'));
 
 Vue.component('customers-dialog', require('./components/customers/Dialog.vue'));
+
+Vue.component('terminals-dialog', require('./components/terminals/Dialog.vue'));
  
 const app = new Vue({
     el: '#app',

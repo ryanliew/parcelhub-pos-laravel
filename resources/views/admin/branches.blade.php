@@ -24,7 +24,6 @@
 							<th>Contact</th>
 							<th>Email</th>
 							<th>Registration No.</th>
-							<th>Terminal</th>
 							<th>Payment Bank</th>
 							<th>Payment Account</th>
 							<th>GST No.</th>
@@ -82,7 +81,6 @@
 					{data: 'contact'},
 					{data: 'email'},
 					{data: 'registration_no'},
-					{data: 'terminal_count'},
 					{data: 'payment_bank'},
 					{data: 'payment_acc_no'},
 					{data: 'gst_no'},

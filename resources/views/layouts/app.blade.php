@@ -52,13 +52,7 @@
                             </li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
                             
-                            @if(auth()->user()->is_admin)
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('branches.page') }}">
-                                        Admin panel
-                                    </a>
-                                </li>
-                            @endif
+                            
                             <!-- <li class="nav-item"><a class="nav-link" href="{{ route('payments.page') }}">Payment</a></li> -->
                         </ul>
                     @endif
@@ -68,6 +62,13 @@
                         @guest
                             
                         @else
+                            @if(auth()->user()->is_admin)
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('branches.page') }}">
+                                        Admin panel
+                                    </a>
+                                </li>
+                            @endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }} <span class="caret"></span>
@@ -96,11 +97,9 @@
             </div>
         </nav>
         @if(auth()->check())
-        <div class="branch-selector inset-shadow">
-            <div class="container">
-                <branch-selector :branches="{{ json_encode(Auth::user()->branches) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}"  :userId="{{ auth()->user()->id }}"></branch-selector>
-            </div>
-        </div>
+        
+            <branch-selector :branches="{{ json_encode(Auth::user()->branches()->with('terminals')->get()) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}"  :userId="{{ auth()->user()->id }}"></branch-selector>
+            
         @endif
         <main class="py-4 main-content inset-shadow">
             @yield('content')

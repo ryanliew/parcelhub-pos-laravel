@@ -82,19 +82,6 @@
 									:error="form.errors.get('gst_no')">
 								</text-input>
 							</div>
-							<div class="col">
-								<text-input v-model="form.terminal_count" 
-									:defaultValue="form.terminal_count"
-									:required="true"
-									type="number"
-									label="Number of terminal"
-									name="terminal_count"
-									:editable="true"
-									:focus="false"
-									:hideLabel="false"
-									:error="form.errors.get('terminal_count')">
-								</text-input>
-							</div>
 						</div>	
 						<div class="row">
 							<div class="col">

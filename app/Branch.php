@@ -25,6 +25,11 @@ class Branch extends Model
         return $this->hasMany('App\Customer','branch');
     }
 
+    public function terminals()
+    {
+        return $this->hasMany('App\Terminal');
+    }
+    
     public function create_default_user()
     {
         $user = User::create([
@@ -38,6 +43,15 @@ class Branch extends Model
         ]);
 
         $this->grant_permission($user, Permission::Write);
+    }
+
+    public function create_default_terminal()
+    {
+        $terminal = $this->terminals()->create([
+            'name' => 'Drawer A',
+            'float' => 0.00,
+            'is_active' => true,
+        ]);
     }
 
     public function grant_permission($user, $type)
