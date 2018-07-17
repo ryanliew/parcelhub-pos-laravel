@@ -30362,7 +30362,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138);
-module.exports = __webpack_require__(225);
+module.exports = __webpack_require__(228);
 
 
 /***/ }),
@@ -30432,6 +30432,8 @@ Vue.component('payments-dialog', __webpack_require__(216));
 Vue.component('invoices-create', __webpack_require__(219));
 
 Vue.component('customers-dialog', __webpack_require__(222));
+
+Vue.component('terminals-dialog', __webpack_require__(225));
 
 var app = new Vue({
   el: '#app',
@@ -65366,19 +65368,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: [''],
@@ -65673,34 +65662,6 @@ var render = function() {
                               _vm.$set(_vm.form, "gst_no", $$v)
                             },
                             expression: "form.gst_no"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.terminal_count,
-                            required: true,
-                            type: "number",
-                            label: "Number of terminal",
-                            name: "terminal_count",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("terminal_count")
-                          },
-                          model: {
-                            value: _vm.form.terminal_count,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "terminal_count", $$v)
-                            },
-                            expression: "form.terminal_count"
                           }
                         })
                       ],
@@ -66070,6 +66031,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['branches', 'terminal', 'default', 'userid'],
@@ -66077,7 +66046,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		return {
 			current: this.default,
 			current_terminal: this.terminal,
-			current_branch: ''
+			current_branch: '',
+			terminals: [],
+			active: false
 		};
 	},
 	mounted: function mounted() {
@@ -66104,6 +66075,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.current_branch = _.filter(this.branches, function (branch) {
 				return this.current == branch.id;
 			}.bind(this))[0];
+			this.terminals = this.current_branch.terminals;
+		},
+		toggleActive: function toggleActive() {
+			console.log("Clicked!");
+		}
+	},
+
+	computed: {
+		shouldShowClass: function shouldShowClass() {
+			return this.active ? 'show-selector' : 'hide-selector';
+		},
+		expandButtonContent: function expandButtonContent() {
+			return this.active ? '<i class="fas fa-angle-up"></i>' : '<i class="fas fa-angle-down"></i>';
 		}
 	},
 
@@ -66133,90 +66117,111 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "form-inline" }, [
-    _c("label", { staticClass: "mr-1", attrs: { for: "branch-selector" } }, [
-      _vm._v("Branch:")
-    ]),
-    _vm._v(" "),
-    _c(
-      "select",
-      {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.current,
-            expression: "current"
-          }
-        ],
-        staticClass: "custom-select",
-        attrs: { id: "branch-selector" },
-        on: {
-          change: function($event) {
-            var $$selectedVal = Array.prototype.filter
-              .call($event.target.options, function(o) {
-                return o.selected
-              })
-              .map(function(o) {
-                var val = "_value" in o ? o._value : o.value
-                return val
-              })
-            _vm.current = $event.target.multiple
-              ? $$selectedVal
-              : $$selectedVal[0]
-          }
-        }
-      },
-      _vm._l(_vm.branches, function(branch) {
-        return _c("option", { domProps: { value: branch.id } }, [
-          _vm._v(_vm._s(branch.name))
+  return _c(
+    "div",
+    { staticClass: "branch-selector inset-shadow", class: _vm.shouldShowClass },
+    [
+      _c("div", { staticClass: "container" }, [
+        _c("div", { staticClass: "form-inline" }, [
+          _c(
+            "label",
+            { staticClass: "mr-1", attrs: { for: "branch-selector" } },
+            [_vm._v("Branch:")]
+          ),
+          _vm._v(" "),
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.current,
+                  expression: "current"
+                }
+              ],
+              staticClass: "custom-select",
+              attrs: { id: "branch-selector" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.current = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.branches, function(branch) {
+              return _c("option", { domProps: { value: branch.id } }, [
+                _vm._v(_vm._s(branch.name))
+              ])
+            })
+          ),
+          _vm._v(" "),
+          _c(
+            "label",
+            { staticClass: "mr-1 ml-3", attrs: { for: "terminal-selector" } },
+            [_vm._v("Terminal:")]
+          ),
+          _vm._v(" "),
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.current_terminal,
+                  expression: "current_terminal"
+                }
+              ],
+              staticClass: "custom-select",
+              attrs: { id: "terminal-selector" },
+              on: {
+                changed: _vm.terminalChanged,
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.current_terminal = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.terminals, function(terminal) {
+              return _c("option", { domProps: { value: terminal.id } }, [
+                _vm._v(_vm._s(terminal.name))
+              ])
+            })
+          ),
+          _vm._v(" "),
+          _c("button", {
+            staticClass: "btn btn-rounded expand-button",
+            attrs: { type: "button" },
+            domProps: { innerHTML: _vm._s(_vm.expandButtonContent) },
+            on: {
+              click: function($event) {
+                _vm.active = !_vm.active
+              }
+            }
+          })
         ])
-      })
-    ),
-    _vm._v(" "),
-    _c(
-      "label",
-      { staticClass: "mr-1 ml-3", attrs: { for: "terminal-selector" } },
-      [_vm._v("Terminal:")]
-    ),
-    _vm._v(" "),
-    _c(
-      "select",
-      {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.current_terminal,
-            expression: "current_terminal"
-          }
-        ],
-        staticClass: "custom-select",
-        attrs: { id: "terminal-selector" },
-        on: {
-          changed: _vm.terminalChanged,
-          change: function($event) {
-            var $$selectedVal = Array.prototype.filter
-              .call($event.target.options, function(o) {
-                return o.selected
-              })
-              .map(function(o) {
-                var val = "_value" in o ? o._value : o.value
-                return val
-              })
-            _vm.current_terminal = $event.target.multiple
-              ? $$selectedVal
-              : $$selectedVal[0]
-          }
-        }
-      },
-      _vm._l(_vm.current_branch.terminal_count, function(n) {
-        return _c("option", { domProps: { value: n } }, [
-          _vm._v("Drawer " + _vm._s(n))
-        ])
-      })
-    )
-  ])
+      ])
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -73040,6 +73045,457 @@ if (false) {
 
 /***/ }),
 /* 225 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(226)
+/* template */
+var __vue_template__ = __webpack_require__(227)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\terminals\\Dialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-70e1d844", Component.options)
+  } else {
+    hotAPI.reload("data-v-70e1d844", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 226 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: [''],
+	data: function data() {
+		return {
+			isActive: false,
+			selectedTerminal: '',
+			selectedBranch: '',
+			isEdit: false,
+			branches: [],
+			form: new Form({
+				name: '',
+				float: '',
+				branch_id: '',
+				is_active: ''
+			})
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('createTerminal', function (evt) {
+			return _this.createTerminal(evt);
+		});
+		window.events.$on('editTerminal', function (evt) {
+			return _this.editTerminal(evt);
+		});
+
+		$("#terminal-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+
+		this.getBranches();
+	},
+
+
+	methods: {
+		getBranches: function getBranches() {
+			var _this2 = this;
+
+			axios.get("/data/branches").then(function (response) {
+				return _this2.setBranches(response);
+			}).catch(function (error) {
+				return _this2.getBranches();
+			});
+		},
+		setBranches: function setBranches(response) {
+			this.branches = response.data.map(function (branch) {
+				var obj = {};
+
+				obj['label'] = branch.name;
+				obj['value'] = branch.id;
+
+				return obj;
+			});
+		},
+		createTerminal: function createTerminal(evt) {
+			this.openDialog();
+		},
+		editTerminal: function editTerminal(evt) {
+			this.selectedTerminal = evt[0];
+			this.isEdit = true;
+			this.setForm();
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#terminal-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.form.reset();
+			this.selectedTerminal = '';
+		},
+		setForm: function setForm() {
+			this.form.name = this.selectedTerminal.name;
+			this.form.float = this.selectedTerminal.float;
+			this.form.branch_id = this.selectedTerminal.branch_id;
+			this.form.is_active = this.selectedTerminal.is_active;
+
+			this.selectedBranch = '';
+
+			if (this.form.branch_id) {
+				this.selectedBranch = _.filter(this.branches, function (type) {
+					return this.form.branch_id == type.value;
+				}.bind(this))[0];
+			}
+		},
+		submit: function submit() {
+			var _this3 = this;
+
+			this.form.post(this.url).then(function (response) {
+				return _this3.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			$("#terminal-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.selectedTerminal ? "Edit terminal - " + this.selectedTerminal.name : "Create terminal";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.selectedTerminal ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.selectedTerminal ? "/admin/terminals/" + this.selectedTerminal.id : "/admin/terminals";
+		}
+	},
+
+	watch: {
+		selectedBranch: function selectedBranch(newVal, oldVal) {
+			this.form.branch_id = newVal.value;
+		}
+	}
+
+});
+
+/***/ }),
+/* 227 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "terminal-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.name,
+                            required: true,
+                            type: "text",
+                            label: "Name",
+                            name: "name",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("name")
+                          },
+                          model: {
+                            value: _vm.form.name,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "name", $$v)
+                            },
+                            expression: "form.name"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.float,
+                            required: true,
+                            type: "number",
+                            label: "Float",
+                            name: "float",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("float")
+                          },
+                          model: {
+                            value: _vm.form.float,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "float", $$v)
+                            },
+                            expression: "form.float"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("selector-input", {
+                    attrs: {
+                      potentialData: _vm.branches,
+                      defaultData: _vm.selectedBranch,
+                      placeholder: "Select branch",
+                      required: true,
+                      label: "Branch",
+                      name: "branch_id",
+                      editable: true,
+                      focus: false,
+                      hideLabel: false,
+                      error: _vm.form.errors.get("branch_id")
+                    },
+                    model: {
+                      value: _vm.selectedBranch,
+                      callback: function($$v) {
+                        _vm.selectedBranch = $$v
+                      },
+                      expression: "selectedBranch"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("checkbox-input", {
+                    attrs: {
+                      defaultChecked: _vm.form.is_active,
+                      label: "Active",
+                      name: "is_active",
+                      editable: true
+                    },
+                    model: {
+                      value: _vm.form.is_active,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "is_active", $$v)
+                      },
+                      expression: "form.is_active"
+                    }
+                  })
+                ],
+                1
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-70e1d844", module.exports)
+  }
+}
+
+/***/ }),
+/* 228 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

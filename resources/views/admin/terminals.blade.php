@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page')
-	Users
+	Terminals
 @endsection
 
 @section('styles')
@@ -12,24 +12,23 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Users</b>
+				<b>Terminals</b>
 			</div>
 			<div class="card-body">
-				<table class="table table-bordered" id="users-table">
+				<table class="table table-bordered" id="terminals-table">
 					<thead>
 						<tr>
+							<th>Branch</th>
 							<th>Name</th>
-							<th>Username</th>
-							<th>Email</th>
-							<th>Default branch</th>
-							<th>Default terminal</th>
+							<th>Float</th>
+							<th>Active</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<users-dialog></users-dialog>
+		<terminals-dialog></terminals-dialog>
 	</div>
 
 @endsection
@@ -40,7 +39,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
-			var table = $("#users-table").DataTable({
+			var table = $("#terminals-table").DataTable({
 				processing: true,
 				serverSide: true,
 				responsive: true,
@@ -53,13 +52,13 @@
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('createUser');
+							window.events.$emit('createTerminal');
 						}
 					},
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editUser', table.rows({selected: true}).data().toArray());
+							window.events.$emit('editTerminal', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},
@@ -67,19 +66,25 @@
 					// {
 					// 	text: 'Delete',
 					// 	action: function( e, dt, node, config ) {
-					// 		window.events.$emit('deleteUser', table.rows({selected: true}).data().toArray());
+					// 		window.events.$emit('deleteTerminal', table.rows({selected: true}).data().toArray());
 					// 	},
 					// 	enabled: false
 					// },
 					'excel', 'colvis'
 				],
-				ajax: '{!! route("users.index") !!}',
+				ajax: '{!! route("terminals.index") !!}',
 				columns: [
+					{data: 'branch_name'},
 					{data: 'name'},
-					{data: 'username'},
-					{data: 'email'},
-					{data: 'current.name'},
-					{data: 'terminal.name'}
+					{data: 'float'},
+					{data: 'is_active', render: function(data,type,row){
+							if(type === 'display' || type === 'filter') {
+								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
+							}
+
+							return data;
+						}
+					}
 				]
 			});
 

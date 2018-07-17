@@ -40,6 +40,11 @@ class User extends Authenticatable
         return $this->hasMany("App\Invoice", "created_by");
     }
 
+    public function terminal()
+    {
+        return $this->belongsTo("App\Terminal", "current_terminal");
+    }
+
     public function isAdmin()
     {
         return $this->is_admin;

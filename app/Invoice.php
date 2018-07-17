@@ -13,6 +13,11 @@ class Invoice extends Model
     	return $this->belongsTo('App\Branch');
     }
 
+    public function terminal()
+    {
+        return $this->belongsTo('App\Terminal', 'terminal_no');
+    }
+
     public function items()
     {
     	return $this->hasMany('App\Item');

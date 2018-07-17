@@ -72,6 +72,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/{sku}", "ProductController@update");
 	});
 
+	Route::group(['prefix' => 'terminals'], function(){
+		Route::get('/', "TerminalController@page")->name('terminals.page');
+		Route::post("/", "TerminalController@store");
+		Route::get("/index", "TerminalController@index")->name('terminals.index');
+		Route::post("/{terminal}", "TerminalController@update");
+	});
+
 });
 
 // Users route
@@ -80,6 +87,7 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'data'], function(){
 		Route::get("/zonetypes", "ZoneTypeController@list");
 		Route::get("/branches", "BranchController@list");
+		Route::get("/terminals", "TerminalController@list");
 		Route::get("/vendors", "VendorController@list");
 		Route::get("/producttypes", "ProductTypeController@list");
 		Route::get("/taxes", "TaxController@list");

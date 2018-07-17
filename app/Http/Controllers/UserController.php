@@ -9,8 +9,11 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     public function change_branch()
-    {
-        auth()->user()->update(['current_branch' => request()->branch]);
+    {   
+        $branch = Branch::find(request()->branch);
+
+        auth()->user()->update(['current_branch' => request()->branch, 'current_terminal' => $branch->terminals()->first()->id]);
+
     }
 
     public function change_terminal()
@@ -41,7 +44,7 @@ class UserController extends Controller
 
     public function index()
     {
-    	return datatables()->of(User::with('current'))->toJson();	
+    	return datatables()->of(User::with(['current', 'terminal']))->toJson();	
     }
 
     public function store()
