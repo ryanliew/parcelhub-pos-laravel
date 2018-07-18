@@ -38,8 +38,13 @@ class Invoice extends Model
         return $this->hasMany('App\Payment', "invoice_no");
     }
 
-    public function getDisplayTextAttribute()
+    public function cashup()
     {
-        return $this->branch->code . sprintf("%05d", $this->id);
+        return $this->belongsTo("App\Cashup");
+    }
+
+    public function scopeCashupRequired($query)
+    {
+        return $query->where('cashed', false)->where('type', 'Cash');
     }
 }

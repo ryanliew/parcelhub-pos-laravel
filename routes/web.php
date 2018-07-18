@@ -132,4 +132,11 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/{customer}","CustomerController@get");
 	});
 
+	Route::group(['prefix' => 'cashups'], function(){
+		Route::get("/", "CashupController@page")->name('cashups.page');
+		Route::post("/", "CashupController@store");
+		Route::get("/index", "CashupController@index")->name('cashups.index');
+		Route::get("/report/{cashup}", "CashupController@report")->name('cashups.report');
+	});
+
 });

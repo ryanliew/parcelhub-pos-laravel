@@ -17,4 +17,9 @@ class Terminal extends Model
     {
     	return $this->hasMany('App\Invoice', 'terminal_no');
     }
+
+    public function cashups()
+    {
+    	return $this->hasMany('App\Cashup');
+    }
 }
