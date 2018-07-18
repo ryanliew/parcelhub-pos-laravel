@@ -82,7 +82,7 @@
 				ajax: '{!! route("invoices.index") !!}',
 				columns: [
 					{data: 'created_at'},
-					{data: 'display_id', name:'id'},
+					{data: 'invoice_no'},
 					{data: 'customer', name:'customer.name'},
 					{data: 'subtotal', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {

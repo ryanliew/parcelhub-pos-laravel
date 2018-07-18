@@ -40,10 +40,7 @@ class InvoiceController extends Controller
         $terminal = auth()->user()->terminal()->first();
 
     	return datatables()
-			->of($terminal->invoices()->with(['customer','payment', 'branch', 'terminal'])->select('invoices.*'))
-                ->addColumn('display_id', function(Invoice $invoice) {
-                    return $invoice->display_text;
-                })
+			->of($terminal->invoices()->latest()->with(['customer','payment', 'branch', 'terminal'])->select('invoices.*'))
     			->addColumn('payment', function(Invoice $invoice) {
                     return $invoice->payment->sum();
                 })
@@ -69,6 +66,10 @@ class InvoiceController extends Controller
 
         $user = User::find(request()->created_by);
 
+        $branch = auth()->user()->current;
+
+        $invoice_no = $branch->code . sprintf("%05d", $branch->sequence->last_id++);
+
         $invoice = Invoice::create([
             'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
             'total' =>  request()->has('total') ? request()->total : 0.00,
@@ -83,7 +84,8 @@ class InvoiceController extends Controller
             'discount_mode' => request()->discount_mode,
             'discount' => request()->has('discount') ? request()->discount : 0.00,
             'remarks' => request()->remarks,
-            'customer_id' => request()->customer_id
+            'customer_id' => request()->customer_id,
+            'invoice_no' => $invoice_no,
         ]);
 
         foreach($items as $item)
@@ -110,6 +112,8 @@ class InvoiceController extends Controller
         //$invoice->items()->create($items);
 
         $url = $invoice->customer_id ? "/invoices/preview/" . $invoice->id : "/invoices/receipt/" . $invoice->id;
+
+        $branch->sequence()->update(["last_id" => $branch->sequence->last_id + 1]);
 
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
     }

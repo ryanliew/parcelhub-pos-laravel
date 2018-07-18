@@ -11081,7 +11081,7 @@ body {
   background-color: #fff;
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-  z-index: 1;
+  z-index: 3;
 }
 
 .dt-buttons {
@@ -11132,7 +11132,7 @@ body {
   border-radius: 50%;
   border: 2px solid #f47920;
   font-size: 15px;
-  z-index: 2;
+  z-index: 4;
 }
 
 .navbar-admin {

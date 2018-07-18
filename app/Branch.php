@@ -29,6 +29,11 @@ class Branch extends Model
     {
         return $this->hasMany('App\Terminal');
     }
+
+    public function sequence()
+    {
+        return $this->hasOne('App\Sequence');
+    }
     
     public function create_default_user()
     {
@@ -43,6 +48,8 @@ class Branch extends Model
         ]);
 
         $this->grant_permission($user, Permission::Write);
+
+        return $user;
     }
 
     public function create_default_terminal()
@@ -52,6 +59,15 @@ class Branch extends Model
             'float' => 0.00,
             'is_active' => true,
         ]);
+
+        return $terminal;
+    }
+
+    public function create_default_sequence()
+    {
+        $sequence = $this->sequence()->create();
+
+        return $sequence;
     }
 
     public function grant_permission($user, $type)
