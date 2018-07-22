@@ -117,8 +117,10 @@ Route::group(['middleware' => 'auth'], function(){
 	});
 
 	Route::group(['prefix' => 'payments'], function(){
-		Route::get('/', "PaymentController@page")->name('payments.page');
+		Route::get('/all', "PaymentController@page")->name('payments.page');
 		Route::get("/index", "PaymentController@index")->name('payments.index');
+		Route::get('/index/{invoice}',"PaymentController@index");
+		Route::get('/invoice/{invoice}', "PaymentController@page");
 		Route::post("/", "PaymentController@store");
 	});
 

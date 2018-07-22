@@ -8,28 +8,26 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Payments</b>
+				<b>Payments</b> <b style="display: none;" id='label_invoice'>per Invoice : {{$invoice_no}}</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="payments-table">
 					<thead>
 						<tr>
+							<th>Datetime</th>
 							<th>Customer</th>
 							<th>Branch</th>
 							<th>Terminal</th>
 							<th>Total</th>
 							<th>Payment method</th>
-							<th>Created by</th>
-							<th></th>
+							<th>Invoice No.</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
-
 		<payments-dialog></payments-dialog>
 	</div>
-
 @endsection
 
 @section('js')
@@ -38,6 +36,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
+			var url = '/payments/index/{{ $invoice_no }}';//: '{!! route("payments.index") !!}';
 			var table = $("#payments-table").DataTable({
 				processing: true,
 				serverSide: true,
@@ -48,29 +47,37 @@
 				},
 				dom: 'Blftip',
 				buttons: [
-					{
-						text: 'Create',
-						action: function( e, dt, node, config ) {
-							window.events.$emit('createPayment');
-						}
-					},
-					{
-						text: 'Edit',
-						action: function( e, dt, node, config ) {
-							window.events.$emit('editPayment', table.rows({selected: true}).data().toArray());
-						},
-						enabled: false
-					},
+					// {
+					// 	text: 'Create',
+					// 	action: function( e, dt, node, config ) {
+					// 		window.events.$emit('createPayment');
+					// 	}
+					// },
+					// {
+					// 	text: 'Edit',
+					// 	action: function( e, dt, node, config ) {
+					// 		window.events.$emit('editPayment', table.rows({selected: true}).data().toArray());
+					// 	},
+					// 	enabled: false
+					// },
 					'excel', 'colvis'
 				],
-				ajax: '{!! route("payments.index") !!}',
+				ajax: url,
 				columns: [
+					{data: 'updated_at'},
+					{data: 'customer', name:'customer.name'},
+					{data: 'branch', name:'branch.name'},
+					{data: 'terminal_no' },
+					{data: 'total', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}	
+					},
+					{data: 'payment_method'},
 					{data: 'invoice_no'},
-					{data: 'total'},
-					{data: 'paid_amount'},
-					{data: 'remaining'},
-					{data: 'outstanding'},
-					{data: 'amount'},
 				]
 			});
 
@@ -86,6 +93,7 @@
 		    });
 		});
 
+        
 		
 	</script>
 @endsection

@@ -20,6 +20,11 @@ class Branch extends Model
         return $this->belongsToMany('App\User', 'permissions', 'branch_id', 'user_id')->withPivot('type')->as('permission')->withTimestamps();
     }
 
+    public function payments()
+    {
+        return $this->hasMany('App\Payment', 'branch_id');
+    }
+
     public function customers()
     {
         return $this->hasMany('App\Customer','branch');

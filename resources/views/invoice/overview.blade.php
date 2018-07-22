@@ -36,7 +36,7 @@
 			</div>
 		</div>
 
-		<payments-dialog></payments-dialog>
+		<payments-dialog :data = "{{ auth()->user() }}"></payments-dialog>
 	</div>
 
 @endsection
@@ -58,26 +58,27 @@
 				dom: 'Blftip',
 				buttons: [
 					{
-						text: 'Create',
-						action: function( e, dt, node, config ) {
-							location.href="/invoices/create";
-						}
-					},
-					{
-						text: 'Edit',
-						action: function( e, dt, node, config ) {
-							location.href = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
-						},
-						enabled: false
-					},
-					'excel', 'colvis',
-					{
 						text: 'Add payment',
 						action: function( e, dt, node, config ) {
 							window.events.$emit('createPayment', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},
+					{
+						text: 'View payments',
+						action: function( e, dt, node, config ) {
+
+							var dataArr = [];
+						    $.each($("#invoice-table tr.selected"),function(){ //get each tr which has selected class
+						        dataArr.push($(this).find('td').eq(1).text()); //find its first td and push the value
+						        //dataArr.push($(this).find('td:first').text()); You can use this too
+						    });
+
+							window.location.href = '/payments/invoice/' + dataArr;
+						},
+						enabled: false
+					},
+					'excel', 'colvis',
 				],
 				ajax: '{!! route("invoices.index") !!}',
 				columns: [
@@ -149,9 +150,8 @@
 			table.on( 'select deselect', function () {
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
+		        table.button( 0 ).enable( selectedRows === 1 );
 		        table.button( 1 ).enable( selectedRows === 1 );
-		        table.button( 4 ).enable( selectedRows === 1 );
-		        table.button( 2 ).enable( selectedRows > 0 );
 		    });
 
 		    window.events.$on("reload-table", function(){
