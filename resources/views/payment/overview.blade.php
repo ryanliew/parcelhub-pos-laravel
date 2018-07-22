@@ -8,7 +8,13 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Payments</b> <b style="display: none;" id='label_invoice'>per Invoice : {{$invoice_no}}</b>
+				<b>Payments</b> 
+
+				@if( $invoice_no !== '' )
+
+				<b>per Invoice : {{$invoice_no}}</b>
+
+				@endif
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="payments-table">

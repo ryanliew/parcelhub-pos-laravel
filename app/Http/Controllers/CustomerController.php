@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use App\Customer;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 class CustomerController extends Controller
 {
@@ -55,6 +60,14 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function validate_input_statement()
+    {
+        request()->validate([
+            "date_from" => 'required',
+            "date_to" => 'required|date|after:date_from',
+        ]);
+    }
+
     public function store()
     {
         $this->validate_input();
@@ -79,4 +92,51 @@ class CustomerController extends Controller
 
         return $result;
     }
+
+    public function statement(Customer $customer)
+    {
+
+        $this->validate_input_statement();
+
+        $html = View::make('customer.statement', ["customer" => $customer])->render();
+
+        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF->WriteHTML($html);
+        $newPDF->setFooter('{PAGENO}/{nbpg}');
+
+        $path = storage_path('statements\soa_' . $customer->id . request()->date_from . request()->date_to . '.pdf' );
+        $newPDF->Output($path, Destination::FILE);
+
+        return json_encode(["message" => "Statement created succesfully", 
+                            "redirect_url" => $path, 
+                            "id" =>$customer->id, 
+                            "start" => request()->date_from, 
+                            "end" => request()->date_to ]);
+    }
+
+    public function view($customer_id, $start, $end)
+    {
+
+        $url = 'statements\soa_'. $customer_id . $start . $end . '.pdf';
+
+        $path = storage_path($url );
+
+        return response()->file($path);
+    }
+
+
+    public function report(Customer $customer)
+    {
+        $html = View::make('customer.statement', ["customer" => $customer])->render();
+
+        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF->WriteHTML($html);
+        $newPDF->setFooter('{PAGENO}/{nbpg}');
+
+        $path = storage_path('statements\soa_' . $customer->id . '.pdf' );
+        $newPDF->Output($path, Destination::FILE);
+
+        return response()->file($path);
+    }
+
 }
