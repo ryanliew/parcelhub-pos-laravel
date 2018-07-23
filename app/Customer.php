@@ -12,4 +12,9 @@ class customer extends Model
     {
     	return $this->belongsTo('App\Branch', 'branch_id');
     }
+
+    public function invoices()
+    {
+    	return $this->hasMany('App\Invoice', 'customer_id');
+    }
 }

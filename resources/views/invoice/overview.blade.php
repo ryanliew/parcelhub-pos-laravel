@@ -58,6 +58,13 @@
 				dom: 'Blftip',
 				buttons: [
 					{
+						text: 'Edit',
+						action: function( e, dt, node, config ) {
+							location.href = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
+						},
+						enabled: false
+					},
+					{
 						text: 'Add payment',
 						action: function( e, dt, node, config ) {
 							window.events.$emit('createPayment', table.rows({selected: true}).data().toArray());
@@ -152,6 +159,7 @@
 		 
 		        table.button( 0 ).enable( selectedRows === 1 );
 		        table.button( 1 ).enable( selectedRows === 1 );
+		        table.button( 2 ).enable( selectedRows === 1 );
 		    });
 
 		    window.events.$on("reload-table", function(){

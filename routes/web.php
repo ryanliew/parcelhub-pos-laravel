@@ -134,8 +134,6 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/{customer}","CustomerController@get");
 		Route::get("/statement/{customer}/{start}/{end}","CustomerController@view");
 		Route::post("/statement/{customer}","CustomerController@statement");
-
-		Route::get("/report/{customer}","CustomerController@report");
 	});
 
 	Route::group(['prefix' => 'cashups'], function(){

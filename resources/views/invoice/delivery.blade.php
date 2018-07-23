@@ -116,7 +116,7 @@
                 </tr>
                 <tr>
                     <td class="meta-head">Invoice #</td>
-                    <td><textarea>{{$invoice->display_text}}</textarea></td>
+                    <td><textarea>{{$invoice->invoice_no}}</textarea></td>
                 </tr>
                 <tr>
                     <td class="meta-head">Invoice date</td>
