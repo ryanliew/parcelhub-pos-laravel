@@ -79,6 +79,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/{terminal}", "TerminalController@update");
 	});
 
+	Route::group(['prefix' => 'settings'], function() {
+		Route::get("/", "SettingController@view")->name('settings');
+		Route::post("/", "SettingController@store");
+	});
+
 });
 
 // Users route

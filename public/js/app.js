@@ -64534,10 +64534,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true } },
+	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true }, addon: String, addonTooltip: String },
 
 	components: { vSelect: __WEBPACK_IMPORTED_MODULE_0_vue_select___default.a },
 
@@ -64583,11 +64589,36 @@ var render = function() {
   return _c("div", { staticClass: "mb-3" }, [
     !_vm.hideLabel
       ? _c("label", { staticClass: "select-label" }, [
-          _c("span", { domProps: { textContent: _vm._s(_vm.label) } }),
-          _vm._v(" "),
-          _vm.required
-            ? _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
-            : _vm._e()
+          _c("div", { staticClass: "d-flex align-items-center" }, [
+            _c("span", { domProps: { textContent: _vm._s(_vm.label) } }),
+            _vm._v(" "),
+            _vm.required
+              ? _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.addon
+              ? _c(
+                  "span",
+                  {
+                    staticClass: "fa-stack pointer text-info ml-2",
+                    attrs: { title: _vm.addonTooltip },
+                    on: {
+                      click: function($event) {
+                        _vm.$emit(_vm.addon)
+                      }
+                    }
+                  },
+                  [
+                    _c("i", { staticClass: "fas fa-circle fa-stack-2x" }),
+                    _vm._v(" "),
+                    _c("i", {
+                      staticClass:
+                        "fas fa-plus fa-stack-1x fa-inverse text-white"
+                    })
+                  ]
+                )
+              : _vm._e()
+          ])
         ])
       : _vm._e(),
     _vm._v(" "),
@@ -67873,6 +67904,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: [''],
@@ -67890,7 +67929,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				is_document: '',
 				is_merchandise: '',
 				default_vendor_id: '',
-				default_zone_type_id: ''
+				default_zone_type_id: '',
+				has_detail: ''
 			})
 		};
 	},
@@ -67973,6 +68013,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.is_merchandise = this.selectedProductType.is_merchandise;
 			this.form.default_vendor_id = this.selectedProductType.default_vendor_id;
 			this.form.default_zone_type_id = this.selectedProductType.default_zone_type_id;
+			this.form.has_detail = this.selectedProductType.has_detail;
 
 			this.selectedVendor = '';
 			this.selectedZoneType = '';
@@ -68145,6 +68186,29 @@ var render = function() {
                                   _vm.$set(_vm.form, "is_document", $$v)
                                 },
                                 expression: "form.is_document"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "ml-2" },
+                          [
+                            _c("checkbox-input", {
+                              attrs: {
+                                defaultChecked: _vm.form.has_detail,
+                                label: "Has details",
+                                name: "has_detail",
+                                editable: true
+                              },
+                              model: {
+                                value: _vm.form.has_detail,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "has_detail", $$v)
+                                },
+                                expression: "form.has_detail"
                               }
                             })
                           ],
@@ -70821,10 +70885,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['created_by', 'invoice'],
+	props: ['created_by', 'invoice', 'auth_user', 'setting'],
 	data: function data() {
 		return {
 			form: new Form(_defineProperty({
@@ -70924,8 +70993,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		setInvoice: function setInvoice(response) {
 			var invoice = response.data;
 
-			console.log(invoice.items);
-
 			this.form.items = invoice.items;
 			this.selectedType = { label: invoice.type, value: invoice.type };
 			this.selectedCustomer = invoice.customer ? { label: invoice.customer.name, value: invoice.customer.id } : '';
@@ -70956,6 +71023,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 				obj['label'] = type.name;
 				obj['value'] = type.id;
+				obj['has_detail'] = type.has_detail;
 
 				return obj;
 			});
@@ -71021,14 +71089,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 				obj['value'] = customer.id;
 				obj['label'] = customer.name;
+				obj['type'] = customer.type;
 
 				return obj;
 			});
 		},
 		getRelatedProduct: function getRelatedProduct() {
 			var _this7 = this;
-
-			console.log("Getting related product and clearing input");
 
 			if (this.selectedProductType) {
 				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
@@ -71041,7 +71108,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		getFilteredProduct: function getFilteredProduct() {
 			var _this8 = this;
 
-			console.log("Getting filtered product");
 			if (this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
 				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
 
@@ -71059,6 +71125,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 		},
 		setProduct: function setProduct(response) {
+			this.selectedProduct = '';
+			this.selectedProduct_error = "";
 			this.products = response.data.map(function (product) {
 				var obj = {};
 
@@ -71076,10 +71144,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (this.products.length == 1) {
 				this.selectedProduct = this.products[0];
 			}
+			// If we dont have any products that matches
+			if (this.products.length == 0) {
+				this.selectedProduct_error = "No matching SKU found";
+			}
 
 			// If selected product type = Document or Parcel
 			if (this.selectedProductType.value == 2 || this.selectedProductType.value == 5) {
 				this.selectedZoneType = { label: 'Domestic', value: 1 };
+				if (this.products.length > 1) {
+					this.getFilteredProduct();
+				}
 			}
 		},
 		productChange: function productChange() {
@@ -71091,8 +71166,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				var price = this.selectedProduct.walk_in_price;
 
 				if (this.selectedType.label == "Customer") {
-					//this.getCustomers;
-					price = this.selectedProduct.corporate_price;
+					if (this.selectedCustomer.type == 'walk_in_special') price = this.selectedProduct.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = this.selectedProduct.corporate_price;
 				}
 
 				this.price = price.toFixed(2);
@@ -71195,7 +71269,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedZoneType_error = this.selectedZoneType || !this.isParcelOrDocument ? '' : 'This field is required';
 			this.zone_error = this.zone || !this.isParcelOrDocument ? '' : 'This field is required';
 			this.weight_error = this.weight || !this.isParcelOrDocument ? '' : 'This field is required';
-			this.dimension_weight_error = this.dimension_weight || !this.isParcelOrDocument ? '' : 'This field is required';
+			// this.dimension_weight_error = this.dimension_weight || !this.isParcelOrDocument ? '' : 'This field is required';
 			this.selectedCourier_error = this.selectedCourier || !this.isParcelOrDocument ? '' : 'This field is required';
 			this.selectedProduct_error = this.selectedProduct ? '' : 'This field is required';
 
@@ -71231,6 +71305,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.dimension_weight = 0;
 			this.selectedCourier = '';
 			this.selectedProduct = '';
+			this.selectedProductType = { label: 'Packaging', value: 4 };
 			this.description = '';
 			this.price = '';
 			this.unit = 1;
@@ -71238,6 +71313,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.width = '';
 			this.length = '';
 			this.total_price = '';
+			this.tracking_no = '';
 
 			this.isAddingItem = !this.isAddingItem;
 
@@ -71248,6 +71324,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		getItemRowClass: function getItemRowClass(index) {
 			return this.editingIndex == index && this.isEditing ? "item-editing" : '';
+		},
+		createCustomer: function createCustomer() {
+			window.events.$emit('createCustomer');
+		},
+		addCustomer: function addCustomer(e) {
+			var customer = {};
+
+			customer['value'] = e.customer.id;
+			customer['label'] = e.customer.name;
+			customer['type'] = e.customer.type;
+
+			this.customers.push(customer);
+
+			this.selectedCustomer = customer;
 		}
 	},
 
@@ -71273,7 +71363,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return 0.00;
 		},
 		isParcelOrDocument: function isParcelOrDocument() {
-			return this.selectedProductType.value == 2 || this.selectedProductType.value == 5;
+			return this.selectedProductType.has_detail;
 		},
 		change: function change() {
 			if (this.form.paid && this.total) return parseFloat(this.form.paid) - parseFloat(this.total);
@@ -71291,12 +71381,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 
 			return value;
+		},
+		canEdit: function canEdit() {
+			return this.form.items.length > 0 && (!this.invoice || this.invoice.can_edit);
+		},
+		editTooltip: function editTooltip() {
+			if (!this.canEdit) {
+				if (this.invoice && !this.invoice.can_edit) return "Invoice has been locked";
+
+				return "No items";
+			}
+
+			return "";
 		}
 	},
 
 	watch: {
 		selectedType: function selectedType(newVal, oldVal) {
 			this.form.type = newVal.value;
+			if (this.isAddingItem) this.toggleAddItem();
 		},
 		zone: function zone(newVal, oldVal) {
 			this.getFilteredProduct();
@@ -71307,6 +71410,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		dimension_weight: function dimension_weight(newVal, oldVal) {
 			this.getFilteredProduct();
 		},
+		selectedCourier: function selectedCourier(newVal, oldVal) {
+			this.getFilteredProduct();
+		},
 		selectedDiscountMode: function selectedDiscountMode(newVal, oldVal) {
 			this.form.discount_mode = newVal.value;
 		},
@@ -71315,6 +71421,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
 			this.form.customer_id = newVal.value;
+			if (this.isAddingItem) this.toggleAddItem();
 		}
 	}
 });
@@ -71327,901 +71434,921 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "form",
-      {
-        on: {
-          submit: function($event) {
-            $event.preventDefault()
-            return _vm.submit($event)
-          },
-          keydown: function($event) {
-            _vm.form.errors.clear($event.target.name)
-          },
-          input: function($event) {
-            _vm.form.errors.clear($event.target.name)
-          },
-          keyup: function($event) {
-            if (
-              !("button" in $event) &&
-              _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-            ) {
-              return null
+  return _c(
+    "div",
+    [
+      _c(
+        "form",
+        {
+          on: {
+            submit: function($event) {
+              $event.preventDefault()
+              return _vm.submit($event)
+            },
+            keydown: function($event) {
+              _vm.form.errors.clear($event.target.name)
+            },
+            input: function($event) {
+              _vm.form.errors.clear($event.target.name)
+            },
+            keyup: function($event) {
+              if (
+                !("button" in $event) &&
+                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+              ) {
+                return null
+              }
+              return _vm.moveToNext($event)
             }
-            return _vm.moveToNext($event)
           }
-        }
-      },
-      [
-        _c(
-          "div",
-          { staticClass: "row" },
-          [
-            _c(
-              "div",
-              { staticClass: "col-5 invoice-right" },
-              [
-                _c("p", [
-                  _c("b", [_vm._v("Current time")]),
-                  _vm._v(": " + _vm._s(_vm.currentTime))
-                ]),
-                _vm._v(" "),
-                _c("selector-input", {
-                  attrs: {
-                    potentialData: _vm.types,
-                    defaultData: _vm.selectedType,
-                    placeholder: "Select type",
-                    required: true,
-                    label: "Type",
-                    name: "type",
-                    editable: true,
-                    focus: false,
-                    hideLabel: false,
-                    error: _vm.form.errors.get("type")
-                  },
-                  model: {
-                    value: _vm.selectedType,
-                    callback: function($$v) {
-                      _vm.selectedType = $$v
+        },
+        [
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c(
+                "div",
+                { staticClass: "col-5 invoice-right" },
+                [
+                  _c("p", [
+                    _c("b", [_vm._v("Current time")]),
+                    _vm._v(": " + _vm._s(_vm.currentTime))
+                  ]),
+                  _vm._v(" "),
+                  _c("selector-input", {
+                    attrs: {
+                      potentialData: _vm.types,
+                      defaultData: _vm.selectedType,
+                      placeholder: "Select type",
+                      required: true,
+                      label: "Type",
+                      name: "type",
+                      editable: true,
+                      focus: false,
+                      hideLabel: false,
+                      error: _vm.form.errors.get("type")
                     },
-                    expression: "selectedType"
-                  }
-                }),
-                _vm._v(" "),
-                _vm.form.type == "Customer"
-                  ? _c("selector-input", {
-                      attrs: {
-                        potentialData: _vm.customers,
-                        defaultData: _vm.selectedCustomer,
-                        placeholder: "Select customer",
-                        required: true,
-                        label: "Customer",
-                        name: "customer_id",
-                        editable: true,
-                        focus: false,
-                        hideLabel: false,
-                        error: _vm.form.errors.get("customer_id")
+                    model: {
+                      value: _vm.selectedType,
+                      callback: function($$v) {
+                        _vm.selectedType = $$v
                       },
-                      model: {
-                        value: _vm.selectedCustomer,
-                        callback: function($$v) {
-                          _vm.selectedCustomer = $$v
+                      expression: "selectedType"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _vm.form.type == "Customer"
+                    ? _c("selector-input", {
+                        attrs: {
+                          potentialData: _vm.customers,
+                          defaultData: _vm.selectedCustomer,
+                          placeholder: "Select customer",
+                          required: true,
+                          label: "Customer",
+                          name: "customer_id",
+                          editable: true,
+                          focus: false,
+                          hideLabel: false,
+                          error: _vm.form.errors.get("customer_id"),
+                          addon: "createCustomer"
                         },
-                        expression: "selectedCustomer"
-                      }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("text-input", {
-                  attrs: {
-                    defaultValue: _vm.form.remarks,
-                    required: false,
-                    type: "text",
-                    label: "Remarks",
-                    name: "remarks",
-                    editable: true,
-                    focus: false,
-                    hideLabel: false,
-                    error: _vm.form.errors.get("remarks")
-                  },
-                  model: {
-                    value: _vm.form.remarks,
-                    callback: function($$v) {
-                      _vm.$set(_vm.form, "remarks", $$v)
-                    },
-                    expression: "form.remarks"
-                  }
-                }),
-                _vm._v(" "),
-                _c("div", { staticClass: "table-responsive" }, [
-                  _c("table", { staticClass: "table table-striped" }, [
-                    _c("thead", [
-                      _c("tr", [
-                        _c("th", [_vm._v("Tracking code")]),
-                        _vm._v(" "),
-                        _c("th", [_vm._v("Item")]),
-                        _vm._v(" "),
-                        _c("th", [_vm._v("Unit")]),
-                        _vm._v(" "),
-                        _c("th", [_vm._v("Price")]),
-                        _vm._v(" "),
-                        _c("th", [
-                          _c(
-                            "span",
-                            {
-                              staticClass: "fa-stack pointer transition-ease",
-                              class: _vm.add_button_class,
-                              attrs: { title: _vm.tooltip_add },
-                              on: { click: _vm.toggleAddItem }
-                            },
-                            [
-                              _c("i", {
-                                staticClass: "fas fa-circle fa-stack-2x"
-                              }),
-                              _vm._v(" "),
-                              _c("i", {
-                                staticClass:
-                                  "fas fa-plus fa-stack-1x fa-inverse text-white"
-                              })
-                            ]
-                          )
-                        ])
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "tbody",
-                      _vm._l(_vm.form.items, function(item, index) {
-                        return _c(
-                          "tr",
-                          {
-                            staticClass: "transition-ease",
-                            class: _vm.getItemRowClass(index)
+                        on: { createCustomer: _vm.createCustomer },
+                        model: {
+                          value: _vm.selectedCustomer,
+                          callback: function($$v) {
+                            _vm.selectedCustomer = $$v
                           },
-                          [
-                            _c("td", [_vm._v(_vm._s(item.tracking_code))]),
-                            _vm._v(" "),
-                            _c("td", [_vm._v(_vm._s(item.description))]),
-                            _vm._v(" "),
-                            _c("td", [_vm._v(_vm._s(item.unit))]),
-                            _vm._v(" "),
-                            _c("td", [_vm._v(_vm._s(item.total_price))]),
-                            _vm._v(" "),
-                            _c("td", [
-                              _c("i", {
-                                staticClass: "fas fa-edit text-primary pointer",
-                                on: {
-                                  click: function($event) {
-                                    _vm.editItem(index)
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("i", {
-                                staticClass: "fas fa-times text-danger pointer",
-                                on: {
-                                  click: function($event) {
-                                    _vm.deleteItem(index)
-                                  }
-                                }
-                              })
-                            ])
-                          ]
-                        )
+                          expression: "selectedCustomer"
+                        }
                       })
-                    ),
-                    _vm._v(" "),
-                    _vm.form.items.length > 0
-                      ? _c("tfoot", [
-                          _c("tr", [
-                            _vm._m(0),
-                            _vm._v(" "),
-                            _c("td", [
-                              _vm._v(_vm._s(_vm._f("price")(_vm.subtotal)))
-                            ]),
-                            _vm._v(" "),
-                            _c("td")
-                          ]),
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("text-input", {
+                    attrs: {
+                      defaultValue: _vm.form.remarks,
+                      required: false,
+                      type: "text",
+                      label: "Remarks",
+                      name: "remarks",
+                      editable: true,
+                      focus: false,
+                      hideLabel: false,
+                      error: _vm.form.errors.get("remarks")
+                    },
+                    model: {
+                      value: _vm.form.remarks,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "remarks", $$v)
+                      },
+                      expression: "form.remarks"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "table-responsive" }, [
+                    _c("table", { staticClass: "table table-striped" }, [
+                      _c("thead", [
+                        _c("tr", [
+                          _c("th", [_vm._v("Tracking code")]),
                           _vm._v(" "),
-                          _c("tr", [
-                            _vm._m(1),
-                            _vm._v(" "),
-                            _c("td", [
-                              _vm._v(_vm._s(_vm._f("price")(_vm.tax)))
-                            ]),
-                            _vm._v(" "),
-                            _c("td")
+                          _c("th", [_vm._v("Item")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("Unit")]),
+                          _vm._v(" "),
+                          _c("th", [_vm._v("Price")]),
+                          _vm._v(" "),
+                          _c("th", [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "fa-stack pointer transition-ease",
+                                class: _vm.add_button_class,
+                                attrs: { title: _vm.tooltip_add },
+                                on: { click: _vm.toggleAddItem }
+                              },
+                              [
+                                _c("i", {
+                                  staticClass: "fas fa-circle fa-stack-2x"
+                                }),
+                                _vm._v(" "),
+                                _c("i", {
+                                  staticClass:
+                                    "fas fa-plus fa-stack-1x fa-inverse text-white"
+                                })
+                              ]
+                            )
                           ])
                         ])
-                      : _vm._e()
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "div",
-                    { staticClass: "col" },
-                    [
-                      _c("text-input", {
-                        attrs: {
-                          defaultValue: _vm.form.discount,
-                          required: false,
-                          type: "number",
-                          label: "Discount",
-                          name: "discount",
-                          editable: true,
-                          focus: false,
-                          hideLabel: false,
-                          error: _vm.form.errors.get("discount")
-                        },
-                        model: {
-                          value: _vm.form.discount,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "discount", $$v)
-                          },
-                          expression: "form.discount"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "col" },
-                    [
-                      _c("selector-input", {
-                        attrs: {
-                          potentialData: _vm.modes,
-                          defaultData: _vm.selectedDiscountMode,
-                          placeholder: "Select discount mode",
-                          required: false,
-                          label: "Discount mode",
-                          name: "discount_mode",
-                          editable: true,
-                          focus: false,
-                          hideLabel: false,
-                          error: _vm.form.errors.get("discount_mode")
-                        },
-                        model: {
-                          value: _vm.selectedDiscountMode,
-                          callback: function($$v) {
-                            _vm.selectedDiscountMode = $$v
-                          },
-                          expression: "selectedDiscountMode"
-                        }
-                      })
-                    ],
-                    1
-                  )
-                ]),
-                _vm._v(" "),
-                _vm.form.type !== "Customer"
-                  ? _c("div", { staticClass: "row" }, [
-                      _c(
-                        "div",
-                        { staticClass: "col-7" },
-                        [
-                          _c("selector-input", {
-                            attrs: {
-                              potentialData: _vm.payment_types,
-                              defaultData: _vm.selectedPaymentType,
-                              placeholder: "Select payment type",
-                              required: true,
-                              label: "Payment type",
-                              name: "payment_type",
-                              editable: true,
-                              focus: false,
-                              hideLabel: false,
-                              error: _vm.form.errors.get("payment_type")
-                            },
-                            model: {
-                              value: _vm.selectedPaymentType,
-                              callback: function($$v) {
-                                _vm.selectedPaymentType = $$v
-                              },
-                              expression: "selectedPaymentType"
-                            }
-                          })
-                        ],
-                        1
-                      ),
+                      ]),
                       _vm._v(" "),
                       _c(
-                        "div",
-                        { staticClass: "col" },
-                        [
-                          _c("text-input", {
-                            attrs: {
-                              defaultValue: _vm.form.paid,
-                              required: true,
-                              type: "number",
-                              label: "Paid",
-                              name: "paid",
-                              editable: true,
-                              focus: false,
-                              hideLabel: false,
-                              error: _vm.form.errors.get("paid")
+                        "tbody",
+                        _vm._l(_vm.form.items, function(item, index) {
+                          return _c(
+                            "tr",
+                            {
+                              staticClass: "transition-ease",
+                              class: _vm.getItemRowClass(index)
                             },
-                            model: {
-                              value: _vm.form.paid,
-                              callback: function($$v) {
-                                _vm.$set(_vm.form, "paid", $$v)
-                              },
-                              expression: "form.paid"
-                            }
-                          })
-                        ],
-                        1
-                      )
+                            [
+                              _c("td", [_vm._v(_vm._s(item.tracking_code))]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(item.description))]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(item.unit))]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(item.total_price))]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("i", {
+                                  staticClass:
+                                    "fas fa-edit text-primary pointer",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.editItem(index)
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("i", {
+                                  staticClass:
+                                    "fas fa-times text-danger pointer",
+                                  on: {
+                                    click: function($event) {
+                                      _vm.deleteItem(index)
+                                    }
+                                  }
+                                })
+                              ])
+                            ]
+                          )
+                        })
+                      ),
+                      _vm._v(" "),
+                      _vm.form.items.length > 0
+                        ? _c("tfoot", [
+                            _c("tr", [
+                              _vm._m(0),
+                              _vm._v(" "),
+                              _c("td", [
+                                _vm._v(_vm._s(_vm._f("price")(_vm.subtotal)))
+                              ]),
+                              _vm._v(" "),
+                              _c("td")
+                            ]),
+                            _vm._v(" "),
+                            _c("tr", [
+                              _vm._m(1),
+                              _vm._v(" "),
+                              _c("td", [
+                                _vm._v(_vm._s(_vm._f("price")(_vm.tax)))
+                              ]),
+                              _vm._v(" "),
+                              _c("td")
+                            ])
+                          ])
+                        : _vm._e()
                     ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("h4", { staticClass: "text-right" }, [
-                  _vm._v(
-                    "Discount: RM" + _vm._s(_vm._f("price")(_vm.discount_value))
-                  )
-                ]),
-                _vm._v(" "),
-                _c("h4", { staticClass: "text-right" }, [
-                  _vm._v("Total: RM" + _vm._s(_vm._f("price")(_vm.total)))
-                ]),
-                _vm._v(" "),
-                _vm.form.type !== "Customer"
-                  ? _c("h4", { staticClass: "text-right" }, [
-                      _vm._v("Change: RM" + _vm._s(_vm._f("price")(_vm.change)))
-                    ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex justify-content-end" }, [
-                  this.selectedCustomer && this.invoice
-                    ? _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-success mr-2",
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
                           attrs: {
-                            target: "_blank",
-                            href: "/invoices/do/" + this.invoice,
-                            type: "button"
+                            defaultValue: _vm.form.discount,
+                            required: false,
+                            type: "number",
+                            label: "Discount",
+                            name: "discount",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("discount")
+                          },
+                          model: {
+                            value: _vm.form.discount,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "discount", $$v)
+                            },
+                            expression: "form.discount"
                           }
-                        },
-                        [_vm._v("Print delivery note")]
-                      )
-                    : this.invoice
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.modes,
+                            defaultData: _vm.selectedDiscountMode,
+                            placeholder: "Select discount mode",
+                            required: false,
+                            label: "Discount mode",
+                            name: "discount_mode",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("discount_mode")
+                          },
+                          model: {
+                            value: _vm.selectedDiscountMode,
+                            callback: function($$v) {
+                              _vm.selectedDiscountMode = $$v
+                            },
+                            expression: "selectedDiscountMode"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _vm.form.type !== "Customer"
+                    ? _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col-7" },
+                          [
+                            _c("selector-input", {
+                              attrs: {
+                                potentialData: _vm.payment_types,
+                                defaultData: _vm.selectedPaymentType,
+                                placeholder: "Select payment type",
+                                required: true,
+                                label: "Payment type",
+                                name: "payment_type",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("payment_type")
+                              },
+                              model: {
+                                value: _vm.selectedPaymentType,
+                                callback: function($$v) {
+                                  _vm.selectedPaymentType = $$v
+                                },
+                                expression: "selectedPaymentType"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.paid,
+                                required: true,
+                                type: "number",
+                                label: "Paid",
+                                name: "paid",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("paid")
+                              },
+                              model: {
+                                value: _vm.form.paid,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "paid", $$v)
+                                },
+                                expression: "form.paid"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("h4", { staticClass: "text-right" }, [
+                    _vm._v(
+                      "Discount: RM" +
+                        _vm._s(_vm._f("price")(_vm.discount_value))
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("h4", { staticClass: "text-right" }, [
+                    _vm._v("Total: RM" + _vm._s(_vm._f("price")(_vm.total)))
+                  ]),
+                  _vm._v(" "),
+                  _vm.form.type !== "Customer"
+                    ? _c("h4", { staticClass: "text-right" }, [
+                        _vm._v(
+                          "Change: RM" + _vm._s(_vm._f("price")(_vm.change))
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "d-flex justify-content-end" }, [
+                    this.selectedCustomer && this.invoice
                       ? _c(
                           "a",
                           {
                             staticClass: "btn btn-success mr-2",
                             attrs: {
                               target: "_blank",
-                              href: "/invoices/receipt/" + this.invoice,
+                              href: "/invoices/do/" + this.invoice,
                               type: "button"
                             }
                           },
-                          [_vm._v("Print receipt")]
+                          [_vm._v("Print delivery note")]
+                        )
+                      : this.invoice
+                        ? _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-success mr-2",
+                              attrs: {
+                                target: "_blank",
+                                href: "/invoices/receipt/" + this.invoice,
+                                type: "button"
+                              }
+                            },
+                            [_vm._v("Print receipt")]
+                          )
+                        : _vm._e(),
+                    _vm._v(" "),
+                    this.selectedCustomer && this.invoice
+                      ? _c(
+                          "a",
+                          {
+                            staticClass: "btn btn-success mr-2",
+                            attrs: {
+                              target: "_blank",
+                              href: "/invoices/preview/" + this.invoice,
+                              type: "button"
+                            }
+                          },
+                          [_vm._v("Preview")]
                         )
                       : _vm._e(),
-                  _vm._v(" "),
-                  this.selectedCustomer && this.invoice
-                    ? _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-success mr-2",
-                          attrs: {
-                            target: "_blank",
-                            href: "/invoices/preview/" + this.invoice,
-                            type: "button"
-                          }
-                        },
-                        [_vm._v("Preview")]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "submit" }
-                    },
-                    [_vm._v("Confirm")]
-                  )
-                ])
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("transition", { attrs: { name: "left-slide" } }, [
-              _vm.isAddingItem
-                ? _c(
-                    "div",
-                    { staticClass: "col-7 invoice-left" },
-                    [
-                      _c("text-input", {
-                        ref: "tracking_input",
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
                         attrs: {
-                          defaultValue: _vm.tracking_no,
-                          required: true,
-                          type: "text",
-                          label: "Tracking no",
-                          name: "tracking_no",
-                          editable: true,
-                          focus: true,
-                          hideLabel: false,
-                          error: _vm.tracking_no_error
-                        },
-                        model: {
-                          value: _vm.tracking_no,
-                          callback: function($$v) {
-                            _vm.tracking_no = $$v
-                          },
-                          expression: "tracking_no"
+                          type: "submit",
+                          disabled: !_vm.canEdit,
+                          title: _vm.editTooltip
                         }
-                      }),
-                      _vm._v(" "),
-                      _c("selector-input", {
-                        ref: "producttypes",
-                        attrs: {
-                          potentialData: _vm.product_types,
-                          defaultData: _vm.selectedProductType,
-                          placeholder: "Select product type",
-                          required: true,
-                          label: "Product type",
-                          name: "product_type",
-                          editable: true,
-                          focus: false,
-                          hideLabel: false,
-                          error: _vm.selectedProductType_error
-                        },
-                        on: { input: _vm.getRelatedProduct },
-                        model: {
-                          value: _vm.selectedProductType,
-                          callback: function($$v) {
-                            _vm.selectedProductType = $$v
-                          },
-                          expression: "selectedProductType"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "row" }, [
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _vm.isParcelOrDocument
-                              ? _c("selector-input", {
-                                  attrs: {
-                                    potentialData: _vm.zone_types,
-                                    defaultData: _vm.selectedZoneType,
-                                    placeholder: "Select zone type",
-                                    required: false,
-                                    label: "Zone type",
-                                    name: "zone_type",
-                                    editable: true,
-                                    focus: false,
-                                    hideLabel: false,
-                                    error: _vm.selectedZoneType_error
-                                  },
-                                  model: {
-                                    value: _vm.selectedZoneType,
-                                    callback: function($$v) {
-                                      _vm.selectedZoneType = $$v
-                                    },
-                                    expression: "selectedZoneType"
-                                  }
-                                })
-                              : _vm._e()
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _vm.isParcelOrDocument
-                              ? _c("selector-input", {
-                                  attrs: {
-                                    potentialData: _vm.couriers,
-                                    defaultData: _vm.selectedCourier,
-                                    placeholder: "Select courier",
-                                    required: false,
-                                    label: "Courier",
-                                    name: "courier",
-                                    editable: true,
-                                    focus: false,
-                                    hideLabel: false,
-                                    error: _vm.selectedCourier_error
-                                  },
-                                  model: {
-                                    value: _vm.selectedCourier,
-                                    callback: function($$v) {
-                                      _vm.selectedCourier = $$v
-                                    },
-                                    expression: "selectedCourier"
-                                  }
-                                })
-                              : _vm._e()
-                          ],
-                          1
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "row" }, [
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _vm.isParcelOrDocument
-                              ? _c("text-input", {
-                                  attrs: {
-                                    defaultValue: _vm.zone,
-                                    required: true,
-                                    type: "number",
-                                    label: "Zone",
-                                    name: "zone",
-                                    editable: true,
-                                    focus: false,
-                                    hideLabel: false,
-                                    error: _vm.zone_error
-                                  },
-                                  model: {
-                                    value: _vm.zone,
-                                    callback: function($$v) {
-                                      _vm.zone = $$v
-                                    },
-                                    expression: "zone"
-                                  }
-                                })
-                              : _vm._e()
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _vm.isParcelOrDocument
-                              ? _c("text-input", {
-                                  attrs: {
-                                    defaultValue: _vm.weight,
-                                    required: true,
-                                    type: "number",
-                                    label: "Weight (KG)",
-                                    name: "weight",
-                                    editable: true,
-                                    focus: false,
-                                    hideLabel: false,
-                                    error: _vm.weight_error
-                                  },
-                                  model: {
-                                    value: _vm.weight,
-                                    callback: function($$v) {
-                                      _vm.weight = $$v
-                                    },
-                                    expression: "weight"
-                                  }
-                                })
-                              : _vm._e()
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _vm.isParcelOrDocument
-                              ? _c("text-input", {
-                                  attrs: {
-                                    defaultValue: _vm.dimension_weight,
-                                    required: true,
-                                    type: "number",
-                                    label: "Dimension weight (KG)",
-                                    name: "dimension_weight",
-                                    editable: true,
-                                    focus: false,
-                                    hideLabel: false,
-                                    error: _vm.dimension_weight_error,
-                                    addon: "Calculate"
-                                  },
-                                  on: {
-                                    addon: function($event) {
-                                      _vm.isCalculatingDimWeight = true
-                                    }
-                                  },
-                                  model: {
-                                    value: _vm.dimension_weight,
-                                    callback: function($$v) {
-                                      _vm.dimension_weight = $$v
-                                    },
-                                    expression: "dimension_weight"
-                                  }
-                                })
-                              : _vm._e()
-                          ],
-                          1
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("selector-input", {
-                        attrs: {
-                          potentialData: _vm.products,
-                          defaultData: _vm.selectedProduct,
-                          placeholder: "Select SKU",
-                          required: true,
-                          label: "SKU",
-                          name: "product",
-                          editable: true,
-                          focus: false,
-                          hideLabel: false,
-                          error: _vm.selectedProduct_error
-                        },
-                        on: { input: _vm.productChange },
-                        model: {
-                          value: _vm.selectedProduct,
-                          callback: function($$v) {
-                            _vm.selectedProduct = $$v
-                          },
-                          expression: "selectedProduct"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "row" }, [
-                        _c(
-                          "div",
-                          { staticClass: "col-4" },
-                          [
-                            _c("text-input", {
-                              attrs: {
-                                defaultValue: _vm.description,
-                                required: false,
-                                type: "text",
-                                label: "Description",
-                                name: "description",
-                                editable: false,
-                                focus: false,
-                                hideLabel: false,
-                                error: _vm.description_error
-                              },
-                              model: {
-                                value: _vm.description,
-                                callback: function($$v) {
-                                  _vm.description = $$v
-                                },
-                                expression: "description"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _c("text-input", {
-                              attrs: {
-                                defaultValue: _vm.unit,
-                                required: true,
-                                type: "number",
-                                label: "Unit",
-                                name: "unit",
-                                editable: false,
-                                focus: false,
-                                hideLabel: false,
-                                error: _vm.unit_error
-                              },
-                              model: {
-                                value: _vm.unit,
-                                callback: function($$v) {
-                                  _vm.unit = $$v
-                                },
-                                expression: "unit"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _c("text-input", {
-                              attrs: {
-                                defaultValue: _vm.price,
-                                required: true,
-                                type: "number",
-                                label: "Price",
-                                name: "price",
-                                editable: false,
-                                focus: false,
-                                hideLabel: false,
-                                error: _vm.price_error
-                              },
-                              model: {
-                                value: _vm.price,
-                                callback: function($$v) {
-                                  _vm.price = $$v
-                                },
-                                expression: "price"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "col" },
-                          [
-                            _c("text-input", {
-                              attrs: {
-                                defaultValue: _vm.total_price,
-                                required: true,
-                                type: "number",
-                                label: "Total price",
-                                name: "total_price",
-                                editable: false,
-                                focus: false,
-                                hideLabel: false
-                              },
-                              model: {
-                                value: _vm.total_price,
-                                callback: function($$v) {
-                                  _vm.total_price = $$v
-                                },
-                                expression: "total_price"
-                              }
-                            })
-                          ],
-                          1
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-primary",
-                          attrs: { type: "button" },
-                          on: { click: _vm.add_item }
-                        },
-                        [_vm._v("Confirm")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-secondary",
-                          attrs: { type: "button" },
-                          on: { click: _vm.toggleAddItem }
-                        },
-                        [_vm._v("Cancel")]
-                      )
-                    ],
-                    1
-                  )
-                : _vm._e()
-            ])
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "modal",
-          {
-            attrs: {
-              active: _vm.isCalculatingDimWeight,
-              id: "dim-weight-calculator"
-            },
-            on: {
-              close: function($event) {
-                _vm.isCalculatingDimWeight = false
-              }
-            }
-          },
-          [
-            _c("span", { attrs: { slot: "header" }, slot: "header" }, [
-              _vm._v("Calculate dimension weight")
-            ]),
-            _vm._v(" "),
-            _c("text-input", {
-              attrs: {
-                defaultValue: _vm.height,
-                required: true,
-                type: "number",
-                label: "Height (cm)",
-                name: "height",
-                editable: true,
-                focus: false,
-                hideLabel: false,
-                error: _vm.form.errors.get("height")
-              },
-              model: {
-                value: _vm.height,
-                callback: function($$v) {
-                  _vm.height = $$v
-                },
-                expression: "height"
-              }
-            }),
-            _vm._v(" "),
-            _c("text-input", {
-              attrs: {
-                defaultValue: _vm.width,
-                required: true,
-                type: "number",
-                label: "Width (cm)",
-                name: "width",
-                editable: true,
-                focus: false,
-                hideLabel: false,
-                error: _vm.form.errors.get("width")
-              },
-              model: {
-                value: _vm.width,
-                callback: function($$v) {
-                  _vm.width = $$v
-                },
-                expression: "width"
-              }
-            }),
-            _vm._v(" "),
-            _c("text-input", {
-              attrs: {
-                defaultValue: _vm.length,
-                required: true,
-                type: "number",
-                label: "Length (cm)",
-                name: "length",
-                editable: true,
-                focus: false,
-                hideLabel: false,
-                error: _vm.form.errors.get("length")
-              },
-              model: {
-                value: _vm.length,
-                callback: function($$v) {
-                  _vm.length = $$v
-                },
-                expression: "length"
-              }
-            }),
-            _vm._v(" "),
-            _c("template", { slot: "footer" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-secondary",
-                  attrs: { type: "button" },
-                  on: {
-                    click: function($event) {
-                      _vm.isCalculatingDimWeight = false
-                    }
-                  }
-                },
-                [_vm._v("Cancel")]
+                      },
+                      [_vm._v("Confirm")]
+                    )
+                  ])
+                ],
+                1
               ),
               _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-primary",
-                  attrs: { type: "button" },
-                  on: { click: _vm.calculateDimWeight }
+              _c("transition", { attrs: { name: "left-slide" } }, [
+                _vm.isAddingItem
+                  ? _c(
+                      "div",
+                      { staticClass: "col-7 invoice-left" },
+                      [
+                        _c("text-input", {
+                          ref: "tracking_input",
+                          attrs: {
+                            defaultValue: _vm.tracking_no,
+                            required: true,
+                            type: "text",
+                            label: "Tracking no",
+                            name: "tracking_no",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.tracking_no_error
+                          },
+                          model: {
+                            value: _vm.tracking_no,
+                            callback: function($$v) {
+                              _vm.tracking_no = $$v
+                            },
+                            expression: "tracking_no"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("selector-input", {
+                          ref: "producttypes",
+                          attrs: {
+                            potentialData: _vm.product_types,
+                            defaultData: _vm.selectedProductType,
+                            placeholder: "Select product type",
+                            required: true,
+                            label: "Product type",
+                            name: "product_type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.selectedProductType_error
+                          },
+                          on: { input: _vm.getRelatedProduct },
+                          model: {
+                            value: _vm.selectedProductType,
+                            callback: function($$v) {
+                              _vm.selectedProductType = $$v
+                            },
+                            expression: "selectedProductType"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _vm.isParcelOrDocument
+                                ? _c("selector-input", {
+                                    attrs: {
+                                      potentialData: _vm.zone_types,
+                                      defaultData: _vm.selectedZoneType,
+                                      placeholder: "Select zone type",
+                                      required: false,
+                                      label: "Zone type",
+                                      name: "zone_type",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.selectedZoneType_error
+                                    },
+                                    model: {
+                                      value: _vm.selectedZoneType,
+                                      callback: function($$v) {
+                                        _vm.selectedZoneType = $$v
+                                      },
+                                      expression: "selectedZoneType"
+                                    }
+                                  })
+                                : _vm._e()
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _vm.isParcelOrDocument
+                                ? _c("selector-input", {
+                                    attrs: {
+                                      potentialData: _vm.couriers,
+                                      defaultData: _vm.selectedCourier,
+                                      placeholder: "Select courier",
+                                      required: false,
+                                      label: "Courier",
+                                      name: "courier",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.selectedCourier_error
+                                    },
+                                    model: {
+                                      value: _vm.selectedCourier,
+                                      callback: function($$v) {
+                                        _vm.selectedCourier = $$v
+                                      },
+                                      expression: "selectedCourier"
+                                    }
+                                  })
+                                : _vm._e()
+                            ],
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _vm.isParcelOrDocument
+                                ? _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.zone,
+                                      required: true,
+                                      type: "number",
+                                      label: "Zone",
+                                      name: "zone",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.zone_error
+                                    },
+                                    model: {
+                                      value: _vm.zone,
+                                      callback: function($$v) {
+                                        _vm.zone = $$v
+                                      },
+                                      expression: "zone"
+                                    }
+                                  })
+                                : _vm._e()
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _vm.isParcelOrDocument
+                                ? _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.weight,
+                                      required: true,
+                                      type: "number",
+                                      label: "Weight (KG)",
+                                      name: "weight",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.weight_error
+                                    },
+                                    model: {
+                                      value: _vm.weight,
+                                      callback: function($$v) {
+                                        _vm.weight = $$v
+                                      },
+                                      expression: "weight"
+                                    }
+                                  })
+                                : _vm._e()
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _vm.isParcelOrDocument
+                                ? _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.dimension_weight,
+                                      required: false,
+                                      type: "number",
+                                      label: "Dimension weight (KG)",
+                                      name: "dimension_weight",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.dimension_weight_error,
+                                      addon: "Calculate"
+                                    },
+                                    on: {
+                                      addon: function($event) {
+                                        _vm.isCalculatingDimWeight = true
+                                      }
+                                    },
+                                    model: {
+                                      value: _vm.dimension_weight,
+                                      callback: function($$v) {
+                                        _vm.dimension_weight = $$v
+                                      },
+                                      expression: "dimension_weight"
+                                    }
+                                  })
+                                : _vm._e()
+                            ],
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.products,
+                            defaultData: _vm.selectedProduct,
+                            placeholder: "Select SKU",
+                            required: true,
+                            label: "SKU",
+                            name: "product",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.selectedProduct_error
+                          },
+                          on: { input: _vm.productChange },
+                          model: {
+                            value: _vm.selectedProduct,
+                            callback: function($$v) {
+                              _vm.selectedProduct = $$v
+                            },
+                            expression: "selectedProduct"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col-4" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.description,
+                                  required: false,
+                                  type: "text",
+                                  label: "Description",
+                                  name: "description",
+                                  editable: false,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.description_error
+                                },
+                                model: {
+                                  value: _vm.description,
+                                  callback: function($$v) {
+                                    _vm.description = $$v
+                                  },
+                                  expression: "description"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.unit,
+                                  required: true,
+                                  type: "number",
+                                  label: "Unit",
+                                  name: "unit",
+                                  editable: false,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.unit_error
+                                },
+                                model: {
+                                  value: _vm.unit,
+                                  callback: function($$v) {
+                                    _vm.unit = $$v
+                                  },
+                                  expression: "unit"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.price,
+                                  required: true,
+                                  type: "number",
+                                  label: "Price",
+                                  name: "price",
+                                  editable: false,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.price_error
+                                },
+                                model: {
+                                  value: _vm.price,
+                                  callback: function($$v) {
+                                    _vm.price = $$v
+                                  },
+                                  expression: "price"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
+                                  defaultValue: _vm.total_price,
+                                  required: true,
+                                  type: "number",
+                                  label: "Total price",
+                                  name: "total_price",
+                                  editable: false,
+                                  focus: false,
+                                  hideLabel: false
+                                },
+                                model: {
+                                  value: _vm.total_price,
+                                  callback: function($$v) {
+                                    _vm.total_price = $$v
+                                  },
+                                  expression: "total_price"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary",
+                            attrs: { type: "button", disbaled: !_vm.canEdit },
+                            on: { click: _vm.add_item }
+                          },
+                          [_vm._v("Confirm")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-secondary",
+                            attrs: { type: "button" },
+                            on: { click: _vm.toggleAddItem }
+                          },
+                          [_vm._v("Cancel")]
+                        )
+                      ],
+                      1
+                    )
+                  : _vm._e()
+              ])
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "modal",
+            {
+              attrs: {
+                active: _vm.isCalculatingDimWeight,
+                id: "dim-weight-calculator"
+              },
+              on: {
+                close: function($event) {
+                  _vm.isCalculatingDimWeight = false
+                }
+              }
+            },
+            [
+              _c("span", { attrs: { slot: "header" }, slot: "header" }, [
+                _vm._v("Calculate dimension weight")
+              ]),
+              _vm._v(" "),
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.height,
+                  required: true,
+                  type: "number",
+                  label: "Height (cm)",
+                  name: "height",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("height")
                 },
-                [_vm._v("Confirm")]
-              )
-            ])
-          ],
-          2
-        )
-      ],
-      1
-    )
-  ])
+                model: {
+                  value: _vm.height,
+                  callback: function($$v) {
+                    _vm.height = $$v
+                  },
+                  expression: "height"
+                }
+              }),
+              _vm._v(" "),
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.width,
+                  required: true,
+                  type: "number",
+                  label: "Width (cm)",
+                  name: "width",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("width")
+                },
+                model: {
+                  value: _vm.width,
+                  callback: function($$v) {
+                    _vm.width = $$v
+                  },
+                  expression: "width"
+                }
+              }),
+              _vm._v(" "),
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.length,
+                  required: true,
+                  type: "number",
+                  label: "Length (cm)",
+                  name: "length",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("length")
+                },
+                model: {
+                  value: _vm.length,
+                  callback: function($$v) {
+                    _vm.length = $$v
+                  },
+                  expression: "length"
+                }
+              }),
+              _vm._v(" "),
+              _c("template", { slot: "footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-secondary",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        _vm.isCalculatingDimWeight = false
+                      }
+                    }
+                  },
+                  [_vm._v("Cancel")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.calculateDimWeight }
+                  },
+                  [_vm._v("Confirm")]
+                )
+              ])
+            ],
+            2
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("customers-dialog", {
+        attrs: { data: _vm.auth_user },
+        on: { customerCreated: _vm.addCustomer }
+      })
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
@@ -72507,7 +72634,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				branch: ''
 
 			}),
-			types: [{ label: 'Corporate', value: 'Corporate' }, { label: 'Walk-in', value: 'walk_in' }, { label: 'Walk-in special', value: 'walk_in_sepcial' }],
+			types: [{ label: 'Corporate', value: 'Corporate' }, { label: 'Walk-in', value: 'walk_in' }, { label: 'Walk-in special', value: 'walk_in_special' }],
 
 			selectedType: '',
 			selectedBranch: '',
@@ -72574,6 +72701,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 		},
 		onSuccess: function onSuccess(response) {
+			console.log("Success!");
+			console.log(response);
+			this.$emit("customerCreated", { customer: response.customer });
+
 			$("#customer-dialog").modal('hide');
 
 			this.closeDialog();

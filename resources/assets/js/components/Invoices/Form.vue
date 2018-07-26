@@ -30,7 +30,9 @@
 						:focus="false"
 						:hideLabel="false"
 						:error="form.errors.get('customer_id')"
-						 v-if="form.type == 'Customer'">
+						v-if="form.type == 'Customer'"
+						addon="createCustomer"
+						@createCustomer="createCustomer">
 					</selector-input>
 					<text-input v-model="form.remarks" 
 						:defaultValue="form.remarks"
@@ -153,7 +155,7 @@
 						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
 						<a v-else-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/preview/' + this.invoice" type="button" class="btn btn-success mr-2">Preview</a>
-						<button type="submit" class="btn btn-primary">Confirm</button>
+						<button type="submit" class="btn btn-primary" :disabled="!canEdit" :title="editTooltip">Confirm</button>
 					</div>
 				</div>
 				<transition name="left-slide">
@@ -248,7 +250,7 @@
 						<div class="col">
 							<text-input v-model="dimension_weight" 
 								:defaultValue="dimension_weight"
-								:required="true"
+								:required="false"
 								type="number"
 								label="Dimension weight (KG)"
 								name="dimension_weight"
@@ -330,7 +332,7 @@
 						</div>
 					</div>
 
-					<button type="button" class="btn btn-primary" @click="add_item">Confirm</button>
+					<button type="button" class="btn btn-primary" @click="add_item" :disbaled="!canEdit">Confirm</button>
 					<button type="button" class="btn btn-secondary" @click="toggleAddItem">Cancel</button>
 					</div>
 				</transition>	
@@ -382,13 +384,16 @@
 				</template>
 			</modal>
 		</form>
+
+		<customers-dialog :data="auth_user" @customerCreated="addCustomer"></customers-dialog>
 	</div>
 </template>
 
 <script>
 	import moment from 'moment';
+
 	export default {
-		props: ['created_by', 'invoice'],
+		props: ['created_by', 'invoice', 'auth_user', 'setting'],
 		data() {
 			return {
 				form: new Form({
@@ -498,8 +503,6 @@
 			setInvoice(response) {
 				let invoice = response.data;
 
-				console.log(invoice.items);
-
 				this.form.items = invoice.items;
 				this.selectedType = {label: invoice.type, value: invoice.type};
 				this.selectedCustomer = invoice.customer? {label: invoice.customer.name, value : invoice.customer.id } : '';
@@ -529,6 +532,7 @@
 
 					obj['label'] = type.name;
 					obj['value'] = type.id;
+					obj['has_detail'] = type.has_detail;
 
 					return obj;
 				});
@@ -588,6 +592,7 @@
 
 					obj['value'] = customer.id;
 					obj['label'] = customer.name;
+					obj['type'] = customer.type;
 
 					return obj;
 				});
@@ -595,8 +600,6 @@
 			},
 
 			getRelatedProduct(){
-				console.log("Getting related product and clearing input");
-
 				if(this.selectedProductType) {
 					axios.get('/data/products?type=' + this.selectedProductType.value)
 						.then(response => this.setProduct(response))
@@ -605,7 +608,6 @@
 			},
 
 			getFilteredProduct() {
-				console.log("Getting filtered product");
 				if(this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
 					let url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
 
@@ -625,6 +627,8 @@
 			},
 
 			setProduct(response) {
+				this.selectedProduct = '';
+				this.selectedProduct_error = "";
 				this.products = response.data.map(function(product){
 					let obj = {};
 
@@ -642,11 +646,18 @@
 				if(this.products.length == 1) {
 					this.selectedProduct = this.products[0];
 				}
+				// If we dont have any products that matches
+				if(this.products.length == 0) {
+					this.selectedProduct_error = "No matching SKU found";
+				}
 
 				// If selected product type = Document or Parcel
 				if(this.selectedProductType.value == 2 || this.selectedProductType.value == 5)
 				{
 					this.selectedZoneType = {label: 'Domestic', value: 1};
+					if(this.products.length > 1) {
+						this.getFilteredProduct();
+					}
 				}
 			},
 
@@ -660,8 +671,10 @@
 
 					if(this.selectedType.label == "Customer")
 					{
-						//this.getCustomers;
-						price = this.selectedProduct.corporate_price;
+						if(this.selectedCustomer.type == 'walk_in_special')
+							price = this.selectedProduct.walk_in_price_special;
+						else if(this.selectedCustomer.type == 'Corporate')
+							price = this.selectedProduct.corporate_price;
 					}
 
 					this.price = price.toFixed(2);
@@ -768,7 +781,7 @@
 				this.selectedZoneType_error = this.selectedZoneType || !this.isParcelOrDocument ? '' : 'This field is required';
 				this.zone_error = this.zone || !this.isParcelOrDocument ? '' : 'This field is required';
 				this.weight_error = this.weight || !this.isParcelOrDocument ? '' : 'This field is required';
-				this.dimension_weight_error = this.dimension_weight || !this.isParcelOrDocument ? '' : 'This field is required';
+				// this.dimension_weight_error = this.dimension_weight || !this.isParcelOrDocument ? '' : 'This field is required';
 				this.selectedCourier_error = this.selectedCourier || !this.isParcelOrDocument ? '' : 'This field is required';
 				this.selectedProduct_error = this.selectedProduct ? '' : 'This field is required';
 
@@ -806,6 +819,7 @@
 				this.dimension_weight = 0;
 				this.selectedCourier = '';
 				this.selectedProduct = '';
+				this.selectedProductType = {label: 'Packaging', value: 4};
 				this.description = '';
 				this.price = '';
 				this.unit = 1;
@@ -813,6 +827,7 @@
 				this.width = '';
 				this.length = '';
 				this.total_price = '';
+				this.tracking_no = '';
 
 				this.isAddingItem = !this.isAddingItem;
 
@@ -826,6 +841,22 @@
 
 			getItemRowClass(index) {
 				return this.editingIndex == index && this.isEditing ? "item-editing" : '';
+			},
+
+			createCustomer() {
+				window.events.$emit('createCustomer');
+			},
+
+			addCustomer(e) {
+				let customer = {};
+
+				customer['value'] = e.customer.id;
+				customer['label'] = e.customer.name;
+				customer['type'] = e.customer.type;
+
+				this.customers.push(customer);
+
+				this.selectedCustomer = customer;
 			}
 
 		},
@@ -856,7 +887,7 @@
 			},
 
 			isParcelOrDocument() {
-				return this.selectedProductType.value == 2 || this.selectedProductType.value == 5;
+				return this.selectedProductType.has_detail;
 			},
 
 			change() {
@@ -878,12 +909,30 @@
 				}
 
 				return value;
+			},
+
+			canEdit() {
+				return this.form.items.length > 0 && ( !this.invoice ||  this.invoice.can_edit );
+			},
+
+			editTooltip() {
+				if(!this.canEdit)
+				{
+					if(this.invoice && !this.invoice.can_edit)
+						return "Invoice has been locked"
+
+					return "No items";
+				}
+
+				return "";
 			}
 		},
 
 		watch: {
 			selectedType(newVal, oldVal) {
 				this.form.type = newVal.value;
+				if(this.isAddingItem)
+					this.toggleAddItem();
 			},
 
 			zone(newVal, oldVal) {
@@ -898,6 +947,10 @@
 				this.getFilteredProduct();
 			},
 
+			selectedCourier(newVal, oldVal) {
+				this.getFilteredProduct();
+			},
+
 			selectedDiscountMode(newVal, oldVal) {
 				this.form.discount_mode = newVal.value;
 			},
@@ -908,6 +961,8 @@
 
 			selectedCustomer(newVal, oldVal) {
 				this.form.customer_id = newVal.value;
+				if(this.isAddingItem)
+					this.toggleAddItem();
 			}
 		}	
 	}

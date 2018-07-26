@@ -22,6 +22,7 @@
 							<th>Name</th>
 							<th>Is merchandise</th>
 							<th>Is document</th>
+							<th>Has detail</th>
 						</tr>
 					</thead>
 				</table>
@@ -84,6 +85,14 @@
 						}
 					},
 					{data: 'is_document', render: function(data,type,row){
+							if(type === 'display' || type === 'filter') {
+								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
+							}
+
+							return data;
+						}
+					},
+					{data: 'has_detail', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
 								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
 							}
