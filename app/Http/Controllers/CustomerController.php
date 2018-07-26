@@ -61,7 +61,7 @@ class CustomerController extends Controller
 
         $customer = Customer::create(request()->all());
 
-        return json_encode(['message' => "Customer created" ]);
+        return json_encode(['message' => "Customer created", "customer" => $customer]);
     }
 
     public function update(Customer $customer)

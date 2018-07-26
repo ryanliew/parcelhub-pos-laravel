@@ -1,8 +1,14 @@
 <template>
 	<div class="mb-3">
 		<label class="select-label" v-if="!hideLabel">
-			<span v-text="label"></span>
-			<span v-if="required" class="text-danger">*</span>
+			<div class="d-flex align-items-center">
+				<span v-text="label"></span>
+				<span v-if="required" class="text-danger">*</span>
+				<span class="fa-stack pointer text-info ml-2" :title="addonTooltip" @click="$emit(addon)" v-if="addon">
+					<i class="fas fa-circle fa-stack-2x"></i>
+					<i class="fas fa-plus fa-stack-1x fa-inverse text-white"></i>
+				</span>
+			</div>
 		</label>
 		<div class="control" :class="canClearCss" v-if="editable">
 			<v-select :multiple="multiple" :options="potentialData" :value="this.defaultData" @input="updateValue" :name="name" :placeholder="placeholder" :closeOnSelect="!multiple || true" ref="selector">
@@ -18,7 +24,7 @@
 <script>
 	import vSelect from 'vue-select';
 	export default {
-		props: { potentialData: Array, label: String, defaultData: {default: ''}, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}},
+		props: { potentialData: Array, label: String, defaultData: {default: ''}, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}, addon: String, addonTooltip: String},
 
 		components: { vSelect },
 

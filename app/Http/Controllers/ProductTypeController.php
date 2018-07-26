@@ -58,6 +58,6 @@ class ProductTypeController extends Controller
 
     public function list()
     {
-        return ProductType::all();
+        return ProductType::orderBy('name', 'asc')->get();
     }
 }

@@ -205,7 +205,7 @@
 				types: [
 						{label: 'Corporate', value: 'Corporate'},
 						{label: 'Walk-in', value: 'walk_in'},
-						{label: 'Walk-in special', value: 'walk_in_sepcial'},
+						{label: 'Walk-in special', value: 'walk_in_special'},
 						],
 
 				selectedType: '',
@@ -271,6 +271,10 @@
 			},
 
 			onSuccess(response) {
+				console.log("Success!");
+				console.log(response);
+				this.$emit("customerCreated", {customer: response.customer});
+
 				$("#customer-dialog").modal('hide');
 
 				this.closeDialog();

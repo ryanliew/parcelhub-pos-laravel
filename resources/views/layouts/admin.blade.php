@@ -107,6 +107,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('settings') }}">Settings</a></li>
                     </ul>
                 </div>
                 <span class="badge badge-danger">You are in Admin panel</span>

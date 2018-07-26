@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
 	protected $guarded = [];
+
+    protected $appends = ['can_edit'];
 	
     public function branch()
     {
@@ -46,5 +48,12 @@ class Invoice extends Model
     public function scopeCashupRequired($query)
     {
         return $query->where('cashed', false)->where('type', 'Cash');
+    }
+
+    public function getCanEditAttribute()
+    {
+        $setting = Setting::find(1);
+
+        return $setting->lock_date->gte($this->created_at);
     }
 }
