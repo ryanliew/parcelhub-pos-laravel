@@ -27,7 +27,7 @@ class Branch extends Model
 
     public function customers()
     {
-        return $this->hasMany('App\Customer','branch');
+        return $this->hasMany('App\Customer','branch_id');
     }
 
     public function terminals()

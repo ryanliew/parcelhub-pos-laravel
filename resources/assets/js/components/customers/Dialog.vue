@@ -20,11 +20,11 @@
 									placeholder="Select branch"
 									:required="true"
 									label="Branch"
-									name="branch"
+									name="branch_id"
 									:editable="data.is_admin"
 									:focus="false"
 									:hideLabel="false"
-									:error="selectedBranch_error"
+									:error="form.errors.get('branch_id')"
 									@input="getBranches"
 									ref="branches">
 								</selector-input>
@@ -189,7 +189,7 @@
 				selectedCustomer: '',
 				isEdit: false,
 				form: new Form({
-					type: '',
+					type: 'Corporate',
 					name: '',
 					email: '',
 					contact: '',
@@ -199,7 +199,7 @@
 					address2:'',
 					address3:'',
 					address4:'',
-					branch:'',
+					branch_id:'',
 
 				}),
 				types: [
@@ -208,7 +208,7 @@
 						{label: 'Walk-in special', value: 'walk_in_sepcial'},
 						],
 
-				selectedType: '',
+				selectedType: {label: 'Corporate', value: 'Corporate'},
 				selectedBranch: '',
 				selectedBranch_error: '',
 				branches: [],
@@ -331,7 +331,7 @@
 			},
 
 			selectedBranch(newVal, oldVal) {
-				this.form.branch = newVal.value;
+				this.form.branch_id = newVal.value;
 			},
 
 		}	

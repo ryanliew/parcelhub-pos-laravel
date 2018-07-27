@@ -55,7 +55,7 @@ class CustomerController extends Controller
     public function validate_input()
     {
         request()->validate([
-            "branch" => 'required',
+            "branch_id" => 'required',
             "name" => "required",
             "type" => "required",
             "contact" => "required",
