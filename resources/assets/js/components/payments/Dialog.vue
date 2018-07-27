@@ -14,27 +14,13 @@
 						@input="form.errors.clear($event.target.name)">
 						<div class="row">
 							<div class="col">
-								<text-input v-model="form.invoice_no" 
-									:defaultValue="form.invoice_no"
-									:required="true"
-									type="text"
-									label="Invoice No."
-									name="invoice_no"
-									:editable="false"
-									:focus="true"
-									:hideLabel="false"
-									:error="form.errors.get('invoice_no')">
-								</text-input>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col">
 								<text-input v-model="form.total" 
 									:defaultValue="form.total"
 									:required="true"
 									type="text"
 									label="Total"
 									name="total"
+									style="font-size: 20px"
 									:editable="false"
 									:focus="false"
 									:hideLabel="false"
@@ -48,6 +34,7 @@
 									type="text"
 									label="Paid amount"
 									name="paid_amount"
+									style="font-size: 20px"
 									:editable="false"
 									:focus="false"
 									:hideLabel="false"
@@ -61,27 +48,29 @@
 									type="number"
 									label="Outstanding"
 									name="outstanding"
+									style="font-size: 20px"
 									:editable="false"
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('outstanding')">
 								</text-input>
 							</div>
-							<div class="col">
-								<text-input v-model="form.remaining" 
-									:defaultValue="form.remaining"
-									:required="true"
-									type="text"
-									label="Remaining"
-									name="remaining"
-									:editable="false"
-									:focus="false"
-									:hideLabel="false"
-									:error="form.errors.get('remaining')">
-								</text-input>
-							</div>
 						</div>
 						<div class="row">
+							<div class="col">
+								<selector-input :potentialData="types"
+									v-model="selectedType" 
+									:defaultData="selectedType"
+									placeholder="Select type"
+									:required="true"
+									label="Type"
+									name="type"
+									:editable="true"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('type')">
+								</selector-input>
+							</div>
 							<div class="col">
 								<text-input v-model="form.amount" 
 									:defaultValue="form.amount"
@@ -109,21 +98,36 @@
 
 <script>
 	export default {
-		props: [''],
+		props: {
+		    data: {
+		        type: Object
+		    }
+		  },
 		data() {
 			return {
 				isActive: false,
+				selectedInvoice: '',
 				selectedPayment: '',
 				isEdit: false,
 				form: new Form({
+					invoice_id: '',
 					invoice_no: '',
 					total: '',
 					paid_amount: '',
 					remaining: '',
 					outstanding: '',
 					amount: '',
+					method: '',
+					type: '',
 
-				})
+				}),
+				types: [
+					{label: 'Cash', value: 'Cash'},
+					{label: 'Cheque', value: 'Cheque'},
+					{label: 'Credit card', value: 'Credit card'},
+					{label: 'IBG', value: 'IBG'},
+				],
+				selectedType: '',
 			};
 		},
 
@@ -138,8 +142,8 @@
 
 		methods: {
 			createPayment(evt) {
-				this.selectedPayment = evt[0];
-				this.setForm();
+				this.selectedInvoice = evt[0];
+				this.setNewForm();
 				this.openDialog();
 				
 			},
@@ -162,14 +166,22 @@
 				this.form.reset();
 			},
 
-			setForm() {
-				this.form.invoice_no = this.selectedPayment.id; 
-				this.form.total = this.selectedPayment.total;
-				this.form.paid_amount = this.selectedPayment.payment;
-				this.form.remaining = this.selectedPayment.remaining;
-				this.form.outstanding = this.selectedPayment.outstanding;
-				this.form.amount = this.selectedPayment.amount;
+			setNewForm() {
+				this.form.invoice_id	= this.selectedInvoice.id;
+				this.form.invoice_no 	= this.selectedInvoice.invoice_no; 
+				this.form.total 		= this.selectedInvoice.total;
+				this.form.paid_amount 	= this.selectedInvoice.paid;
+				this.form.outstanding 	= this.selectedInvoice.outstanding;
 			},
+
+			setForm() {
+				this.form.invoice_no 	= this.selectedPayment.invoice_no; 
+				this.form.total 		= this.selectedPayment.amount;
+				this.form.paid_amount 	= this.selectedPayment.paid;
+				this.selectedType 		= this.selectedPayment.payment_method;
+				this.form.outstanding 	= this.selectedPayment.outstanding;
+			},
+
 
 			submit() {
 				this.form.post(this.url)
@@ -187,7 +199,7 @@
 
 		computed: {
 			title() {
-				return this.selectedPayment ? "Edit payment - " + this.selectedPayment.invoice_no : "Create payment";
+				return this.selectedPayment ? "Edit payment - " + this.selectedPayment.invoice_no : "Create payment - " + this.selectedInvoice.invoice_no;
 			},
 
 			action() {
@@ -199,8 +211,15 @@
 			},
 
 			url() {
-				return this.selectedPayment ? "/admin/branches/" + this.selectedPayment.id : "/payments";
+				return this.selectedPayment ? "/payments/" + this.selectedPayment.id : "/payments";
 			}
+		},
+
+		watch: {
+			selectedType(newVal, oldVal) {
+				this.form.type = newVal.value;
+			},
+
 		}
 
 

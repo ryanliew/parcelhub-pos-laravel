@@ -25,7 +25,7 @@ class CreateCustomersTable extends Migration
             $table->string('address2')->nullable();
             $table->string('address3')->nullable();
             $table->string('address4')->nullable();
-            $table->string('branch');
+            $table->string('branch_id');
             $table->timestamps();
         });
     }

@@ -36,7 +36,10 @@
 		</div>
 	</div>
 
+	
 	<customers-dialog :data = "{{ auth()->user() }}"></customers-dialog>
+	<statement-dialog :data = "{{ auth()->user() }}"></statement-dialog>
+	
 
 @endsection
 
@@ -66,6 +69,13 @@
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
 							window.events.$emit('editCustomer', table.rows({selected: true}).data().toArray());
+						},
+						enabled: false
+					},
+					{
+						text: 'Generate statement',
+						action: function( e, dt, node, config ) {
+							window.events.$emit('generateStatement', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},

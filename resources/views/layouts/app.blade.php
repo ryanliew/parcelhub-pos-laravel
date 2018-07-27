@@ -52,10 +52,11 @@
                             </li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
 
+                             <li class="nav-item"><a class="nav-link" href="{{ route('payments.page') }}">Payment overview</a></li>
+
                             <li class="nav-item"><a class="nav-link" href="{{ route('cashups.page') }}">Cash up reports</a></li>
                             
-                            
-                            <!-- <li class="nav-item"><a class="nav-link" href="{{ route('payments.page') }}">Payment</a></li> -->
+
                         </ul>
                     @endif
                     <!-- Right Side Of Navbar -->

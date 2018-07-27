@@ -122,8 +122,10 @@ Route::group(['middleware' => 'auth'], function(){
 	});
 
 	Route::group(['prefix' => 'payments'], function(){
-		Route::get('/', "PaymentController@page")->name('payments.page');
+		Route::get('/all', "PaymentController@page")->name('payments.page');
 		Route::get("/index", "PaymentController@index")->name('payments.index');
+		Route::get('/index/{invoice}',"PaymentController@index");
+		Route::get('/invoice/{invoice}', "PaymentController@page");
 		Route::post("/", "PaymentController@store");
 	});
 
@@ -135,6 +137,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/", "CustomerController@store");
 		Route::post("/{customer}", "CustomerController@update");
 		Route::get("/{customer}","CustomerController@get");
+		Route::get("/statement/{customer}/{start}/{end}","CustomerController@view");
+		Route::post("/statement/{customer}","CustomerController@statement");
 	});
 
 	Route::group(['prefix' => 'cashups'], function(){

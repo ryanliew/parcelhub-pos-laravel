@@ -10,7 +10,7 @@ class Payment extends Model
 
   	public function invoice()
   	{
-  		return $this->belongsTo('App\Invoice', 'invoice_no');
+  		return $this->belongsTo('App\Invoice', 'invoice_no', 'invoice_no');
   	}
 
   	public function branch()

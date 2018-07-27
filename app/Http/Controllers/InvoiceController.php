@@ -42,10 +42,10 @@ class InvoiceController extends Controller
     	return datatables()
 			->of($terminal->invoices()->latest()->with(['customer','payment', 'branch', 'terminal'])->select('invoices.*'))
     			->addColumn('payment', function(Invoice $invoice) {
-                    return $invoice->payment->sum();
+                    return $invoice->payment->sum('total');
                 })
     			->addColumn('outstanding', function(Invoice $invoice) {
-                    return $invoice->total - $invoice->payment->sum();
+                    return $invoice->total - $invoice->payment->sum('total');
                 })
                 ->addColumn('customer', function(Invoice $invoice){ 
                     return $invoice->customer ? $invoice->customer->name : "---";
@@ -241,4 +241,5 @@ class InvoiceController extends Controller
 
         return response()->file($path);
     }
+
 }
