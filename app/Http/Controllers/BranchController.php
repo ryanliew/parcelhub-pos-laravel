@@ -65,4 +65,21 @@ class BranchController extends Controller
 
         return $result;
     }
+
+    public function getDefaultValues()
+    {
+        $results = DB::table('branch_knowledge')
+                    ->select("*", "")
+                    ->where(function($query){
+                        $query->where('branch_code', '=', request()->branch_code)
+                            ->orWhere('branch_code', '=', '*');
+                    })
+                    ->where(function($query){
+                        $query->where('product_type', '=', request()->product_type)
+                            ->orWhere("product_type", '=', '*');
+                    })
+                    ->get();
+
+        dd($results);
+    }
 }
