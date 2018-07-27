@@ -30412,6 +30412,7 @@ Vue.component('modal', __webpack_require__(186));
 
 Vue.component('branches-dialog', __webpack_require__(189));
 Vue.component('branch-selector', __webpack_require__(192));
+Vue.component('branch-knowledge-dialog', __webpack_require__(234));
 
 Vue.component('vendors-dialog', __webpack_require__(195));
 // Vue.component('vendors-selector', require('./components/vendors/Selector.vue'));
@@ -70059,34 +70060,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: [''],
+	props: {
+		data: {
+			type: Object
+		}
+	},
 	data: function data() {
 		return {
 			isActive: false,
+			selectedInvoice: '',
 			selectedPayment: '',
 			isEdit: false,
 			form: new Form({
+				invoice_id: '',
 				invoice_no: '',
 				total: '',
 				paid_amount: '',
 				remaining: '',
 				outstanding: '',
-				amount: ''
+				amount: '',
+				method: '',
+				type: ''
 
-			})
+			}),
+			types: [{ label: 'Cash', value: 'Cash' }, { label: 'Cheque', value: 'Cheque' }, { label: 'Credit card', value: 'Credit card' }, { label: 'IBG', value: 'IBG' }],
+			selectedType: ''
 		};
 	},
 	mounted: function mounted() {
@@ -70107,8 +70107,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	methods: {
 		createPayment: function createPayment(evt) {
-			this.selectedPayment = evt[0];
-			this.setForm();
+			this.selectedInvoice = evt[0];
+			this.setNewForm();
 			this.openDialog();
 		},
 		editPayment: function editPayment(evt) {
@@ -70126,13 +70126,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.selectedPayment = '';
 			this.form.reset();
 		},
+		setNewForm: function setNewForm() {
+			this.form.invoice_id = this.selectedInvoice.id;
+			this.form.invoice_no = this.selectedInvoice.invoice_no;
+			this.form.total = this.selectedInvoice.total;
+			this.form.paid_amount = this.selectedInvoice.paid;
+			this.form.outstanding = this.selectedInvoice.outstanding;
+		},
 		setForm: function setForm() {
-			this.form.invoice_no = this.selectedPayment.id;
-			this.form.total = this.selectedPayment.total;
-			this.form.paid_amount = this.selectedPayment.payment;
-			this.form.remaining = this.selectedPayment.remaining;
+			this.form.invoice_no = this.selectedPayment.invoice_no;
+			this.form.total = this.selectedPayment.amount;
+			this.form.paid_amount = this.selectedPayment.paid;
+			this.selectedType = this.selectedPayment.payment_method;
 			this.form.outstanding = this.selectedPayment.outstanding;
-			this.form.amount = this.selectedPayment.amount;
 		},
 		submit: function submit() {
 			var _this2 = this;
@@ -70152,7 +70158,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	computed: {
 		title: function title() {
-			return this.selectedPayment ? "Edit payment - " + this.selectedPayment.invoice_no : "Create payment";
+			return this.selectedPayment ? "Edit payment - " + this.selectedPayment.invoice_no : "Create payment - " + this.selectedInvoice.invoice_no;
 		},
 		action: function action() {
 			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
@@ -70161,7 +70167,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return this.selectedPayment ? "Update" : "Create";
 		},
 		url: function url() {
-			return this.selectedPayment ? "/admin/branches/" + this.selectedPayment.id : "/payments";
+			return this.selectedPayment ? "/payments/" + this.selectedPayment.id : "/payments";
+		}
+	},
+
+	watch: {
+		selectedType: function selectedType(newVal, oldVal) {
+			this.form.type = newVal.value;
 		}
 	}
 
@@ -70219,36 +70231,7 @@ var render = function() {
                       { staticClass: "col" },
                       [
                         _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.invoice_no,
-                            required: true,
-                            type: "text",
-                            label: "Invoice No.",
-                            name: "invoice_no",
-                            editable: false,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("invoice_no")
-                          },
-                          model: {
-                            value: _vm.form.invoice_no,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "invoice_no", $$v)
-                            },
-                            expression: "form.invoice_no"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
+                          staticStyle: { "font-size": "20px" },
                           attrs: {
                             defaultValue: _vm.form.total,
                             required: true,
@@ -70277,6 +70260,7 @@ var render = function() {
                       { staticClass: "col" },
                       [
                         _c("text-input", {
+                          staticStyle: { "font-size": "20px" },
                           attrs: {
                             defaultValue: _vm.form.paid_amount,
                             required: true,
@@ -70305,6 +70289,7 @@ var render = function() {
                       { staticClass: "col" },
                       [
                         _c("text-input", {
+                          staticStyle: { "font-size": "20px" },
                           attrs: {
                             defaultValue: _vm.form.outstanding,
                             required: false,
@@ -70326,38 +70311,39 @@ var render = function() {
                         })
                       ],
                       1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.remaining,
-                            required: true,
-                            type: "text",
-                            label: "Remaining",
-                            name: "remaining",
-                            editable: false,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("remaining")
-                          },
-                          model: {
-                            value: _vm.form.remaining,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "remaining", $$v)
-                            },
-                            expression: "form.remaining"
-                          }
-                        })
-                      ],
-                      1
                     )
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.types,
+                            defaultData: _vm.selectedType,
+                            placeholder: "Select type",
+                            required: true,
+                            label: "Type",
+                            name: "type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("type")
+                          },
+                          model: {
+                            value: _vm.selectedType,
+                            callback: function($$v) {
+                              _vm.selectedType = $$v
+                            },
+                            expression: "selectedType"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
                     _c(
                       "div",
                       { staticClass: "col" },
@@ -71103,10 +71089,41 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				}).catch(function (error) {
 					return _this7.getRelatedProduct();
 				});
+
+				if (this.selectedProductType.has_detail) {
+					this.getDefaultDetails();
+				}
+			}
+		},
+		getDefaultDetails: function getDefaultDetails() {
+			var _this8 = this;
+
+			axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
+				return _this8.setDefaultDetails(response);
+			}).catch(function (error) {
+				return _this8.getDefaultDetails();
+			});
+		},
+		setDefaultDetails: function setDefaultDetails(response) {
+
+			var eligibleZoneTypes = _.filter(this.zone_types, function (type) {
+				return type.label == response.data.result.zone_type;
+			}.bind(response));
+
+			if (eligibleZoneTypes.length > 0) {
+				this.selectedZoneType = eligibleZoneTypes[0];
+			}
+
+			var eligibleCourier = _.filter(this.couriers, function (courier) {
+				return courier.label == response.data.result.vendor_name;
+			}.bind(response));
+
+			if (eligibleCourier.length > 0) {
+				this.selectedCourier = eligibleCourier[0];
 			}
 		},
 		getFilteredProduct: function getFilteredProduct() {
-			var _this8 = this;
+			var _this9 = this;
 
 			if (this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
 				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
@@ -71118,9 +71135,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				if (this.selectedCourier) url += "&vendor=" + this.selectedCourier.value;
 
 				axios.get(url).then(function (response) {
-					return _this8.setProduct(response);
+					return _this9.setProduct(response);
 				}).catch(function (error) {
-					return _this8.getFilteredProduct();
+					return _this9.getFilteredProduct();
 				});
 			}
 		},
@@ -71279,7 +71296,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
 		submit: function submit() {
-			var _this9 = this;
+			var _this10 = this;
 
 			this.form.total = this.total;
 			this.form.subtotal = this.subtotal;
@@ -71287,7 +71304,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 			this.form.post(url).then(function (response) {
-				return _this9.onSuccess(response);
+				return _this10.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -71411,7 +71428,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.getFilteredProduct();
 		},
 		selectedCourier: function selectedCourier(newVal, oldVal) {
-			this.getFilteredProduct();
+			if (oldVal !== newVal) this.getFilteredProduct();
 		},
 		selectedDiscountMode: function selectedDiscountMode(newVal, oldVal) {
 			this.form.discount_mode = newVal.value;
@@ -72621,7 +72638,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			selectedCustomer: '',
 			isEdit: false,
 			form: new Form({
-				type: '',
+				type: 'Corporate',
 				name: '',
 				email: '',
 				contact: '',
@@ -72631,12 +72648,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				address2: '',
 				address3: '',
 				address4: '',
-				branch: ''
+				branch_id: ''
 
 			}),
 			types: [{ label: 'Corporate', value: 'Corporate' }, { label: 'Walk-in', value: 'walk_in' }, { label: 'Walk-in special', value: 'walk_in_special' }],
 
-			selectedType: '',
+			selectedType: { label: 'Corporate', value: 'Corporate' },
 			selectedBranch: '',
 			selectedBranch_error: '',
 			branches: []
@@ -72760,7 +72777,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.type = newVal.value;
 		},
 		selectedBranch: function selectedBranch(newVal, oldVal) {
-			this.form.branch = newVal.value;
+			this.form.branch_id = newVal.value;
 		}
 	}
 
@@ -72825,11 +72842,11 @@ var render = function() {
                             placeholder: "Select branch",
                             required: true,
                             label: "Branch",
-                            name: "branch",
+                            name: "branch_id",
                             editable: _vm.data.is_admin,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.selectedBranch_error
+                            error: _vm.form.errors.get("branch_id")
                           },
                           on: { input: _vm.getBranches },
                           model: {
@@ -73630,6 +73647,452 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 229 */,
+/* 230 */,
+/* 231 */,
+/* 232 */,
+/* 233 */,
+/* 234 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(235)
+/* template */
+var __vue_template__ = __webpack_require__(236)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\branches\\Knowledge.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-25dcf3e9", Component.options)
+  } else {
+    hotAPI.reload("data-v-25dcf3e9", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 235 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: [''],
+	data: function data() {
+		return {
+			isActive: false,
+			selectedKnowledge: '',
+			isEdit: false,
+			branches: [],
+			form: new Form({
+				branch_code: '',
+				product_type: '',
+				zone_type: 'Domestic',
+				vendor_name: ''
+			})
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('createBranchKnowledge', function (evt) {
+			return _this.createKnowledge(evt);
+		});
+		window.events.$on('editBranchKnowledge', function (evt) {
+			return _this.editKnowledge(evt);
+		});
+
+		$("#branch-knowledge-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+	},
+
+
+	methods: {
+		createKnowledge: function createKnowledge(evt) {
+			this.openDialog();
+		},
+		editKnowledge: function editKnowledge(evt) {
+			this.selectedKnowledge = evt[0];
+			this.isEdit = true;
+			this.setForm();
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#branch-knowledge-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.form.reset();
+			this.selectedKnowledge = '';
+		},
+		setForm: function setForm() {
+			this.form.branch_code = this.selectedKnowledge.branch_code;
+			this.form.product_type = this.selectedKnowledge.product_type;
+			this.form.zone_type = this.selectedKnowledge.zone_type;
+			this.form.vendor_name = this.selectedKnowledge.vendor_name;
+		},
+		submit: function submit() {
+			var _this2 = this;
+
+			this.form.post(this.url).then(function (response) {
+				return _this2.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			$("#branch-knowledge-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.selectedKnowledge ? "Edit knowledge" : "Create knowledge";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.selectedKnowledge ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.selectedKnowledge ? "/admin/branch/knowledge/" + this.selectedKnowledge.id : "/admin/branch/knowledge";
+		}
+	}
+
+});
+
+/***/ }),
+/* 236 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "branch-knowledge-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.branch_code,
+                            required: true,
+                            type: "text",
+                            label: "Branch code",
+                            name: "branch_code",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("branch_code")
+                          },
+                          model: {
+                            value: _vm.form.branch_code,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "branch_code", $$v)
+                            },
+                            expression: "form.branch_code"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.product_type,
+                            required: true,
+                            type: "text",
+                            label: "Product type",
+                            name: "product_type",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("product_type")
+                          },
+                          model: {
+                            value: _vm.form.product_type,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "product_type", $$v)
+                            },
+                            expression: "form.product_type"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.zone_type,
+                            required: true,
+                            type: "text",
+                            label: "Default zone type",
+                            name: "zone_type",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("zone_type")
+                          },
+                          model: {
+                            value: _vm.form.zone_type,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "zone_type", $$v)
+                            },
+                            expression: "form.zone_type"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.vendor_name,
+                            required: true,
+                            type: "text",
+                            label: "Default vendor",
+                            name: "vendor_name",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("vendor_name")
+                          },
+                          model: {
+                            value: _vm.form.vendor_name,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "vendor_name", $$v)
+                            },
+                            expression: "form.vendor_name"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-25dcf3e9", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

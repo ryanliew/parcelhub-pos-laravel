@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Branch;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BranchController extends Controller
 {
@@ -64,5 +65,28 @@ class BranchController extends Controller
         $result = Branch::where('id', $branch)->get();
 
         return $result;
+    }
+
+    public function getDefaultValues()
+    {
+        $branch_code = auth()->user()->current->code;
+
+        $results = DB::table('branch_knowledge')
+                    ->select("*")
+                    ->where(function($query) use ($branch_code) {
+                        $query->where('branch_code', '=', $branch_code)
+                            ->orWhere('branch_code', '=', '*');
+                    })
+                    ->where(function($query){
+                        $query->where('product_type', '=', request()->product_type)
+                            ->orWhere("product_type", '=', '*');
+                    })
+                    ->get();
+
+        $result = $results->sortBy(function ($knowledge, $key){
+            return ($knowledge->branch_code == "*") + ($knowledge->product_type == "*");
+        });
+
+        return json_encode(['result' => $result->first()]);
     }
 }

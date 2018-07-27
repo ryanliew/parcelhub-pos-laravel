@@ -39,6 +39,7 @@ Vue.component('modal', require('./components/Modal.vue'));
 
 Vue.component('branches-dialog', require('./components/branches/Dialog.vue'));
 Vue.component('branch-selector', require('./components/branches/Selector.vue'));
+Vue.component('branch-knowledge-dialog', require('./components/branches/Knowledge.vue'));
 
 
 Vue.component('vendors-dialog', require('./components/vendors/Dialog.vue'));
