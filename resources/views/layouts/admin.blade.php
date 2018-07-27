@@ -49,9 +49,12 @@
                                 </a>
                             </div>
                         </li>
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
-                        
-                        <!-- <li class="nav-item"><a class="nav-link" href="{{ route('payments.page') }}">Payment</a></li> -->
+
+                         <li class="nav-item"><a class="nav-link" href="{{ route('payments.page') }}">Payment overview</a></li>
+
+                        <li class="nav-item"><a class="nav-link" href="{{ route('cashups.page') }}">Cash up reports</a></li>
                     </ul>
                     
 
@@ -107,7 +110,20 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('settings') }}">Settings</a></li>
+                        <li class="nav-item dropdown">
+                            <a id="settings-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                Settings <span class="caret"></span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="invoice-dropdown">
+                                <a class="dropdown-item" href="{{ route('settings') }}">
+                                    Global settings
+                                </a>
+                                <a class="dropdown-item" href="{{ route('branch-knowledge.page') }}">
+                                    Branch settings
+                                </a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
                 <span class="badge badge-danger">You are in Admin panel</span>

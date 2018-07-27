@@ -604,6 +604,33 @@
 					axios.get('/data/products?type=' + this.selectedProductType.value)
 						.then(response => this.setProduct(response))
 						.catch(error => this.getRelatedProduct());
+
+					if(this.selectedProductType.has_detail) {
+						this.getDefaultDetails();
+					}
+				}
+			},
+
+			getDefaultDetails() {
+				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
+					.then(response => this.setDefaultDetails(response))
+					.catch(error => this.getDefaultDetails());
+			},
+
+			setDefaultDetails(response) {
+
+				let eligibleZoneTypes = _.filter(this.zone_types, function(type){ return type.label == response.data.result.zone_type; }.bind(response));
+
+				if(eligibleZoneTypes.length > 0)
+				{
+					this.selectedZoneType = eligibleZoneTypes[0];
+				}
+
+				let eligibleCourier = _.filter(this.couriers, function(courier){ return courier.label == response.data.result.vendor_name; }.bind(response));
+				
+				if(eligibleCourier.length > 0)
+				{
+					this.selectedCourier = eligibleCourier[0];
 				}
 			},
 
@@ -948,7 +975,8 @@
 			},
 
 			selectedCourier(newVal, oldVal) {
-				this.getFilteredProduct();
+				if(oldVal !== newVal)
+					this.getFilteredProduct();
 			},
 
 			selectedDiscountMode(newVal, oldVal) {

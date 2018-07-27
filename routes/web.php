@@ -84,6 +84,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/", "SettingController@store");
 	});
 
+	Route::group(['prefix' => 'branch/knowledge'], function(){
+		Route::get('/', "BranchKnowledgeController@page")->name('branch-knowledge.page');
+		Route::post("/", "BranchKnowledgeController@store");
+		Route::get("/index", "BranchKnowledgeController@index")->name('branch-knowledge.index');
+		Route::post("/{knowledge}", "BranchKnowledgeController@update");
+	});
+
 });
 
 // Users route
@@ -98,6 +105,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/taxes", "TaxController@list");
 		Route::get("/products", "ProductController@list");
 		Route::get("/customers", "CustomerController@list");
+		Route::get("/branch/knowledge", "BranchController@getDefaultValues");
 		Route::get('/branch/{branch}', "BranchController@get");
 	});
 
