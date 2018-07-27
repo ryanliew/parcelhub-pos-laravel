@@ -43,6 +43,14 @@
 										:editable="true">
 									</checkbox-input>
 								</div>
+								<div class="ml-2">
+									<checkbox-input v-model="form.has_detail"
+										:defaultChecked="form.has_detail"
+										label="Has details"
+										name="has_detail"
+										:editable="true">
+									</checkbox-input>
+								</div>
 							</div>
 						</div>
 						<div class="row">
@@ -103,7 +111,8 @@
 					is_document: '',
 					is_merchandise: '',
 					default_vendor_id: '',
-					default_zone_type_id: ''
+					default_zone_type_id: '',
+					has_detail: ''
 				})
 			};
 		},
@@ -182,6 +191,7 @@
 				this.form.is_merchandise = this.selectedProductType.is_merchandise;
 				this.form.default_vendor_id = this.selectedProductType.default_vendor_id;				
 				this.form.default_zone_type_id = this.selectedProductType.default_zone_type_id;
+				this.form.has_detail = this.selectedProductType.has_detail;
 
 				this.selectedVendor = '';
 				this.selectedZoneType = '';
