@@ -183,7 +183,6 @@
 						:focus="false"
 						:hideLabel="false"
 						:error="selectedProductType_error"
-						@input="getRelatedProduct"
 						ref="producttypes">
 					</selector-input>
 					<div class="row">
@@ -319,6 +318,19 @@
 							</text-input>
 						</div>
 						<div class="col">
+							<text-input v-model="item_tax" 
+								:defaultValue="item_tax"
+								:required="true"
+								type="number"
+								label="Tax"
+								name="item_tax"
+								:editable="false"
+								:focus="false"
+								:hideLabel="false"
+								:error="item_tax_error">
+							</text-input>
+						</div>
+						<div class="col">
 							<text-input v-model="total_price" 
 								:defaultValue="total_price"
 								:required="true"
@@ -332,7 +344,7 @@
 						</div>
 					</div>
 
-					<button type="button" class="btn btn-primary" @click="add_item" :disbaled="!canEdit">Confirm</button>
+					<button type="button" class="btn btn-primary" @click="add_item" :disabled="!canEditItem">Confirm</button>
 					<button type="button" class="btn btn-secondary" @click="toggleAddItem">Cancel</button>
 					</div>
 				</transition>	
@@ -461,6 +473,7 @@
 				length: 0,
 				height: 0,
 				total_price: '',
+				item_tax: 0,
 
 				tracking_no_error: '',
 				selectedProductType_error: '',
@@ -473,8 +486,11 @@
 				description_error: '',
 				price_error: '',
 				unit_error: '',
+				item_tax_error: '',
 
-				currentTime: ''
+				currentTime: '',
+
+				item_add_loading: false
 			};
 		},
 
@@ -599,11 +615,11 @@
 
 			},
 
-			getRelatedProduct(){
+			getRelatedProduct(error = 'No error'){
 				if(this.selectedProductType) {
 					axios.get('/data/products?type=' + this.selectedProductType.value)
 						.then(response => this.setProduct(response))
-						.catch(error => this.getRelatedProduct());
+						.catch(error => this.getRelatedProduct(error));
 
 					if(this.selectedProductType.has_detail) {
 						this.getDefaultDetails();
@@ -665,9 +681,11 @@
 					obj['corporate_price'] = product.corporate_price;
 					obj['walk_in_price'] = product.walk_in_price;
 					obj['walk_in_price_special'] = product.walk_in_price_special;
+					obj['tax'] = product.tax.percentage;
+
 
 					return obj;
-				});
+				}.bind(this));
 
 				// If we only have 1 product, set it as default
 				if(this.products.length == 1) {
@@ -694,19 +712,49 @@
 				this.total_price = "";
 				if(this.selectedProduct) {
 					this.description = this.selectedProduct.description;
-					let price = this.selectedProduct.walk_in_price;
 
-					if(this.selectedType.label == "Customer")
-					{
-						if(this.selectedCustomer.type == 'walk_in_special')
-							price = this.selectedProduct.walk_in_price_special;
-						else if(this.selectedCustomer.type == 'Corporate')
-							price = this.selectedProduct.corporate_price;
-					}
+					this.getProductPrice();
 
-					this.price = price.toFixed(2);
-					this.total_price = price.toFixed(2);
+					
 				}
+			},
+
+			getProductPrice() {
+				if(this.selectedProduct && this.selectedCustomer && this.selectedType.value == "Customer") {
+					this.item_add_loading = true;
+					axios.get("/data/pricing?product=" + this.selectedProduct.value + "&customer=" + this.selectedCustomer.value )
+						.then(response => this.setProductPrice(response))
+						.catch(error => this.getProductPrice());
+				}
+
+				this.setProductPrice('');
+			},
+
+			setProductPrice(response) {
+				let price_group = this.selectedProduct;
+
+				if(response.data)
+					price_group = response.data;
+
+				let price = price_group.walk_in_price;
+
+				if(this.selectedType.label == "Customer")
+				{
+					if(this.selectedCustomer.type == 'walk_in_special')
+						price = price_group.walk_in_price_special;
+					else if(this.selectedCustomer.type == 'Corporate')
+						price = price_group.corporate_price;
+				}
+
+				this.price = price;
+				this.item_tax = (price * this.selectedProduct.tax / 100);
+				this.total_price = price + this.item_tax;
+
+				this.price = this.price.toFixed(2);
+				this.item_tax = this.item_tax.toFixed(2);
+				this.total_price = this.total_price.toFixed(2);
+
+				this.item_add_loading = false;
 			},
 
 			calculateDimWeight() {
@@ -734,7 +782,7 @@
 					item['length'] = this.length ? this.length : 0;
 					item['width'] = this.width ? this.width : 0;
 					item['sku'] = this.selectedProduct.label;
-					item['tax'] = this.tax;
+					item['tax'] = this.item_tax;
 					item['price'] = this.price;
 					item['courier_id'] = this.selectedCourier.value;
 					item['product_id'] = this.selectedProduct.value;
@@ -765,6 +813,7 @@
 					this.length = 0;
 					this.total_price = '';
 					this.tracking_no = '';
+					this.item_tax = 0;
 
 					this.toggleAddItem();
 				}
@@ -795,6 +844,7 @@
 				this.length = item.length;
 				this.total_price = item.total_price;
 				this.tracking_no = item.tracking_code;
+				this.item_tax = item.tax;
 
 			},
 
@@ -830,8 +880,6 @@
 			},
 
 			onSuccess(response) {
-
-
 				window.open(response.redirect_url, '_blank');
 
 				setInterval(function(){
@@ -890,12 +938,12 @@
 
 		computed: {
 			total() {
-				return parseFloat(this.subtotal) - parseFloat(this.discount_value);
+				return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
 			},
 
 			subtotal() {
 				if(this.form.items.length > 0)
-					return _.sumBy(this.form.items, function(item){ return parseFloat(item.total_price); }) + parseFloat(this.tax);
+					return _.sumBy(this.form.items, function(item){ return parseFloat(item.total_price); });
 
 				return 0;
 			},
@@ -910,7 +958,10 @@
 			},
 
 			tax() {
-				return 0.00;
+				if( this.form.items.length > 0 )
+					return _.sumBy(this.form.items, function(item){ return parseFloat(item.tax); });
+
+				return 0;
 			},
 
 			isParcelOrDocument() {
@@ -940,6 +991,10 @@
 
 			canEdit() {
 				return this.form.items.length > 0 && ( !this.invoice ||  this.invoice.can_edit );
+			},
+
+			canEditItem() {
+				return ( !this.invoice ||  this.invoice.can_edit ) && !this.item_add_loading;
 			},
 
 			editTooltip() {
@@ -991,6 +1046,11 @@
 				this.form.customer_id = newVal.value;
 				if(this.isAddingItem)
 					this.toggleAddItem();
+			},
+
+			selectedProductType(newVal, oldVal) {
+				if(newVal && oldVal !== newVal)
+					this.getRelatedProduct();
 			}
 		}	
 	}

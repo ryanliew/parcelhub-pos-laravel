@@ -39,6 +39,13 @@ class Branch extends Model
     {
         return $this->hasOne('App\Sequence');
     }
+
+    public function products()
+    {
+        return $this->belongsToMany("App\Product")
+                    ->withTimestamps()
+                    ->withPivot('customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
+    }
     
     public function create_default_user()
     {

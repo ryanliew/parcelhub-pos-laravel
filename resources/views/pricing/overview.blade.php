@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('page')
-	Invoices
+	Branch Product
 @endsection
 
 @section('styles')
@@ -12,7 +12,7 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Invoices</b>
+				<b>Branch products</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="branch-product-table">
@@ -21,10 +21,6 @@
 							<th>SKU</th>
 							<th>Customer</th>
 							<th>Courier</th>
-							<th>Zone</th>
-							<th>Weight Start(Kg)</th>
-							<th>Weight End(Kg)</th>
-							<th>GST Inclusive</th>
 							<th>Walk In Price</th>
 							<th>Walk In Override</th>
 							<th>Walk In Special Price</th>  
@@ -32,14 +28,17 @@
 							<th>Corporate Price</th>
 							<th>Corporate Override</th>
 							<th>Last update time</th>
-							<!-- <th>Payment</th>   -->
+							<th>GST Inclusive</th>
+							<th>Zone</th>
+							<th>Weight Start(Kg)</th>
+							<th>Weight End(Kg)</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<payments-dialog :data = "{{ auth()->user() }}"></payments-dialog>
+		<pricing-dialog :data = "{{ auth()->user() }}"></pricing-dialog>
 	</div>
 
 @endsection
@@ -61,6 +60,12 @@
 				dom: 'Blftip',
 				buttons: [
 					{
+						text: 'Create',
+						action: function( e, dt, node, config ) {
+							window.events.$emit('createBranchProduct');
+						}
+					},
+					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
 							window.events.$emit('editBranchProduct', table.rows({selected: true}).data().toArray());
@@ -77,68 +82,30 @@
 					},
 					'excel', 'colvis',
 				],
-				ajax: '{!! route("invoices.index") !!}',
+				ajax: '{!! route("branch-product.index") !!}',
 				columns: [
-					{data: 'created_at'},
-					{data: 'invoice_no'},
-					{data: 'customer', name:'customer.name'},
-					{data: 'subtotal', render: function(data, type, row){
+					{data: 'sku'},
+					{data: 'customer_name'},
+					{data: 'courier_name'},
+					{data: 'walk_in_price'},
+					{data: 'pivot.walk_in_price'},
+					{data: 'walk_in_price_special'},
+					{data: 'pivot.walk_in_price_special'},
+					{data: 'corporate_price'},
+					{data: 'pivot.corporate_price'},
+					{data: 'last_update'},
+					{data: 'is_tax_inclusive', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
+								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
 							}
 
 							return data;
 						}
 					},
-					{data: 'discount', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
+					{data: 'zone'},
+					{data: 'weight_start'},
+					{data: 'weight_end'}
 
-							return data;
-						}
-					},
-					{data: 'tax', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}
-					},
-					{data: 'total', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}
-					},
-					{data: 'payment', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}
-					},
-					{data: 'updated_at'},
-					{data: 'outstanding', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}
-					},
-					{data: 'remarks', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return data ? data : "---";
-							}
-
-							return data;
-						}
-					}
 				]
 
 				
@@ -146,8 +113,6 @@
 
 			table.on( 'select deselect', function () {
 		        var selectedRows = table.rows( { selected: true } ).count();
-		 
-		        table.button( 0 ).enable( selectedRows === 1 );
 		        table.button( 1 ).enable( selectedRows === 1 );
 		        table.button( 2 ).enable( selectedRows === 1 );
 		    });

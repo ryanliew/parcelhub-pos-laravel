@@ -32,16 +32,16 @@ class BranchKnowledgeController extends Controller
     {
     	$this->validate_input();
 
-        $terminal = BranchKnowledge::create(request()->all());
+        $knowledge = BranchKnowledge::create(request()->all());
 
     	return json_encode(['message' => "New knowledge created."]);
     }
 
-    public function update(BranchKnowledge $terminal)
+    public function update(BranchKnowledge $knowledge)
     {
     	$this->validate_input();
 
-        $terminal->update(request()->all());
+        $knowledge->update(request()->all());
     	
     	return json_encode(['message' => "Knowledge updated"]);
     }

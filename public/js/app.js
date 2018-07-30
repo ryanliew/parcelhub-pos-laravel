@@ -30362,7 +30362,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138);
-module.exports = __webpack_require__(228);
+module.exports = __webpack_require__(231);
 
 
 /***/ }),
@@ -30412,29 +30412,31 @@ Vue.component('modal', __webpack_require__(186));
 
 Vue.component('branches-dialog', __webpack_require__(189));
 Vue.component('branch-selector', __webpack_require__(192));
-Vue.component('branch-knowledge-dialog', __webpack_require__(234));
+Vue.component('branch-knowledge-dialog', __webpack_require__(195));
 
-Vue.component('vendors-dialog', __webpack_require__(195));
+Vue.component('vendors-dialog', __webpack_require__(198));
 // Vue.component('vendors-selector', require('./components/vendors/Selector.vue'));
 
-Vue.component('zones-dialog', __webpack_require__(198));
+Vue.component('zones-dialog', __webpack_require__(201));
 
-Vue.component('users-dialog', __webpack_require__(201));
+Vue.component('users-dialog', __webpack_require__(204));
 
-Vue.component('product-types-dialog', __webpack_require__(204));
+Vue.component('product-types-dialog', __webpack_require__(207));
 
-Vue.component('taxes-dialog', __webpack_require__(207));
+Vue.component('taxes-dialog', __webpack_require__(210));
 
-Vue.component('products-dialog', __webpack_require__(210));
-Vue.component('products-importer', __webpack_require__(213));
+Vue.component('products-dialog', __webpack_require__(213));
+Vue.component('products-importer', __webpack_require__(216));
 
-Vue.component('payments-dialog', __webpack_require__(216));
+Vue.component('payments-dialog', __webpack_require__(219));
 
-Vue.component('invoices-create', __webpack_require__(219));
+Vue.component('invoices-create', __webpack_require__(222));
 
-Vue.component('customers-dialog', __webpack_require__(222));
+Vue.component('customers-dialog', __webpack_require__(225));
 
-Vue.component('terminals-dialog', __webpack_require__(225));
+Vue.component('terminals-dialog', __webpack_require__(228));
+
+Vue.component('pricing-dialog', __webpack_require__(237));
 
 var app = new Vue({
   el: '#app',
@@ -63893,10 +63895,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon'],
+	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText'],
 	data: function data() {
 		return {
 			localValue: ''
@@ -64264,6 +64267,17 @@ var render = function() {
           staticClass: "input__field input__field--hoshi",
           domProps: { innerHTML: _vm._s(_vm.value) }
         }),
+    _vm._v(" "),
+    _vm.helpText && _vm.editable
+      ? _c(
+          "small",
+          {
+            staticClass: "form-text text-muted",
+            attrs: { id: _vm.name + "Help" }
+          },
+          [_vm._v(_vm._s(_vm.helpText))]
+        )
+      : _vm._e(),
     _vm._v(" "),
     _vm.error
       ? _c("span", { staticClass: "text-danger" }, [_vm._v(_vm._s(_vm.error))])
@@ -65400,6 +65414,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: [''],
@@ -65407,6 +65435,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		return {
 			isActive: false,
 			selectedBranch: '',
+			types: [],
+			selectedType: '',
 			isEdit: false,
 			form: new Form({
 				name: '',
@@ -65421,7 +65451,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				fax: '',
 				tollfree: '',
 				website: '',
-				address: ''
+				address: '',
+				default_product_type: ''
 			})
 		};
 	},
@@ -65438,17 +65469,43 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		$("#branch-dialog").on("hide.bs.modal", function (e) {
 			this.closeDialog();
 		}.bind(this));
+
+		this.getProductTypes();
 	},
 
 
 	methods: {
+		getProductTypes: function getProductTypes() {
+			var _this2 = this;
+
+			axios.get("/data/producttypes").then(function (response) {
+				return _this2.setProductTypes(response);
+			}).catch(function (error) {
+				return _this2.getProductTypes();
+			});
+		},
+		setProductTypes: function setProductTypes(response) {
+			this.types = response.data.map(function (type) {
+				var obj = {};
+
+				obj['value'] = type.id;
+				obj['label'] = type.name;
+
+				return obj;
+			});
+		},
 		createBranch: function createBranch(evt) {
 			this.isEdit = false;
+
+			this.selectedType = '';
+
 			this.openDialog();
 		},
 		editBranch: function editBranch(evt) {
 			this.selectedBranch = evt[0];
 			this.isEdit = true;
+
+			this.selectedType = '';
 			this.setForm();
 			this.openDialog();
 		},
@@ -65475,12 +65532,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.tollfree = this.selectedBranch.tollfree;
 			this.form.website = this.selectedBranch.website;
 			this.form.address = this.selectedBranch.address;
+			this.form.product_type_id = this.selectedBranch.product_type_id;
+
+			this.selectedType = _.filter(this.types, function (type) {
+				return this.form.product_type_id == type.value;
+			}.bind(this))[0];
 		},
 		submit: function submit() {
-			var _this2 = this;
+			var _this3 = this;
 
 			this.form.post(this.url).then(function (response) {
-				return _this2.onSuccess(response);
+				return _this3.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -65504,6 +65566,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		url: function url() {
 			return this.selectedBranch ? "/admin/branches/" + this.selectedBranch.id : "/admin/branches";
+		}
+	},
+
+	watch: {
+		selectedType: function selectedType(newVal, oldVal) {
+			if (newVal) {
+				this.form.product_type_id = newVal.value;
+			}
 		}
 	}
 
@@ -65782,6 +65852,35 @@ var render = function() {
                               _vm.$set(_vm.form, "website", $$v)
                             },
                             expression: "form.website"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.types,
+                            defaultData: _vm.selectedType,
+                            placeholder: "Select default product type",
+                            required: true,
+                            label: "Default product type",
+                            name: "product_type_id",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("product_type_id")
+                          },
+                          model: {
+                            value: _vm.selectedType,
+                            callback: function($$v) {
+                              _vm.selectedType = $$v
+                            },
+                            expression: "selectedType"
                           }
                         })
                       ],
@@ -66291,6 +66390,590 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
+Component.options.__file = "resources\\assets\\js\\components\\branches\\Knowledge.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-25dcf3e9", Component.options)
+  } else {
+    hotAPI.reload("data-v-25dcf3e9", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 196 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: [''],
+	data: function data() {
+		return {
+			isActive: false,
+			selectedKnowledge: '',
+			isEdit: false,
+			branches: [],
+			types: [],
+			vendors: [],
+			zonetypes: [],
+			selectedBranch: '',
+			selectedType: '',
+			selectedVendor: '',
+			selectedZoneType: '',
+			form: new Form({
+				branch_code: '',
+				product_type: '',
+				zone_type: 'Domestic',
+				vendor_name: ''
+			})
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('createBranchKnowledge', function (evt) {
+			return _this.createKnowledge(evt);
+		});
+		window.events.$on('editBranchKnowledge', function (evt) {
+			return _this.editKnowledge(evt);
+		});
+
+		$("#branch-knowledge-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+
+		this.getBranches();
+	},
+
+
+	methods: {
+		getBranches: function getBranches() {
+			var _this2 = this;
+
+			axios.get("/data/branches").then(function (response) {
+				return _this2.setBranches(response);
+			}).catch(function (error) {
+				return _this2.getBranches();
+			});
+		},
+		setBranches: function setBranches(response) {
+			this.branches = response.data.map(function (branch) {
+				var obj = {};
+
+				obj['value'] = branch.code;
+				obj['label'] = branch.name;
+
+				return obj;
+			});
+
+			this.branches.unshift({ value: "*", label: "Any" });
+
+			this.getProductTypes();
+		},
+		getProductTypes: function getProductTypes() {
+			var _this3 = this;
+
+			axios.get("/data/producttypes").then(function (response) {
+				return _this3.setProductTypes(response);
+			}).catch(function (error) {
+				return _this3.getProductTypes();
+			});
+		},
+		setProductTypes: function setProductTypes(response) {
+			this.types = response.data.map(function (type) {
+				var obj = {};
+
+				obj['value'] = type.name;
+				obj['label'] = type.name;
+
+				return obj;
+			});
+
+			this.types.unshift({ value: "*", label: "Any" });
+
+			this.getZoneTypes();
+		},
+		getZoneTypes: function getZoneTypes() {
+			var _this4 = this;
+
+			axios.get("/data/zonetypes").then(function (response) {
+				return _this4.setZoneTypes(response);
+			}).catch(function (error) {
+				return _this4.getZoneTypes();
+			});
+		},
+		setZoneTypes: function setZoneTypes(response) {
+			this.zonetypes = response.data.map(function (type) {
+				var obj = {};
+
+				obj['value'] = type.name;
+				obj['label'] = type.name;
+
+				return obj;
+			});
+
+			this.getVendors();
+		},
+		getVendors: function getVendors() {
+			var _this5 = this;
+
+			axios.get("/data/vendors").then(function (response) {
+				return _this5.setVendors(response);
+			}).catch(function (error) {
+				return _this5.getVendors();
+			});
+		},
+		setVendors: function setVendors(response) {
+			this.vendors = response.data.map(function (vendor) {
+				var obj = {};
+
+				obj['value'] = vendor.name;
+				obj['label'] = vendor.name;
+
+				return obj;
+			});
+		},
+		createKnowledge: function createKnowledge(evt) {
+
+			this.selectedBranch = '';
+			this.selectedVendor = '';
+			this.selectedType = '';
+			this.selectedZoneType = '';
+
+			this.openDialog();
+		},
+		editKnowledge: function editKnowledge(evt) {
+			this.selectedKnowledge = evt[0];
+			this.isEdit = true;
+
+			this.selectedBranch = '';
+			this.selectedVendor = '';
+			this.selectedType = '';
+			this.selectedZoneType = '';
+
+			this.setForm();
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#branch-knowledge-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.form.reset();
+			this.selectedKnowledge = '';
+		},
+		setForm: function setForm() {
+			this.form.branch_code = this.selectedKnowledge.branch_code;
+			this.form.product_type = this.selectedKnowledge.product_type;
+			this.form.zone_type = this.selectedKnowledge.zone_type;
+			this.form.vendor_name = this.selectedKnowledge.vendor_name;
+
+			this.selectedBranch = _.filter(this.branches, function (branch) {
+				return this.form.branch_code == branch.value;
+			}.bind(this))[0];
+			this.selectedType = _.filter(this.types, function (type) {
+				return this.form.product_type == type.value;
+			}.bind(this))[0];
+			this.selectedZoneType = _.filter(this.zonetypes, function (zone) {
+				return this.form.zone_type == zone.value;
+			}.bind(this))[0];
+			this.selectedVendor = _.filter(this.vendors, function (vendor) {
+				return this.form.vendor_name == vendor.value;
+			}.bind(this))[0];
+		},
+		submit: function submit() {
+			var _this6 = this;
+
+			this.form.post(this.url).then(function (response) {
+				return _this6.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			$("#branch-knowledge-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.selectedKnowledge ? "Edit knowledge" : "Create knowledge";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.selectedKnowledge ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.selectedKnowledge ? "/admin/branch/knowledge/" + this.selectedKnowledge.id : "/admin/branch/knowledge";
+		}
+	},
+
+	watch: {
+		selectedZoneType: function selectedZoneType(newVal, oldVal) {
+			if (newVal) this.form.zone_type = newVal.value;
+		},
+		selectedVendor: function selectedVendor(newVal, oldVal) {
+			if (newVal) this.form.vendor_name = newVal.value;
+		},
+		selectedType: function selectedType(newVal, oldVal) {
+			if (newVal) this.form.product_type = newVal.value;
+		},
+		selectedBranch: function selectedBranch(newVal, oldVal) {
+			if (newVal) this.form.branch_code = newVal.value;
+		}
+	}
+
+});
+
+/***/ }),
+/* 197 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "branch-knowledge-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.branches,
+                            defaultData: _vm.selectedBranch,
+                            placeholder: "Select a branch",
+                            required: true,
+                            label: "Branch",
+                            name: "branch_code",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("branch_code")
+                          },
+                          model: {
+                            value: _vm.selectedBranch,
+                            callback: function($$v) {
+                              _vm.selectedBranch = $$v
+                            },
+                            expression: "selectedBranch"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.types,
+                            defaultData: _vm.selectedType,
+                            placeholder: "Select product type",
+                            required: true,
+                            label: "Product Type",
+                            name: "product_type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("product_type")
+                          },
+                          model: {
+                            value: _vm.selectedType,
+                            callback: function($$v) {
+                              _vm.selectedType = $$v
+                            },
+                            expression: "selectedType"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.zonetypes,
+                            defaultData: _vm.selectedZoneType,
+                            placeholder: "Select zone type",
+                            required: true,
+                            label: "Zone Type",
+                            name: "zone_type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("zone_type")
+                          },
+                          model: {
+                            value: _vm.selectedZoneType,
+                            callback: function($$v) {
+                              _vm.selectedZoneType = $$v
+                            },
+                            expression: "selectedZoneType"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.vendors,
+                            defaultData: _vm.selectedVendor,
+                            placeholder: "Select vendor",
+                            required: true,
+                            label: "Vendor Name",
+                            name: "vendor_name",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("vendor_name")
+                          },
+                          model: {
+                            value: _vm.selectedVendor,
+                            callback: function($$v) {
+                              _vm.selectedVendor = $$v
+                            },
+                            expression: "selectedVendor"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-25dcf3e9", module.exports)
+  }
+}
+
+/***/ }),
+/* 198 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(199)
+/* template */
+var __vue_template__ = __webpack_require__(200)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
 Component.options.__file = "resources\\assets\\js\\components\\vendors\\Dialog.vue"
 
 /* hot reload */
@@ -66313,7 +66996,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 196 */
+/* 199 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66516,7 +67199,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 197 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -66705,15 +67388,15 @@ if (false) {
 }
 
 /***/ }),
-/* 198 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(199)
+var __vue_script__ = __webpack_require__(202)
 /* template */
-var __vue_template__ = __webpack_require__(200)
+var __vue_template__ = __webpack_require__(203)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -66752,7 +67435,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 199 */
+/* 202 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66938,7 +67621,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 200 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -67154,15 +67837,15 @@ if (false) {
 }
 
 /***/ }),
-/* 201 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(202)
+var __vue_script__ = __webpack_require__(205)
 /* template */
-var __vue_template__ = __webpack_require__(203)
+var __vue_template__ = __webpack_require__(206)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -67201,7 +67884,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 202 */
+/* 205 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67462,7 +68145,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 203 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -67765,15 +68448,15 @@ if (false) {
 }
 
 /***/ }),
-/* 204 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(205)
+var __vue_script__ = __webpack_require__(208)
 /* template */
-var __vue_template__ = __webpack_require__(206)
+var __vue_template__ = __webpack_require__(209)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -67812,7 +68495,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 205 */
+/* 208 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68074,7 +68757,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 206 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -68335,15 +69018,15 @@ if (false) {
 }
 
 /***/ }),
-/* 207 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(208)
+var __vue_script__ = __webpack_require__(211)
 /* template */
-var __vue_template__ = __webpack_require__(209)
+var __vue_template__ = __webpack_require__(212)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -68382,7 +69065,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 208 */
+/* 211 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68528,7 +69211,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 209 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -68686,15 +69369,15 @@ if (false) {
 }
 
 /***/ }),
-/* 210 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(211)
+var __vue_script__ = __webpack_require__(214)
 /* template */
-var __vue_template__ = __webpack_require__(212)
+var __vue_template__ = __webpack_require__(215)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -68733,7 +69416,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 211 */
+/* 214 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -69180,7 +69863,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 212 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -69632,15 +70315,15 @@ if (false) {
 }
 
 /***/ }),
-/* 213 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(214)
+var __vue_script__ = __webpack_require__(217)
 /* template */
-var __vue_template__ = __webpack_require__(215)
+var __vue_template__ = __webpack_require__(218)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -69679,7 +70362,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 214 */
+/* 217 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -69792,7 +70475,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 215 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -69910,15 +70593,15 @@ if (false) {
 }
 
 /***/ }),
-/* 216 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(217)
+var __vue_script__ = __webpack_require__(220)
 /* template */
-var __vue_template__ = __webpack_require__(218)
+var __vue_template__ = __webpack_require__(221)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -69957,7 +70640,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 217 */
+/* 220 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -70180,7 +70863,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 218 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -70428,15 +71111,15 @@ if (false) {
 }
 
 /***/ }),
-/* 219 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(220)
+var __vue_script__ = __webpack_require__(223)
 /* template */
-var __vue_template__ = __webpack_require__(221)
+var __vue_template__ = __webpack_require__(224)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -70475,7 +71158,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 220 */
+/* 223 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -70484,6 +71167,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -70931,6 +71626,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			length: 0,
 			height: 0,
 			total_price: '',
+			item_tax: 0,
 
 			tracking_no_error: '',
 			selectedProductType_error: '',
@@ -70943,8 +71639,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			description_error: '',
 			price_error: '',
 			unit_error: '',
+			item_tax_error: '',
 
-			currentTime: ''
+			currentTime: '',
+
+			item_add_loading: false
 		};
 	},
 	mounted: function mounted() {
@@ -71083,11 +71782,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		getRelatedProduct: function getRelatedProduct() {
 			var _this7 = this;
 
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
 			if (this.selectedProductType) {
 				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
 					return _this7.setProduct(response);
 				}).catch(function (error) {
-					return _this7.getRelatedProduct();
+					return _this7.getRelatedProduct(error);
 				});
 
 				if (this.selectedProductType.has_detail) {
@@ -71153,9 +71854,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				obj['corporate_price'] = product.corporate_price;
 				obj['walk_in_price'] = product.walk_in_price;
 				obj['walk_in_price_special'] = product.walk_in_price_special;
+				obj['tax'] = product.tax.percentage;
 
 				return obj;
-			});
+			}.bind(this));
 
 			// If we only have 1 product, set it as default
 			if (this.products.length == 1) {
@@ -71180,15 +71882,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.total_price = "";
 			if (this.selectedProduct) {
 				this.description = this.selectedProduct.description;
-				var price = this.selectedProduct.walk_in_price;
 
-				if (this.selectedType.label == "Customer") {
-					if (this.selectedCustomer.type == 'walk_in_special') price = this.selectedProduct.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = this.selectedProduct.corporate_price;
-				}
-
-				this.price = price.toFixed(2);
-				this.total_price = price.toFixed(2);
+				this.getProductPrice();
 			}
+		},
+		getProductPrice: function getProductPrice() {
+			var _this10 = this;
+
+			if (this.selectedProduct && this.selectedCustomer && this.selectedType.value == "Customer") {
+				this.item_add_loading = true;
+				axios.get("/data/pricing?product=" + this.selectedProduct.value + "&customer=" + this.selectedCustomer.value).then(function (response) {
+					return _this10.setProductPrice(response);
+				}).catch(function (error) {
+					return _this10.getProductPrice();
+				});
+			}
+
+			this.setProductPrice('');
+		},
+		setProductPrice: function setProductPrice(response) {
+			var price_group = this.selectedProduct;
+
+			if (response.data) price_group = response.data;
+
+			var price = price_group.walk_in_price;
+
+			if (this.selectedType.label == "Customer") {
+				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
+			}
+
+			this.price = price;
+			this.item_tax = price * this.selectedProduct.tax / 100;
+			this.total_price = price + this.item_tax;
+
+			this.price = this.price.toFixed(2);
+			this.item_tax = this.item_tax.toFixed(2);
+			this.total_price = this.total_price.toFixed(2);
+
+			this.item_add_loading = false;
 		},
 		calculateDimWeight: function calculateDimWeight() {
 			var formula = this.selectedCourier.formula;
@@ -71213,7 +71944,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				item['length'] = this.length ? this.length : 0;
 				item['width'] = this.width ? this.width : 0;
 				item['sku'] = this.selectedProduct.label;
-				item['tax'] = this.tax;
+				item['tax'] = this.item_tax;
 				item['price'] = this.price;
 				item['courier_id'] = this.selectedCourier.value;
 				item['product_id'] = this.selectedProduct.value;
@@ -71242,6 +71973,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.length = 0;
 				this.total_price = '';
 				this.tracking_no = '';
+				this.item_tax = 0;
 
 				this.toggleAddItem();
 			}
@@ -71276,6 +72008,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.length = item.length;
 			this.total_price = item.total_price;
 			this.tracking_no = item.tracking_code;
+			this.item_tax = item.tax;
 		},
 		deleteItem: function deleteItem(index) {
 			this.form.items.splice(index, 1);
@@ -71296,7 +72029,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
 		submit: function submit() {
-			var _this10 = this;
+			var _this11 = this;
 
 			this.form.total = this.total;
 			this.form.subtotal = this.subtotal;
@@ -71304,11 +72037,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 			this.form.post(url).then(function (response) {
-				return _this10.onSuccess(response);
+				return _this11.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
-
 			window.open(response.redirect_url, '_blank');
 
 			setInterval(function () {
@@ -71360,12 +72092,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 	computed: {
 		total: function total() {
-			return parseFloat(this.subtotal) - parseFloat(this.discount_value);
+			return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
 		},
 		subtotal: function subtotal() {
 			if (this.form.items.length > 0) return _.sumBy(this.form.items, function (item) {
 				return parseFloat(item.total_price);
-			}) + parseFloat(this.tax);
+			});
 
 			return 0;
 		},
@@ -71377,7 +72109,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return parseFloat(value);
 		},
 		tax: function tax() {
-			return 0.00;
+			if (this.form.items.length > 0) return _.sumBy(this.form.items, function (item) {
+				return parseFloat(item.tax);
+			});
+
+			return 0;
 		},
 		isParcelOrDocument: function isParcelOrDocument() {
 			return this.selectedProductType.has_detail;
@@ -71401,6 +72137,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		canEdit: function canEdit() {
 			return this.form.items.length > 0 && (!this.invoice || this.invoice.can_edit);
+		},
+		canEditItem: function canEditItem() {
+			return (!this.invoice || this.invoice.can_edit) && !this.item_add_loading;
 		},
 		editTooltip: function editTooltip() {
 			if (!this.canEdit) {
@@ -71439,12 +72178,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
 			this.form.customer_id = newVal.value;
 			if (this.isAddingItem) this.toggleAddItem();
+		},
+		selectedProductType: function selectedProductType(newVal, oldVal) {
+			if (newVal && oldVal !== newVal) this.getRelatedProduct();
 		}
 	}
 });
 
 /***/ }),
-/* 221 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -71910,7 +72652,6 @@ var render = function() {
                             hideLabel: false,
                             error: _vm.selectedProductType_error
                           },
-                          on: { input: _vm.getRelatedProduct },
                           model: {
                             value: _vm.selectedProductType,
                             callback: function($$v) {
@@ -72196,6 +72937,34 @@ var render = function() {
                             [
                               _c("text-input", {
                                 attrs: {
+                                  defaultValue: _vm.item_tax,
+                                  required: true,
+                                  type: "number",
+                                  label: "Tax",
+                                  name: "item_tax",
+                                  editable: false,
+                                  focus: false,
+                                  hideLabel: false,
+                                  error: _vm.item_tax_error
+                                },
+                                model: {
+                                  value: _vm.item_tax,
+                                  callback: function($$v) {
+                                    _vm.item_tax = $$v
+                                  },
+                                  expression: "item_tax"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "col" },
+                            [
+                              _c("text-input", {
+                                attrs: {
                                   defaultValue: _vm.total_price,
                                   required: true,
                                   type: "number",
@@ -72222,7 +72991,10 @@ var render = function() {
                           "button",
                           {
                             staticClass: "btn btn-primary",
-                            attrs: { type: "button", disbaled: !_vm.canEdit },
+                            attrs: {
+                              type: "button",
+                              disabled: !_vm.canEditItem
+                            },
                             on: { click: _vm.add_item }
                           },
                           [_vm._v("Confirm")]
@@ -72395,15 +73167,15 @@ if (false) {
 }
 
 /***/ }),
-/* 222 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(223)
+var __vue_script__ = __webpack_require__(226)
 /* template */
-var __vue_template__ = __webpack_require__(224)
+var __vue_template__ = __webpack_require__(227)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -72442,7 +73214,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 223 */
+/* 226 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -72718,8 +73490,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 		},
 		onSuccess: function onSuccess(response) {
-			console.log("Success!");
-			console.log(response);
 			this.$emit("customerCreated", { customer: response.customer });
 
 			$("#customer-dialog").modal('hide');
@@ -72731,25 +73501,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		getBranches: function getBranches() {
 			var _this3 = this;
 
-			axios.get(this.branch_url).then(function (response) {
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+
+			if (this.branch_url) axios.get(this.branch_url).then(function (response) {
 				return _this3.setBranch(response);
 			}).catch(function (error) {
-				return _this3.getBranches();
+				return _this3.getBranches(error);
 			});
 		},
 		setBranch: function setBranch(response) {
+			if (response.data) {
+				this.branches = response.data.map(function (branch) {
+					var obj = {};
 
-			this.branches = response.data.map(function (branch) {
-				var obj = {};
+					obj['value'] = branch.id;
+					obj['label'] = branch.name;
 
-				obj['value'] = branch.id;
-				obj['label'] = branch.name;
+					return obj;
+				});
 
-				return obj;
-			});
-
-			if (this.branches.length == 1) {
-				this.selectedBranch = { label: this.branches[0].label, value: this.branches[0].value };
+				if (this.branches.length == 1) {
+					this.selectedBranch = { label: this.branches[0].label, value: this.branches[0].value };
+				}
 			}
 		}
 	},
@@ -72768,7 +73541,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return this.selectedCustomer ? "/customers/" + this.selectedCustomer.id : "/customers";
 		},
 		branch_url: function branch_url() {
-			return this.data.is_admin ? '/data/branches/' : '/data/branch/' + this.data.current_branch;
+			if (this.data) return this.data.is_admin ? '/data/branches/' : '/data/branch/' + this.data.current_branch;
+
+			return "";
 		}
 	},
 
@@ -72784,7 +73559,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 224 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -72811,334 +73586,342 @@ var render = function() {
               _vm._m(0)
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "modal-body" }, [
-              _c(
-                "form",
-                {
-                  on: {
-                    submit: function($event) {
-                      $event.preventDefault()
-                      return _vm.submit($event)
+            _vm.data
+              ? _c("div", { staticClass: "modal-body" }, [
+                  _c(
+                    "form",
+                    {
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.submit($event)
+                        },
+                        keydown: function($event) {
+                          _vm.form.errors.clear($event.target.name)
+                        },
+                        input: function($event) {
+                          _vm.form.errors.clear($event.target.name)
+                        }
+                      }
                     },
-                    keydown: function($event) {
-                      _vm.form.errors.clear($event.target.name)
-                    },
-                    input: function($event) {
-                      _vm.form.errors.clear($event.target.name)
-                    }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("selector-input", {
-                          ref: "branches",
-                          attrs: {
-                            potentialData: _vm.branches,
-                            defaultData: _vm.selectedBranch,
-                            placeholder: "Select branch",
-                            required: true,
-                            label: "Branch",
-                            name: "branch_id",
-                            editable: _vm.data.is_admin,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("branch_id")
-                          },
-                          on: { input: _vm.getBranches },
-                          model: {
-                            value: _vm.selectedBranch,
-                            callback: function($$v) {
-                              _vm.selectedBranch = $$v
-                            },
-                            expression: "selectedBranch"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("selector-input", {
-                          attrs: {
-                            potentialData: _vm.types,
-                            defaultData: _vm.selectedType,
-                            placeholder: "Select type",
-                            required: true,
-                            label: "Type",
-                            name: "type",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("type")
-                          },
-                          model: {
-                            value: _vm.selectedType,
-                            callback: function($$v) {
-                              _vm.selectedType = $$v
-                            },
-                            expression: "selectedType"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.name,
-                            required: true,
-                            type: "text",
-                            label: "Name",
-                            name: "name",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("name")
-                          },
-                          model: {
-                            value: _vm.form.name,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "name", $$v)
-                            },
-                            expression: "form.name"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.contact,
-                                  required: true,
-                                  type: "string",
-                                  label: "Contact",
-                                  name: "contact",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("contact")
+                    [
+                      _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("selector-input", {
+                              ref: "branches",
+                              attrs: {
+                                potentialData: _vm.branches,
+                                defaultData: _vm.selectedBranch,
+                                placeholder: "Select branch",
+                                required: true,
+                                label: "Branch",
+                                name: "branch_id",
+                                editable: _vm.data.is_admin,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("branch_id")
+                              },
+                              on: { input: _vm.getBranches },
+                              model: {
+                                value: _vm.selectedBranch,
+                                callback: function($$v) {
+                                  _vm.selectedBranch = $$v
                                 },
-                                model: {
-                                  value: _vm.form.contact,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "contact", $$v)
-                                  },
-                                  expression: "form.contact"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.registration_no,
-                                  required: false,
-                                  type: "string",
-                                  label: "Registration/IC No",
-                                  name: "registration_no",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("registration_no")
+                                expression: "selectedBranch"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("selector-input", {
+                              attrs: {
+                                potentialData: _vm.types,
+                                defaultData: _vm.selectedType,
+                                placeholder: "Select type",
+                                required: true,
+                                label: "Type",
+                                name: "type",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("type")
+                              },
+                              model: {
+                                value: _vm.selectedType,
+                                callback: function($$v) {
+                                  _vm.selectedType = $$v
                                 },
-                                model: {
-                                  value: _vm.form.registration_no,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "registration_no", $$v)
-                                  },
-                                  expression: "form.registration_no"
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.email,
-                                  required: false,
-                                  type: "string",
-                                  label: "Email",
-                                  name: "email",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("email")
+                                expression: "selectedType"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.name,
+                                required: true,
+                                type: "text",
+                                label: "Name",
+                                name: "name",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("name")
+                              },
+                              model: {
+                                value: _vm.form.name,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "name", $$v)
                                 },
-                                model: {
-                                  value: _vm.form.email,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "email", $$v)
-                                  },
-                                  expression: "form.email"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.fax,
-                                  required: false,
-                                  type: "string",
-                                  label: "Fax",
-                                  name: "fax",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("fax")
-                                },
-                                model: {
-                                  value: _vm.form.fax,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "fax", $$v)
-                                  },
-                                  expression: "form.fax"
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.address1,
-                                  required: false,
-                                  type: "string",
-                                  label: "Address line 1",
-                                  name: "address1",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("address1")
-                                },
-                                model: {
-                                  value: _vm.form.address1,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "address1", $$v)
-                                  },
-                                  expression: "form.address1"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.address2,
-                                  required: false,
-                                  type: "string",
-                                  label: "Address line 2",
-                                  name: "address2",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("address2")
-                                },
-                                model: {
-                                  value: _vm.form.address2,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "address2", $$v)
-                                  },
-                                  expression: "form.address2"
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.address3,
-                                  required: false,
-                                  type: "string",
-                                  label: "Address line 3",
-                                  name: "address3",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("address3")
-                                },
-                                model: {
-                                  value: _vm.form.address3,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "address3", $$v)
-                                  },
-                                  expression: "form.address3"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.form.address4,
-                                  required: false,
-                                  type: "string",
-                                  label: "Address line 4",
-                                  name: "address4",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.form.errors.get("address4")
-                                },
-                                model: {
-                                  value: _vm.form.address4,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.form, "address4", $$v)
-                                  },
-                                  expression: "form.address4"
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        ])
-                      ],
-                      1
-                    )
-                  ])
-                ]
-              )
-            ]),
+                                expression: "form.name"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "row" }, [
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.contact,
+                                      required: true,
+                                      type: "string",
+                                      label: "Contact",
+                                      name: "contact",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get("contact")
+                                    },
+                                    model: {
+                                      value: _vm.form.contact,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "contact", $$v)
+                                      },
+                                      expression: "form.contact"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.registration_no,
+                                      required: false,
+                                      type: "string",
+                                      label: "Registration/IC No",
+                                      name: "registration_no",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get(
+                                        "registration_no"
+                                      )
+                                    },
+                                    model: {
+                                      value: _vm.form.registration_no,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.form,
+                                          "registration_no",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "form.registration_no"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "row" }, [
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.email,
+                                      required: false,
+                                      type: "string",
+                                      label: "Email",
+                                      name: "email",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get("email")
+                                    },
+                                    model: {
+                                      value: _vm.form.email,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "email", $$v)
+                                      },
+                                      expression: "form.email"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.fax,
+                                      required: false,
+                                      type: "string",
+                                      label: "Fax",
+                                      name: "fax",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get("fax")
+                                    },
+                                    model: {
+                                      value: _vm.form.fax,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "fax", $$v)
+                                      },
+                                      expression: "form.fax"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "row" }, [
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.address1,
+                                      required: false,
+                                      type: "string",
+                                      label: "Address line 1",
+                                      name: "address1",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get("address1")
+                                    },
+                                    model: {
+                                      value: _vm.form.address1,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "address1", $$v)
+                                      },
+                                      expression: "form.address1"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.address2,
+                                      required: false,
+                                      type: "string",
+                                      label: "Address line 2",
+                                      name: "address2",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get("address2")
+                                    },
+                                    model: {
+                                      value: _vm.form.address2,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "address2", $$v)
+                                      },
+                                      expression: "form.address2"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "row" }, [
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.address3,
+                                      required: false,
+                                      type: "string",
+                                      label: "Address line 3",
+                                      name: "address3",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get("address3")
+                                    },
+                                    model: {
+                                      value: _vm.form.address3,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "address3", $$v)
+                                      },
+                                      expression: "form.address3"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                { staticClass: "col" },
+                                [
+                                  _c("text-input", {
+                                    attrs: {
+                                      defaultValue: _vm.form.address4,
+                                      required: false,
+                                      type: "string",
+                                      label: "Address line 4",
+                                      name: "address4",
+                                      editable: true,
+                                      focus: false,
+                                      hideLabel: false,
+                                      error: _vm.form.errors.get("address4")
+                                    },
+                                    model: {
+                                      value: _vm.form.address4,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "address4", $$v)
+                                      },
+                                      expression: "form.address4"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ])
+                          ],
+                          1
+                        )
+                      ])
+                    ]
+                  )
+                ])
+              : _vm._e(),
             _vm._v(" "),
             _c("div", { staticClass: "modal-footer" }, [
               _c("button", {
@@ -73192,15 +73975,15 @@ if (false) {
 }
 
 /***/ }),
-/* 225 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(226)
+var __vue_script__ = __webpack_require__(229)
 /* template */
-var __vue_template__ = __webpack_require__(227)
+var __vue_template__ = __webpack_require__(230)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -73239,7 +74022,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 226 */
+/* 229 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -73446,7 +74229,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 227 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -73643,26 +74426,26 @@ if (false) {
 }
 
 /***/ }),
-/* 228 */
+/* 231 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 229 */,
-/* 230 */,
-/* 231 */,
 /* 232 */,
 /* 233 */,
-/* 234 */
+/* 234 */,
+/* 235 */,
+/* 236 */,
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(235)
+var __vue_script__ = __webpack_require__(238)
 /* template */
-var __vue_template__ = __webpack_require__(236)
+var __vue_template__ = __webpack_require__(239)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -73679,7 +74462,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\js\\components\\branches\\Knowledge.vue"
+Component.options.__file = "resources\\assets\\js\\components\\pricing\\Dialog.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -73688,9 +74471,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-25dcf3e9", Component.options)
+    hotAPI.createRecord("data-v-2eb03b56", Component.options)
   } else {
-    hotAPI.reload("data-v-25dcf3e9", Component.options)
+    hotAPI.reload("data-v-2eb03b56", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -73701,7 +74484,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 235 */
+/* 238 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -73787,73 +74570,157 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: [''],
+	props: ['data'],
 	data: function data() {
 		return {
 			isActive: false,
-			selectedKnowledge: '',
+			products: [],
+			customers: [],
+			selectedProduct: '',
+			selectedCustomer: '',
 			isEdit: false,
-			branches: [],
 			form: new Form({
-				branch_code: '',
-				product_type: '',
-				zone_type: 'Domestic',
-				vendor_name: ''
+				product_id: '',
+				customer_id: '',
+				corporate_override: '',
+				walk_in_override: '',
+				walk_in_special_override: ''
 			})
 		};
 	},
 	mounted: function mounted() {
 		var _this = this;
 
-		window.events.$on('createBranchKnowledge', function (evt) {
-			return _this.createKnowledge(evt);
+		window.events.$on('createBranchProduct', function (evt) {
+			return _this.createBranchProduct(evt);
 		});
-		window.events.$on('editBranchKnowledge', function (evt) {
-			return _this.editKnowledge(evt);
+		window.events.$on('editBranchProduct', function (evt) {
+			return _this.editBranchProduct(evt);
 		});
 
-		$("#branch-knowledge-dialog").on("hide.bs.modal", function (e) {
+		$("#branch-product-dialog").on("hide.bs.modal", function (e) {
 			this.closeDialog();
 		}.bind(this));
+
+		this.getCustomers();
 	},
 
 
 	methods: {
-		createKnowledge: function createKnowledge(evt) {
+		getCustomers: function getCustomers() {
+			var _this2 = this;
+
+			axios.get("/customers/list").then(function (response) {
+				return _this2.setCustomers(response);
+			}).catch(function (error) {
+				return _this2.getCustomers();
+			});
+		},
+		setCustomers: function setCustomers(response) {
+			this.customers = response.data.map(function (customer) {
+				var obj = {};
+
+				obj['value'] = customer.id;
+				obj['label'] = customer.name;
+
+				return obj;
+			});
+
+			this.getProducts();
+		},
+		getProducts: function getProducts() {
+			var _this3 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			axios.get("/data/products").then(function (response) {
+				return _this3.setProducts(response);
+			}).catch(function (error) {
+				return _this3.getProducts(error);
+			});
+		},
+		setProducts: function setProducts(response) {
+			this.products = response.data.map(function (product) {
+				var obj = {};
+
+				obj['value'] = product.id;
+				obj['label'] = product.sku;
+				obj['walk_in_price'] = product.walk_in_price;
+				obj['walk_in_price_special'] = product.walk_in_price_special;
+				obj['corporate_price'] = product.corporate_price;
+
+				return obj;
+			});
+		},
+		createBranchProduct: function createBranchProduct(evt) {
 			this.openDialog();
 		},
-		editKnowledge: function editKnowledge(evt) {
-			this.selectedKnowledge = evt[0];
+		editBranchProduct: function editBranchProduct(evt) {
+			this.selectedProduct = evt[0];
 			this.isEdit = true;
 			this.setForm();
 			this.openDialog();
 		},
 		openDialog: function openDialog() {
-			$("#branch-knowledge-dialog").modal();
+			$("#branch-product-dialog").modal();
 			this.isActive = true;
 		},
 		closeDialog: function closeDialog() {
 			this.isActive = false;
+			this.selectedProduct = '';
 			this.form.reset();
-			this.selectedKnowledge = '';
 		},
 		setForm: function setForm() {
-			this.form.branch_code = this.selectedKnowledge.branch_code;
-			this.form.product_type = this.selectedKnowledge.product_type;
-			this.form.zone_type = this.selectedKnowledge.zone_type;
-			this.form.vendor_name = this.selectedKnowledge.vendor_name;
+			this.form.product_id = this.selectedProduct.product_id;
+			this.form.customer_id = this.selectedProduct.pivot.customer_id;
+			this.form.corporate_price = this.selectedProduct.pivot.corporate_price;
+			this.form.walk_in_price = this.selectedProduct.pivot.walk_in_price;
+			this.form.walk_in_price_special = this.selectedProduct.pivot.walk_in_price_special;
+
+			this.selectedProduct = '';
+			this.selectedCustomer = '';
+
+			if (this.form.product_id) {
+				this.selectedProduct = _.filter(this.products, function (type) {
+					return this.form.product_id == type.value;
+				}.bind(this))[0];
+			}
+
+			if (this.form.customer_id) {
+				this.selectedCustomer = _.filter(this.customers, function (type) {
+					return this.form.customer_id == type.value;
+				}.bind(this))[0];
+			}
 		},
 		submit: function submit() {
-			var _this2 = this;
+			var _this4 = this;
 
 			this.form.post(this.url).then(function (response) {
-				return _this2.onSuccess(response);
+				return _this4.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
-			$("#branch-knowledge-dialog").modal('hide');
+			$("#branch-product-dialog").modal('hide');
 
 			this.closeDialog();
 
@@ -73863,23 +74730,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	computed: {
 		title: function title() {
-			return this.selectedKnowledge ? "Edit knowledge" : "Create knowledge";
+			return this.isEdit ? "Edit SKU branch- " + this.selectedProduct.sku : "Create SKU branch";
 		},
 		action: function action() {
 			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
 		},
 		actionText: function actionText() {
-			return this.selectedKnowledge ? "Update" : "Create";
+			return this.isEdit ? "Update" : "Create";
 		},
 		url: function url() {
-			return this.selectedKnowledge ? "/admin/branch/knowledge/" + this.selectedKnowledge.id : "/admin/branch/knowledge";
+			return this.isEdit ? "/branch/product/" + this.selectedProduct.id : "/branch/product";
+		}
+	},
+
+	watch: {
+		selectedProduct: function selectedProduct(newVal, oldVal) {
+			this.form.product_id = newVal.value;
+		},
+		selectedCustomer: function selectedCustomer(newVal, oldVal) {
+			this.form.customer_id = newVal.value;
 		}
 	}
 
 });
 
 /***/ }),
-/* 236 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -73890,7 +74766,7 @@ var render = function() {
     "div",
     {
       staticClass: "modal fade",
-      attrs: { id: "branch-knowledge-dialog", tabindex: "-1", role: "dialog" }
+      attrs: { id: "branch-product-dialog", tabindex: "-1", role: "dialog" }
     },
     [
       _c(
@@ -73929,24 +74805,25 @@ var render = function() {
                       "div",
                       { staticClass: "col" },
                       [
-                        _c("text-input", {
+                        _c("selector-input", {
                           attrs: {
-                            defaultValue: _vm.form.branch_code,
+                            potentialData: _vm.products,
+                            defaultData: _vm.selectedProduct,
+                            placeholder: "Select product",
                             required: true,
-                            type: "text",
-                            label: "Branch code",
-                            name: "branch_code",
+                            label: "Product",
+                            name: "product_id",
                             editable: true,
-                            focus: true,
+                            focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("branch_code")
+                            error: _vm.form.errors.get("product_id")
                           },
                           model: {
-                            value: _vm.form.branch_code,
+                            value: _vm.selectedProduct,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "branch_code", $$v)
+                              _vm.selectedProduct = $$v
                             },
-                            expression: "form.branch_code"
+                            expression: "selectedProduct"
                           }
                         })
                       ],
@@ -73957,24 +74834,25 @@ var render = function() {
                       "div",
                       { staticClass: "col" },
                       [
-                        _c("text-input", {
+                        _c("selector-input", {
                           attrs: {
-                            defaultValue: _vm.form.product_type,
+                            potentialData: _vm.customers,
+                            defaultData: _vm.selectedCustomer,
+                            placeholder: "Select customer",
                             required: true,
-                            type: "text",
-                            label: "Product type",
-                            name: "product_type",
+                            label: "Customer",
+                            name: "customer_id",
                             editable: true,
-                            focus: true,
+                            focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("product_type")
+                            error: _vm.form.errors.get("customer_id")
                           },
                           model: {
-                            value: _vm.form.product_type,
+                            value: _vm.selectedCustomer,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "product_type", $$v)
+                              _vm.selectedCustomer = $$v
                             },
-                            expression: "form.product_type"
+                            expression: "selectedCustomer"
                           }
                         })
                       ],
@@ -73982,63 +74860,112 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.zone_type,
-                            required: true,
-                            type: "text",
-                            label: "Default zone type",
-                            name: "zone_type",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("zone_type")
-                          },
-                          model: {
-                            value: _vm.form.zone_type,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "zone_type", $$v)
-                            },
-                            expression: "form.zone_type"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.vendor_name,
-                            required: true,
-                            type: "text",
-                            label: "Default vendor",
-                            name: "vendor_name",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("vendor_name")
-                          },
-                          model: {
-                            value: _vm.form.vendor_name,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "vendor_name", $$v)
-                            },
-                            expression: "form.vendor_name"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ])
+                  _vm.selectedProduct && _vm.selectedCustomer
+                    ? _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.corporate_override,
+                                required: true,
+                                type: "number",
+                                label: "Corporate price",
+                                name: "corporate_override",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get(
+                                  "corporate_override"
+                                ),
+                                helpText:
+                                  "Original: RM" +
+                                  _vm.selectedProduct.corporate_price.toFixed(2)
+                              },
+                              model: {
+                                value: _vm.form.corporate_override,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "corporate_override", $$v)
+                                },
+                                expression: "form.corporate_override"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.walk_in_override,
+                                required: true,
+                                type: "number",
+                                label: "Walk in price",
+                                name: "walk_in_override",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("walk_in_override"),
+                                helpText:
+                                  "Original: RM" +
+                                  _vm.selectedProduct.walk_in_price.toFixed(2)
+                              },
+                              model: {
+                                value: _vm.form.walk_in_override,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "walk_in_override", $$v)
+                                },
+                                expression: "form.walk_in_override"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.walk_in_special_override,
+                                required: true,
+                                type: "number",
+                                label: "Walk in price (special)",
+                                name: "walk_in_special_override",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get(
+                                  "walk_in_special_override"
+                                ),
+                                helpText:
+                                  "Original: RM" +
+                                  _vm.selectedProduct.walk_in_price_special.toFixed(
+                                    2
+                                  )
+                              },
+                              model: {
+                                value: _vm.form.walk_in_special_override,
+                                callback: function($$v) {
+                                  _vm.$set(
+                                    _vm.form,
+                                    "walk_in_special_override",
+                                    $$v
+                                  )
+                                },
+                                expression: "form.walk_in_special_override"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ])
+                    : _vm._e()
                 ]
               )
             ]),
@@ -74090,7 +75017,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-25dcf3e9", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-2eb03b56", module.exports)
   }
 }
 

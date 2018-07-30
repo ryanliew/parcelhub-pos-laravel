@@ -14,58 +14,62 @@
 						@input="form.errors.clear($event.target.name)">
 						<div class="row">
 							<div class="col">
-								<text-input v-model="form.branch_code" 
-									:defaultValue="form.branch_code"
+								<selector-input :potentialData="branches"
+									v-model="selectedBranch" 
+									:defaultData="selectedBranch"
+									placeholder="Select a branch"
 									:required="true"
-									type="text"
-									label="Branch code"
+									label="Branch"
 									name="branch_code"
 									:editable="true"
-									:focus="true"
+									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('branch_code')">
-								</text-input>
+								</selector-input>
 							</div>
 							<div class="col">
-								<text-input v-model="form.product_type" 
-									:defaultValue="form.product_type"
+								<selector-input :potentialData="types"
+									v-model="selectedType" 
+									:defaultData="selectedType"
+									placeholder="Select product type"
 									:required="true"
-									type="text"
-									label="Product type"
+									label="Product Type"
 									name="product_type"
 									:editable="true"
-									:focus="true"
+									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('product_type')">
-								</text-input>
+								</selector-input>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col">
-								<text-input v-model="form.zone_type" 
-									:defaultValue="form.zone_type"
+								<selector-input :potentialData="zonetypes"
+									v-model="selectedZoneType" 
+									:defaultData="selectedZoneType"
+									placeholder="Select zone type"
 									:required="true"
-									type="text"
-									label="Default zone type"
+									label="Zone Type"
 									name="zone_type"
 									:editable="true"
-									:focus="true"
+									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('zone_type')">
-								</text-input>
+								</selector-input>
 							</div>
 							<div class="col">
-								<text-input v-model="form.vendor_name" 
-									:defaultValue="form.vendor_name"
+								<selector-input :potentialData="vendors"
+									v-model="selectedVendor" 
+									:defaultData="selectedVendor"
+									placeholder="Select vendor"
 									:required="true"
-									type="text"
-									label="Default vendor"
+									label="Vendor Name"
 									name="vendor_name"
 									:editable="true"
-									:focus="true"
+									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('vendor_name')">
-								</text-input>
+								</selector-input>
 							</div>
 						</div>
 					</form>
@@ -88,6 +92,13 @@
 				selectedKnowledge: '',
 				isEdit: false,
 				branches: [],
+				types: [],
+				vendors: [],
+				zonetypes: [],
+				selectedBranch: '',
+				selectedType: '',
+				selectedVendor: '',
+				selectedZoneType: '',
 				form: new Form({
 					branch_code: '',
 					product_type: '',
@@ -104,11 +115,100 @@
 			$("#branch-knowledge-dialog").on("hide.bs.modal", function(e){
 				this.closeDialog();
 			}.bind(this));
+
+			this.getBranches();
 		},
 
 		methods: {
+
+			getBranches() {
+				axios.get("/data/branches")
+					.then(response => this.setBranches(response))
+					.catch(error => this.getBranches());
+			},
+
+			setBranches(response) {
+				this.branches = response.data.map(function(branch){
+					let obj = {};
+
+					obj['value'] = branch.code;
+					obj['label'] = branch.name;
+
+					return obj;
+				});
+
+				this.branches.unshift({value: "*", label: "Any"});
+
+				this.getProductTypes();
+			},
+
+			getProductTypes() {
+				axios.get("/data/producttypes")
+					.then(response => this.setProductTypes(response))
+					.catch(error => this.getProductTypes());
+			},
+
+			setProductTypes(response){
+				this.types = response.data.map(function(type){
+					let obj = {};
+
+					obj['value'] = type.name;
+					obj['label'] = type.name;
+
+					return obj;
+				});
+
+				this.types.unshift({value: "*", label: "Any"});
+
+				this.getZoneTypes();
+
+			},
+
+			getZoneTypes() {
+				axios.get("/data/zonetypes")
+					.then(response => this.setZoneTypes(response))
+					.catch(error => this.getZoneTypes());
+			},
+
+			setZoneTypes(response) {
+				this.zonetypes = response.data.map(function(type){
+					let obj = {};
+
+					obj['value'] = type.name;
+					obj['label'] = type.name;
+
+					return obj;
+				});
+
+
+				this.getVendors();
+			},
+
+			getVendors() {
+				axios.get("/data/vendors")
+					.then(response => this.setVendors(response))
+					.catch(error => this.getVendors());
+			},
+
+			setVendors(response) {
+				this.vendors = response.data.map(function(vendor){
+					let obj = {};
+
+					obj['value'] = vendor.name;
+					obj['label'] = vendor.name;
+
+					return obj;
+				});
+			},
+
 				
 			createKnowledge(evt) {
+
+				this.selectedBranch = '';
+				this.selectedVendor = '';
+				this.selectedType = '';
+				this.selectedZoneType = '';
+				
 				this.openDialog();
 				
 			},
@@ -116,6 +216,13 @@
 			editKnowledge(evt) {
 				this.selectedKnowledge = evt[0];
 				this.isEdit = true;
+
+
+				this.selectedBranch = '';
+				this.selectedVendor = '';
+				this.selectedType = '';
+				this.selectedZoneType = '';
+
 				this.setForm();
 				this.openDialog();
 			},
@@ -136,6 +243,11 @@
 				this.form.product_type = this.selectedKnowledge.product_type;
 				this.form.zone_type = this.selectedKnowledge.zone_type;
 				this.form.vendor_name = this.selectedKnowledge.vendor_name;
+
+				this.selectedBranch = _.filter(this.branches, function(branch){ return this.form.branch_code == branch.value; }.bind(this))[0];
+				this.selectedType = _.filter(this.types, function(type){ return this.form.product_type == type.value; }.bind(this))[0];
+				this.selectedZoneType = _.filter(this.zonetypes, function(zone){ return this.form.zone_type == zone.value; }.bind(this))[0];
+				this.selectedVendor = _.filter(this.vendors, function(vendor){ return this.form.vendor_name == vendor.value; }.bind(this))[0];
 			},
 
 			submit() {
@@ -168,6 +280,28 @@
 			url() {
 				return this.selectedKnowledge ? "/admin/branch/knowledge/" + this.selectedKnowledge.id : "/admin/branch/knowledge";
 			}
+		},
+
+		watch: {
+			selectedZoneType(newVal, oldVal){
+				if(newVal)
+					this.form.zone_type = newVal.value;
+			},
+
+			selectedVendor(newVal, oldVal){
+				if(newVal)
+					this.form.vendor_name = newVal.value;
+			},
+
+			selectedType(newVal, oldVal){
+				if(newVal)
+					this.form.product_type = newVal.value;
+			},
+
+			selectedBranch(newVal, oldVal){
+				if(newVal)
+					this.form.branch_code= newVal.value;
+			},
 		}
 
 

@@ -24,7 +24,8 @@ class BranchController extends Controller
             "registration_no" => "required",
             "payment_bank" => "required",
             "payment_acc_no" => "required",
-            "address" => "required"
+            "address" => "required",
+            "product_type_id" => "required"
         ]);
 	}
 
@@ -89,4 +90,15 @@ class BranchController extends Controller
 
         return json_encode(['result' => $result->first()]);
     }
+
+    public function getPricing()
+    {
+        $result = DB::table('branch_product')
+                    ->select('corporate_price', 'walk_in_price', 'walk_in_price_special')
+                    ->where('product_id', '=', request()->product)
+                    ->where('customer_id', '=', request()->customer)
+                    ->first();
+
+        return json_encode($result);
+    }   
 }

@@ -19,6 +19,7 @@
 				v-html="value"
 				v-else>	
 		</p>
+		<small :id="name + 'Help'" class="form-text text-muted" v-if="helpText && editable">{{ helpText }}</small>
 		<span class="text-danger" v-if="error">{{ error }}</span>
 	</div>
 </template>
@@ -26,7 +27,7 @@
 <script>
 	import moment from 'moment';
 	export default {
-		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon'],
+		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText'],
 		data() {
 			return {
 				localValue: ''
