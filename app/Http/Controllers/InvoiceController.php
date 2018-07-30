@@ -42,10 +42,10 @@ class InvoiceController extends Controller
     	return datatables()
 			->of($terminal->invoices()->latest()->with(['customer','payment', 'branch', 'terminal'])->select('invoices.*'))
     			->addColumn('payment', function(Invoice $invoice) {
-                    return $invoice->payment->sum('total');
+                    return $invoice->payment->sum('total') + $invoice->paid;
                 })
     			->addColumn('outstanding', function(Invoice $invoice) {
-                    return $invoice->total - $invoice->payment->sum('total');
+                    return max($invoice->total - $invoice->payment->sum('total') - $invoice->paid, 0);
                 })
                 ->addColumn('customer', function(Invoice $invoice){ 
                     return $invoice->customer ? $invoice->customer->name : "---";
@@ -68,7 +68,7 @@ class InvoiceController extends Controller
 
         $branch = auth()->user()->current;
 
-        $invoice_no = $branch->code . sprintf("%05d", $branch->sequence->last_id++);
+        $invoice_no = $branch->code . sprintf("%05d", ++$branch->sequence->last_id);
 
         $invoice = Invoice::create([
             'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
@@ -113,7 +113,7 @@ class InvoiceController extends Controller
 
         $url = $invoice->customer_id ? "/invoices/preview/" . $invoice->id : "/invoices/receipt/" . $invoice->id;
 
-        $branch->sequence()->update(["last_id" => $branch->sequence->last_id + 1]);
+        $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
     }

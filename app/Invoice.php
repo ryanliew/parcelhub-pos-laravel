@@ -54,6 +54,6 @@ class Invoice extends Model
     {
         $setting = Setting::find(1);
 
-        return $setting->lock_date->gte($this->created_at);
+        return $setting->lock_date->lte($this->created_at);
     }
 }

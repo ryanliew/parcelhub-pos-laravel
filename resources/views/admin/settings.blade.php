@@ -19,7 +19,7 @@
 					@csrf
 					<div class="form-group">
 						<label for="lock-date">Invoice lock in date <span class="text-danger">*</span></label>
-						<input type="date" class="form-control" id="lock-date" name="lock_date" value="{{ $setting->lock_date }}">
+						<input type="date" class="form-control" id="lock-date" name="lock_date" value="{{ $setting->lock_date->toDateString() }}">
 						@if ($errors->has('lock_date'))
                             <span class="text-danger" role="alert">
                                 <strong>{{ $errors->first('lock_date') }}</strong>

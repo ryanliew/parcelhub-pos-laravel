@@ -344,7 +344,7 @@
 						</div>
 					</div>
 
-					<button type="button" class="btn btn-primary" @click="add_item" :disbaled="!canEdit">Confirm</button>
+					<button type="button" class="btn btn-primary" @click="add_item" :disabled="!canEditItem">Confirm</button>
 					<button type="button" class="btn btn-secondary" @click="toggleAddItem">Cancel</button>
 					</div>
 				</transition>	
@@ -486,8 +486,11 @@
 				description_error: '',
 				price_error: '',
 				unit_error: '',
+				item_tax_error: '',
 
-				currentTime: ''
+				currentTime: '',
+
+				item_add_loading: false
 			};
 		},
 
@@ -680,8 +683,9 @@
 					obj['walk_in_price_special'] = product.walk_in_price_special;
 					obj['tax'] = product.tax.percentage;
 
+
 					return obj;
-				});
+				}.bind(this));
 
 				// If we only have 1 product, set it as default
 				if(this.products.length == 1) {
@@ -708,20 +712,49 @@
 				this.total_price = "";
 				if(this.selectedProduct) {
 					this.description = this.selectedProduct.description;
-					let price = this.selectedProduct.walk_in_price;
 
-					if(this.selectedType.label == "Customer")
-					{
-						if(this.selectedCustomer.type == 'walk_in_special')
-							price = this.selectedProduct.walk_in_price_special;
-						else if(this.selectedCustomer.type == 'Corporate')
-							price = this.selectedProduct.corporate_price;
-					}
+					this.getProductPrice();
 
-					this.price = price.toFixed(2);
-					this.item_tax = price * this.selectedProduct.tax / 100;
-					this.total_price = (price + this.item_tax).toFixed(2);
+					
 				}
+			},
+
+			getProductPrice() {
+				if(this.selectedProduct && this.selectedCustomer && this.selectedType.value == "Customer") {
+					this.item_add_loading = true;
+					axios.get("/data/pricing?product=" + this.selectedProduct.value + "&customer=" + this.selectedCustomer.value )
+						.then(response => this.setProductPrice(response))
+						.catch(error => this.getProductPrice());
+				}
+
+				this.setProductPrice('');
+			},
+
+			setProductPrice(response) {
+				let price_group = this.selectedProduct;
+
+				if(response.data)
+					price_group = response.data;
+
+				let price = price_group.walk_in_price;
+
+				if(this.selectedType.label == "Customer")
+				{
+					if(this.selectedCustomer.type == 'walk_in_special')
+						price = price_group.walk_in_price_special;
+					else if(this.selectedCustomer.type == 'Corporate')
+						price = price_group.corporate_price;
+				}
+
+				this.price = price;
+				this.item_tax = (price * this.selectedProduct.tax / 100);
+				this.total_price = price + this.item_tax;
+
+				this.price = this.price.toFixed(2);
+				this.item_tax = this.item_tax.toFixed(2);
+				this.total_price = this.total_price.toFixed(2);
+
+				this.item_add_loading = false;
 			},
 
 			calculateDimWeight() {
@@ -847,8 +880,6 @@
 			},
 
 			onSuccess(response) {
-
-
 				window.open(response.redirect_url, '_blank');
 
 				setInterval(function(){
@@ -960,6 +991,10 @@
 
 			canEdit() {
 				return this.form.items.length > 0 && ( !this.invoice ||  this.invoice.can_edit );
+			},
+
+			canEditItem() {
+				return ( !this.invoice ||  this.invoice.can_edit ) && !this.item_add_loading;
 			},
 
 			editTooltip() {

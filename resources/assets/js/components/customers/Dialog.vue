@@ -8,7 +8,7 @@
 	          			<span aria-hidden="true">&times;</span>
 	        		</button>
 	      		</div>
-	      		<div class="modal-body">
+	      		<div class="modal-body" v-if="data">
 	        		<form @submit.prevent="submit" 
 						@keydown="form.errors.clear($event.target.name)" 
 						@input="form.errors.clear($event.target.name)">
@@ -271,8 +271,6 @@
 			},
 
 			onSuccess(response) {
-				console.log("Success!");
-				console.log(response);
 				this.$emit("customerCreated", {customer: response.customer});
 
 				$("#customer-dialog").modal('hide');
@@ -282,25 +280,27 @@
 				window.events.$emit("reload-table");
 			},
 
-			getBranches(){
-				axios.get(this.branch_url)
-					.then(response => this.setBranch(response))
-					.catch(error => this.getBranches());
+			getBranches(error = "No error"){
+				if(this.branch_url)
+					axios.get(this.branch_url)
+						.then(response => this.setBranch(response))
+						.catch(error => this.getBranches(error));
 			},
 
 			setBranch(response) {
+				if(response.data) {
+					this.branches = response.data.map(function(branch){
+						let obj = {};
 
-				this.branches = response.data.map(function(branch){
-					let obj = {};
+						obj['value'] = branch.id;
+						obj['label'] = branch.name;
 
-					obj['value'] = branch.id;
-					obj['label'] = branch.name;
+						return obj;
+					});
 
-					return obj;
-				});
-
-				if(this.branches.length == 1) {
-					this.selectedBranch = {label: this.branches[0].label, value: this.branches[0].value };
+					if(this.branches.length == 1) {
+						this.selectedBranch = {label: this.branches[0].label, value: this.branches[0].value };
+					}
 				}
 
 			},
@@ -325,7 +325,10 @@
 
 			branch_url()
 			{
-				return this.data.is_admin ? '/data/branches/': '/data/branch/' + this.data.current_branch ;
+				if(this.data)
+					return this.data.is_admin ? '/data/branches/': '/data/branch/' + this.data.current_branch ;
+
+				return "";
 			} 
 		},
 

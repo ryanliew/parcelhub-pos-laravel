@@ -125,6 +125,20 @@
 									:error="form.errors.get('website')">
 								</text-input>
 							</div>
+							<div class="col">
+								<selector-input :potentialData="types"
+									v-model="selectedType" 
+									:defaultData="selectedType"
+									placeholder="Select default product type"
+									:required="true"
+									label="Default product type"
+									name="product_type_id"
+									:editable="true"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('product_type_id')">
+								</selector-input>
+							</div>
 						</div>
 						<hr>
 						<h5>Owner information</h5>
@@ -219,6 +233,8 @@
 			return {
 				isActive: false,
 				selectedBranch: '',
+				types: [],
+				selectedType: '',
 				isEdit: false,
 				form: new Form({
 					name: '',
@@ -233,7 +249,8 @@
 					fax: '',
 					tollfree: '',
 					website: '',
-					address: ''
+					address: '',
+					default_product_type: ''
 				})
 			};
 		},
@@ -245,11 +262,33 @@
 			$("#branch-dialog").on("hide.bs.modal", function(e){
 				this.closeDialog();
 			}.bind(this));
+
+			this.getProductTypes();
 		},
 
 		methods: {
+			getProductTypes() {
+				axios.get("/data/producttypes")
+					.then(response => this.setProductTypes(response))
+					.catch(error => this.getProductTypes());
+			},
+
+			setProductTypes(response){
+				this.types = response.data.map(function(type){
+					let obj = {};
+
+					obj['value'] = type.id;
+					obj['label'] = type.name;
+
+					return obj;
+				});
+			},
+
 			createBranch(evt) {
 				this.isEdit = false;
+
+				this.selectedType = '';
+				
 				this.openDialog();
 				
 			},
@@ -257,6 +296,8 @@
 			editBranch(evt) {
 				this.selectedBranch = evt[0];
 				this.isEdit = true;
+
+				this.selectedType = '';
 				this.setForm();
 				this.openDialog();
 			},
@@ -286,6 +327,9 @@
 				this.form.tollfree = this.selectedBranch.tollfree; 
 				this.form.website = this.selectedBranch.website;
 				this.form.address = this.selectedBranch.address;
+				this.form.product_type_id = this.selectedBranch.product_type_id;
+
+				this.selectedType = _.filter(this.types, function(type){ return this.form.product_type_id == type.value; }.bind(this))[0];
 			},
 
 			submit() {
@@ -317,6 +361,14 @@
 
 			url() {
 				return this.selectedBranch ? "/admin/branches/" + this.selectedBranch.id : "/admin/branches";
+			}
+		},
+
+		watch: {
+			selectedType(newVal, oldVal) {
+				if(newVal) {
+					this.form.product_type_id = newVal.value;
+				}
 			}
 		}
 

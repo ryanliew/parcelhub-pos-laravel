@@ -107,6 +107,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/customers", "CustomerController@list");
 		Route::get("/branch/knowledge", "BranchController@getDefaultValues");
 		Route::get('/branch/{branch}', "BranchController@get");
+		Route::get("/pricing", "BranchController@getPricing");
 	});
 
 	Route::group(['prefix' => 'user'], function(){
@@ -127,6 +128,14 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/do/{invoice}","InvoiceController@delivery_order")->name("invoices.delivery_order");
 		Route::get("/{invoice}", "InvoiceController@get");
 		
+	});
+
+	Route::group(['prefix' => 'branch/product'], function(){
+		Route::get('/', "BranchProductController@page")->name('branch-product.page');
+		Route::post("/", "BranchProductController@store");
+		Route::get("/index", "BranchProductController@index")->name('branch-product.index');
+		Route::post("/{product}", "BranchProductController@update");
+		Route::delete("/{product}", "BranchProductController@destroy");
 	});
 
 	Route::group(['prefix' => 'payments'], function(){

@@ -59,6 +59,9 @@
         	border: 1px solid #ccc;
         }
     </style>
+    <title>
+    	Receipt for {{ $invoice->invoice_no }}
+    </title>
 </head>
 <body>
 	<div class="text-center">

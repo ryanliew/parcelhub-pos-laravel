@@ -32,4 +32,11 @@ class Product extends Model
   	{
   		return $this->hasMany('App\Item');
   	}
+
+    public function branches()
+    {
+        return $this->belongsToMany("App\Branch")
+                    ->withTimestamps()
+                    ->withPivot('customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
+    }
 }
