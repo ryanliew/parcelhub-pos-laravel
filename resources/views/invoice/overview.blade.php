@@ -18,20 +18,17 @@
 				<table class="table table-bordered" id="branch-product-table">
 					<thead>
 						<tr>
-							<th>SKU</th>
+							<th>Datetime</th>
+							<th>Invoice No.</th>
 							<th>Customer</th>
-							<th>Courier</th>
-							<th>Zone</th>
-							<th>Weight Start(Kg)</th>
-							<th>Weight End(Kg)</th>
-							<th>GST Inclusive</th>
-							<th>Walk In Price</th>
-							<th>Walk In Override</th>
-							<th>Walk In Special Price</th>  
-							<th>Walk In Special Override</th>
-							<th>Corporate Price</th>
-							<th>Corporate Override</th>
-							<th>Last update time</th>
+							<th>Subtotal</th>
+							<th>Discount(RM)</th>
+							<th>GST</th>
+							<th>Total</th>
+							<th>Payment</th>
+							<th>Last update</th>
+							<th>Outstanding</th>  
+							<th>Remarks</th>
 							<!-- <th>Payment</th>   -->
 						</tr>
 					</thead>
