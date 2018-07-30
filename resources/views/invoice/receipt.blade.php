@@ -107,14 +107,14 @@
 					<th class="text-left border-bottom">Description</th>
 					<th class="text-left border-bottom">Price RM</th>
 					<th class="text-right border-bottom" style="width: 20px;">Qty</th>
-					<th class="text-left border-bottom">Total RM</th>
+					<th class="text-right border-bottom">Total RM</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach($invoice->items as $item)
 					<tr>
 						<td class="ptb-5">{{ $item->description }}</td>
-						<td class="text-right ptb-5">{{ number_format($item->price, 2, '.', ',') }}</td>
+						<td class="text-left ptb-5">{{ number_format($item->price, 2, '.', ',') }}</td>
 						<td class="ptb-5 text-right">{{ $item->unit }}</td>
 						<td class="text-right ptb-5">{{ number_format($item->total_price, 2, '.', ',') }}</td>
 					</tr>
@@ -129,6 +129,11 @@
 					<td colspan="2" class="border-top text-right"><b>Sub Total</b></td>
 					<td class="border-top text-right">RM</td>
 					<td class="text-right border-top">{{ number_format($invoice->subtotal, 2, '.', ',') }}</td>
+				</tr>
+				<tr>
+					<td class="text-right" colspan="2"><b>Tax</b></td>
+					<td class="text-right">RM</td>
+					<td class="text-right">{{ number_format($invoice->tax, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
 					<td class="text-right" colspan="2"><b>Discount</b></td>

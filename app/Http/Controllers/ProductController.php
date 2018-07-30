@@ -169,6 +169,6 @@ class ProductController extends Controller
             $query->where('weight_start', "<=", $weight)
                 ->where('weight_end', ">=", $weight);
 
-        return $query->get();
+        return $query->with('tax')->get();
     }
 }

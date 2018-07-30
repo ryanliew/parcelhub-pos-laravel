@@ -183,7 +183,6 @@
 						:focus="false"
 						:hideLabel="false"
 						:error="selectedProductType_error"
-						@input="getRelatedProduct"
 						ref="producttypes">
 					</selector-input>
 					<div class="row">
@@ -316,6 +315,19 @@
 								:focus="false"
 								:hideLabel="false"
 								:error="price_error">
+							</text-input>
+						</div>
+						<div class="col">
+							<text-input v-model="item_tax" 
+								:defaultValue="item_tax"
+								:required="true"
+								type="number"
+								label="Tax"
+								name="item_tax"
+								:editable="false"
+								:focus="false"
+								:hideLabel="false"
+								:error="item_tax_error">
 							</text-input>
 						</div>
 						<div class="col">
@@ -461,6 +473,7 @@
 				length: 0,
 				height: 0,
 				total_price: '',
+				item_tax: 0,
 
 				tracking_no_error: '',
 				selectedProductType_error: '',
@@ -599,11 +612,11 @@
 
 			},
 
-			getRelatedProduct(){
+			getRelatedProduct(error = 'No error'){
 				if(this.selectedProductType) {
 					axios.get('/data/products?type=' + this.selectedProductType.value)
 						.then(response => this.setProduct(response))
-						.catch(error => this.getRelatedProduct());
+						.catch(error => this.getRelatedProduct(error));
 
 					if(this.selectedProductType.has_detail) {
 						this.getDefaultDetails();
@@ -665,6 +678,7 @@
 					obj['corporate_price'] = product.corporate_price;
 					obj['walk_in_price'] = product.walk_in_price;
 					obj['walk_in_price_special'] = product.walk_in_price_special;
+					obj['tax'] = product.tax.percentage;
 
 					return obj;
 				});
@@ -705,7 +719,8 @@
 					}
 
 					this.price = price.toFixed(2);
-					this.total_price = price.toFixed(2);
+					this.item_tax = price * this.selectedProduct.tax / 100;
+					this.total_price = (price + this.item_tax).toFixed(2);
 				}
 			},
 
@@ -734,7 +749,7 @@
 					item['length'] = this.length ? this.length : 0;
 					item['width'] = this.width ? this.width : 0;
 					item['sku'] = this.selectedProduct.label;
-					item['tax'] = this.tax;
+					item['tax'] = this.item_tax;
 					item['price'] = this.price;
 					item['courier_id'] = this.selectedCourier.value;
 					item['product_id'] = this.selectedProduct.value;
@@ -765,6 +780,7 @@
 					this.length = 0;
 					this.total_price = '';
 					this.tracking_no = '';
+					this.item_tax = 0;
 
 					this.toggleAddItem();
 				}
@@ -795,6 +811,7 @@
 				this.length = item.length;
 				this.total_price = item.total_price;
 				this.tracking_no = item.tracking_code;
+				this.item_tax = item.tax;
 
 			},
 
@@ -890,12 +907,12 @@
 
 		computed: {
 			total() {
-				return parseFloat(this.subtotal) - parseFloat(this.discount_value);
+				return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
 			},
 
 			subtotal() {
 				if(this.form.items.length > 0)
-					return _.sumBy(this.form.items, function(item){ return parseFloat(item.total_price); }) + parseFloat(this.tax);
+					return _.sumBy(this.form.items, function(item){ return parseFloat(item.total_price); });
 
 				return 0;
 			},
@@ -910,7 +927,10 @@
 			},
 
 			tax() {
-				return 0.00;
+				if( this.form.items.length > 0 )
+					return _.sumBy(this.form.items, function(item){ return parseFloat(item.tax); });
+
+				return 0;
 			},
 
 			isParcelOrDocument() {
@@ -991,6 +1011,11 @@
 				this.form.customer_id = newVal.value;
 				if(this.isAddingItem)
 					this.toggleAddItem();
+			},
+
+			selectedProductType(newVal, oldVal) {
+				if(newVal && oldVal !== newVal)
+					this.getRelatedProduct();
 			}
 		}	
 	}
