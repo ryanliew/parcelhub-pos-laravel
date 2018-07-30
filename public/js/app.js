@@ -30362,7 +30362,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(138);
-module.exports = __webpack_require__(231);
+module.exports = __webpack_require__(234);
 
 
 /***/ }),
@@ -30433,10 +30433,11 @@ Vue.component('payments-dialog', __webpack_require__(219));
 Vue.component('invoices-create', __webpack_require__(222));
 
 Vue.component('customers-dialog', __webpack_require__(225));
+Vue.component('statement-dialog', __webpack_require__(240));
 
 Vue.component('terminals-dialog', __webpack_require__(228));
 
-Vue.component('pricing-dialog', __webpack_require__(237));
+Vue.component('pricing-dialog', __webpack_require__(231));
 
 var app = new Vue({
   el: '#app',
@@ -74427,25 +74428,14 @@ if (false) {
 
 /***/ }),
 /* 231 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 232 */,
-/* 233 */,
-/* 234 */,
-/* 235 */,
-/* 236 */,
-/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(238)
+var __vue_script__ = __webpack_require__(232)
 /* template */
-var __vue_template__ = __webpack_require__(239)
+var __vue_template__ = __webpack_require__(233)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -74484,7 +74474,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 238 */
+/* 232 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -74755,7 +74745,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 239 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -75018,6 +75008,358 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-2eb03b56", module.exports)
+  }
+}
+
+/***/ }),
+/* 234 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 235 */,
+/* 236 */,
+/* 237 */,
+/* 238 */,
+/* 239 */,
+/* 240 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(241)
+/* template */
+var __vue_template__ = __webpack_require__(242)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\customers\\Statement.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d5784ffe", Component.options)
+  } else {
+    hotAPI.reload("data-v-d5784ffe", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 241 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: {
+		data: {
+			type: Object
+		}
+	},
+	data: function data() {
+		return {
+			form: new Form({
+				date_to: '',
+				date_from: ''
+			}),
+
+			selected_customer: ''
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('generateStatement', function (evt) {
+			return _this.generateStatement(evt);
+		});
+
+		$("#customer-statement").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+	},
+
+
+	methods: {
+		generateStatement: function generateStatement(evt) {
+			this.selected_customer = evt[0];
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#customer-statement").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.form.reset();
+		},
+		submit: function submit() {
+			var _this2 = this;
+
+			this.form.post(this.url).then(function (response) {
+				return _this2.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+
+			$("#customer-statement").modal('hide');
+
+			this.closeDialog();
+
+			window.open("/customers/statement/" + response.id + '/' + response.start + '/' + response.end, '_blank');
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return "Generate account of statement";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return "Generate statement";
+		},
+		url: function url() {
+			return "/customers/statement/" + this.selected_customer.id;
+		}
+	}
+
+});
+
+/***/ }),
+/* 242 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "customer-statement", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.date_from,
+                            required: true,
+                            type: "date",
+                            label: "Date from:",
+                            name: "date_from",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("date_from")
+                          },
+                          model: {
+                            value: _vm.form.date_from,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "date_from", $$v)
+                            },
+                            expression: "form.date_from"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.date_to,
+                            required: true,
+                            type: "date",
+                            label: "Date to:",
+                            name: "date_to",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("date_to")
+                          },
+                          model: {
+                            value: _vm.form.date_to,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "date_to", $$v)
+                            },
+                            expression: "form.date_to"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-d5784ffe", module.exports)
   }
 }
 
