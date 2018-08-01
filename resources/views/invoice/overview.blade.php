@@ -60,17 +60,29 @@
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editBranchProduct', table.rows({selected: true}).data().toArray());
+							location.href = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
 						},
 						enabled: false
 					},
-					// Enable the following if delete is allowed
 					{
-						text: 'Delete',
+						text: 'Add payment',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('deleteBranchProduct', table.rows({selected: true}).data().toArray());
+							window.events.$emit('createPayment', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
+					},
+					{
+						text: 'View payments',
+						action: function( e, dt, node, config ) {
+
+							// var dataArr = [];
+						 //    $.each($("#invoice-table tr.selected"),function(){ //get each tr which has selected class
+						 //        dataArr.push($(this).find('td').eq(1).text()); //find its first td and push the value
+						 //        //dataArr.push($(this).find('td:first').text()); You can use this too
+						 //    });
+
+							window.location.href = '/payments/invoice/' + table.rows({selected: true}).data().toArray()[0].id;
+						},
 					},
 					'excel', 'colvis',
 				],

@@ -11,7 +11,9 @@ window.Vue = require('vue');
 
 window.events = new Vue();
 import VueNoty from 'vuejs-noty';
-
+import VueSweetalert2 from 'vue-sweetalert2';
+ 
+Vue.use(VueSweetalert2);
 Vue.use(VueNoty);
 
 window.flash = function(message, level = 'success'){
@@ -34,6 +36,7 @@ Vue.component('selector-input', require('./components/SelectorInput.vue'));
 Vue.component('checkbox-input', require('./components/CheckboxInput.vue'));
 Vue.component('file-input', require('./components/FileInput.vue'));
 Vue.component('modal', require('./components/Modal.vue'));
+Vue.component('confirmation', require("./components/Confirmation.vue"));
 
 
 
