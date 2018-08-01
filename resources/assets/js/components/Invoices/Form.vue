@@ -311,7 +311,7 @@
 								type="number"
 								label="Price"
 								name="price"
-								:editable="false"
+								:editable="selectedProductType.value == 1"
 								:focus="false"
 								:hideLabel="false"
 								:error="price_error">
@@ -396,16 +396,20 @@
 				</template>
 			</modal>
 		</form>
-
+		<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
 		<customers-dialog :data="auth_user" @customerCreated="addCustomer"></customers-dialog>
 	</div>
 </template>
 
 <script>
 	import moment from 'moment';
+	import ConfirmationMixin from "../../mixins/ConfirmationMixin.js";
 
 	export default {
 		props: ['created_by', 'invoice', 'auth_user', 'setting'],
+
+		mixins: [ConfirmationMixin],
+
 		data() {
 			return {
 				form: new Form({
@@ -472,7 +476,6 @@
 				width: 0,
 				length: 0,
 				height: 0,
-				total_price: '',
 				item_tax: 0,
 
 				tracking_no_error: '',
@@ -709,7 +712,7 @@
 			productChange() {
 				this.description = "";
 				this.price = "";
-				this.total_price = "";
+				this.item_tax = 0;
 				if(this.selectedProduct) {
 					this.description = this.selectedProduct.description;
 
@@ -748,11 +751,9 @@
 
 				this.price = price;
 				this.item_tax = (price * this.selectedProduct.tax / 100);
-				this.total_price = price + this.item_tax;
 
 				this.price = this.price.toFixed(2);
 				this.item_tax = this.item_tax.toFixed(2);
-				this.total_price = this.total_price.toFixed(2);
 
 				this.item_add_loading = false;
 			},
@@ -791,7 +792,8 @@
 					item['unit'] = this.unit;
 
 					if(this.isEditing) {
-						this.form.items[this.editingIndex] = item;
+						Vue.set(this.form.items, this.editingIndex, item);
+						// this.form.items[this.editingIndex] = item;
 						this.editingIndex = '';
 					}
 					else {
@@ -811,7 +813,6 @@
 					this.height = 0;
 					this.width = 0;
 					this.length = 0;
-					this.total_price = '';
 					this.tracking_no = '';
 					this.item_tax = 0;
 
@@ -842,7 +843,6 @@
 				this.height = item.height;
 				this.width = item.width;
 				this.length = item.length;
-				this.total_price = item.total_price;
 				this.tracking_no = item.tracking_code;
 				this.item_tax = item.tax;
 
@@ -870,6 +870,16 @@
 			},
 
 			submit() {
+				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
+											+ "<div><b>Total: </b> RM" + this.total.toFixed(2) + "</div>"
+											+ "<div><b>Paid: </b> RM" + this.form.paid.toFixed(2) + "</div>"
+											+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
+											+ "</div>"
+				this.isConfirming = true;
+
+			},
+
+			confirmSubmit() {
 				this.form.total = this.total;
 				this.form.subtotal = this.subtotal;
 				this.form.tax = this.tax;
@@ -883,7 +893,7 @@
 				window.open(response.redirect_url, '_blank');
 
 				setInterval(function(){
-					window.location.href = "/invoices/edit/" + response.id;
+					window.location.href = "/invoices/create";
 				}, 3000);
 			},
 
@@ -901,7 +911,6 @@
 				this.height = '';
 				this.width = '';
 				this.length = '';
-				this.total_price = '';
 				this.tracking_no = '';
 
 				this.isAddingItem = !this.isAddingItem;
@@ -939,6 +948,10 @@
 		computed: {
 			total() {
 				return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
+			},
+
+			total_price() {
+				return this.price ? parseFloat(this.price) + parseFloat(this.item_tax) : 0.00;
 			},
 
 			subtotal() {
