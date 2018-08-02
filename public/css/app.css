@@ -11256,3 +11256,12 @@ tr.item-editing {
   margin-top: 0px;
 }
 
+.btn.btn-rounded.expand-button.impersonating {
+  color: #382869;
+  border-color: #382869;
+}
+
+.branch-selector.inset-shadow.impersonating {
+  background-color: #382869;
+}
+
