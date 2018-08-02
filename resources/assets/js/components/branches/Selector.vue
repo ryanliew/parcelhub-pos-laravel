@@ -1,5 +1,5 @@
 <template>
-	<div class="branch-selector inset-shadow" :class="shouldShowClass">
+	<div class="branch-selector inset-shadow" :class="branchSelectorClass">
         <div class="container">
 			<div class="form-inline">
 				<template v-if="!isImpersonating">
@@ -20,7 +20,7 @@
 					<option v-for="terminal in terminals" :value="terminal.id">{{ terminal.name }}</option>
 				</select>
 
-				<button type="button" class="btn btn-rounded expand-button" @click="active = !active" v-html="expandButtonContent"></button>
+				<button type="button" class="btn btn-rounded expand-button" :class="expandButtonClass" @click="active = !active" v-html="expandButtonContent"></button>
 			</div>
 
 
@@ -95,12 +95,16 @@
 		},
 
 		computed: {
-			shouldShowClass() {
-				return this.active ? 'show-selector' : 'hide-selector';
+			branchSelectorClass() {
+				return [this.active ? 'show-selector' : 'hide-selector', this.isImpersonating ? "impersonating" : ''];
 			},
 
 			expandButtonContent() {
 				return this.active ? '<i class="fas fa-angle-up"></i>' : '<i class="fas fa-angle-down"></i>';
+			},
+
+			expandButtonClass() {
+				return this.isImpersonating ? "impersonating" : "";
 			}
 		},
 

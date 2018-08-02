@@ -70593,11 +70593,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	},
 
 	computed: {
-		shouldShowClass: function shouldShowClass() {
-			return this.active ? 'show-selector' : 'hide-selector';
+		branchSelectorClass: function branchSelectorClass() {
+			return [this.active ? 'show-selector' : 'hide-selector', this.isImpersonating ? "impersonating" : ''];
 		},
 		expandButtonContent: function expandButtonContent() {
 			return this.active ? '<i class="fas fa-angle-up"></i>' : '<i class="fas fa-angle-down"></i>';
+		},
+		expandButtonClass: function expandButtonClass() {
+			return this.isImpersonating ? "impersonating" : "";
 		}
 	},
 
@@ -70636,7 +70639,10 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "branch-selector inset-shadow", class: _vm.shouldShowClass },
+    {
+      staticClass: "branch-selector inset-shadow",
+      class: _vm.branchSelectorClass
+    },
     [
       _c("div", { staticClass: "container" }, [
         _c(
@@ -70787,6 +70793,7 @@ var render = function() {
             _vm._v(" "),
             _c("button", {
               staticClass: "btn btn-rounded expand-button",
+              class: _vm.expandButtonClass,
               attrs: { type: "button" },
               domProps: { innerHTML: _vm._s(_vm.expandButtonContent) },
               on: {
