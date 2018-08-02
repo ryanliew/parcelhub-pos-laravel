@@ -60,6 +60,10 @@
                                             Admin panel
                                         </a>
                                     @endif
+                                    <a class="dropdown-item" href="{{ route('impersonate.page') }}">
+                                        Login as other user
+                                    </a>
+
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -78,7 +82,7 @@
         </nav>
         @if(auth()->check())
         
-            <branch-selector :branches="{{ json_encode(Auth::user()->branches()->with('terminals')->get()) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}"  :userId="{{ auth()->user()->id }}"></branch-selector>
+            <branch-selector :branches="{{ json_encode(Auth::user()->branches()->with('terminals')->get()) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}" :userId="{{ auth()->user()->id }}" :users="{{ json_encode(auth()->user()->allowed_users) }}"></branch-selector>
             
         @endif
         <main class="py-4 main-content inset-shadow">

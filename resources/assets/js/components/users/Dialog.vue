@@ -136,6 +136,7 @@
 					username: '',
 					email: '',
 					password: '',
+					password_confirmation: '',
 					current_terminal: '',
 					current_branch: '',
 				})

@@ -2,12 +2,13 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Lab404\Impersonate\Models\Impersonate;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, Impersonate;
 
     /**
      * The attributes that are mass assignable.
@@ -45,6 +46,11 @@ class User extends Authenticatable
         return $this->belongsTo("App\Terminal", "current_terminal");
     }
 
+    public function allowed_users()
+    {
+        return $this->belongsToMany("App\User", "users_permissions", "user_id", "target_id")->withTimestamps();
+    }
+
     public function isAdmin()
     {
         return $this->is_admin;
@@ -53,5 +59,10 @@ class User extends Authenticatable
     public function getDefaultBranchAttribute()
     {
         return $this->branches()->wherePivot('type', 'write')->first();
+    }
+
+    public function canBeImpersonated()
+    {
+        return !$this->is_admin;
     }
 }
