@@ -112,9 +112,17 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/pricing", "BranchController@getPricing");
 	});
 
+	Route::group(['prefix' => 'impersonate'], function(){
+		Route::get("/", "UserController@loginAs")->name("impersonate.page");
+		Route::post("/", "UserController@grantAccess");
+		Route::get("/check", "UserController@check_impersonation");
+		Route::get("/leave", "UserController@leave_impersonation");
+	});
+
 	Route::group(['prefix' => 'user'], function(){
 		Route::post("{user}/branch/change", "UserController@change_branch");
 		Route::post("{user}/terminal/change", "UserController@change_terminal");
+		Route::post("{user}/user/change", "UserController@change_user");
 	});
 
 	Route::group(['prefix' => 'invoices'], function(){
