@@ -56,4 +56,14 @@ class Invoice extends Model
 
         return $setting->lock_date->lte($this->created_at);
     }
+
+    public function getRoundingAttribute()
+    {
+        return $this->total - ( $this->subtotal + $this->tax - $this->discount_value ); 
+    }
+
+    public function getDisplayTextAttribute()
+    {
+        return $this->invoice_no;
+    }
 }

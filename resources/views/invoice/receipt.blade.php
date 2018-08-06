@@ -144,6 +144,11 @@
 					<td class="text-right">{{ number_format($invoice->discount, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
+					<td class="text-right" colspan="2"><b>Rounding</b></td>
+					<td class="text-right">RM</td>
+					<td class="text-right">{{ number_format($invoice->rounding, 2, '.', ',') }}</td>
+				</tr>
+				<tr>
 					<td class="text-right" colspan="2"><b>Total</b></td>
 					<td class="text-right">RM</td>
 					<td class="text-right">{{ number_format($invoice->total, 2, '.', ',') }}</td>
