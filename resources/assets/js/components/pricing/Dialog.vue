@@ -18,10 +18,10 @@
 									v-model="selectedProduct" 
 									:defaultData="selectedProduct"
 									placeholder="Select product"
-									:required="true"
+									:required="!isEdit"
 									label="Product"
 									name="product_id"
-									:editable="true"
+									:editable="!isEdit"
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('product_id')">
@@ -32,7 +32,7 @@
 									v-model="selectedCustomer" 
 									:defaultData="selectedCustomer"
 									placeholder="Select customer"
-									:required="true"
+									:required="false"
 									label="Customer"
 									name="customer_id"
 									:editable="true"
@@ -42,7 +42,7 @@
 								</selector-input>
 							</div>
 						</div>
-						<div class="row" v-if="selectedProduct && selectedCustomer">
+						<div class="row" v-if="selectedProduct">
 							<div class="col">
 								<text-input v-model="form.corporate_override" 
 									:defaultValue="form.corporate_override"
@@ -111,6 +111,7 @@
 				isActive: false,
 				products: [],
 				customers: [],
+				originalProduct: '',
 				selectedProduct: '',
 				selectedCustomer: '',
 				isEdit: false,
@@ -119,7 +120,8 @@
 					customer_id: '',
 					corporate_override: '',
 					walk_in_override: '',
-					walk_in_special_override: ''
+					walk_in_special_override: '',
+					id: ''
 				})
 			};
 		},
@@ -181,7 +183,7 @@
 			},
 
 			editBranchProduct(evt) {
-				this.selectedProduct = evt[0];
+				this.originalProduct = evt[0];
 				this.isEdit = true;
 				this.setForm();
 				this.openDialog();
@@ -195,15 +197,20 @@
 			closeDialog() {
 				this.isActive = false;
 				this.selectedProduct = '';
+				this.selectedProduct = '';
+				this.originalProduct = '';
+				this.selectedCustomer = '';
+				this.isEdit = false;
 				this.form.reset();
 			},
 
 			setForm() {
-				this.form.product_id = this.selectedProduct.product_id;
-				this.form.customer_id = this.selectedProduct.pivot.customer_id;
-				this.form.corporate_price = this.selectedProduct.pivot.corporate_price;
-				this.form.walk_in_price = this.selectedProduct.pivot.walk_in_price;
-				this.form.walk_in_price_special = this.selectedProduct.pivot.walk_in_price_special;
+				this.form.id = this.originalProduct.pivot.id;
+				this.form.product_id = this.originalProduct.pivot.product_id;
+				this.form.customer_id = this.originalProduct.pivot.customer_id;
+				this.form.corporate_override = this.originalProduct.pivot.corporate_price;
+				this.form.walk_in_override = this.originalProduct.pivot.walk_in_price;
+				this.form.walk_in_special_override = this.originalProduct.pivot.walk_in_price_special;
 
 				this.selectedProduct = '';
 				this.selectedCustomer = '';
@@ -239,7 +246,7 @@
 
 		computed: {
 			title() {
-				return this.isEdit ? "Edit SKU branch- " + this.selectedProduct.sku : "Create SKU branch";
+				return this.isEdit ? "Edit SKU branch- " + this.selectedProduct.label : "Create SKU branch";
 			},
 
 			action() {
@@ -251,7 +258,7 @@
 			},
 
 			url() {
-				return this.isEdit ? "/branch/product/" + this.selectedProduct.id : "/branch/product";
+				return this.isEdit ? "/branch/product/" + this.originalProduct.id : "/branch/product";
 			}
 		},
 

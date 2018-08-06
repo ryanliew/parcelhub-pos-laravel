@@ -313,6 +313,7 @@
 
 					if(this.branches.length == 1) {
 						this.selectedBranch = {label: this.branches[0].label, value: this.branches[0].value };
+						this.form.branch_id = this.branches[0].value;
 					}
 				}
 

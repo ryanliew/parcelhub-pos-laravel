@@ -108,6 +108,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/products", "ProductController@list");
 		Route::get("/customers", "CustomerController@list");
 		Route::get("/branch/knowledge", "BranchController@getDefaultValues");
+		Route::get("/branch/type", "BranchController@getDefaultType");
 		Route::get('/branch/{branch}', "BranchController@get");
 		Route::get("/pricing", "BranchController@getPricing");
 	});

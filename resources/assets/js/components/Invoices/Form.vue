@@ -67,7 +67,7 @@
 									<td>{{ item.tracking_code }}</td>
 									<td>{{ item.description }}</td>
 									<td>{{ item.unit }}</td>
-									<td>{{ item.total_price }}</td>
+									<td>{{ item.total_price | price }}</td>
 									<td><i class="fas fa-edit text-primary pointer" @click="editItem(index)"></i> <i class="fas fa-times text-danger pointer" @click="deleteItem(index)"></i></td>
 								</tr>
 							</tbody>
@@ -465,7 +465,7 @@
 				selectedDiscountMode: {label: "%", value: "%"},
 				selectedType: {label: 'Cash', value: 'Cash'},
 
-
+				defaultProductType: '',
 				isCalculatingDimWeight: false,
 				tracking_no: '',
 				selectedProductType: '',
@@ -561,7 +561,7 @@
 					return obj;
 				});
 
-				this.selectedProductType = {label: 'Packaging', value: 4};
+				this.selectedProductType = _.filter(this.product_types, function(type){ return type.value == this.defaultProductType; }.bind(this));
 				this.getZoneType();
 			},
 
@@ -621,6 +621,7 @@
 					return obj;
 				});
 
+				this.getDefaultType();
 			},
 
 			getRelatedProduct(error = 'No error'){
@@ -656,6 +657,19 @@
 				{
 					this.selectedCourier = eligibleCourier[0];
 				}
+			},
+
+			getDefaultType() {
+				axios.get("/data/branch/type")
+					.then(response => this.setDefaultType(response))
+					.catch(error => this.getDefaultProductType());
+			},
+
+			setDefaultType(response) {
+				this.defaultProductType = response.data.type;
+				this.selectedProductType = _.filter(this.product_types, function(type){ return type.value == response.data.type; }.bind(response))[0];
+
+				this.getRelatedProduct();
 			},
 
 			getFilteredProduct() {
@@ -728,9 +742,13 @@
 			},
 
 			getProductPrice() {
-				if(this.selectedProduct && this.selectedCustomer && this.selectedType.value == "Customer") {
+				if(this.selectedProduct) {
 					this.item_add_loading = true;
-					axios.get("/data/pricing?product=" + this.selectedProduct.value + "&customer=" + this.selectedCustomer.value )
+					let url = "/data/pricing?product=" + this.selectedProduct.value;
+					if(this.selectedCustomer) {
+						url += "&customer=" + this.selectedCustomer.value;
+					}
+					axios.get(url)
 						.then(response => this.setProductPrice(response))
 						.catch(error => this.getProductPrice());
 				}
@@ -909,7 +927,7 @@
 				this.dimension_weight = 0;
 				this.selectedCourier = '';
 				this.selectedProduct = '';
-				this.selectedProductType = {label: 'Packaging', value: 4};
+				this.selectedProductType = _.filter(this.product_types, function(type){ return type.value == this.defaultProductType; }.bind(this))[0];
 				this.description = '';
 				this.price = '';
 				this.unit = 1;
@@ -917,6 +935,8 @@
 				this.width = '';
 				this.length = '';
 				this.tracking_no = '';
+
+				this.getRelatedProduct();
 
 				this.isAddingItem = !this.isAddingItem;
 
@@ -1017,7 +1037,7 @@
 			},
 
 			canEdit() {
-				return this.form.items.length > 0 && ( !this.invoice ||  this.invoice.can_edit );
+				return this.form.items.length > 0 && ( !this.invoice ||  this.invoice.can_edit ) && ( this.selectedCustomer || this.form.paid >= this.rounded_total );
 			},
 
 			canEditItem() {
@@ -1029,6 +1049,9 @@
 				{
 					if(this.invoice && !this.invoice.can_edit)
 						return "Invoice has been locked"
+
+					if(!this.selectedCustomer && this.form.paid <= this.rounded_total)
+						return "Full amount must be paid";
 
 					return "No items";
 				}

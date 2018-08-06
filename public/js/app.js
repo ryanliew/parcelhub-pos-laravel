@@ -4687,6 +4687,21 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 /* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+	data: function data() {
+		return {
+			isConfirming: false,
+			confirm_message: "Are you sure?",
+			secondary_message: ""
+		};
+	}
+});
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4996,7 +5011,7 @@ module.exports = {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 var g;
@@ -5023,13 +5038,13 @@ module.exports = g;
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var normalizeHeaderName = __webpack_require__(147);
 
 var DEFAULT_CONTENT_TYPE = {
@@ -5125,21 +5140,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-	data: function data() {
-		return {
-			isConfirming: false,
-			confirm_message: "Are you sure?",
-			secondary_message: ""
-		};
-	}
-});
 
 /***/ }),
 /* 6 */
@@ -7696,7 +7696,7 @@ Popper.Defaults = Defaults;
 /* harmony default export */ __webpack_exports__["default"] = (Popper);
 //# sourceMappingURL=popper.js.map
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(4)))
 
 /***/ }),
 /* 8 */
@@ -18284,7 +18284,7 @@ process.umask = function() { return 0; };
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var settle = __webpack_require__(148);
 var buildURL = __webpack_require__(150);
 var parseHeaders = __webpack_require__(151);
@@ -47642,7 +47642,7 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(6)(module)))
 
 /***/ }),
 /* 142 */
@@ -51590,10 +51590,10 @@ module.exports = __webpack_require__(144);
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var bind = __webpack_require__(9);
 var Axios = __webpack_require__(146);
-var defaults = __webpack_require__(4);
+var defaults = __webpack_require__(5);
 
 /**
  * Create an instance of Axios
@@ -51676,8 +51676,8 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(4);
-var utils = __webpack_require__(2);
+var defaults = __webpack_require__(5);
+var utils = __webpack_require__(3);
 var InterceptorManager = __webpack_require__(155);
 var dispatchRequest = __webpack_require__(156);
 
@@ -51762,7 +51762,7 @@ module.exports = Axios;
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 
 module.exports = function normalizeHeaderName(headers, normalizedName) {
   utils.forEach(headers, function processHeader(value, name) {
@@ -51842,7 +51842,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 
 function encode(val) {
   return encodeURIComponent(val).
@@ -51915,7 +51915,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 
 // Headers whose duplicates are ignored by node
 // c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -51975,7 +51975,7 @@ module.exports = function parseHeaders(headers) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -52093,7 +52093,7 @@ module.exports = btoa;
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 
 module.exports = (
   utils.isStandardBrowserEnv() ?
@@ -52153,7 +52153,7 @@ module.exports = (
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 
 function InterceptorManager() {
   this.handlers = [];
@@ -52212,10 +52212,10 @@ module.exports = InterceptorManager;
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var transformData = __webpack_require__(157);
 var isCancel = __webpack_require__(13);
-var defaults = __webpack_require__(4);
+var defaults = __webpack_require__(5);
 var isAbsoluteURL = __webpack_require__(158);
 var combineURLs = __webpack_require__(159);
 
@@ -52305,7 +52305,7 @@ module.exports = function dispatchRequest(config) {
 "use strict";
 
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 
 /**
  * Transform the data for a request or a response
@@ -63429,7 +63429,7 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(163).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(163).setImmediate))
 
 /***/ }),
 /* 163 */
@@ -63499,7 +63499,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 164 */
@@ -63692,7 +63692,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(10)))
 
 /***/ }),
 /* 165 */
@@ -69524,7 +69524,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -70872,7 +70872,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -71483,7 +71483,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -71948,7 +71948,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -72422,7 +72422,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -73060,7 +73060,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -73656,7 +73656,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -74033,7 +74033,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -75004,7 +75004,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -75308,7 +75308,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -75855,7 +75855,7 @@ module.exports = Component.exports
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -76310,6 +76310,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			selectedDiscountMode: { label: "%", value: "%" },
 			selectedType: { label: 'Cash', value: 'Cash' },
 
+			defaultProductType: '',
 			isCalculatingDimWeight: false,
 			tracking_no: '',
 			selectedProductType: '',
@@ -76412,7 +76413,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				return obj;
 			});
 
-			this.selectedProductType = { label: 'Packaging', value: 4 };
+			this.selectedProductType = _.filter(this.product_types, function (type) {
+				return type.value == this.defaultProductType;
+			}.bind(this));
 			this.getZoneType();
 		},
 		getZoneType: function getZoneType() {
@@ -76477,6 +76480,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 				return obj;
 			});
+
+			this.getDefaultType();
 		},
 		getRelatedProduct: function getRelatedProduct() {
 			var _this7 = this;
@@ -76522,8 +76527,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.selectedCourier = eligibleCourier[0];
 			}
 		},
-		getFilteredProduct: function getFilteredProduct() {
+		getDefaultType: function getDefaultType() {
 			var _this9 = this;
+
+			axios.get("/data/branch/type").then(function (response) {
+				return _this9.setDefaultType(response);
+			}).catch(function (error) {
+				return _this9.getDefaultProductType();
+			});
+		},
+		setDefaultType: function setDefaultType(response) {
+			this.defaultProductType = response.data.type;
+			this.selectedProductType = _.filter(this.product_types, function (type) {
+				return type.value == response.data.type;
+			}.bind(response))[0];
+
+			this.getRelatedProduct();
+		},
+		getFilteredProduct: function getFilteredProduct() {
+			var _this10 = this;
 
 			if (this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
 				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
@@ -76535,9 +76557,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				if (this.selectedCourier) url += "&vendor=" + this.selectedCourier.value;
 
 				axios.get(url).then(function (response) {
-					return _this9.setProduct(response);
+					return _this10.setProduct(response);
 				}).catch(function (error) {
-					return _this9.getFilteredProduct();
+					return _this10.getFilteredProduct();
 				});
 			}
 		},
@@ -76586,14 +76608,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 		},
 		getProductPrice: function getProductPrice() {
-			var _this10 = this;
+			var _this11 = this;
 
-			if (this.selectedProduct && this.selectedCustomer && this.selectedType.value == "Customer") {
+			if (this.selectedProduct) {
 				this.item_add_loading = true;
-				axios.get("/data/pricing?product=" + this.selectedProduct.value + "&customer=" + this.selectedCustomer.value).then(function (response) {
-					return _this10.setProductPrice(response);
+				var url = "/data/pricing?product=" + this.selectedProduct.value;
+				if (this.selectedCustomer) {
+					url += "&customer=" + this.selectedCustomer.value;
+				}
+				axios.get(url).then(function (response) {
+					return _this11.setProductPrice(response);
 				}).catch(function (error) {
-					return _this10.getProductPrice();
+					return _this11.getProductPrice();
 				});
 			}
 
@@ -76729,7 +76755,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.isConfirming = true;
 		},
 		confirmSubmit: function confirmSubmit() {
-			var _this11 = this;
+			var _this12 = this;
 
 			this.form.total = this.rounded_total;
 			this.form.subtotal = this.subtotal;
@@ -76737,7 +76763,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 			this.form.post(url).then(function (response) {
-				return _this11.onSuccess(response);
+				return _this12.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -76754,7 +76780,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.dimension_weight = 0;
 			this.selectedCourier = '';
 			this.selectedProduct = '';
-			this.selectedProductType = { label: 'Packaging', value: 4 };
+			this.selectedProductType = _.filter(this.product_types, function (type) {
+				return type.value == this.defaultProductType;
+			}.bind(this))[0];
 			this.description = '';
 			this.price = '';
 			this.unit = 1;
@@ -76762,6 +76790,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.width = '';
 			this.length = '';
 			this.tracking_no = '';
+
+			this.getRelatedProduct();
 
 			this.isAddingItem = !this.isAddingItem;
 
@@ -76845,7 +76875,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return value;
 		},
 		canEdit: function canEdit() {
-			return this.form.items.length > 0 && (!this.invoice || this.invoice.can_edit);
+			return this.form.items.length > 0 && (!this.invoice || this.invoice.can_edit) && (this.selectedCustomer || this.form.paid >= this.rounded_total);
 		},
 		canEditItem: function canEditItem() {
 			return (!this.invoice || this.invoice.can_edit) && !this.item_add_loading;
@@ -76853,6 +76883,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		editTooltip: function editTooltip() {
 			if (!this.canEdit) {
 				if (this.invoice && !this.invoice.can_edit) return "Invoice has been locked";
+
+				if (!this.selectedCustomer && this.form.paid <= this.rounded_total) return "Full amount must be paid";
 
 				return "No items";
 			}
@@ -77065,7 +77097,11 @@ var render = function() {
                               _vm._v(" "),
                               _c("td", [_vm._v(_vm._s(item.unit))]),
                               _vm._v(" "),
-                              _c("td", [_vm._v(_vm._s(item.total_price))]),
+                              _c("td", [
+                                _vm._v(
+                                  _vm._s(_vm._f("price")(item.total_price))
+                                )
+                              ]),
                               _vm._v(" "),
                               _c("td", [
                                 _c("i", {
@@ -77962,7 +77998,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -78278,6 +78314,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 				if (this.branches.length == 1) {
 					this.selectedBranch = { label: this.branches[0].label, value: this.branches[0].value };
+					this.form.branch_id = this.branches[0].value;
 				}
 			}
 		}
@@ -79139,7 +79176,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -79616,7 +79653,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 //
 //
 //
@@ -79730,6 +79767,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			isActive: false,
 			products: [],
 			customers: [],
+			originalProduct: '',
 			selectedProduct: '',
 			selectedCustomer: '',
 			isEdit: false,
@@ -79738,7 +79776,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				customer_id: '',
 				corporate_override: '',
 				walk_in_override: '',
-				walk_in_special_override: ''
+				walk_in_special_override: '',
+				id: ''
 			})
 		};
 	},
@@ -79810,7 +79849,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.openDialog();
 		},
 		editBranchProduct: function editBranchProduct(evt) {
-			this.selectedProduct = evt[0];
+			this.originalProduct = evt[0];
 			this.isEdit = true;
 			this.setForm();
 			this.openDialog();
@@ -79822,14 +79861,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		closeDialog: function closeDialog() {
 			this.isActive = false;
 			this.selectedProduct = '';
+			this.selectedProduct = '';
+			this.originalProduct = '';
+			this.selectedCustomer = '';
+			this.isEdit = false;
 			this.form.reset();
 		},
 		setForm: function setForm() {
-			this.form.product_id = this.selectedProduct.product_id;
-			this.form.customer_id = this.selectedProduct.pivot.customer_id;
-			this.form.corporate_price = this.selectedProduct.pivot.corporate_price;
-			this.form.walk_in_price = this.selectedProduct.pivot.walk_in_price;
-			this.form.walk_in_price_special = this.selectedProduct.pivot.walk_in_price_special;
+			this.form.id = this.originalProduct.pivot.id;
+			this.form.product_id = this.originalProduct.pivot.product_id;
+			this.form.customer_id = this.originalProduct.pivot.customer_id;
+			this.form.corporate_override = this.originalProduct.pivot.corporate_price;
+			this.form.walk_in_override = this.originalProduct.pivot.walk_in_price;
+			this.form.walk_in_special_override = this.originalProduct.pivot.walk_in_price_special;
 
 			this.selectedProduct = '';
 			this.selectedCustomer = '';
@@ -79868,7 +79912,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	computed: {
 		title: function title() {
-			return this.isEdit ? "Edit SKU branch- " + this.selectedProduct.sku : "Create SKU branch";
+			return this.isEdit ? "Edit SKU branch- " + this.selectedProduct.label : "Create SKU branch";
 		},
 		action: function action() {
 			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
@@ -79877,7 +79921,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return this.isEdit ? "Update" : "Create";
 		},
 		url: function url() {
-			return this.isEdit ? "/branch/product/" + this.selectedProduct.id : "/branch/product";
+			return this.isEdit ? "/branch/product/" + this.originalProduct.id : "/branch/product";
 		}
 	},
 
@@ -79948,10 +79992,10 @@ var render = function() {
                             potentialData: _vm.products,
                             defaultData: _vm.selectedProduct,
                             placeholder: "Select product",
-                            required: true,
+                            required: !_vm.isEdit,
                             label: "Product",
                             name: "product_id",
-                            editable: true,
+                            editable: !_vm.isEdit,
                             focus: false,
                             hideLabel: false,
                             error: _vm.form.errors.get("product_id")
@@ -79977,7 +80021,7 @@ var render = function() {
                             potentialData: _vm.customers,
                             defaultData: _vm.selectedCustomer,
                             placeholder: "Select customer",
-                            required: true,
+                            required: false,
                             label: "Customer",
                             name: "customer_id",
                             editable: true,
@@ -79998,7 +80042,7 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm.selectedProduct && _vm.selectedCustomer
+                  _vm.selectedProduct
                     ? _c("div", { staticClass: "row" }, [
                         _c(
                           "div",

@@ -37,6 +37,6 @@ class Product extends Model
     {
         return $this->belongsToMany("App\Branch")
                     ->withTimestamps()
-                    ->withPivot('customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
+                    ->withPivot('id', 'customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
     }
 }

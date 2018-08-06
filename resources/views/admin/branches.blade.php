@@ -31,6 +31,7 @@
 							<th>Toll Free</th>
 							<th>Website</th>
 							<th>Address</th>
+							<th>Default product type</th>
 						</tr>
 					</thead>
 				</table>
@@ -87,7 +88,8 @@
 					{data: 'fax'},
 					{data: 'tollfree'},
 					{data: 'website'},
-					{data: 'address'}
+					{data: 'address'},
+					{data: 'default_product_type_name'}
 				]
 			});
 
