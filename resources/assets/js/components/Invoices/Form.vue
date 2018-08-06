@@ -82,6 +82,11 @@
 									<td>{{ tax | price }}</td>
 									<td></td>
 								</tr>
+								<tr>
+									<td colspan="3" class="text-right"><b>Rounding:</b></td>
+									<td>{{ rounding | price }}</td>
+									<td></td>
+								</tr>
 							</tfoot>	
 						</table>
 					</div>
@@ -147,14 +152,14 @@
 
 					<h4 class="text-right">Discount: RM{{ discount_value | price }}</h4>
 
-					<h4 class="text-right">Total: RM{{ total | price }}</h4>
+					<h4 class="text-right">Total: RM{{ rounded_total | price }}</h4>
 
 					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
 
 					<div class="d-flex justify-content-end">
 						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
 						<a v-else-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
-						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/preview/' + this.invoice" type="button" class="btn btn-success mr-2">Preview</a>
+						<a v-if="this.invoice" target="_blank" :href="'/invoices/preview/' + this.invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
 						<button type="submit" class="btn btn-primary" :disabled="!canEdit" :title="editTooltip">Confirm</button>
 					</div>
 				</div>
@@ -871,7 +876,7 @@
 
 			submit() {
 				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
-											+ "<div><b>Total: </b> RM" + this.total.toFixed(2) + "</div>"
+											+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
 											+ "<div><b>Paid: </b> RM" + this.form.paid.toFixed(2) + "</div>"
 											+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
 											+ "</div>"
@@ -880,7 +885,7 @@
 			},
 
 			confirmSubmit() {
-				this.form.total = this.total;
+				this.form.total = this.rounded_total;
 				this.form.subtotal = this.subtotal;
 				this.form.tax = this.tax;
 
@@ -950,6 +955,15 @@
 				return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
 			},
 
+			rounded_total() {
+				return this.total + this.rounding;
+			},
+
+			rounding() {
+				let rounded_total = Math.round(this.total * 100 / 5 ) / 100 * 5;
+				return - (this.total - rounded_total);
+			},
+
 			total_price() {
 				return this.price ? parseFloat(this.price) + parseFloat(this.item_tax) : 0.00;
 			},
@@ -983,7 +997,7 @@
 
 			change() {
 				if(this.form.paid && this.total)
-					return parseFloat(this.form.paid) - parseFloat(this.total);
+					return parseFloat(this.form.paid) - this.rounded_total;
 
 				return 0.00;
 			},

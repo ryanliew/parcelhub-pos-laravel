@@ -173,16 +173,23 @@
 	      		</div>
 	    	</div>
 	  	</div>
+
+	  	<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
 	</div>
 </template>
 
 <script>
+	import ConfirmationMixin from "../../mixins/ConfirmationMixin.js";
+
 	export default {
 		props: {
 		    data: {
 		        type: Object
 		    }
-		  },
+		 },
+
+		mixins: [ConfirmationMixin],
+
 		data() {
 			return {
 				isActive: false,
@@ -266,6 +273,12 @@
 			},
 
 			submit() {
+				this.isConfirming = true;
+			},
+
+			confirmSubmit() {
+				this.isConfirming = false;
+
 				this.form.post(this.url)
 					.then(response => this.onSuccess(response));
 			},
