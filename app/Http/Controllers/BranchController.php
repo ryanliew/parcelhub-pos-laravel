@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Branch;
+use App\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -31,7 +32,11 @@ class BranchController extends Controller
 
     public function index()
     {
-    	return datatables()->of(Branch::all())->toJson();	
+    	return datatables()->of(Branch::all())
+                            ->addColumn('default_product_type_name', function($branch){
+                                return ProductType::find($branch->product_type_id)->name;
+                            })
+                            ->toJson();	
     }
 
     public function store()
@@ -91,14 +96,21 @@ class BranchController extends Controller
         return json_encode(['result' => $result->first()]);
     }
 
+    public function getDefaultType()
+    {
+        return json_encode(['type' => auth()->user()->current->product_type_id]);
+    }
+
     public function getPricing()
     {
         $result = DB::table('branch_product')
                     ->select('corporate_price', 'walk_in_price', 'walk_in_price_special')
-                    ->where('product_id', '=', request()->product)
-                    ->where('customer_id', '=', request()->customer)
-                    ->first();
+                    ->where('product_id', '=', request()->product);
 
-        return json_encode($result);
+        if(request()->has('customer')) {
+            $result->where('customer_id', '=', request()->customer);
+        }
+        
+        return json_encode($result->first());
     }   
 }
