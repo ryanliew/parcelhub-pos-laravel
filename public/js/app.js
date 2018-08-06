@@ -76725,7 +76725,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
 		submit: function submit() {
-			this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>" + "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>" + "<div><b>Paid: </b> RM" + this.form.paid.toFixed(2) + "</div>" + "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>" + "</div>";
+			this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>" + "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>" + "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>" + "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>" + "</div>";
 			this.isConfirming = true;
 		},
 		confirmSubmit: function confirmSubmit() {
