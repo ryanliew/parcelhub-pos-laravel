@@ -70533,49 +70533,56 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			current_user: this.userid,
 			current_terminal: this.terminal,
 			current_branch: '',
+			selectableUsers: [],
 			terminals: [],
 			isImpersonating: false,
 			active: false
 		};
 	},
 	mounted: function mounted() {
-		this.getIsImpersonating();
+		this.getUsers();
 		this.setCurrentBranch();
 	},
 
 
 	methods: {
-		getIsImpersonating: function getIsImpersonating() {
+		getUsers: function getUsers() {
 			var _this = this;
 
-			axios.get("/impersonate/check").then(function (response) {
-				return _this.setIsImpersonating(response);
+			var params = this.users;
+			if (!params) params = this.userid;
+
+			axios.get("/impersonate/users?allowed=" + params).then(function (response) {
+				return _this.setUsers(response);
+			}).catch(function (error) {
+				return _this.getUsers();
 			});
 		},
-		setIsImpersonating: function setIsImpersonating(response) {
-			console.log(response);
-			this.isImpersonating = response.data;
+		setUsers: function setUsers(response) {
+			if (response.data) this.selectableUsers = response.data;
 		},
 		userChanged: function userChanged(response) {
+			axios.get("/impersonate/user?user=" + this.current_user);
+
 			flash("User changed, reloading");
 
 			setTimeout(function () {
 				location.reload();
-			}, 3000);
+			}, 2000);
 		},
 		branchChanged: function branchChanged(response) {
 			flash("Branch changed, reloading");
 
 			setTimeout(function () {
 				location.reload();
-			}, 3000);
+			}, 2000);
 		},
 		terminalChanged: function terminalChanged() {
 			flash("Terminal changed, reloading");
 
 			setTimeout(function () {
 				location.reload();
-			}, 3000);
+			}, 2000);
 		},
 		leaveImpersonation: function leaveImpersonation() {
 			var _this2 = this;
@@ -70687,10 +70694,12 @@ var render = function() {
                         }
                       }
                     },
-                    _vm._l(_vm.users, function(user) {
-                      return _c("option", { domProps: { value: user.id } }, [
-                        _vm._v(_vm._s(user.name))
-                      ])
+                    _vm._l(_vm.selectableUsers, function(user) {
+                      return user
+                        ? _c("option", { domProps: { value: user.id } }, [
+                            _vm._v(_vm._s(user.name))
+                          ])
+                        : _vm._e()
                     })
                   )
                 ]

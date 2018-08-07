@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class LoginController extends Controller
 {
@@ -40,5 +42,14 @@ class LoginController extends Controller
     public function username()
     {
         return 'username';
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+
+        $cookie = Cookie::forget('allowed_users');
+
+        return redirect('/login')->cookie($cookie);
     }
 }

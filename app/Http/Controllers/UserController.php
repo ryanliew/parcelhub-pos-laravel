@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Lab404\Impersonate\Models\impersonate;
@@ -26,6 +27,17 @@ class UserController extends Controller
     public function change_user()
     {
         auth()->user()->impersonate(User::find(request()->user));
+    }
+
+    public function get_impersonation()
+    {
+        $users = collect(explode( ",", request()->allowed));    
+
+        $result = $users->map(function($user, $key){
+            return User::find($user);
+        });
+
+        return json_encode($result);
     }
 
     public function check_impersonation()
@@ -117,14 +129,22 @@ class UserController extends Controller
 
         // Authenticated, add to permission
         if(Hash::check(request()->password, $target->password)) {
-            auth()->user()->allowed_users()->attach($target);
+
+            $existing = Cookie::get('allowed_users');
+
+            $value = $existing ? $existing : auth()->id();
+
+            $value .= "," . $target->id;
+
+            $cookie = cookie('allowed_users', $value, 240);
+            // auth()->user()->allowed_users()->attach($target);
             auth()->user()->impersonate($target);
         }
         else {
             return redirect()->back()->withErrors(['username' => 'Credentials does not match with our database']);
         }
 
-        return redirect()->route('invoices.page');
+        return redirect()->route('invoices.page')->cookie($cookie);
 
     }
 }
