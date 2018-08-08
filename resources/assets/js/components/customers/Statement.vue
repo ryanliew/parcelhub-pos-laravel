@@ -52,6 +52,7 @@
 </template>
 
 <script>
+	import moment from 'moment';
 	export default {
 		props: {
 		    data: {
@@ -61,8 +62,8 @@
 		data() {
 			return {
 				form: new Form({
-					date_to: '',
-					date_from: '',
+					date_to: moment().format("YYYY-MM-DD"),
+					date_from: moment().startOf('month').format("YYYY-MM-DD"),
 				}),
 
 				selected_customer:'',

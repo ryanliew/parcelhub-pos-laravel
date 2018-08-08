@@ -171,7 +171,7 @@
 					<div class="col-7 invoice-left" v-if="isAddingItem">
 					<text-input v-model="tracking_no" 
 						:defaultValue="tracking_no"
-						:required="true"
+						:required="this.selectedProductType.has_detail"
 						type="text"
 						label="Tracking no"
 						name="tracking_no"
@@ -884,7 +884,7 @@
 			},
 
 			validateInputs() {
-				this.tracking_no_error = this.tracking_no ? '' : 'This field is required';
+				this.tracking_no_error = this.tracking_no || !this.selectedProductType.has_detail ? '' : 'This field is required';
 				this.selectedProductType_error = this.selectedProductType ? '' : 'This field is required';
 				this.selectedZoneType_error = this.selectedZoneType || !this.isParcelOrDocument ? '' : 'This field is required';
 				this.zone_error = this.zone || !this.isParcelOrDocument ? '' : 'This field is required';
@@ -989,7 +989,12 @@
 
 			rounding() {
 				let rounded_total = Math.round(this.total * 100 / 5 ) / 100 * 5;
-				return - (this.total - rounded_total);
+				let value = this.total - rounded_total;
+
+				if(value !== 0)
+					return -value;
+
+				return 0.00;
 			},
 
 			total_price() {
