@@ -504,7 +504,8 @@
 
 				currentTime: '',
 
-				item_add_loading: false
+				item_add_loading: false,
+				price_group: ''
 			};
 		},
 
@@ -764,19 +765,19 @@
 			},
 
 			setProductPrice(response) {
-				let price_group = this.selectedProduct;
+				this.price_group = this.selectedProduct;
 
 				if(response.data)
-					price_group = response.data;
+					this.price_group = response.data;
 
-				let price = price_group.walk_in_price;
+				let price = this.price_group.walk_in_price;
 
 				if(this.selectedType.label == "Customer")
 				{
 					if(this.selectedCustomer.type == 'walk_in_special')
-						price = price_group.walk_in_price_special;
+						price = this.price_group.walk_in_price_special;
 					else if(this.selectedCustomer.type == 'Corporate')
-						price = price_group.corporate_price;
+						price = this.price_group.corporate_price;
 				}
 
 				this.price = price;

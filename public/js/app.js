@@ -76358,7 +76358,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			currentTime: '',
 
-			item_add_loading: false
+			item_add_loading: false,
+			price_group: ''
 		};
 	},
 	mounted: function mounted() {
@@ -76642,14 +76643,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.setProductPrice('');
 		},
 		setProductPrice: function setProductPrice(response) {
-			var price_group = this.selectedProduct;
+			this.price_group = this.selectedProduct;
 
-			if (response.data) price_group = response.data;
+			if (response.data) this.price_group = response.data;
 
-			var price = price_group.walk_in_price;
+			var price = this.price_group.walk_in_price;
 
 			if (this.selectedType.label == "Customer") {
-				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
+				if (this.selectedCustomer.type == 'walk_in_special') price = this.price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = this.price_group.corporate_price;
 			}
 
 			this.price = price;
