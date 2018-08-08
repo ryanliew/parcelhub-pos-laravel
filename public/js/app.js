@@ -70542,10 +70542,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	mounted: function mounted() {
 		this.getUsers();
 		this.setCurrentBranch();
+
+		this.getStatus();
 	},
 
 
 	methods: {
+		getStatus: function getStatus() {
+			var memory = this.getCookie("branch-selector");
+
+			this.active = memory == "open";
+		},
 		getUsers: function getUsers() {
 			var _this = this;
 
@@ -70557,6 +70564,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}).catch(function (error) {
 				return _this.getUsers();
 			});
+		},
+		getCookie: function getCookie(name) {
+			var value = "; " + document.cookie;
+			var parts = value.split("; " + name + "=");
+			if (parts.length == 2) return parts.pop().split(";").shift();
 		},
 		setUsers: function setUsers(response) {
 			if (response.data) this.selectableUsers = response.data;
@@ -70596,6 +70608,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return this.current == branch.id;
 			}.bind(this))[0];
 			this.terminals = this.current_branch.terminals;
+		},
+		toggleExpand: function toggleExpand() {
+			this.active = !this.active;
+			document.cookie = "branch-selector=open; path=/";
+
+			if (!this.active) {
+				document.cookie = "branch-selector=close; path=/";
+			}
 		}
 	},
 
@@ -70805,11 +70825,7 @@ var render = function() {
               class: _vm.expandButtonClass,
               attrs: { type: "button" },
               domProps: { innerHTML: _vm._s(_vm.expandButtonContent) },
-              on: {
-                click: function($event) {
-                  _vm.active = !_vm.active
-                }
-              }
+              on: { click: _vm.toggleExpand }
             })
           ],
           2
@@ -76753,7 +76769,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.items.splice(index, 1);
 		},
 		validateInputs: function validateInputs() {
-			this.tracking_no_error = this.tracking_no ? '' : 'This field is required';
+			this.tracking_no_error = this.tracking_no || !this.selectedProductType.has_detail ? '' : 'This field is required';
 			this.selectedProductType_error = this.selectedProductType ? '' : 'This field is required';
 			this.selectedZoneType_error = this.selectedZoneType || !this.isParcelOrDocument ? '' : 'This field is required';
 			this.zone_error = this.zone || !this.isParcelOrDocument ? '' : 'This field is required';
@@ -76845,7 +76861,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		rounding: function rounding() {
 			var rounded_total = Math.round(this.total * 100 / 5) / 100 * 5;
-			return -(this.total - rounded_total);
+			var value = this.total - rounded_total;
+
+			if (value !== 0) return -value;
+
+			return 0.00;
 		},
 		total_price: function total_price() {
 			return this.price ? parseFloat(this.price) + parseFloat(this.item_tax) : 0.00;
@@ -77400,7 +77420,7 @@ var render = function() {
                           ref: "tracking_input",
                           attrs: {
                             defaultValue: _vm.tracking_no,
-                            required: true,
+                            required: this.selectedProductType.has_detail,
                             type: "text",
                             label: "Tracking no",
                             name: "tracking_no",
@@ -78858,6 +78878,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
 //
 //
 //
@@ -78912,6 +78934,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: {
 		data: {
@@ -78921,8 +78944,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	data: function data() {
 		return {
 			form: new Form({
-				date_to: '',
-				date_from: ''
+				date_to: __WEBPACK_IMPORTED_MODULE_0_moment___default()().format("YYYY-MM-DD"),
+				date_from: __WEBPACK_IMPORTED_MODULE_0_moment___default()().startOf('month').format("YYYY-MM-DD")
 			}),
 
 			selected_customer: ''

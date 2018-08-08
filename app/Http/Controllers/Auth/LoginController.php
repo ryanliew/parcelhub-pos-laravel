@@ -46,10 +46,28 @@ class LoginController extends Controller
 
     public function logout()
     {
+        $logging_out = collect([request()->user]);
+
+        $allowed_users = collect(explode("," ,request()->allowed_users));
+
+        $remaining_users = $allowed_users->diff($logging_out);
+
         Auth::logout();
 
         $cookie = Cookie::forget('allowed_users');
 
-        return redirect('/login')->cookie($cookie);
+        if($remaining_users->count() > 0) {
+            $cookie = cookie('allowed_users', $remaining_users->implode(","), 240);
+
+            Auth::loginUsingId( $remaining_users->first() );
+        }
+
+
+        return redirect()->route('invoices.page')->cookie($cookie);
+    }
+
+    public function redirectTo()
+    {
+        return "/invoices/create";
     }
 }

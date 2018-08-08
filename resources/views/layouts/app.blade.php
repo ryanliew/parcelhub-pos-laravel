@@ -64,7 +64,7 @@
                                         Login as other user
                                     </a>
 
-                                    <a class="dropdown-item" href="{{ route('logout') }}">
+                                    <a class="dropdown-item" href="{{ route('logout') }}?user={{ auth()->id() }}&allowed_users={{ Cookie::get('allowed_users') }}">
                                         {{ __('Logout') }}
                                     </a>
                                 </div>

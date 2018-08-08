@@ -20,7 +20,7 @@
 					<option v-for="terminal in terminals" :value="terminal.id">{{ terminal.name }}</option>
 				</select>
 
-				<button type="button" class="btn btn-rounded expand-button" :class="expandButtonClass" @click="active = !active" v-html="expandButtonContent"></button>
+				<button type="button" class="btn btn-rounded expand-button" :class="expandButtonClass" @click="toggleExpand" v-html="expandButtonContent"></button>
 			</div>
 
 
@@ -47,9 +47,17 @@
 		mounted() {
 			this.getUsers();
 			this.setCurrentBranch();
+
+			this.getStatus();
 		},
 
 		methods: {
+			getStatus() {
+				let memory = this.getCookie("branch-selector");
+
+				this.active = memory == "open";
+			},
+
 			getUsers() {
 				let params = this.users;
 				if(!params) params = this.userid;
@@ -57,6 +65,12 @@
 				axios.get("/impersonate/users?allowed=" + params)
 					.then(response => this.setUsers(response))
 					.catch(error => this.getUsers());
+			},
+
+			getCookie(name) {
+			  	var value = "; " + document.cookie;
+			  	var parts = value.split("; " + name + "=");
+			  	if (parts.length == 2) return parts.pop().split(";").shift();
 			},
 
 			setUsers(response) {
@@ -98,6 +112,15 @@
 			setCurrentBranch() {
 				this.current_branch = _.filter(this.branches, function(branch){ return this.current == branch.id; }.bind(this))[0];
 				this.terminals = this.current_branch.terminals;
+			},
+
+			toggleExpand() {
+				this.active = !this.active;
+				document.cookie = "branch-selector=open; path=/";
+
+				if(!this.active) {
+					document.cookie = "branch-selector=close; path=/";
+				}
 			}
 		},
 
