@@ -108,7 +108,7 @@ class BranchController extends Controller
                     ->where('product_id', '=', request()->product);
 
         if(request()->has('customer')) {
-            $result->where('customer_id', '=', request()->customer);
+            $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
         }
         
         return json_encode($result->first());
