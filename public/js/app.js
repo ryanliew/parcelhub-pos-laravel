@@ -76275,6 +76275,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -76304,6 +76309,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			isAddingItem: false,
 			isEditing: false,
 			editingIndex: '',
+			isLoading: true,
 
 			product_types: [],
 			zone_types: [],
@@ -76369,7 +76375,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}, 1000);
 
 		window.addEventListener('keyup', function (event) {
-			if (event.key == "F8") {
+			if (event.key == "F8" && this.canAddItem) {
 				this.toggleAddItem();
 			}
 		}.bind(this));
@@ -76504,6 +76510,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					return _this7.getRelatedProduct(error);
 				});
 
+				this.isLoading = false;
 				if (this.selectedProductType.has_detail) {
 					this.getDefaultDetails();
 				}
@@ -76893,12 +76900,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (!this.canEdit) {
 				if (this.invoice && !this.invoice.can_edit) return "Invoice has been locked";
 
-				if (!this.selectedCustomer && this.form.paid <= this.rounded_total) return "Full amount must be paid";
+				if (!this.selectedCustomer && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
 
 				return "No items";
 			}
 
 			return "";
+		},
+		canAddItem: function canAddItem() {
+			return this.isLoading;
 		}
 	},
 
@@ -77072,7 +77082,10 @@ var render = function() {
                               {
                                 staticClass: "fa-stack pointer transition-ease",
                                 class: _vm.add_button_class,
-                                attrs: { title: _vm.tooltip_add },
+                                attrs: {
+                                  title: _vm.tooltip_add,
+                                  disabled: !_vm.canAddItem
+                                },
                                 on: { click: _vm.toggleAddItem }
                               },
                               [

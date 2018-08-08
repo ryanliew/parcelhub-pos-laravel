@@ -5,6 +5,7 @@
 			@input="form.errors.clear($event.target.name)"
 			@keyup.enter="moveToNext">
 			<div class="row">
+				<!-- Start main section -->
 				<div class="col-5 invoice-right">
 					<p><b>Current time</b>: {{ currentTime }}</p>
 					<selector-input :potentialData="types"
@@ -55,7 +56,7 @@
 									<th>Unit</th>
 									<th>Price</th>
 									<th>
-										<span class="fa-stack pointer transition-ease" :class="add_button_class" :title="tooltip_add" @click="toggleAddItem">
+										<span class="fa-stack pointer transition-ease" :class="add_button_class" :title="tooltip_add" @click="toggleAddItem" :disabled="!canAddItem">
 											<i class="fas fa-circle fa-stack-2x"></i>
 											<i class="fas fa-plus fa-stack-1x fa-inverse text-white"></i>
 										</span>
@@ -163,6 +164,9 @@
 						<button type="submit" class="btn btn-primary" :disabled="!canEdit" :title="editTooltip">Confirm</button>
 					</div>
 				</div>
+				<!-- End main section -->
+
+				<!-- Start item section -->
 				<transition name="left-slide">
 					<div class="col-7 invoice-left" v-if="isAddingItem">
 					<text-input v-model="tracking_no" 
@@ -353,6 +357,7 @@
 					<button type="button" class="btn btn-secondary" @click="toggleAddItem">Cancel</button>
 					</div>
 				</transition>	
+				<!-- End item section -->
 			</div>
 
 			<modal :active="isCalculatingDimWeight"
@@ -438,6 +443,7 @@
 				isAddingItem: false,
 				isEditing: false,
 				editingIndex: '',
+				isLoading: true,
 
 				product_types: [],
 				zone_types: [],
@@ -512,7 +518,7 @@
 			setInterval(() => this.updateCurrentTime(), 1000);
 
 			window.addEventListener('keyup', function(event){
-	    		if(event.key == "F8") {
+	    		if(event.key == "F8" && this.canAddItem) {
 	    			this.toggleAddItem();
 	    		}
 	    	}.bind(this));
@@ -630,6 +636,7 @@
 						.then(response => this.setProduct(response))
 						.catch(error => this.getRelatedProduct(error));
 
+					this.isLoading = false;
 					if(this.selectedProductType.has_detail) {
 						this.getDefaultDetails();
 					}
@@ -1050,13 +1057,17 @@
 					if(this.invoice && !this.invoice.can_edit)
 						return "Invoice has been locked"
 
-					if(!this.selectedCustomer && this.form.paid <= this.rounded_total)
+					if(!this.selectedCustomer && this.form.paid <= this.rounded_total && this.rounded_total > 0)
 						return "Full amount must be paid";
 
 					return "No items";
 				}
 
 				return "";
+			},
+
+			canAddItem() {
+				return this.isLoading;
 			}
 		},
 
