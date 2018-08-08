@@ -84,7 +84,7 @@ class BranchController extends Controller
                             ->orWhere('branch_code', '=', '*');
                     })
                     ->where(function($query){
-                        $query->where('product_type', '=', request()->product_type)
+                        $query->where('product_type', '=', request()->type)
                             ->orWhere("product_type", '=', '*');
                     })
                     ->get();
