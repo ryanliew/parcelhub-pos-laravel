@@ -93,6 +93,8 @@
 
 			function onSuccess(response) {
 				flash(response.data.message);
+				if(response.data.id)
+					window.open("/cashups/report/" + response.data.id);
 				table.ajax.reload();
 			}
 

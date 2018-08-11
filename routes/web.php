@@ -98,6 +98,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 // Users route
 Route::group(['middleware' => 'auth'], function(){
 	
+	Route::get("/logout", "Auth\LoginController@logout");
+
 	Route::group(['prefix' => 'data'], function(){
 		Route::get("/zonetypes", "ZoneTypeController@list");
 		Route::get("/branches", "BranchController@list");
@@ -118,6 +120,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/", "UserController@grantAccess");
 		Route::get("/check", "UserController@check_impersonation");
 		Route::get("/leave", "UserController@leave_impersonation");
+		Route::get("/users", "UserController@get_impersonation");
+		Route::get("/user", "UserController@change_user");
 	});
 
 	Route::group(['prefix' => 'user'], function(){

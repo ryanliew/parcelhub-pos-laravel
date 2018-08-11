@@ -64,15 +64,9 @@
                                         Login as other user
                                     </a>
 
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                    <a class="dropdown-item" href="{{ route('logout') }}?user={{ auth()->id() }}&allowed_users={{ Cookie::get('allowed_users') }}">
                                         {{ __('Logout') }}
                                     </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
                                 </div>
                             </li>
                         @endguest
@@ -82,7 +76,7 @@
         </nav>
         @if(auth()->check())
         
-            <branch-selector :branches="{{ json_encode(Auth::user()->branches()->with('terminals')->get()) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}" :userId="{{ auth()->user()->id }}" :users="{{ json_encode(auth()->user()->allowed_users) }}"></branch-selector>
+            <branch-selector :branches="{{ json_encode(Auth::user()->branches()->with('terminals')->get()) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}" :userId="{{ auth()->user()->id }}" :users="{{ json_encode(Cookie::get('allowed_users')) }}"></branch-selector>
             
         @endif
         <main class="py-4 main-content inset-shadow">

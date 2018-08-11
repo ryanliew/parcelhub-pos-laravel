@@ -5,7 +5,7 @@
 				<template v-if="!isImpersonating">
 					<label for="users-selector" class="mr-1">Login as:</label>
 					<select id="user-selector" class="custom-select" v-model="current_user" @changed="userChanged">
-						<option v-for="user in users" :value="user.id">{{ user.name }}</option>
+						<option v-for="user in selectableUsers" :value="user.id" v-if="user">{{ user.name }}</option>
 					</select>
 				</template>
 				<template v-else>
@@ -20,7 +20,7 @@
 					<option v-for="terminal in terminals" :value="terminal.id">{{ terminal.name }}</option>
 				</select>
 
-				<button type="button" class="btn btn-rounded expand-button" :class="expandButtonClass" @click="active = !active" v-html="expandButtonContent"></button>
+				<button type="button" class="btn btn-rounded expand-button" :class="expandButtonClass" @click="toggleExpand" v-html="expandButtonContent"></button>
 			</div>
 
 
@@ -37,6 +37,7 @@
 				current_user: this.userid,
 				current_terminal: this.terminal,
 				current_branch: '',
+				selectableUsers: [],
 				terminals: [],
 				isImpersonating: false,
 				active: false
@@ -44,27 +45,47 @@
 		},
 
 		mounted() {
-			this.getIsImpersonating();
+			this.getUsers();
 			this.setCurrentBranch();
+
+			this.getStatus();
 		},
 
 		methods: {
-			getIsImpersonating() {
-				axios.get("/impersonate/check")
-					.then(response => this.setIsImpersonating(response));
+			getStatus() {
+				let memory = this.getCookie("branch-selector");
+
+				this.active = memory == "open";
 			},
 
-			setIsImpersonating(response) {
-				console.log(response);
-				this.isImpersonating = response.data;
+			getUsers() {
+				let params = this.users;
+				if(!params) params = this.userid;
+
+				axios.get("/impersonate/users?allowed=" + params)
+					.then(response => this.setUsers(response))
+					.catch(error => this.getUsers());
+			},
+
+			getCookie(name) {
+			  	var value = "; " + document.cookie;
+			  	var parts = value.split("; " + name + "=");
+			  	if (parts.length == 2) return parts.pop().split(";").shift();
+			},
+
+			setUsers(response) {
+				if(response.data)
+					this.selectableUsers = response.data;
 			},
 
 			userChanged(response) {
+				axios.get("/impersonate/user?user=" + this.current_user);
+
 				flash("User changed, reloading");
 
 				setTimeout(function(){
 					location.reload();
-				}, 3000);
+				}, 2000);
 			},
 
 			branchChanged(response) {
@@ -72,7 +93,7 @@
 
 				setTimeout(function(){
 					location.reload();
-				}, 3000);
+				}, 2000);
 			},
 
 			terminalChanged() {
@@ -80,7 +101,7 @@
 
 				setTimeout(function(){
 					location.reload();
-				}, 3000);
+				}, 2000);
 			},
 
 			leaveImpersonation() {
@@ -91,6 +112,15 @@
 			setCurrentBranch() {
 				this.current_branch = _.filter(this.branches, function(branch){ return this.current == branch.id; }.bind(this))[0];
 				this.terminals = this.current_branch.terminals;
+			},
+
+			toggleExpand() {
+				this.active = !this.active;
+				document.cookie = "branch-selector=open; path=/";
+
+				if(!this.active) {
+					document.cookie = "branch-selector=close; path=/";
+				}
 			}
 		},
 

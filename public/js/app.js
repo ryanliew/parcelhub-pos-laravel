@@ -70533,49 +70533,68 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			current_user: this.userid,
 			current_terminal: this.terminal,
 			current_branch: '',
+			selectableUsers: [],
 			terminals: [],
 			isImpersonating: false,
 			active: false
 		};
 	},
 	mounted: function mounted() {
-		this.getIsImpersonating();
+		this.getUsers();
 		this.setCurrentBranch();
+
+		this.getStatus();
 	},
 
 
 	methods: {
-		getIsImpersonating: function getIsImpersonating() {
+		getStatus: function getStatus() {
+			var memory = this.getCookie("branch-selector");
+
+			this.active = memory == "open";
+		},
+		getUsers: function getUsers() {
 			var _this = this;
 
-			axios.get("/impersonate/check").then(function (response) {
-				return _this.setIsImpersonating(response);
+			var params = this.users;
+			if (!params) params = this.userid;
+
+			axios.get("/impersonate/users?allowed=" + params).then(function (response) {
+				return _this.setUsers(response);
+			}).catch(function (error) {
+				return _this.getUsers();
 			});
 		},
-		setIsImpersonating: function setIsImpersonating(response) {
-			console.log(response);
-			this.isImpersonating = response.data;
+		getCookie: function getCookie(name) {
+			var value = "; " + document.cookie;
+			var parts = value.split("; " + name + "=");
+			if (parts.length == 2) return parts.pop().split(";").shift();
+		},
+		setUsers: function setUsers(response) {
+			if (response.data) this.selectableUsers = response.data;
 		},
 		userChanged: function userChanged(response) {
+			axios.get("/impersonate/user?user=" + this.current_user);
+
 			flash("User changed, reloading");
 
 			setTimeout(function () {
 				location.reload();
-			}, 3000);
+			}, 2000);
 		},
 		branchChanged: function branchChanged(response) {
 			flash("Branch changed, reloading");
 
 			setTimeout(function () {
 				location.reload();
-			}, 3000);
+			}, 2000);
 		},
 		terminalChanged: function terminalChanged() {
 			flash("Terminal changed, reloading");
 
 			setTimeout(function () {
 				location.reload();
-			}, 3000);
+			}, 2000);
 		},
 		leaveImpersonation: function leaveImpersonation() {
 			var _this2 = this;
@@ -70589,6 +70608,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return this.current == branch.id;
 			}.bind(this))[0];
 			this.terminals = this.current_branch.terminals;
+		},
+		toggleExpand: function toggleExpand() {
+			this.active = !this.active;
+			document.cookie = "branch-selector=open; path=/";
+
+			if (!this.active) {
+				document.cookie = "branch-selector=close; path=/";
+			}
 		}
 	},
 
@@ -70687,10 +70714,12 @@ var render = function() {
                         }
                       }
                     },
-                    _vm._l(_vm.users, function(user) {
-                      return _c("option", { domProps: { value: user.id } }, [
-                        _vm._v(_vm._s(user.name))
-                      ])
+                    _vm._l(_vm.selectableUsers, function(user) {
+                      return user
+                        ? _c("option", { domProps: { value: user.id } }, [
+                            _vm._v(_vm._s(user.name))
+                          ])
+                        : _vm._e()
                     })
                   )
                 ]
@@ -70796,11 +70825,7 @@ var render = function() {
               class: _vm.expandButtonClass,
               attrs: { type: "button" },
               domProps: { innerHTML: _vm._s(_vm.expandButtonContent) },
-              on: {
-                click: function($event) {
-                  _vm.active = !_vm.active
-                }
-              }
+              on: { click: _vm.toggleExpand }
             })
           ],
           2
@@ -76266,6 +76291,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -76295,6 +76325,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			isAddingItem: false,
 			isEditing: false,
 			editingIndex: '',
+			isLoading: true,
 
 			product_types: [],
 			zone_types: [],
@@ -76343,7 +76374,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			currentTime: '',
 
-			item_add_loading: false
+			item_add_loading: false,
+			price_group: ''
 		};
 	},
 	mounted: function mounted() {
@@ -76360,7 +76392,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}, 1000);
 
 		window.addEventListener('keyup', function (event) {
-			if (event.key == "F8") {
+			if (event.key == "F8" && this.canAddItem) {
 				this.toggleAddItem();
 			}
 		}.bind(this));
@@ -76495,6 +76527,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 					return _this7.getRelatedProduct(error);
 				});
 
+				this.isLoading = false;
 				if (this.selectedProductType.has_detail) {
 					this.getDefaultDetails();
 				}
@@ -76626,14 +76659,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.setProductPrice('');
 		},
 		setProductPrice: function setProductPrice(response) {
-			var price_group = this.selectedProduct;
+			this.price_group = this.selectedProduct;
 
-			if (response.data) price_group = response.data;
+			if (response.data) this.price_group = response.data;
 
-			var price = price_group.walk_in_price;
+			var price = this.price_group.walk_in_price;
 
 			if (this.selectedType.label == "Customer") {
-				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
+				if (this.selectedCustomer.type == 'walk_in_special') price = this.price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = this.price_group.corporate_price;
 			}
 
 			this.price = price;
@@ -76736,7 +76769,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.items.splice(index, 1);
 		},
 		validateInputs: function validateInputs() {
-			this.tracking_no_error = this.tracking_no ? '' : 'This field is required';
+			this.tracking_no_error = this.tracking_no || !this.selectedProductType.has_detail ? '' : 'This field is required';
 			this.selectedProductType_error = this.selectedProductType ? '' : 'This field is required';
 			this.selectedZoneType_error = this.selectedZoneType || !this.isParcelOrDocument ? '' : 'This field is required';
 			this.zone_error = this.zone || !this.isParcelOrDocument ? '' : 'This field is required';
@@ -76828,7 +76861,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		rounding: function rounding() {
 			var rounded_total = Math.round(this.total * 100 / 5) / 100 * 5;
-			return -(this.total - rounded_total);
+			var value = this.total - rounded_total;
+
+			if (value !== 0) return -value;
+
+			return 0.00;
 		},
 		total_price: function total_price() {
 			return this.price ? parseFloat(this.price) + parseFloat(this.item_tax) : 0.00;
@@ -76884,12 +76921,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (!this.canEdit) {
 				if (this.invoice && !this.invoice.can_edit) return "Invoice has been locked";
 
-				if (!this.selectedCustomer && this.form.paid <= this.rounded_total) return "Full amount must be paid";
+				if (!this.selectedCustomer && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
 
 				return "No items";
 			}
 
 			return "";
+		},
+		canAddItem: function canAddItem() {
+			return this.isLoading;
 		}
 	},
 
@@ -77063,7 +77103,10 @@ var render = function() {
                               {
                                 staticClass: "fa-stack pointer transition-ease",
                                 class: _vm.add_button_class,
-                                attrs: { title: _vm.tooltip_add },
+                                attrs: {
+                                  title: _vm.tooltip_add,
+                                  disabled: !_vm.canAddItem
+                                },
                                 on: { click: _vm.toggleAddItem }
                               },
                               [
@@ -77377,7 +77420,7 @@ var render = function() {
                           ref: "tracking_input",
                           attrs: {
                             defaultValue: _vm.tracking_no,
-                            required: true,
+                            required: this.selectedProductType.has_detail,
                             type: "text",
                             label: "Tracking no",
                             name: "tracking_no",
@@ -78835,6 +78878,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
 //
 //
 //
@@ -78889,6 +78934,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: {
 		data: {
@@ -78898,8 +78944,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	data: function data() {
 		return {
 			form: new Form({
-				date_to: '',
-				date_from: ''
+				date_to: __WEBPACK_IMPORTED_MODULE_0_moment___default()().format("YYYY-MM-DD"),
+				date_from: __WEBPACK_IMPORTED_MODULE_0_moment___default()().startOf('month').format("YYYY-MM-DD")
 			}),
 
 			selected_customer: ''

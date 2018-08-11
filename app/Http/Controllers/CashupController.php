@@ -49,7 +49,7 @@ class CashupController extends Controller
 
 	    	$terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
 
-	    	return json_encode(['message' => "Cash up report generated"]);
+	    	return json_encode(['message' => "Cash up report generated", "id" => $cashup->id]);
 	    }
 
 	    return json_encode(['message' => "No invoices pending for cash up"]);

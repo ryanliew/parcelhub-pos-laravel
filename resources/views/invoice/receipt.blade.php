@@ -121,9 +121,11 @@
 						<td class="ptb-5 text-right">{{ $item->unit }}</td>
 						<td class="text-right ptb-5">{{ number_format($item->total_price, 2, '.', ',') }}</td>
 					</tr>
-					<tr>
-						<td colspan="4" class="pl-2 pb-5">S/No. {{ $item->tracking_code }}</td>
-					</tr>
+					@if(!empty($item->tracking_code))
+						<tr>
+							<td colspan="4" class="pl-2 pb-5">S/No. {{ $item->tracking_code }}</td>
+						</tr>
+					@endif
 
 				@endforeach
 			</tbody>

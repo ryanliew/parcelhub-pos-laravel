@@ -84,7 +84,7 @@ class BranchController extends Controller
                             ->orWhere('branch_code', '=', '*');
                     })
                     ->where(function($query){
-                        $query->where('product_type', '=', request()->product_type)
+                        $query->where('product_type', '=', request()->type)
                             ->orWhere("product_type", '=', '*');
                     })
                     ->get();
@@ -108,7 +108,7 @@ class BranchController extends Controller
                     ->where('product_id', '=', request()->product);
 
         if(request()->has('customer')) {
-            $result->where('customer_id', '=', request()->customer);
+            $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
         }
         
         return json_encode($result->first());
