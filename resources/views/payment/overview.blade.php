@@ -26,7 +26,7 @@
 							<th>Terminal</th>
 							<th>Total</th>
 							<th>Payment method</th>
-							<th>Invoice No.</th>
+							<!-- <th>Action</th> -->
 						</tr>
 					</thead>
 				</table>
@@ -68,6 +68,11 @@
 					// },
 					'excel', 'colvis'
 				],
+				columnDefs: [ {
+		            "targets": -1,
+		            "data": null,
+		            "defaultContent": "<button class='btn btn-primary'>View</button>",
+		        } ],
 				ajax: url,
 				columns: [
 					{data: 'updated_at'},
@@ -83,7 +88,7 @@
 						}	
 					},
 					{data: 'payment_method'},
-					{data: 'invoice_no'},
+					// {data: ''},
 				]
 			});
 

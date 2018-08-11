@@ -154,7 +154,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/index", "PaymentController@index")->name('payments.index');
 		Route::get('/index/{invoice}',"PaymentController@index");
 		Route::get('/invoice/{invoice}', "PaymentController@page");
-		Route::post("/", "PaymentController@store");
+		Route::get('/receive', "PaymentController@receive")->name('payments.receive');
+		// Route::post("/", "PaymentController@store");
+		Route::post("/create/", "PaymentController@store");
 	});
 
 	Route::group(['prefix' => 'customers'], function(){

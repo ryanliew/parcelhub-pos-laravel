@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Payment;
+use App\PaymentInvoice;
 use App\Invoice;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,11 @@ class PaymentController extends Controller
     public function page($invoice_no = '')
     {
         return view('payment.overview', ['invoice_no' => $invoice_no]);
+    }
+
+    public function receive()
+    {
+        return view('payment.receive' );
     }
 
     public function index($invoice_no = '')
@@ -67,28 +73,50 @@ class PaymentController extends Controller
 
     public function store()
     {
-        $this->validate_input();
+
+        $data = file_get_contents('php://input');
+
+        // $data = json_decode($_POST['row'], true);
+
+        $data = json_decode($data, true);
 
         $user = auth()->user();
 
-        $invoice = Invoice::find(request()->invoice_id);
+        $customer = $data[0];
+        $total = $data[1];
+        $type = $data[2];
 
-        $payment = Payment::create([
-            'customer_id' => $invoice->customer ? $invoice->customer->id : '',
-            'branch_id' => $user->current_branch,
-            'terminal_no' => $user->current_terminal,
-            'total' =>  request()->amount,
-            'payment_method' => request()->type,
-            'created_by' => $user->id,
-            'invoice_no' => request()->invoice_no,
+        if($total > 0 )
+        {
+            $payment = Payment::create([
+                'customer_id' => $customer,
+                'branch_id' => $user->current_branch,
+                'terminal_no' => $user->current_terminal,
+                'total' =>  $total,
+                'payment_method' => $type,
+                'created_by' => $user->id,
+            ]);
 
-        ]);
+            foreach ($data[3] as $row) {
 
+                $invoice_total = $row[1];
 
-        $invoice->update([
-            'paid' => request()->amount + $invoice->paid,
-        ]);
+                if( $invoice_total > 0 )
+                {
+                    PaymentInvoice::create([
+                    'payment_id' => $payment->id,
+                    'invoice_no' => $row[0],
+                    'total' => $invoice_total,
+                    ]);
 
+                    $invoice = Invoice::where('invoice_no', $row[0])->get()->first();
+
+                    $invoice->update([
+                        'paid' => request()->amount + $invoice->paid,
+                    ]);
+                }
+            }
+        }
 
         return json_encode(['message' => "Payment created"]);
     }

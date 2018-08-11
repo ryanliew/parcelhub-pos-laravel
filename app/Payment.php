@@ -8,11 +8,6 @@ class Payment extends Model
 {
     protected $guarded = [];
 
-  	public function invoice()
-  	{
-  		return $this->belongsTo('App\Invoice', 'invoice_no', 'invoice_no');
-  	}
-
   	public function branch()
   	{
   		return $this->belongsTo('App\Branch', 'branch_id');
@@ -22,4 +17,9 @@ class Payment extends Model
   	{
   		return $this->belongsTo('App\Customer', 'customer_id');
   	}
+
+    public function payments()
+    {
+      return $this->hasMany('App\PaymentInvoice', 'payment_id');
+    }
 }

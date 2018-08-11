@@ -37,7 +37,7 @@ class Invoice extends Model
 
     public function payment()
     {
-        return $this->hasMany('App\Payment', "invoice_no", "invoice_no");
+        return $this->hasMany('App\PaymentInvoice', "invoice_no", "invoice_no");
     }
 
     public function cashup()
