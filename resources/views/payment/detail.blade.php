@@ -8,23 +8,32 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Payments</b>
+				<b>Payments per invoice</b> <br><br>
+				<b>Customer name :</b> {{ $customer }} <br>
+				<b>Payment type :</b> {{ $payment_type }}
 			</div>
+
 			<div class="card-body">
 				<table class="table table-bordered" id="payments-table">
 					<thead>
 						<tr>
-							<th>Datetime</th>
-							<th>Customer</th>
-							<th>Branch</th>
-							<th>Terminal</th>
+							<th>Invoice no.</th>
 							<th>Total</th>
-							<th>Payment method</th>
+							<th>Paid amount</th>
+							<th>Outstanding</th>
+							<th>Amt paid</th>
 						</tr>
 					</thead>
+					<tfoot>
+			            <tr>
+			                <th colspan="4" style="text-align:right">Total:</th>
+			                <th>RM {{ number_format((float)$total, 2, '.', '') }}</th>
+			            </tr>
+			        </tfoot>
 				</table>
 			</div>
 		</div>
+		<payments-dialog></payments-dialog>
 	</div>
 @endsection
 
@@ -34,7 +43,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
-			var url = '{!! route("payments.index") !!}';
+			var url = '/payments/details/{{ $payment_id }}';
 			var table = $("#payments-table").DataTable({
 				processing: true,
 				serverSide: true,
@@ -43,28 +52,37 @@
 				select: {
 					style: 'single'
 				},
-				dom: 'Blftip',
+				dom: 'Bt',
 				buttons: [
-					{
-						text: 'View',
-						action: function( e, dt, node, config ) {
-							window.location.href = "/payments/detail/" + table.rows( { selected: true } ).data()[0]['id'];
-						},
-						enabled: false
-					},
-					'excel', 'colvis'
+					 'excel', 'colvis'
 				],
-				columnDefs: [ {
-		            "targets": -1,
-		            "data": null,
-		            "defaultContent": "<button class='btn btn-primary'>View</button>",
-		        } ],
 				ajax: url,
 				columns: [
-					{data: 'updated_at'},
-					{data: 'customer', name:'customer.name'},
-					{data: 'branch', name:'branch.name'},
-					{data: 'terminal_no' },
+					{data: 'invoice_no'},
+					{data: 'invoice_total', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}	
+					},
+					{data: 'paid', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}	
+					},
+					{data: 'outstanding', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}	
+					},
 					{data: 'total', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);
@@ -73,20 +91,15 @@
 							return data;
 						}	
 					},
-					{data: 'payment_method'},
 				]
 			});
-
-			table.on( 'select deselect', function () {
-		        var selectedRows = table.rows( { selected: true } ).count();
-		 
-		        table.button( 0 ).enable( selectedRows === 1 );
-		    });
 
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();
 		    });
 		});
 
+        
+		
 	</script>
 @endsection

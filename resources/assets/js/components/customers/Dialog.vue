@@ -255,6 +255,7 @@
 				this.isActive = false;
 				this.selectedCustomer = '';
 				this.form.reset();
+				this.form.branch_id = this.selectedBranch;
 			},
 
 			setForm() {

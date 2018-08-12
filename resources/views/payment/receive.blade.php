@@ -11,10 +11,16 @@
 				<b>Payments receive</b> 
 			</div>
 			<div class="card-body">
-			
+
 				<div class="row">
 					<div class="col-2">
-						Customer <input class='form-control' id='customer_name' type="text"><br>
+						Customer <br>
+						<select id='customer_name' class='form-control'>
+							@foreach($customers as $customer)
+								<option value='{{ $customer->name }}'>{{$customer->name}}</option>
+							@endforeach 
+						</select>
+						<!-- Customer <input class='form-control' id='customer_name' type="text"><br> -->
 					</div>
 					<div class="col-2">
 						Date from <input class='form-control' id='min' type="date" ><br>
@@ -48,6 +54,7 @@
 					<tfoot>
 			            <tr>
 			                <th colspan="6" style="text-align:right">Total:</th>
+
 			                <th></th>
 			            </tr>
 			            <tr>
@@ -207,14 +214,26 @@
 
 			$("#btnSearch").click(function() {
 		    	
-		    	table.ajax.url('{!! route("invoices.index") !!}').load();
 
-		    	customer = document.getElementById("customer_name").value;
+		    	var customerInput = document.getElementById("customer_name");
+		    	customer = customerInput.value;
 
-	   			table
+		    	if(customer == '')
+		    	{
+		    		customerInput.setCustomValidity("Customer field is required");
+		    		customerInput.reportValidity();
+
+		    		flash("The given input is invalid",'danger');
+		    	}
+		    	else
+		    	{
+		    		table.ajax.url('{!! route("invoices.index") !!}').load();
+
+		    		table
 	   				.columns( 2 ).search( customer, true, false, true)
 	   				.draw();
-		    	
+		    	}
+
 	  		});
 
 	  		$.ajaxSetup({
@@ -225,56 +244,76 @@
 
 	  		$("#btnPayment").click(function() {
 
-	  			var type = document.getElementById("payment_type").value;
-	  			var customer = table.rows({ filter : 'applied'}).data()[0]['customer_id'];
+	  			var row = table.rows({ filter : 'applied'});
+	  			var amount_paid = sumTotalAmt();
 
-	  			var array = [];
+	  			
 
-	  			var detail_array = [];
+	  			if( row.count() == 0 )
+	  			{
+	  				var search = document.getElementById("btnSearch");
 
-	  			array.push(customer);
-			    array.push(sumTotalAmt());
-			    array.push(type);
+	  				search.setCustomValidity("Please retrieve customer invoice(s)");
+		    		search.reportValidity();
 
-		    	table.rows({ filter : 'applied'}).every( function ( rowIdx, tableLoop, rowLoop ) {
-				    var invoice = this.data()['invoice_no'];
-				    var amount = this.nodes().to$().find('input').val();
-				    var inner_array = [];
+		    		flash("No invoices selected",'danger');
+	  			}
+	  			else if( amount_paid == 0)
+	  			{
+		    		flash("Total amount cannot be zero",'danger');
+	  			}
+	  			else
+	  			{
 
-				    inner_array.push(invoice);
-				    inner_array.push(amount);
+	  				var confirmed = confirm("Confirm payment amount of RM " + parseFloat(amount_paid).toFixed(2) );
 
-				    detail_array.push(inner_array);
+	  				if( confirmed )
+	  				{
+		  				var type = document.getElementById("payment_type").value;
+			  			var customer = row.data()[0]['customer_id'];
 
-				   
+			  			var array = [];
 
-				} );
+			  			var detail_array = [];
 
-				array.push(detail_array);
+			  			array.push(customer);
+					    array.push(amount_paid);
+					    array.push(type);
 
-	  			data = JSON.stringify( array );
+				    	table.rows({ filter : 'applied'}).every( function ( rowIdx, tableLoop, rowLoop ) {
+						    var invoice = this.data()['invoice_no'];
+						    var outstanding = this.data()['outstanding'];
+						    var total = this.data()['total'];
+						    var amount = this.nodes().to$().find('input').val();
+						    var inner_array = [];
 
-	  			console.log(array);
+						    inner_array.push(invoice);
+						    inner_array.push(amount);
+						    inner_array.push(outstanding-amount);
+						    inner_array.push(total);
 
-		    	$.ajax({
-				  type: "POST",
-				  "_token": "{{ csrf_token() }}",
-				  url: "/payments/create/",
-				  data: data,
-				  // "data": function(d) {
-		    //    		var data =  table.rows().data()
-		    //    				$.each(data, function(key, val) {
-		    //      				d[val.name] = val.value;
-		    //    				});
-		    //  		},
-				  success: function(response){ 
-				  	alert(response.message);
-				  	//window.location.href ='/invoices/create'
-				  },
-				  dataType: "json",
-				  contentType : "application/json"
-				});
+						    detail_array.push(inner_array);
 
+						} );
+
+						array.push(detail_array);
+
+			  			data = JSON.stringify( array );
+
+				    	$.ajax({
+						  type: "POST",
+						  "_token": "{{ csrf_token() }}",
+						  url: "/payments/create/",
+						  data: data,
+						  success: function(response){ 
+						  	window.location.href ='/payments/detail/' + response.payment_id;
+						  },
+						  dataType: "json",
+						  contentType : "application/json"
+						});
+
+				    }
+	  			}
 		    });
 
 		});
