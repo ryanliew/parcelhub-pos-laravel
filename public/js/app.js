@@ -30377,7 +30377,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(139);
-module.exports = __webpack_require__(248);
+module.exports = __webpack_require__(251);
 
 
 /***/ }),
@@ -30411,6 +30411,20 @@ window.flash = function (message) {
   var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
 
   window.events.$emit('flash', { message: message, level: level });
+};
+
+window.swalalert = function (title, message) {
+  var level = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'warning';
+  var callback = arguments[3];
+
+  window.events.$swal({
+    title: title,
+    type: level,
+    html: message,
+    showCancelButton: true
+  }).then(function (result) {
+    callback();
+  });
 };
 
 __webpack_require__(173);
@@ -30447,16 +30461,14 @@ Vue.component('taxes-dialog', __webpack_require__(221));
 Vue.component('products-dialog', __webpack_require__(224));
 Vue.component('products-importer', __webpack_require__(227));
 
-Vue.component('payments-dialog', __webpack_require__(230));
+Vue.component('invoices-create', __webpack_require__(236));
 
-Vue.component('invoices-create', __webpack_require__(233));
+Vue.component('customers-dialog', __webpack_require__(239));
+Vue.component('statement-dialog', __webpack_require__(242));
 
-Vue.component('customers-dialog', __webpack_require__(236));
-Vue.component('statement-dialog', __webpack_require__(239));
+Vue.component('terminals-dialog', __webpack_require__(245));
 
-Vue.component('terminals-dialog', __webpack_require__(242));
-
-Vue.component('pricing-dialog', __webpack_require__(245));
+Vue.component('pricing-dialog', __webpack_require__(248));
 
 var app = new Vue({
   el: '#app',
@@ -75281,560 +75293,21 @@ if (false) {
 }
 
 /***/ }),
-/* 230 */
+/* 230 */,
+/* 231 */,
+/* 232 */,
+/* 233 */,
+/* 234 */,
+/* 235 */,
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(231)
+var __vue_script__ = __webpack_require__(237)
 /* template */
-var __vue_template__ = __webpack_require__(232)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources\\assets\\js\\components\\payments\\Dialog.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-b935f920", Component.options)
-  } else {
-    hotAPI.reload("data-v-b935f920", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 231 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	props: {
-		data: {
-			type: Object
-		}
-	},
-
-	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
-
-	data: function data() {
-		return {
-			isActive: false,
-			selectedInvoice: '',
-			selectedPayment: '',
-			isEdit: false,
-			form: new Form({
-				invoice_id: '',
-				invoice_no: '',
-				total: '',
-				paid_amount: '',
-				remaining: '',
-				outstanding: '',
-				amount: '',
-				method: '',
-				type: ''
-
-			}),
-			types: [{ label: 'Cash', value: 'Cash' }, { label: 'Cheque', value: 'Cheque' }, { label: 'Credit card', value: 'Credit card' }, { label: 'IBG', value: 'IBG' }],
-			selectedType: ''
-		};
-	},
-	mounted: function mounted() {
-		var _this = this;
-
-		window.events.$on('createPayment', function (evt) {
-			return _this.createPayment(evt);
-		});
-		window.events.$on('editPayment', function (evt) {
-			return _this.editPayment(evt);
-		});
-
-		$("#payment-dialog").on("hide.bs.modal", function (e) {
-			this.closeDialog();
-		}.bind(this));
-	},
-
-
-	methods: {
-		createPayment: function createPayment(evt) {
-			this.selectedInvoice = evt[0];
-			this.setNewForm();
-			this.openDialog();
-		},
-		editPayment: function editPayment(evt) {
-			this.selectedPayment = evt[0];
-			this.isEdit = true;
-			this.setForm();
-			this.openDialog();
-		},
-		openDialog: function openDialog() {
-			$("#payment-dialog").modal();
-			this.isActive = true;
-		},
-		closeDialog: function closeDialog() {
-			this.isActive = false;
-			this.selectedPayment = '';
-			this.form.reset();
-		},
-		setNewForm: function setNewForm() {
-			this.form.invoice_id = this.selectedInvoice.id;
-			this.form.invoice_no = this.selectedInvoice.invoice_no;
-			this.form.total = this.selectedInvoice.total;
-			this.form.paid_amount = this.selectedInvoice.paid;
-			this.form.outstanding = this.selectedInvoice.outstanding;
-		},
-		setForm: function setForm() {
-			this.form.invoice_no = this.selectedPayment.invoice_no;
-			this.form.total = this.selectedPayment.amount;
-			this.form.paid_amount = this.selectedPayment.paid;
-			this.selectedType = this.selectedPayment.payment_method;
-			this.form.outstanding = this.selectedPayment.outstanding;
-		},
-		submit: function submit() {
-			this.isConfirming = true;
-		},
-		confirmSubmit: function confirmSubmit() {
-			var _this2 = this;
-
-			this.isConfirming = false;
-			this.form.post(this.url).then(function (response) {
-				return _this2.onSuccess(response);
-			});
-		},
-		onSuccess: function onSuccess(response) {
-			$("#payment-dialog").modal('hide');
-
-			this.closeDialog();
-
-			window.events.$emit("reload-table");
-		}
-	},
-
-	computed: {
-		title: function title() {
-			return this.selectedPayment ? "Edit payment - " + this.selectedPayment.invoice_no : "Create payment - " + this.selectedInvoice.invoice_no;
-		},
-		action: function action() {
-			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
-		},
-		actionText: function actionText() {
-			return this.selectedPayment ? "Update" : "Create";
-		},
-		url: function url() {
-			return this.selectedPayment ? "/payments/" + this.selectedPayment.id : "/payments";
-		}
-	},
-
-	watch: {
-		selectedType: function selectedType(newVal, oldVal) {
-			this.form.type = newVal.value;
-		}
-	}
-
-});
-
-/***/ }),
-/* 232 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "modal fade",
-      attrs: { id: "payment-dialog", tabindex: "-1", role: "dialog" }
-    },
-    [
-      _c(
-        "div",
-        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
-        [
-          _c("div", { staticClass: "modal-content" }, [
-            _c("div", { staticClass: "modal-header" }, [
-              _c("h5", { staticClass: "modal-title" }, [
-                _vm._v(_vm._s(_vm.title))
-              ]),
-              _vm._v(" "),
-              _vm._m(0)
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "modal-body" }, [
-              _c(
-                "form",
-                {
-                  on: {
-                    submit: function($event) {
-                      $event.preventDefault()
-                      return _vm.submit($event)
-                    },
-                    keydown: function($event) {
-                      _vm.form.errors.clear($event.target.name)
-                    },
-                    input: function($event) {
-                      _vm.form.errors.clear($event.target.name)
-                    }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          staticStyle: { "font-size": "20px" },
-                          attrs: {
-                            defaultValue: _vm.form.total,
-                            required: true,
-                            type: "text",
-                            label: "Total",
-                            name: "total",
-                            editable: false,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("total")
-                          },
-                          model: {
-                            value: _vm.form.total,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "total", $$v)
-                            },
-                            expression: "form.total"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          staticStyle: { "font-size": "20px" },
-                          attrs: {
-                            defaultValue: _vm.form.paid_amount,
-                            required: true,
-                            type: "text",
-                            label: "Paid amount",
-                            name: "paid_amount",
-                            editable: false,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("paid_amount")
-                          },
-                          model: {
-                            value: _vm.form.paid_amount,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "paid_amount", $$v)
-                            },
-                            expression: "form.paid_amount"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          staticStyle: { "font-size": "20px" },
-                          attrs: {
-                            defaultValue: _vm.form.outstanding,
-                            required: false,
-                            type: "number",
-                            label: "Outstanding",
-                            name: "outstanding",
-                            editable: false,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("outstanding")
-                          },
-                          model: {
-                            value: _vm.form.outstanding,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "outstanding", $$v)
-                            },
-                            expression: "form.outstanding"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("selector-input", {
-                          attrs: {
-                            potentialData: _vm.types,
-                            defaultData: _vm.selectedType,
-                            placeholder: "Select type",
-                            required: true,
-                            label: "Type",
-                            name: "type",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("type")
-                          },
-                          model: {
-                            value: _vm.selectedType,
-                            callback: function($$v) {
-                              _vm.selectedType = $$v
-                            },
-                            expression: "selectedType"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.amount,
-                            required: true,
-                            type: "number",
-                            label: "Amount",
-                            name: "amount",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("amount")
-                          },
-                          model: {
-                            value: _vm.form.amount,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "amount", $$v)
-                            },
-                            expression: "form.amount"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "modal-footer" }, [
-              _c("button", {
-                staticClass: "btn btn-primary",
-                attrs: { type: "button" },
-                domProps: { innerHTML: _vm._s(_vm.action) },
-                on: { click: _vm.submit }
-              }),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-secondary",
-                  attrs: { type: "button", "data-dismiss": "modal" }
-                },
-                [_vm._v("Close")]
-              )
-            ])
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _c("confirmation", {
-        attrs: {
-          message: _vm.confirm_message,
-          secondary: _vm.secondary_message,
-          confirming: _vm.isConfirming
-        },
-        on: {
-          cancel: function($event) {
-            _vm.isConfirming = false
-          },
-          confirm: _vm.confirmSubmit
-        }
-      })
-    ],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "modal",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-b935f920", module.exports)
-  }
-}
-
-/***/ }),
-/* 233 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(234)
-/* template */
-var __vue_template__ = __webpack_require__(235)
+var __vue_template__ = __webpack_require__(238)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -75873,7 +75346,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 234 */
+/* 237 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -76967,7 +76440,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 });
 
 /***/ }),
-/* 235 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -77989,15 +77462,15 @@ if (false) {
 }
 
 /***/ }),
-/* 236 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(237)
+var __vue_script__ = __webpack_require__(240)
 /* template */
-var __vue_template__ = __webpack_require__(238)
+var __vue_template__ = __webpack_require__(241)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -78036,7 +77509,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 237 */
+/* 240 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -78291,6 +77764,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		openDialog: function openDialog() {
 			$("#customer-dialog").modal();
+			this.form.branch_id = this.selectedBranch.value;
 			this.isActive = true;
 		},
 		closeDialog: function closeDialog() {
@@ -78395,7 +77869,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 238 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -78826,15 +78300,15 @@ if (false) {
 }
 
 /***/ }),
-/* 239 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(240)
+var __vue_script__ = __webpack_require__(243)
 /* template */
-var __vue_template__ = __webpack_require__(241)
+var __vue_template__ = __webpack_require__(244)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -78873,7 +78347,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 240 */
+/* 243 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79012,7 +78486,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 241 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -79170,15 +78644,15 @@ if (false) {
 }
 
 /***/ }),
-/* 242 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(243)
+var __vue_script__ = __webpack_require__(246)
 /* template */
-var __vue_template__ = __webpack_require__(244)
+var __vue_template__ = __webpack_require__(247)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79217,7 +78691,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 243 */
+/* 246 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79435,7 +78909,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 244 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -79647,15 +79121,15 @@ if (false) {
 }
 
 /***/ }),
-/* 245 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(246)
+var __vue_script__ = __webpack_require__(249)
 /* template */
-var __vue_template__ = __webpack_require__(247)
+var __vue_template__ = __webpack_require__(250)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79694,7 +79168,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 246 */
+/* 249 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79983,7 +79457,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 247 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -80265,7 +79739,7 @@ if (false) {
 }
 
 /***/ }),
-/* 248 */
+/* 251 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
