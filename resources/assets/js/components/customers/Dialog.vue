@@ -248,6 +248,7 @@
 
 			openDialog() {
 				$("#customer-dialog").modal();
+				this.form.branch_id = this.selectedBranch.value;
 				this.isActive = true;
 			},
 
@@ -255,7 +256,6 @@
 				this.isActive = false;
 				this.selectedCustomer = '';
 				this.form.reset();
-				this.form.branch_id = this.selectedBranch;
 			},
 
 			setForm() {

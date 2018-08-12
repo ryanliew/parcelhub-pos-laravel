@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('page')
+	Payment receive
+@endsection
+
 @section('styles')
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.css"/>
 @endsection
@@ -11,7 +15,6 @@
 				<b>Payments receive</b> 
 			</div>
 			<div class="card-body">
-
 				<div class="row">
 					<div class="col-2">
 						Customer <br>
@@ -23,10 +26,10 @@
 						<!-- Customer <input class='form-control' id='customer_name' type="text"><br> -->
 					</div>
 					<div class="col-2">
-						Date from <input class='form-control' id='min' type="date" ><br>
+						Date from <input class='form-control' id='min' type="date" value="<?php echo date('Y-m-01');?>"><br>
 					</div>
 					<div class="col-2">
-						Date to <input class='form-control' id= 'max' type="date" ><br>
+						Date to <input class='form-control' id= 'max' type="date" value="<?php echo date("Y-m-t");?>">
 					</div>
 					<div class="col-2">
 						Options <br>
@@ -35,8 +38,8 @@
   								<option value="Unpaid">Unpaid</option>
 						</select>
 					</div>
-					<div class="col-3">
-						<button class='btn btn-primary' id='btnSearch'>Search</button>
+					<div class="d-flex align-items-center" style="margin-left: 10px">
+						<button class='btn btn-primary align-item-bottom' id='btnSearch'>Search</button>
 					</div>
 				</div>
 				<table class="table table-bordered" id="payments-table">
@@ -59,8 +62,8 @@
 			            </tr>
 			            <tr>
 			                <th colspan="7" >
-			                	<div align="right" class="d-flex" style="float: right;" >
-				                		Payment type: 
+			                	<div class="d-flex align-items-center" style="margin-left: 10px; float: right;"> Payment type: <div>
+			                	<div class="d-flex align-items-center" style="margin-left: 10px; float: right;">
 				                		<select name='Options' class='form-control flex:1' id='payment_type' style="width: 100px" >
 												<option value="Cash">Cash</option>
 				  								<option value="Cheque">Cheque</option>
@@ -303,7 +306,7 @@
 				    	$.ajax({
 						  type: "POST",
 						  "_token": "{{ csrf_token() }}",
-						  url: "/payments/create/",
+						  url: "/payments/create",
 						  data: data,
 						  success: function(response){ 
 						  	window.location.href ='/payments/detail/' + response.payment_id;
