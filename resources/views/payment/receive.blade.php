@@ -267,11 +267,8 @@
 	  			}
 	  			else
 	  			{
+	  				swalalert("Confirmation","Confirm payment amount of RM " + parseFloat(amount_paid).toFixed(2), 'warning', function() { 
 
-	  				var confirmed = confirm("Confirm payment amount of RM " + parseFloat(amount_paid).toFixed(2) );
-
-	  				if( confirmed )
-	  				{
 		  				var type = document.getElementById("payment_type").value;
 			  			var customer = row.data()[0]['customer_id'];
 
@@ -306,7 +303,7 @@
 				    	$.ajax({
 						  type: "POST",
 						  "_token": "{{ csrf_token() }}",
-						  url: "/payments/create",
+						  url: "/payments/create/",
 						  data: data,
 						  success: function(response){ 
 						  	window.location.href ='/payments/detail/' + response.payment_id;
@@ -315,7 +312,7 @@
 						  contentType : "application/json"
 						});
 
-				    }
+				    });
 	  			}
 		    });
 

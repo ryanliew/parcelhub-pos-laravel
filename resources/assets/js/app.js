@@ -20,6 +20,17 @@ window.flash = function(message, level = 'success'){
  	window.events.$emit('flash', {message, level});
 };
 
+window.swalalert = function(title, message, level = 'warning', callback){
+	window.events.$swal({
+		title: title,
+		type: level,
+		html: message,
+		showCancelButton: true
+	}).then((result) => {
+		callback();
+	});
+}
+
 
 require('./filters');
 
