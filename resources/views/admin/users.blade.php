@@ -21,15 +21,17 @@
 							<th>Name</th>
 							<th>Username</th>
 							<th>Email</th>
+							@if(auth()->user()->is_admin)
 							<th>Default branch</th>
 							<th>Default terminal</th>
+							@endif
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<users-dialog></users-dialog>
+		<users-dialog :is_admin="{{ auth()->user()->is_admin }}" :default_branch="{{ auth()->user()->current_branch }}"></users-dialog>
 	</div>
 
 @endsection
@@ -78,8 +80,10 @@
 					{data: 'name'},
 					{data: 'username'},
 					{data: 'email'},
+					@if(auth()->user()->is_admin)
 					{data: 'current.name'},
 					{data: 'terminal.name'}
+					@endif
 				]
 			});
 

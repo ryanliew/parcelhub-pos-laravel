@@ -93,6 +93,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/{knowledge}", "BranchKnowledgeController@update");
 	});
 
+	Route::group(['prefix' => 'permissions'], function(){
+		Route::get('/', "PermissionController@page")->name('permissions.page');
+		Route::post("/", "PermissionController@store");
+		Route::get("/index", "PermissionController@index")->name('permissions.index');
+		Route::post("/{permission}", "PermissionController@update");
+	});
+
 });
 
 // Users route
@@ -111,8 +118,10 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/customers", "CustomerController@list");
 		Route::get("/branch/knowledge", "BranchController@getDefaultValues");
 		Route::get("/branch/type", "BranchController@getDefaultType");
+		Route::get('/branch/{branch}/terminals', "BranchController@getTerminals");
 		Route::get('/branch/{branch}', "BranchController@get");
 		Route::get("/pricing", "BranchController@getPricing");
+		Route::get("/users", "UserController@list");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){

@@ -45,9 +45,9 @@ class BranchController extends Controller
 
         $branch = Branch::create(request()->all());
 
-        $branch->create_default_user();
+        $terminal = $branch->create_default_terminal();
 
-        $branch->create_default_terminal();
+        $branch->create_default_user($terminal->id);
 
     	return json_encode(['message' => "New branch created. User " . $branch->code . " has been assigned to the branch."]);
     }
@@ -110,7 +110,23 @@ class BranchController extends Controller
         if(request()->has('customer')) {
             $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
         }
+        else {
+            $result->whereRaw('ISNULL(customer_id)');
+        }
+
+
+        if($result->orderBy('customer_id', 'DESC')->get()->count() == 0)
+            $result = DB::table('products')
+                        ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'taxes.percentage as tax')
+                        ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id')
+                        ->where('products.id', request()->product)
+                        ->get();
         
-        return json_encode($result->orderBy('customer_id', 'DESC')->first());
-    }   
+        return json_encode($result->first());
+    }
+
+    public function getTerminals(Branch $branch)
+    {
+        return $branch->terminals;
+    }
 }

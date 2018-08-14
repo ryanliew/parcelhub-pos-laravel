@@ -81,7 +81,7 @@
 								</text-input>
 							</div>
 						</div>
-						<div class="row">
+						<div class="row" v-if="is_admin">
 							<div class="col">
 								<selector-input :potentialData="branches"
 									v-model="selectedBranch" 
@@ -90,24 +90,24 @@
 									:required="true"
 									label="Branch"
 									name="current_branch"
-									:editable="true"
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('current_branch')">
 								</selector-input>
 							</div>
 							<div class="col">
-								<text-input v-model="form.current_terminal" 
-									:defaultValue="form.current_terminal"
+								<selector-input :potentialData="terminals"
+									v-model="selectedTerminal" 
+									:defaultData="selectedTerminal"
+									placeholder="Select a terminal"
 									:required="true"
-									type="number"
-									label="Default Terminal"
+									label="Terminal"
 									name="current_terminal"
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('current_terminal')">
-								</text-input>
+								</selector-input>
 							</div>
 						</div>
 					</form>
@@ -126,7 +126,7 @@
 	import ConfirmationMixin from "../../mixins/ConfirmationMixin.js";
 	
 	export default {
-		props: [''],
+		props: ['is_admin'],
 
 		mixins: [ConfirmationMixin],
 
@@ -134,8 +134,10 @@
 			return {
 				isActive: false,
 				selectedBranch: '',
+				selectedTerminal: '',
 				selectedUser: '',
 				branches: [],
+				terminals: [],
 				isEdit: false,
 				form: new Form({
 					name: '',
@@ -181,9 +183,30 @@
 				}
 			},
 
+			getTerminals(error = 'No error') {
+				// console.log(error);
+				axios.get("/data/branch/" + this.selectedBranch.value + "/terminals")
+					.then(response => this.setTerminals(response))
+					.catch(error => this.getTerminals(error));
+			},
+
+			setTerminals(response) {
+				this.terminals = response.data.map(function(terminal){
+					let obj ={};
+
+					obj['value'] = terminal.id;
+					obj['label'] = terminal.name;
+
+					return obj;
+				});
+
+				if(this.form.current_terminal) {
+					this.selectedTerminal = _.filter(this.terminals, function(terminal){ return this.form.current_terminal == terminal.value; }.bind(this))[0];
+				}
+			},
+
 			createUser(evt) {
 				this.openDialog();
-				
 			},
 
 			editUser(evt) {
@@ -201,6 +224,8 @@
 			closeDialog() {
 				this.isActive = false;
 				this.selectedUser = '';
+				this.selectedBranch = '';
+				this.selectedTerminal = '';
 				this.form.reset();
 			},
 
@@ -213,6 +238,7 @@
 
 				if(this.branches.length > 0) {
 					this.selectedBranch = _.filter(this.branches, function(branch){ return this.form.current_branch == branch.value; }.bind(this))[0];
+					this.getTerminals();
 				}
 			},
 
@@ -256,6 +282,21 @@
 		watch: {
 			selectedUserType(newVal, oldVal) {
 				this.form.user_type_id = newVal.value;
+			},
+
+			selectedBranch(newVal, oldVal) {
+				this.terminals = [];
+				this.selectedTerminal = "";
+
+				if(newVal) {
+					this.form.current_branch = newVal.value;
+					this.getTerminals();
+				}
+			},
+
+			selectedTerminal(newVal, oldVal) {
+				if(newVal)
+					this.form.current_terminal = newVal.value;
 			}
 		}
 

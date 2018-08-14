@@ -10,7 +10,7 @@
             padding: 0;
             margin: 1px;
             font-family: 'monaco';
-            font-size: 9px;
+            font-size: 11px;
         }
 
         .text-center {
@@ -34,8 +34,20 @@
         	padding: 10px 0;
         }
 
+        .pl-1 {
+        	padding-left: 1em;
+        }
+
         .pl-2 {
         	padding-left: 2em;
+        }
+
+        .pl-5 {
+        	padding-left: 5em;
+        }
+
+        .pr-1 {
+        	padding-right: 1em;
         }
 
         .ptb-5 {
@@ -107,52 +119,59 @@
 		<table>
 			<thead>
 				<tr>
-					<th class="text-left border-bottom">Description</th>
-					<th class="text-left border-bottom">Price RM</th>
-					<th class="text-right border-bottom" style="width: 20px;">Qty</th>
+					<th class="text-left border-bottom">Description SKU</th>
+					<th class="text-right border-bottom">Price RM</th>
+					<th class="text-center border-bottom" style="width: 30px;">Qty</th>
 					<th class="text-right border-bottom">Total RM</th>
 				</tr>
 			</thead>
 			<tbody>
-				@foreach($invoice->items as $item)
+				<?php $items = $invoice->items->groupBy('description') ?>
+				@foreach($items->toArray() as $key => $item)
 					<tr>
-						<td class="ptb-5">{{ $item->description }}</td>
-						<td class="text-left ptb-5">{{ number_format($item->price, 2, '.', ',') }}</td>
-						<td class="ptb-5 text-right">{{ $item->unit }}</td>
-						<td class="text-right ptb-5">{{ number_format($item->total_price, 2, '.', ',') }}</td>
+						<td class="ptb-5" colspan="4">{{ $key }}</td>
 					</tr>
-					@if(!empty($item->tracking_code))
-						<tr>
-							<td colspan="4" class="pl-2 pb-5">S/No. {{ $item->tracking_code }}</td>
-						</tr>
-					@endif
+					<tr>
+						<td class="text-right ptb-5" colspan="2">{{ number_format($item[0]['price'], 2, '.', ',') }}</td>
+						<td class="ptb-5 text-right pr-1">{{ collect($item)->sum('unit') }}</td>
+						<td class="text-right ptb-5">{{ number_format(collect($item)->sum('total_price'), 2, '.', ',') }}</td>
+
+					</tr>
+
+					@foreach($item as $subitem)
+						@if(!empty($subitem['tracking_code']))
+							<tr>
+								<td class="pl-1 pb-5" colspan="4">S/No. {{ $subitem['tracking_code'] }}</td>
+							</tr>
+						@endif
+					@endforeach
 
 				@endforeach
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="2" class="border-top text-right"><b>Sub Total</b></td>
-					<td class="border-top text-right">RM</td>
+					<td colspan="2" class="border-top pl-5 text-left"><b>Sub Total</b></td>
+					<td class="border-top text-center">RM</td>
 					<td class="text-right border-top">{{ number_format($invoice->subtotal, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
-					<td class="text-right" colspan="2"><b>Tax</b></td>
-					<td class="text-right">RM</td>
+					<td class="pl-5 text-left" colspan="2"><b>Tax</b></td>
+					<td class="text-center">RM</td>
 					<td class="text-right">{{ number_format($invoice->tax, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
-					<td class="text-right" colspan="2"><b>Discount</b></td>
-					<td class="text-right">RM</td>
+					<td class="pl-5 text-left" colspan="2"><b>Discount</b></td>
+					<td class="text-center">RM</td>
 					<td class="text-right">{{ number_format($invoice->discount, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
-					<td class="text-right" colspan="2"><b>Rounding</b></td>
-					<td class="text-right">RM</td>
+					<td class="pl-5 text-left" colspan="2"><b>Rounding</b></td>
+					<td class="text-center">RM</td>
 					<td class="text-right">{{ number_format($invoice->rounding, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
-					<td class="text-right" colspan="2"><b>Total</b></td>
-					<td class="text-right">RM</td>
+					<td class="pl-5 text-left" colspan="2"><b>Total</b></td>
+					<td class="text-center">RM</td>
 					<td class="text-right">{{ number_format($invoice->total, 2, '.', ',') }}</td>
 				</tr>
 			</tfoot>
@@ -164,12 +183,12 @@
 		<table class="outer-border">
 			<tbody>
 				<tr>
-					<td class="text-center" style="width: 215px;">Received:</td>
+					<td class="pl-5 text-left" colspan="2"><b>Received:</b></td>
 					<td>RM</td>
 					<td class="text-right">{{ number_format($invoice->paid, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
-					<td class="text-center">Change:</td>
+					<td class="pl-5 text-left" colspan="2"><b>Change:</b></td>
 					<td>RM</td>
 					<td class="text-right">{{ number_format( max($invoice->paid - $invoice->total, 0.00), 2, '.', ',') }}</td>
 				</tr>

@@ -20,6 +20,11 @@ class Branch extends Model
         return $this->belongsToMany('App\User', 'permissions', 'branch_id', 'user_id')->withPivot('type')->as('permission')->withTimestamps();
     }
 
+    public function permissions()
+    {
+        return $this->hasMany("App\Permission");
+    }
+
     public function payments()
     {
         return $this->hasMany('App\Payment', 'branch_id');
@@ -47,7 +52,7 @@ class Branch extends Model
                     ->withPivot('id', 'customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
     }
     
-    public function create_default_user()
+    public function create_default_user($terminal)
     {
         $user = User::create([
             'username' => $this->code,
@@ -56,7 +61,7 @@ class Branch extends Model
             'is_staff' => true,
             'name' => $this->owner,
             'current_branch' => $this->id,
-            'current_terminal' => 1
+            'current_terminal' => $terminal
         ]);
 
         $this->grant_permission($user, Permission::Write);

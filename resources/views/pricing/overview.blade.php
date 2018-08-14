@@ -59,6 +59,8 @@
 				},
 				dom: 'Blftip',
 				buttons: [
+
+		 			@if(auth()->user()->hasPermission(auth()->user()->current_branch, 'write'))
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
@@ -76,10 +78,14 @@
 					{
 						text: 'Delete',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('deleteBranchProduct', table.rows({selected: true}).data().toArray());
+							swalalert("Are you sure?", "", 'warning', function(){
+								axios.delete("/branch/product/" + table.rows({selected: true}).data().toArray()[0].id)
+									.then(response => table.ajax.reload());
+							});
 						},
 						enabled: false
 					},
+					@endif
 					'excel', 'colvis',
 				],
 				ajax: '{!! route("branch-product.index") !!}',
@@ -111,11 +117,13 @@
 				
 			});
 
+		 	@if(auth()->user()->hasPermission(auth()->user()->current_branch, 'write'))
 			table.on( 'select deselect', function () {
 		        var selectedRows = table.rows( { selected: true } ).count();
 		        table.button( 1 ).enable( selectedRows === 1 );
 		        table.button( 2 ).enable( selectedRows === 1 );
 		    });
+		    @endif
 
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();
