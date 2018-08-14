@@ -14,9 +14,11 @@
 			<div class="card-header">
 				<b>Payments per invoice</b> <br><br>
 				<b>Customer name :</b> {{ $customer }} <br>
-				<b>Payment type :</b> {{ $payment_type }}
+				<b>Payment date :</b> {{ $payment_date }} <br>
+				<b>Payment type :</b> {{ $payment_type }} <br>
+				<b>Terminal	:</b> {{ $terminal }} <br>
 			</div>
-
+			
 			<div class="card-body">
 				<table class="table table-bordered" id="payments-table">
 					<thead>
@@ -33,6 +35,13 @@
 			                <th colspan="4" style="text-align:right">Total:</th>
 			                <th>RM {{ number_format((float)$total, 2, '.', '') }}</th>
 			            </tr>
+						<tr>
+							<th colspan="5">
+								<div style="float: right">
+									<button class='btn btn-primary' id='btnBack'>Back to summary</button>
+								</div>
+							</th>
+						</tr>
 			        </tfoot>
 				</table>
 			</div>
@@ -101,6 +110,10 @@
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();
 		    });
+		});
+
+		$("#btnBack").click(function(){
+			window.location.href = "/payments/all";
 		});
 
         

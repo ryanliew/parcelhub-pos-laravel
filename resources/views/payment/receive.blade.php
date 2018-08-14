@@ -34,8 +34,8 @@
 					<div class="col-2">
 						Options <br>
 						<select name='Options' class='form-control' id='option'>
+								<option value="Unpaid">Unpaid</option>
 								<option value="All">All</option>
-  								<option value="Unpaid">Unpaid</option>
 						</select>
 					</div>
 					<div class="d-flex align-items-center" style="margin-left: 10px">

@@ -43,6 +43,8 @@ class PaymentInvoiceController extends Controller
         return view('payment.detail', 
                     ['payment_id'   => $payment_id,
                      'payment_type' => $type,
+                     'payment_date' => $payment->created_at,
+                     'terminal'     => $payment->terminal ? $payment->terminal->name : '',
                      'customer'     => $customer_name,
                      'total'        => $total,
                     ]);

@@ -162,14 +162,21 @@
 			      	<th>Ordered</th>
 			      	<th>Delivered</th>
 				  </tr>
-
-				  @foreach($invoice->items as $item)
-					<tr class="item-row">
-					  <td class="text-center">{{$item->sku}}</td>
-					  <td class="text-center">{{$item->description}}</td>
-					  <td class="text-center">1</td>
-					  <td class="text-center">1</td>
+				  <?php $items = $invoice->items->groupBy("description")->toArray() ?>
+				  @foreach($items as $key => $item)
+				  	<tr class="item-row">
+					  <td class="text-center">{{$item[0]['sku']}}</td>
+					  <td class="text-left">{{$key}}</td>
+					  <td class="text-center">{{collect($item)->count('id')}}</td>
+					  <td class="text-center">{{collect($item)->count('id')}}</td>
 					</tr>
+					
+					@foreach($item as $product)
+						<tr class="item-row">
+							<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
+						</tr>
+					@endforeach
+					
 				  @endforeach
 
 				  @for($x=0; $x < max( 16 - count($invoice->items), 0 ); $x++  )
