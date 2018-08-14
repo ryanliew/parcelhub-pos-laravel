@@ -52,7 +52,7 @@ class Branch extends Model
                     ->withPivot('id', 'customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
     }
     
-    public function create_default_user()
+    public function create_default_user($terminal)
     {
         $user = User::create([
             'username' => $this->code,
@@ -61,7 +61,7 @@ class Branch extends Model
             'is_staff' => true,
             'name' => $this->owner,
             'current_branch' => $this->id,
-            'current_terminal' => 1
+            'current_terminal' => $terminal
         ]);
 
         $this->grant_permission($user, Permission::Write);
