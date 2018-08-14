@@ -68785,6 +68785,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -68793,13 +68794,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	components: { vSelect: __WEBPACK_IMPORTED_MODULE_0_vue_select___default.a },
 
 	data: function data() {
-		return {};
+		return {
+			data: ''
+		};
 	},
 
 
 	methods: {
 		updateValue: function updateValue(value) {
 			this.$emit('input', value);
+			this.data = value;
 		},
 		focus: function focus() {
 			this.$refs.selector.open = true;
@@ -68883,6 +68887,11 @@ var render = function() {
                 closeOnSelect: !_vm.multiple || true
               },
               on: { input: _vm.updateValue }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              attrs: { id: _vm.name, type: "hidden" },
+              domProps: { value: _vm.data }
             })
           ],
           1
