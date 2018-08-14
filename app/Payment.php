@@ -21,5 +21,10 @@ class Payment extends Model
     public function payments()
     {
       return $this->hasMany('App\PaymentInvoice', 'payment_id');
-    }
+		}
+		
+		public function terminal()
+		{
+			return $this->belongsTo('App\Terminal', 'terminal_no');
+		}
 }

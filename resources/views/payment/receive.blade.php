@@ -6,6 +6,21 @@
 
 @section('styles')
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.css"/>
+
+	<style>
+		.col.cust-input {
+			max-width: 250px;
+		}
+
+		.cust-input .select-label {
+			margin-bottom: 0;
+		}
+
+		.cust-input .v-select input[type=search], .cust-input .v-select input[type=search]:focus
+		{
+			height: 37px;
+		}
+	</style>
 @endsection
 
 @section('content')
@@ -16,13 +31,22 @@
 			</div>
 			<div class="card-body">
 				<div class="row">
-					<div class="col-2">
-						Customer <br>
+					<div class="col cust-input small-select">
+						<!-- Customer <br>
 						<select id='customer_name' class='form-control'>
 							@foreach($customers as $customer)
 								<option value='{{ $customer->name }}'>{{$customer->name}}</option>
 							@endforeach 
-						</select>
+						</select> -->
+						<selector-input :potential-data='{{ json_encode($customers) }}'
+							placeholder="Select customer"
+							required="true"
+							label="Customer"
+							name="customer_name"
+							editable="true"
+							focus="false"
+						>
+						</selector-input>
 						<!-- Customer <input class='form-control' id='customer_name' type="text"><br> -->
 					</div>
 					<div class="col-2">
@@ -34,8 +58,8 @@
 					<div class="col-2">
 						Options <br>
 						<select name='Options' class='form-control' id='option'>
+								<option value="Unpaid">Unpaid</option>
 								<option value="All">All</option>
-  								<option value="Unpaid">Unpaid</option>
 						</select>
 					</div>
 					<div class="d-flex align-items-center" style="margin-left: 10px">

@@ -162,8 +162,31 @@
 			      	<th>Qty</th>
 			      	<th>Total RM</th>
 				  </tr>
+				<?php $items = $invoice->items->groupBy('description')->toArray() ?>
 
-				  @foreach($invoice->items as $item)
+				@foreach($items as $key => $item)
+					<tr class="item-row">
+					  <td class="text-center">{{ $item[0]['sku'] }}</td>
+					  <td class="text-left"  >{{ $key }} </td>
+					  <td class="text-center">{{ number_format((float)$item[0]['tax'],2,'.','') }}</td>
+					  <td class="text-center">{{ number_format((float)$item[0]['total_price'],2,'.','') }}</td>
+					  <td class="text-center">{{ collect($item)->count('id') }}</td>
+					  <td class="text-center">{{ number_format((float)collect($item)->sum('total_price'),2,'.','') }}</td>
+					</tr>
+
+					@foreach($item as $product)
+						<tr class="item-row">
+							<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
+						</tr>
+					@endforeach
+					
+				@endforeach
+				
+				@for($x=0; $x < max( 20 - count($invoice->items), 0 ); $x++  )
+					<tr class="item-row"><td style="height: 20px"></td></tr>
+				@endfor
+
+				  <!-- @foreach($invoice->items as $item)
 					<tr class="item-row">
 					  <td class="text-center">{{$item->sku}}</td>
 					  <td class="text-center">{{$item->description}}</td>
@@ -178,7 +201,7 @@
 				  {
 				  	<tr class="item-row"><td style="height: 20px"></td></tr>
 				  }
-				  @endfor
+				  @endfor -->
 
 				</tbody>
 			</table> 

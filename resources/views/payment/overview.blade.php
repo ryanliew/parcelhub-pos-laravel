@@ -68,7 +68,7 @@
 					{data: 'updated_at'},
 					{data: 'customer', name:'customer.name'},
 					{data: 'branch', name:'branch.name'},
-					{data: 'terminal_no' },
+					{data: 'terminal.name'	 },
 					{data: 'total', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);

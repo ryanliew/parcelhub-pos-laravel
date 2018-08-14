@@ -75929,7 +75929,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}, 1000);
 
 		window.addEventListener('keyup', function (event) {
-			console.log("Keyup" + event.key);
+			// console.log("Keyup" + event.key);
 
 			if (event.key == "F8" && this.canAddItem) {
 				this.toggleAddItem();
@@ -76482,7 +76482,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return 0;
 		},
 		isParcelOrDocument: function isParcelOrDocument() {
-			return this.selectedProductType.has_detail;
+			return this.selectedProductType ? this.selectedProductType.has_detail : false;
 		},
 		change: function change() {
 			if (this.form.paid && this.total) return parseFloat(this.form.paid) - this.rounded_total;
