@@ -13,6 +13,7 @@
 		<div class="control" :class="canClearCss" v-if="editable">
 			<v-select :multiple="multiple" :options="potentialData" :value="this.defaultData" @input="updateValue" :name="name" :placeholder="placeholder" :closeOnSelect="!multiple || true" ref="selector">
 			</v-select>
+			<input :value="data" :id="name" type="hidden">
 		</div>
 		<div v-else>
 			{{ defaultData.label }}
@@ -30,13 +31,14 @@
 
 		data() {
 			return {
-				
+				data: ''
 			};
 		},
 
 		methods: {
 			updateValue(value) {
 				this.$emit('input', value);
+				this.data = value;
 			}, 
 
 			focus() {
