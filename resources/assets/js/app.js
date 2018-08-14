@@ -27,7 +27,9 @@ window.swalalert = function(title, message, level = 'warning', callback){
 		html: message,
 		showCancelButton: true
 	}).then((result) => {
-		callback();
+		if(result.value) {
+			callback();
+		}
 	});
 }
 

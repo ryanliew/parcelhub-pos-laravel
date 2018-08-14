@@ -201,3 +201,33 @@ tr.item-editing {
 .branch-selector.inset-shadow.impersonating {
 	background-color: #382869;
 }
+
+.small-text td{
+	font-size: 10px;
+}
+
+.small-padding td {
+	padding: 0.25rem;
+}
+
+.small-text th {
+	padding: 0.25rem;
+}
+
+.small-text:hover td{
+	font-size: 14px;
+}
+
+.small-select .v-select .dropdown-toggle {
+	height: 37px;
+}
+
+.small-select .v-select .form-control {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.v-select.open .form-control {
+	position:relative;
+}

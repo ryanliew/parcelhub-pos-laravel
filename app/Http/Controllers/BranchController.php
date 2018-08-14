@@ -110,7 +110,17 @@ class BranchController extends Controller
         if(request()->has('customer')) {
             $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
         }
+        else {
+            $result->whereRaw('ISNULL(customer_id)');
+        }
+
+
+        if($result->orderBy('customer_id', 'DESC')->get()->count() == 0)
+            $result = DB::table('products')
+                        ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'tax')
+                        ->where('id', request()->product)
+                        ->get();
         
-        return json_encode($result->orderBy('customer_id', 'DESC')->first());
+        return json_encode($result->first());
     }   
 }

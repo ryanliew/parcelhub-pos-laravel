@@ -30423,7 +30423,9 @@ window.swalalert = function (title, message) {
     html: message,
     showCancelButton: true
   }).then(function (result) {
-    callback();
+    if (result.value) {
+      callback();
+    }
   });
 };
 
@@ -75764,6 +75766,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -76067,7 +76077,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 		},
 		setProduct: function setProduct(response) {
-			this.selectedProduct = '';
+			if (!this.isEditing) this.selectedProduct = '';
 			this.selectedProduct_error = "";
 			this.products = response.data.map(function (product) {
 				var obj = {};
@@ -76075,10 +76085,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				obj['value'] = product.id;
 				obj['label'] = product.sku;
 				obj['description'] = product.description;
-				obj['corporate_price'] = product.corporate_price;
-				obj['walk_in_price'] = product.walk_in_price;
-				obj['walk_in_price_special'] = product.walk_in_price_special;
-				obj['tax'] = product.tax.percentage;
 
 				return obj;
 			}.bind(this));
@@ -76110,40 +76116,61 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.getProductPrice();
 			}
 		},
+		getProductPriceUrl: function getProductPriceUrl(product) {
+
+			var url = "/data/pricing?product=" + product;
+			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
+				url += "&customer=" + this.selectedCustomer.value;
+			}
+
+			return url;
+		},
 		getProductPrice: function getProductPrice() {
 			var _this11 = this;
 
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			console.log(error);
 			if (this.selectedProduct) {
 				this.item_add_loading = true;
-				var url = "/data/pricing?product=" + this.selectedProduct.value;
-				if (this.selectedCustomer) {
-					url += "&customer=" + this.selectedCustomer.value;
-				}
+
+				var url = this.getProductPriceUrl(this.selectedProduct.value);
+
 				axios.get(url).then(function (response) {
 					return _this11.setProductPrice(response);
 				}).catch(function (error) {
-					return _this11.getProductPrice();
+					return _this11.getProductPrice(error);
 				});
 			}
 
 			this.setProductPrice('');
 		},
-		setProductPrice: function setProductPrice(response) {
-			this.price_group = this.selectedProduct;
+		calculatePriceBasedOnCustomer: function calculatePriceBasedOnCustomer(price_group) {
+			var price = price_group.walk_in_price;
 
-			if (response.data) this.price_group = response.data;
-
-			var price = this.price_group.walk_in_price;
-
-			if (this.selectedType.label == "Customer") {
-				if (this.selectedCustomer.type == 'walk_in_special') price = this.price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = this.price_group.corporate_price;
+			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
+				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
 			}
 
-			this.price = price;
-			this.item_tax = price * this.selectedProduct.tax / 100;
+			var tax = price_group.tax ? price * price_group.tax : 0;
+			var total = price + tax;
 
-			this.price = this.price.toFixed(2);
-			this.item_tax = this.item_tax.toFixed(2);
+			return { price: price, tax: tax, total: total };
+		},
+		setProductPrice: function setProductPrice(response) {
+			// console.log("Setting product price");
+			if (response) {
+				this.price_group = this.selectedProduct;
+
+				if (response.data) this.price_group = response.data;
+
+				var prices = this.calculatePriceBasedOnCustomer(this.price_group);
+				this.price = prices.price;
+				this.item_tax = prices.tax;
+
+				this.price = this.price.toFixed(2);
+				this.item_tax = this.item_tax.toFixed(2);
+			}
 
 			this.item_add_loading = false;
 		},
@@ -76217,12 +76244,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedCourier = item.courier_id ? _.filter(this.couriers, function (courier) {
 				return item.courier_id == courier.value;
 			}.bind(item))[0] : '';
-			this.selectedProduct = _.filter(this.products, function (product) {
-				return item.product_id == product.value;
-			}.bind(item))[0];
 			this.selectedProductType = _.filter(this.product_types, function (type) {
 				return item.product_type_id == type.value;
 			}.bind(item))[0];
+
+			this.selectedProduct = { value: item.product_id, label: item.sku, description: item.description };
+			// this.selectedProduct = _.filter(this.products, function(product){ return item.product_id == product.value; }.bind(item))[0];
 			this.zone = item.zone;
 			this.weight = item.weight;
 			this.dimension_weight = item.dimension_weight;
@@ -76319,6 +76346,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.customers.push(customer);
 
 			this.selectedCustomer = customer;
+		},
+		getPriceForItems: function getPriceForItems() {
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			// console.log(error);
+			this.isLoading = this.form.items.length > 0;
+			this.form.items.forEach(function (element, index) {
+				var _this13 = this;
+
+				var url = this.getProductPriceUrl(element.product_id);
+
+				axios.get(url).then(function (response) {
+					return _this13.changePriceForItem(index, response.data);
+				}).catch(function (error) {
+					return _this13.getPriceForItems(error);
+				});
+			}.bind(this));
+
+			if (this.isAddingItem) {
+				this.getProductPrice();
+			}
+		},
+		changePriceForItem: function changePriceForItem(item, price_group) {
+			var prices = this.calculatePriceBasedOnCustomer(price_group);
+			this.form.items[item].price = prices.price;
+			this.form.items[item].tax = prices.tax;
+			this.form.items[item].total_price = prices.total;
+
+			if (item + 1 == this.form.items.length || this.form.items.length == 0) this.isLoading = false;
 		}
 	},
 
@@ -76391,7 +76447,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (!this.canEdit) {
 				if (this.invoice && !this.invoice.can_edit) return "Invoice has been locked";
 
-				if (!this.selectedCustomer && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
+				if (this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
+
+				if (this.selectedType.value == 'Customer' && !this.selectedCustomer) return "Customer not selected";
 
 				return "No items";
 			}
@@ -76406,8 +76464,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	watch: {
 		selectedType: function selectedType(newVal, oldVal) {
 			this.form.type = newVal.value;
-			this.form.items = [];
-			if (this.isAddingItem) this.toggleAddItem();
+
+			this.getPriceForItems();
 		},
 		zone: function zone(newVal, oldVal) {
 			this.getFilteredProduct();
@@ -76428,9 +76486,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.payment_type = newVal.value;
 		},
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
-			this.form.customer_id = newVal.value;
-			this.form.items = [];
-			if (this.isAddingItem) this.toggleAddItem();
+			if (newVal) this.form.customer_id = newVal.value;
+
+			this.getPriceForItems();
 		},
 		selectedProductType: function selectedProductType(newVal, oldVal) {
 			if (newVal && oldVal !== newVal) this.getRelatedProduct();
@@ -76488,27 +76546,64 @@ var render = function() {
                     _vm._v(": " + _vm._s(_vm.currentTime))
                   ]),
                   _vm._v(" "),
-                  _c("selector-input", {
-                    attrs: {
-                      potentialData: _vm.types,
-                      defaultData: _vm.selectedType,
-                      placeholder: "Select type",
-                      required: true,
-                      label: "Type",
-                      name: "type",
-                      editable: true,
-                      focus: false,
-                      hideLabel: false,
-                      error: _vm.form.errors.get("type")
-                    },
-                    model: {
-                      value: _vm.selectedType,
-                      callback: function($$v) {
-                        _vm.selectedType = $$v
-                      },
-                      expression: "selectedType"
-                    }
-                  }),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col-5 small-select" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.types,
+                            defaultData: _vm.selectedType,
+                            placeholder: "Select type",
+                            required: true,
+                            label: "Type",
+                            name: "type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("type")
+                          },
+                          model: {
+                            value: _vm.selectedType,
+                            callback: function($$v) {
+                              _vm.selectedType = $$v
+                            },
+                            expression: "selectedType"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.remarks,
+                            required: false,
+                            type: "text",
+                            label: "Remarks",
+                            name: "remarks",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("remarks")
+                          },
+                          model: {
+                            value: _vm.form.remarks,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "remarks", $$v)
+                            },
+                            expression: "form.remarks"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
                   _vm._v(" "),
                   _vm.form.type == "Customer"
                     ? _c("selector-input", {
@@ -76536,31 +76631,10 @@ var render = function() {
                       })
                     : _vm._e(),
                   _vm._v(" "),
-                  _c("text-input", {
-                    attrs: {
-                      defaultValue: _vm.form.remarks,
-                      required: false,
-                      type: "text",
-                      label: "Remarks",
-                      name: "remarks",
-                      editable: true,
-                      focus: false,
-                      hideLabel: false,
-                      error: _vm.form.errors.get("remarks")
-                    },
-                    model: {
-                      value: _vm.form.remarks,
-                      callback: function($$v) {
-                        _vm.$set(_vm.form, "remarks", $$v)
-                      },
-                      expression: "form.remarks"
-                    }
-                  }),
-                  _vm._v(" "),
                   _c("div", { staticClass: "table-responsive" }, [
                     _c("table", { staticClass: "table table-striped" }, [
                       _c("thead", [
-                        _c("tr", [
+                        _c("tr", { staticClass: "small-text" }, [
                           _c("th", [_vm._v("Tracking code")]),
                           _vm._v(" "),
                           _c("th", [_vm._v("Item")]),
@@ -76586,10 +76660,15 @@ var render = function() {
                                   staticClass: "fas fa-circle fa-stack-2x"
                                 }),
                                 _vm._v(" "),
-                                _c("i", {
-                                  staticClass:
-                                    "fas fa-plus fa-stack-1x fa-inverse text-white"
-                                })
+                                _vm.canAddItem
+                                  ? _c("i", {
+                                      staticClass:
+                                        "fas fa-plus fa-stack-1x fa-inverse text-white"
+                                    })
+                                  : _c("i", {
+                                      staticClass:
+                                        "fas fa-stack-1x fa-inverse text-white fa-circle-notch fa-spin"
+                                    })
                               ]
                             )
                           ])
@@ -76602,7 +76681,7 @@ var render = function() {
                           return _c(
                             "tr",
                             {
-                              staticClass: "transition-ease",
+                              staticClass: "transition-ease small-text",
                               class: _vm.getItemRowClass(index)
                             },
                             [
@@ -76646,7 +76725,7 @@ var render = function() {
                       _vm._v(" "),
                       _vm.form.items.length > 0
                         ? _c("tfoot", [
-                            _c("tr", [
+                            _c("tr", { staticClass: "small-padding" }, [
                               _vm._m(0),
                               _vm._v(" "),
                               _c("td", [
@@ -76656,7 +76735,7 @@ var render = function() {
                               _c("td")
                             ]),
                             _vm._v(" "),
-                            _c("tr", [
+                            _c("tr", { staticClass: "small-padding" }, [
                               _vm._m(1),
                               _vm._v(" "),
                               _c("td", [
@@ -76666,7 +76745,7 @@ var render = function() {
                               _c("td")
                             ]),
                             _vm._v(" "),
-                            _c("tr", [
+                            _c("tr", { staticClass: "small-padding" }, [
                               _vm._m(2),
                               _vm._v(" "),
                               _c("td", [
@@ -76871,7 +76950,7 @@ var render = function() {
                         staticClass: "btn btn-primary",
                         attrs: {
                           type: "submit",
-                          disabled: !_vm.canEdit,
+                          disabled: !_vm.canEdit || _vm.isLoading,
                           title: _vm.editTooltip
                         }
                       },

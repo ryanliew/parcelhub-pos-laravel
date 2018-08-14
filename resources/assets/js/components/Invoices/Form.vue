@@ -8,18 +8,35 @@
 				<!-- Start main section -->
 				<div class="col-5 invoice-right">
 					<p><b>Current time</b>: {{ currentTime }}</p>
-					<selector-input :potentialData="types"
-						v-model="selectedType" 
-						:defaultData="selectedType"
-						placeholder="Select type"
-						:required="true"
-						label="Type"
-						name="type"
-						:editable="true"
-						:focus="false"
-						:hideLabel="false"
-						:error="form.errors.get('type')">
-					</selector-input>
+					<div class="row">
+						<div class="col-5 small-select">
+							<selector-input :potentialData="types"
+								v-model="selectedType" 
+								:defaultData="selectedType"
+								placeholder="Select type"
+								:required="true"
+								label="Type"
+								name="type"
+								:editable="true"
+								:focus="false"
+								:hideLabel="false"
+								:error="form.errors.get('type')">
+							</selector-input>
+						</div>
+						<div class="col">
+							<text-input v-model="form.remarks" 
+								:defaultValue="form.remarks"
+								:required="false"
+								type="text"
+								label="Remarks"
+								name="remarks"
+								:editable="true"
+								:focus="false"
+								:hideLabel="false"
+								:error="form.errors.get('remarks')">
+							</text-input>
+						</div>
+					</div>
 					<selector-input :potentialData="customers"
 						v-model="selectedCustomer" 
 						:defaultData="selectedCustomer"
@@ -35,22 +52,12 @@
 						addon="createCustomer"
 						@createCustomer="createCustomer">
 					</selector-input>
-					<text-input v-model="form.remarks" 
-						:defaultValue="form.remarks"
-						:required="false"
-						type="text"
-						label="Remarks"
-						name="remarks"
-						:editable="true"
-						:focus="false"
-						:hideLabel="false"
-						:error="form.errors.get('remarks')">
-					</text-input>
+					
 
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
-								<tr>
+								<tr class="small-text">
 									<th>Tracking code</th>
 									<th>Item</th>
 									<th>Unit</th>
@@ -58,13 +65,14 @@
 									<th>
 										<span class="fa-stack pointer transition-ease" :class="add_button_class" :title="tooltip_add" @click="toggleAddItem" :disabled="!canAddItem">
 											<i class="fas fa-circle fa-stack-2x"></i>
-											<i class="fas fa-plus fa-stack-1x fa-inverse text-white"></i>
+											<i class="fas fa-plus fa-stack-1x fa-inverse text-white" v-if="canAddItem"></i>
+											<i class="fas fa-stack-1x fa-inverse text-white fa-circle-notch fa-spin" v-else></i>
 										</span>
 									</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="(item, index) in form.items" class="transition-ease" :class="getItemRowClass(index)">
+								<tr v-for="(item, index) in form.items" class="transition-ease small-text" :class="getItemRowClass(index)">
 									<td>{{ item.tracking_code }}</td>
 									<td>{{ item.description }}</td>
 									<td>{{ item.unit }}</td>
@@ -73,17 +81,17 @@
 								</tr>
 							</tbody>
 							<tfoot v-if="form.items.length > 0">
-								<tr>
+								<tr class="small-padding">
 									<td colspan="3" class="text-right"><b>Subtotal:</b></td>
 									<td>{{ subtotal | price }}</td>
 									<td></td>
 								</tr>
-								<tr>
+								<tr class="small-padding">
 									<td colspan="3" class="text-right"><b>Tax:</b></td>
 									<td>{{ tax | price }}</td>
 									<td></td>
 								</tr>
-								<tr>
+								<tr class="small-padding">
 									<td colspan="3" class="text-right"><b>Rounding:</b></td>
 									<td>{{ rounding | price }}</td>
 									<td></td>
@@ -161,7 +169,7 @@
 						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
 						<a v-else-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 						<a v-if="this.invoice" target="_blank" :href="'/invoices/preview/' + this.invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
-						<button type="submit" class="btn btn-primary" :disabled="!canEdit" :title="editTooltip">Confirm</button>
+						<button type="submit" class="btn btn-primary" :disabled="!canEdit || isLoading" :title="editTooltip">Confirm</button>
 					</div>
 				</div>
 				<!-- End main section -->
@@ -703,7 +711,7 @@
 			},
 
 			setProduct(response) {
-				this.selectedProduct = '';
+				if(!this.isEditing) this.selectedProduct = '';
 				this.selectedProduct_error = "";
 				this.products = response.data.map(function(product){
 					let obj = {};
@@ -711,10 +719,6 @@
 					obj['value'] = product.id;
 					obj['label'] = product.sku;
 					obj['description'] = product.description;
-					obj['corporate_price'] = product.corporate_price;
-					obj['walk_in_price'] = product.walk_in_price;
-					obj['walk_in_price_special'] = product.walk_in_price_special;
-					obj['tax'] = product.tax.percentage;
 
 
 					return obj;
@@ -752,42 +756,63 @@
 				}
 			},
 
-			getProductPrice() {
+			getProductPriceUrl(product) {
+
+				let url = "/data/pricing?product=" + product;
+				if(this.selectedType.label == "Customer" && this.selectedCustomer) {
+					url += "&customer=" + this.selectedCustomer.value;
+				}
+
+				return url;
+			},
+
+			getProductPrice(error = 'No error') {
+				console.log(error);
 				if(this.selectedProduct) {
 					this.item_add_loading = true;
-					let url = "/data/pricing?product=" + this.selectedProduct.value;
-					if(this.selectedCustomer) {
-						url += "&customer=" + this.selectedCustomer.value;
-					}
+
+					let url = this.getProductPriceUrl(this.selectedProduct.value);
+					
 					axios.get(url)
 						.then(response => this.setProductPrice(response))
-						.catch(error => this.getProductPrice());
+						.catch(error => this.getProductPrice(error));
 				}
 
 				this.setProductPrice('');
 			},
 
-			setProductPrice(response) {
-				this.price_group = this.selectedProduct;
+			calculatePriceBasedOnCustomer(price_group) {
+				let price = price_group.walk_in_price;
 
-				if(response.data)
-					this.price_group = response.data;
-
-				let price = this.price_group.walk_in_price;
-
-				if(this.selectedType.label == "Customer")
+				if(this.selectedType.label == "Customer" && this.selectedCustomer)
 				{
 					if(this.selectedCustomer.type == 'walk_in_special')
-						price = this.price_group.walk_in_price_special;
+						price = price_group.walk_in_price_special;
 					else if(this.selectedCustomer.type == 'Corporate')
-						price = this.price_group.corporate_price;
+						price = price_group.corporate_price;
 				}
 
-				this.price = price;
-				this.item_tax = (price * this.selectedProduct.tax / 100);
+				let tax = price_group.tax ? price * price_group.tax : 0;
+				let total = price + tax;
 
-				this.price = this.price.toFixed(2);
-				this.item_tax = this.item_tax.toFixed(2);
+				return {price: price, tax: tax, total: total};
+			},
+
+			setProductPrice(response) {
+				// console.log("Setting product price");
+				if(response) {
+					this.price_group = this.selectedProduct;
+
+					if(response.data)
+						this.price_group = response.data;
+
+					let prices = this.calculatePriceBasedOnCustomer(this.price_group)
+					this.price = prices.price;
+					this.item_tax = prices.tax;
+
+					this.price = this.price.toFixed(2);
+					this.item_tax = this.item_tax.toFixed(2);
+				}
 
 				this.item_add_loading = false;
 			},
@@ -866,8 +891,10 @@
 
 				this.selectedZoneType = this.zone_types[0];
 				this.selectedCourier = item.courier_id ? _.filter(this.couriers, function(courier){ return item.courier_id == courier.value; }.bind(item))[0] : '';
-				this.selectedProduct = _.filter(this.products, function(product){ return item.product_id == product.value; }.bind(item))[0];
 				this.selectedProductType = _.filter(this.product_types, function(type){ return item.product_type_id == type.value; }.bind(item))[0];
+
+				this.selectedProduct = {value: item.product_id, label: item.sku, description: item.description};
+				// this.selectedProduct = _.filter(this.products, function(product){ return item.product_id == product.value; }.bind(item))[0];
 				this.zone = item.zone;
 				this.weight = item.weight;
 				this.dimension_weight = item.dimension_weight;
@@ -977,6 +1004,33 @@
 				this.customers.push(customer);
 
 				this.selectedCustomer = customer;
+			},
+
+			getPriceForItems(error = 'No error') {
+				// console.log(error);
+				this.isLoading = this.form.items.length > 0;
+				this.form.items.forEach(function(element, index) {
+					let url = this.getProductPriceUrl(element.product_id);
+					
+					axios.get(url)
+						.then(response => this.changePriceForItem(index, response.data))
+						.catch(error => this.getPriceForItems(error));
+				}.bind(this));
+
+				if(this.isAddingItem) {
+					this.getProductPrice();
+				}
+			},
+
+			changePriceForItem(item, price_group) {
+				let prices = this.calculatePriceBasedOnCustomer(price_group);
+				this.form.items[item].price = prices.price;
+				this.form.items[item].tax = prices.tax;
+				this.form.items[item].total_price = prices.total;
+
+				if(item + 1 == this.form.items.length || this.form.items.length == 0) 
+					this.isLoading = false;
+
 			}
 
 		},
@@ -1066,8 +1120,11 @@
 					if(this.invoice && !this.invoice.can_edit)
 						return "Invoice has been locked"
 
-					if(!this.selectedCustomer && this.form.paid <= this.rounded_total && this.rounded_total > 0)
+					if(this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0)
 						return "Full amount must be paid";
+
+					if(this.selectedType.value == 'Customer' && !this.selectedCustomer)
+						return "Customer not selected";
 
 					return "No items";
 				}
@@ -1083,9 +1140,8 @@
 		watch: {
 			selectedType(newVal, oldVal) {
 				this.form.type = newVal.value;
-				this.form.items = [];
-				if(this.isAddingItem)
-					this.toggleAddItem();
+				
+				this.getPriceForItems();
 			},
 
 			zone(newVal, oldVal) {
@@ -1114,10 +1170,10 @@
 			},
 
 			selectedCustomer(newVal, oldVal) {
-				this.form.customer_id = newVal.value;
-				this.form.items = [];
-				if(this.isAddingItem)
-					this.toggleAddItem();
+				if(newVal)
+					this.form.customer_id = newVal.value;
+				
+				this.getPriceForItems();
 			},
 
 			selectedProductType(newVal, oldVal) {

@@ -76,7 +76,10 @@
 					{
 						text: 'Delete',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('deleteBranchProduct', table.rows({selected: true}).data().toArray());
+							swalalert("Are you sure?", "", 'warning', function(){
+								axios.delete("/branch/product/" + table.rows({selected: true}).data().toArray()[0].id)
+									.then(response => table.ajax.reload());
+							});
 						},
 						enabled: false
 					},
