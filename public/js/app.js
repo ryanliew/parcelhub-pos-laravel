@@ -72592,7 +72592,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['isAdmin', 'default_branch'],
+	props: ['is_admin'],
 
 	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
 
@@ -72611,8 +72611,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				email: '',
 				password: '',
 				password_confirmation: '',
-				current_terminal: 1,
-				current_branch: this.default_branch
+				current_terminal: '',
+				current_branch: ''
 			})
 		};
 	},
@@ -72657,8 +72657,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					return this.form.current_branch == type.value;
 				}.bind(this))[0];
 			}
-
-			this.getTerminals();
 		},
 		getTerminals: function getTerminals() {
 			var _this3 = this;
@@ -72666,7 +72664,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
 			// console.log(error);
-			axios.get("/data/terminals").then(function (response) {
+			axios.get("/data/branch/" + this.selectedBranch.value + "/terminals").then(function (response) {
 				return _this3.setTerminals(response);
 			}).catch(function (error) {
 				return _this3.getTerminals(error);
@@ -72704,6 +72702,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		closeDialog: function closeDialog() {
 			this.isActive = false;
 			this.selectedUser = '';
+			this.selectedBranch = '';
+			this.selectedTerminal = '';
 			this.form.reset();
 		},
 		setForm: function setForm() {
@@ -72717,6 +72717,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.selectedBranch = _.filter(this.branches, function (branch) {
 					return this.form.current_branch == branch.value;
 				}.bind(this))[0];
+				this.getTerminals();
 			}
 		},
 		submit: function submit() {
@@ -72758,8 +72759,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		selectedUserType: function selectedUserType(newVal, oldVal) {
 			this.form.user_type_id = newVal.value;
 		},
+		selectedBranch: function selectedBranch(newVal, oldVal) {
+			this.terminals = [];
+			this.selectedTerminal = "";
+
+			if (newVal) {
+				this.form.current_branch = newVal.value;
+				this.getTerminals();
+			}
+		},
 		selectedTerminal: function selectedTerminal(newVal, oldVal) {
-			if (newVal) this.form.currentTerminal = newVal.value;
+			if (newVal) this.form.current_terminal = newVal.value;
 		}
 	}
 
@@ -72955,7 +72965,7 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm.isAdmin
+                  _vm.is_admin
                     ? _c("div", { staticClass: "row" }, [
                         _c(
                           "div",

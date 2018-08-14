@@ -31,7 +31,7 @@
 			</div>
 		</div>
 
-		<users-dialog isAdmin="{{ auth()->user()->is_admin }}" :default_branch="{{ auth()->user()->current_branch }}"></users-dialog>
+		<users-dialog :is_admin="{{ auth()->user()->is_admin }}" :default_branch="{{ auth()->user()->current_branch }}"></users-dialog>
 	</div>
 
 @endsection

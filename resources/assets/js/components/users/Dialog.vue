@@ -81,7 +81,7 @@
 								</text-input>
 							</div>
 						</div>
-						<div class="row" v-if="isAdmin">
+						<div class="row" v-if="is_admin">
 							<div class="col">
 								<selector-input :potentialData="branches"
 									v-model="selectedBranch" 
@@ -126,7 +126,7 @@
 	import ConfirmationMixin from "../../mixins/ConfirmationMixin.js";
 	
 	export default {
-		props: ['isAdmin', 'default_branch'],
+		props: ['is_admin'],
 
 		mixins: [ConfirmationMixin],
 
@@ -145,8 +145,8 @@
 					email: '',
 					password: '',
 					password_confirmation: '',
-					current_terminal: 1,
-					current_branch: this.default_branch,
+					current_terminal: '',
+					current_branch: '',
 				})
 			};
 		},
@@ -181,13 +181,11 @@
 				if(this.form.current_branch) {
 					this.selectedBranch = _.filter(this.branches, function(type){ return this.form.current_branch == type.value; }.bind(this))[0];
 				}
-
-				this.getTerminals();
 			},
 
 			getTerminals(error = 'No error') {
 				// console.log(error);
-				axios.get("/data/terminals")
+				axios.get("/data/branch/" + this.selectedBranch.value + "/terminals")
 					.then(response => this.setTerminals(response))
 					.catch(error => this.getTerminals(error));
 			},
@@ -226,6 +224,8 @@
 			closeDialog() {
 				this.isActive = false;
 				this.selectedUser = '';
+				this.selectedBranch = '';
+				this.selectedTerminal = '';
 				this.form.reset();
 			},
 
@@ -238,6 +238,7 @@
 
 				if(this.branches.length > 0) {
 					this.selectedBranch = _.filter(this.branches, function(branch){ return this.form.current_branch == branch.value; }.bind(this))[0];
+					this.getTerminals();
 				}
 			},
 
@@ -283,9 +284,19 @@
 				this.form.user_type_id = newVal.value;
 			},
 
+			selectedBranch(newVal, oldVal) {
+				this.terminals = [];
+				this.selectedTerminal = "";
+
+				if(newVal) {
+					this.form.current_branch = newVal.value;
+					this.getTerminals();
+				}
+			},
+
 			selectedTerminal(newVal, oldVal) {
 				if(newVal)
-					this.form.currentTerminal = newVal.value;
+					this.form.current_terminal = newVal.value;
 			}
 		}
 

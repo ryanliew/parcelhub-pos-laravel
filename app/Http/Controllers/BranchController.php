@@ -45,9 +45,9 @@ class BranchController extends Controller
 
         $branch = Branch::create(request()->all());
 
-        $branch->create_default_user();
+        $terminal = $branch->create_default_terminal();
 
-        $branch->create_default_terminal();
+        $branch->create_default_user($terminal->id);
 
     	return json_encode(['message' => "New branch created. User " . $branch->code . " has been assigned to the branch."]);
     }
@@ -123,5 +123,10 @@ class BranchController extends Controller
                         ->get();
         
         return json_encode($result->first());
+    }
+
+    public function getTerminals(Branch $branch)
+    {
+        return $branch->terminals;
     }
 }
