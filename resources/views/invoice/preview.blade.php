@@ -168,7 +168,7 @@
 					<tr class="item-row">
 					  <td class="text-center">{{ $item[0]['sku'] }}</td>
 					  <td class="text-left"  >{{ $key }} </td>
-					  <td class="text-center">{{ $item[0]['tax'] }}</td>
+					  <td class="text-center">{{ number_format((float)$item[0]['tax'],2,'.','') }}</td>
 					  <td class="text-center">{{ number_format((float)$item[0]['total_price'],2,'.','') }}</td>
 					  <td class="text-center">{{ collect($item)->count('id') }}</td>
 					  <td class="text-center">{{ number_format((float)collect($item)->sum('total_price'),2,'.','') }}</td>

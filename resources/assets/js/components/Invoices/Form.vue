@@ -528,7 +528,7 @@
 			setInterval(() => this.updateCurrentTime(), 1000);
 
 			window.addEventListener('keyup', function(event){
-				console.log("Keyup" + event.key);
+				// console.log("Keyup" + event.key);
 
 	    		if(event.key == "F8" && this.canAddItem) {
 	    			this.toggleAddItem();
@@ -1085,7 +1085,7 @@
 			},
 
 			isParcelOrDocument() {
-				return this.selectedProductType.has_detail;
+				return this.selectedProductType ? this.selectedProductType.has_detail : false;
 			},
 
 			change() {

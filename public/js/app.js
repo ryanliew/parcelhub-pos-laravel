@@ -30377,7 +30377,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(139);
-module.exports = __webpack_require__(245);
+module.exports = __webpack_require__(248);
 
 
 /***/ }),
@@ -30472,7 +30472,7 @@ Vue.component('terminals-dialog', __webpack_require__(239));
 
 Vue.component('pricing-dialog', __webpack_require__(242));
 
-Vue.component('permissions-dialog', __webpack_require__(248));
+Vue.component('permissions-dialog', __webpack_require__(245));
 
 var app = new Vue({
   el: '#app',
@@ -75928,7 +75928,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}, 1000);
 
 		window.addEventListener('keyup', function (event) {
-			console.log("Keyup" + event.key);
+			// console.log("Keyup" + event.key);
 
 			if (event.key == "F8" && this.canAddItem) {
 				this.toggleAddItem();
@@ -76479,7 +76479,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return 0;
 		},
 		isParcelOrDocument: function isParcelOrDocument() {
-			return this.selectedProductType.has_detail;
+			return this.selectedProductType ? this.selectedProductType.has_detail : false;
 		},
 		change: function change() {
 			if (this.form.paid && this.total) return parseFloat(this.form.paid) - this.rounded_total;
@@ -79880,22 +79880,14 @@ if (false) {
 
 /***/ }),
 /* 245 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 246 */,
-/* 247 */,
-/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(249)
+var __vue_script__ = __webpack_require__(246)
 /* template */
-var __vue_template__ = __webpack_require__(250)
+var __vue_template__ = __webpack_require__(247)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79934,7 +79926,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 249 */
+/* 246 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -80214,7 +80206,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 250 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -80410,6 +80402,12 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-7e7d7357", module.exports)
   }
 }
+
+/***/ }),
+/* 248 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

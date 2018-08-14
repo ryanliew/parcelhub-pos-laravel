@@ -23,7 +23,7 @@ class PaymentController extends Controller
     public function receive()
     {
 
-        $customer = Customer::select('id','name')->get();
+        $customer = '';
 
         if(auth()->user()->is_admin)
         {
@@ -34,6 +34,16 @@ class PaymentController extends Controller
             $branch = auth()->user()->current()->first();
 
             $customer = $branch->customers()->get();
+        }
+
+        if($customer)
+        {
+            $customer = $customer->map(function($customer, $key){
+                $customer->label = $customer->name;
+                $customer->value = $customer->name;
+
+                return $customer;
+            });
         }
 
         return view('payment.receive')->with(['customers'=>$customer]);
