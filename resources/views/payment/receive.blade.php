@@ -303,7 +303,7 @@
 				    	$.ajax({
 						  type: "POST",
 						  "_token": "{{ csrf_token() }}",
-						  url: "/payments/create/",
+						  url: "/payments/create",
 						  data: data,
 						  success: function(response){ 
 						  	window.location.href ='/payments/detail/' + response.payment_id;

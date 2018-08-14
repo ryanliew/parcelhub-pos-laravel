@@ -9,7 +9,7 @@
 				:value="value" 
 				@input="updateValue($event.target.value)"
 				ref="input"
-				step=".001"
+				:step="step ? step : 0.001"
 				:placeholder="placeholder" />
 			<div class="input-group-append" v-if="addon">
 				<button class="btn btn-secondary" type="button" @click="addonAction">{{ addon }}</button>
@@ -27,7 +27,7 @@
 <script>
 	import moment from 'moment';
 	export default {
-		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText'],
+		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText', 'step'],
 		data() {
 			return {
 				localValue: ''

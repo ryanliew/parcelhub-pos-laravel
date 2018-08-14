@@ -238,6 +238,7 @@
 								:focus="false"
 								:hideLabel="false"
 								:error="zone_error"
+								step="1"
 								v-if="isParcelOrDocument">
 							</text-input>
 						</div>
@@ -519,6 +520,8 @@
 			setInterval(() => this.updateCurrentTime(), 1000);
 
 			window.addEventListener('keyup', function(event){
+				console.log("Keyup" + event.key);
+
 	    		if(event.key == "F8" && this.canAddItem) {
 	    			this.toggleAddItem();
 	    		}
@@ -638,7 +641,7 @@
 						.catch(error => this.getRelatedProduct(error));
 
 					this.isLoading = false;
-					if(this.selectedProductType.has_detail) {
+					if(this.selectedProductType.has_detail && !this.isEditing) {
 						this.getDefaultDetails();
 					}
 				}
@@ -1073,13 +1076,14 @@
 			},
 
 			canAddItem() {
-				return this.isLoading;
+				return !this.isLoading;
 			}
 		},
 
 		watch: {
 			selectedType(newVal, oldVal) {
 				this.form.type = newVal.value;
+				this.form.items = [];
 				if(this.isAddingItem)
 					this.toggleAddItem();
 			},
@@ -1111,6 +1115,7 @@
 
 			selectedCustomer(newVal, oldVal) {
 				this.form.customer_id = newVal.value;
+				this.form.items = [];
 				if(this.isAddingItem)
 					this.toggleAddItem();
 			},

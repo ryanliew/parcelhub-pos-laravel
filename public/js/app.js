@@ -30377,7 +30377,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(139);
-module.exports = __webpack_require__(251);
+module.exports = __webpack_require__(245);
 
 
 /***/ }),
@@ -30461,14 +30461,14 @@ Vue.component('taxes-dialog', __webpack_require__(221));
 Vue.component('products-dialog', __webpack_require__(224));
 Vue.component('products-importer', __webpack_require__(227));
 
-Vue.component('invoices-create', __webpack_require__(236));
+Vue.component('invoices-create', __webpack_require__(230));
 
-Vue.component('customers-dialog', __webpack_require__(239));
-Vue.component('statement-dialog', __webpack_require__(242));
+Vue.component('customers-dialog', __webpack_require__(233));
+Vue.component('statement-dialog', __webpack_require__(236));
 
-Vue.component('terminals-dialog', __webpack_require__(245));
+Vue.component('terminals-dialog', __webpack_require__(239));
 
-Vue.component('pricing-dialog', __webpack_require__(248));
+Vue.component('pricing-dialog', __webpack_require__(242));
 
 var app = new Vue({
   el: '#app',
@@ -68125,7 +68125,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText'],
+	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText', 'step'],
 	data: function data() {
 		return {
 			localValue: ''
@@ -68464,7 +68464,7 @@ var render = function() {
               name: _vm.name,
               id: _vm.name,
               type: _vm.type || "text",
-              step: ".001",
+              step: _vm.step ? _vm.step : 0.001,
               placeholder: _vm.placeholder
             },
             domProps: { value: _vm.value },
@@ -75293,21 +75293,15 @@ if (false) {
 }
 
 /***/ }),
-/* 230 */,
-/* 231 */,
-/* 232 */,
-/* 233 */,
-/* 234 */,
-/* 235 */,
-/* 236 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(237)
+var __vue_script__ = __webpack_require__(231)
 /* template */
-var __vue_template__ = __webpack_require__(238)
+var __vue_template__ = __webpack_require__(232)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -75346,7 +75340,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 237 */
+/* 231 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -75356,6 +75350,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
 //
 //
 //
@@ -75865,6 +75860,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}, 1000);
 
 		window.addEventListener('keyup', function (event) {
+			console.log("Keyup" + event.key);
+
 			if (event.key == "F8" && this.canAddItem) {
 				this.toggleAddItem();
 			}
@@ -76001,7 +75998,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				});
 
 				this.isLoading = false;
-				if (this.selectedProductType.has_detail) {
+				if (this.selectedProductType.has_detail && !this.isEditing) {
 					this.getDefaultDetails();
 				}
 			}
@@ -76402,13 +76399,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return "";
 		},
 		canAddItem: function canAddItem() {
-			return this.isLoading;
+			return !this.isLoading;
 		}
 	},
 
 	watch: {
 		selectedType: function selectedType(newVal, oldVal) {
 			this.form.type = newVal.value;
+			this.form.items = [];
 			if (this.isAddingItem) this.toggleAddItem();
 		},
 		zone: function zone(newVal, oldVal) {
@@ -76431,6 +76429,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
 			this.form.customer_id = newVal.value;
+			this.form.items = [];
 			if (this.isAddingItem) this.toggleAddItem();
 		},
 		selectedProductType: function selectedProductType(newVal, oldVal) {
@@ -76440,7 +76439,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 });
 
 /***/ }),
-/* 238 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -77014,7 +77013,8 @@ var render = function() {
                                       editable: true,
                                       focus: false,
                                       hideLabel: false,
-                                      error: _vm.zone_error
+                                      error: _vm.zone_error,
+                                      step: "1"
                                     },
                                     model: {
                                       value: _vm.zone,
@@ -77462,15 +77462,15 @@ if (false) {
 }
 
 /***/ }),
-/* 239 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(240)
+var __vue_script__ = __webpack_require__(234)
 /* template */
-var __vue_template__ = __webpack_require__(241)
+var __vue_template__ = __webpack_require__(235)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -77509,7 +77509,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 240 */
+/* 234 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -77869,7 +77869,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 241 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -78300,15 +78300,15 @@ if (false) {
 }
 
 /***/ }),
-/* 242 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(243)
+var __vue_script__ = __webpack_require__(237)
 /* template */
-var __vue_template__ = __webpack_require__(244)
+var __vue_template__ = __webpack_require__(238)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -78347,7 +78347,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 243 */
+/* 237 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -78486,7 +78486,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 244 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -78644,15 +78644,15 @@ if (false) {
 }
 
 /***/ }),
-/* 245 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(246)
+var __vue_script__ = __webpack_require__(240)
 /* template */
-var __vue_template__ = __webpack_require__(247)
+var __vue_template__ = __webpack_require__(241)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -78691,7 +78691,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 246 */
+/* 240 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -78909,7 +78909,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 247 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -79121,15 +79121,15 @@ if (false) {
 }
 
 /***/ }),
-/* 248 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(249)
+var __vue_script__ = __webpack_require__(243)
 /* template */
-var __vue_template__ = __webpack_require__(250)
+var __vue_template__ = __webpack_require__(244)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79168,7 +79168,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 249 */
+/* 243 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79457,7 +79457,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 250 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -79739,7 +79739,7 @@ if (false) {
 }
 
 /***/ }),
-/* 251 */
+/* 245 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

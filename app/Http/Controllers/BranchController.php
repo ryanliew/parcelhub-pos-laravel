@@ -111,6 +111,6 @@ class BranchController extends Controller
             $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
         }
         
-        return json_encode($result->first());
+        return json_encode($result->orderBy('customer_id', 'DESC')->first());
     }   
 }
