@@ -42,9 +42,9 @@
                         @guest
                             
                         @else
-                            @if(auth()->user()->is_admin)
+                            @if(auth()->user()->isAdmin())
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('branches.page') }}">
+                                    <a class="nav-link" href="{{ route('vendors.page') }}">
                                         Admin panel
                                     </a>
                                 </li>
@@ -55,8 +55,8 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    @if(auth()->user()->is_admin)
-                                        <a class="dropdown-item" href="{{ route('branches.page') }}">
+                                    @if(auth()->user()->isAdmin())
+                                        <a class="dropdown-item" href="{{ route('vendors.page') }}">
                                             Admin panel
                                         </a>
                                     @endif

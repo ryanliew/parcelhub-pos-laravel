@@ -59,6 +59,7 @@
 				},
 				dom: 'Blftip',
 				buttons: [
+		 			@if(auth()->user()->hasPermission(auth()->user()->current_branch, 'write'))
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
@@ -72,6 +73,7 @@
 						},
 						enabled: false
 					},
+					@endif
 					{
 						text: 'Generate statement',
 						action: function( e, dt, node, config ) {
@@ -148,9 +150,12 @@
 
 			table.on( 'select deselect', function () {
 		        var selectedRows = table.rows( { selected: true } ).count();
-		 
-		        table.button( 1 ).enable( selectedRows === 1 );
-		        table.button( 2 ).enable( selectedRows > 0 );
+		 		@if(auth()->user()->hasPermission(auth()->user()->current_branch, 'write'))
+			        table.button( 1 ).enable( selectedRows === 1 );
+			        table.button( 2 ).enable( selectedRows > 0 );
+			    @else
+			    		table.button( 0 ).enable( selectedRows > 0 );
+			    @endif
 		    });
 
 		    window.events.$on("reload-table", function(){

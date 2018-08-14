@@ -30423,7 +30423,9 @@ window.swalalert = function (title, message) {
     html: message,
     showCancelButton: true
   }).then(function (result) {
-    callback();
+    if (result.value) {
+      callback();
+    }
   });
 };
 
@@ -30469,6 +30471,8 @@ Vue.component('statement-dialog', __webpack_require__(236));
 Vue.component('terminals-dialog', __webpack_require__(239));
 
 Vue.component('pricing-dialog', __webpack_require__(242));
+
+Vue.component('permissions-dialog', __webpack_require__(248));
 
 var app = new Vue({
   el: '#app',
@@ -72588,7 +72592,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: [''],
+	props: ['isAdmin', 'default_branch'],
 
 	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
 
@@ -72596,8 +72600,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		return {
 			isActive: false,
 			selectedBranch: '',
+			selectedTerminal: '',
 			selectedUser: '',
 			branches: [],
+			terminals: [],
 			isEdit: false,
 			form: new Form({
 				name: '',
@@ -72605,8 +72611,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				email: '',
 				password: '',
 				password_confirmation: '',
-				current_terminal: '',
-				current_branch: ''
+				current_terminal: 1,
+				current_branch: this.default_branch
 			})
 		};
 	},
@@ -72651,6 +72657,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					return this.form.current_branch == type.value;
 				}.bind(this))[0];
 			}
+
+			this.getTerminals();
+		},
+		getTerminals: function getTerminals() {
+			var _this3 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			// console.log(error);
+			axios.get("/data/terminals").then(function (response) {
+				return _this3.setTerminals(response);
+			}).catch(function (error) {
+				return _this3.getTerminals(error);
+			});
+		},
+		setTerminals: function setTerminals(response) {
+			this.terminals = response.data.map(function (terminal) {
+				var obj = {};
+
+				obj['value'] = terminal.id;
+				obj['label'] = terminal.name;
+
+				return obj;
+			});
+
+			if (this.form.current_terminal) {
+				this.selectedTerminal = _.filter(this.terminals, function (terminal) {
+					return this.form.current_terminal == terminal.value;
+				}.bind(this))[0];
+			}
 		},
 		createUser: function createUser(evt) {
 			this.openDialog();
@@ -72687,11 +72723,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.isConfirming = true;
 		},
 		confirmSubmit: function confirmSubmit() {
-			var _this3 = this;
+			var _this4 = this;
 
 			this.isConfirming = false;
 			this.form.post(this.url).then(function (response) {
-				return _this3.onSuccess(response);
+				return _this4.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -72721,6 +72757,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	watch: {
 		selectedUserType: function selectedUserType(newVal, oldVal) {
 			this.form.user_type_id = newVal.value;
+		},
+		selectedTerminal: function selectedTerminal(newVal, oldVal) {
+			if (newVal) this.form.currentTerminal = newVal.value;
 		}
 	}
 
@@ -72916,64 +72955,66 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("selector-input", {
-                          attrs: {
-                            potentialData: _vm.branches,
-                            defaultData: _vm.selectedBranch,
-                            placeholder: "Select default branch",
-                            required: true,
-                            label: "Branch",
-                            name: "current_branch",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("current_branch")
-                          },
-                          model: {
-                            value: _vm.selectedBranch,
-                            callback: function($$v) {
-                              _vm.selectedBranch = $$v
-                            },
-                            expression: "selectedBranch"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.current_terminal,
-                            required: true,
-                            type: "number",
-                            label: "Default Terminal",
-                            name: "current_terminal",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("current_terminal")
-                          },
-                          model: {
-                            value: _vm.form.current_terminal,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "current_terminal", $$v)
-                            },
-                            expression: "form.current_terminal"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ])
+                  _vm.isAdmin
+                    ? _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("selector-input", {
+                              attrs: {
+                                potentialData: _vm.branches,
+                                defaultData: _vm.selectedBranch,
+                                placeholder: "Select default branch",
+                                required: true,
+                                label: "Branch",
+                                name: "current_branch",
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("current_branch")
+                              },
+                              model: {
+                                value: _vm.selectedBranch,
+                                callback: function($$v) {
+                                  _vm.selectedBranch = $$v
+                                },
+                                expression: "selectedBranch"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("selector-input", {
+                              attrs: {
+                                potentialData: _vm.terminals,
+                                defaultData: _vm.selectedTerminal,
+                                placeholder: "Select a terminal",
+                                required: true,
+                                label: "Terminal",
+                                name: "current_terminal",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("current_terminal")
+                              },
+                              model: {
+                                value: _vm.selectedTerminal,
+                                callback: function($$v) {
+                                  _vm.selectedTerminal = $$v
+                                },
+                                expression: "selectedTerminal"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ])
+                    : _vm._e()
                 ]
               )
             ]),
@@ -75764,6 +75805,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -76067,7 +76116,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 		},
 		setProduct: function setProduct(response) {
-			this.selectedProduct = '';
+			if (!this.isEditing) this.selectedProduct = '';
 			this.selectedProduct_error = "";
 			this.products = response.data.map(function (product) {
 				var obj = {};
@@ -76075,10 +76124,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				obj['value'] = product.id;
 				obj['label'] = product.sku;
 				obj['description'] = product.description;
-				obj['corporate_price'] = product.corporate_price;
-				obj['walk_in_price'] = product.walk_in_price;
-				obj['walk_in_price_special'] = product.walk_in_price_special;
-				obj['tax'] = product.tax.percentage;
 
 				return obj;
 			}.bind(this));
@@ -76110,40 +76155,61 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.getProductPrice();
 			}
 		},
+		getProductPriceUrl: function getProductPriceUrl(product) {
+
+			var url = "/data/pricing?product=" + product;
+			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
+				url += "&customer=" + this.selectedCustomer.value;
+			}
+
+			return url;
+		},
 		getProductPrice: function getProductPrice() {
 			var _this11 = this;
 
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			console.log(error);
 			if (this.selectedProduct) {
 				this.item_add_loading = true;
-				var url = "/data/pricing?product=" + this.selectedProduct.value;
-				if (this.selectedCustomer) {
-					url += "&customer=" + this.selectedCustomer.value;
-				}
+
+				var url = this.getProductPriceUrl(this.selectedProduct.value);
+
 				axios.get(url).then(function (response) {
 					return _this11.setProductPrice(response);
 				}).catch(function (error) {
-					return _this11.getProductPrice();
+					return _this11.getProductPrice(error);
 				});
 			}
 
 			this.setProductPrice('');
 		},
-		setProductPrice: function setProductPrice(response) {
-			this.price_group = this.selectedProduct;
+		calculatePriceBasedOnCustomer: function calculatePriceBasedOnCustomer(price_group) {
+			var price = price_group.walk_in_price;
 
-			if (response.data) this.price_group = response.data;
-
-			var price = this.price_group.walk_in_price;
-
-			if (this.selectedType.label == "Customer") {
-				if (this.selectedCustomer.type == 'walk_in_special') price = this.price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = this.price_group.corporate_price;
+			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
+				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
 			}
 
-			this.price = price;
-			this.item_tax = price * this.selectedProduct.tax / 100;
+			var tax = price_group.tax ? price * price_group.tax : 0;
+			var total = price + tax;
 
-			this.price = this.price.toFixed(2);
-			this.item_tax = this.item_tax.toFixed(2);
+			return { price: price, tax: tax, total: total };
+		},
+		setProductPrice: function setProductPrice(response) {
+			// console.log("Setting product price");
+			if (response) {
+				this.price_group = this.selectedProduct;
+
+				if (response.data) this.price_group = response.data;
+
+				var prices = this.calculatePriceBasedOnCustomer(this.price_group);
+				this.price = prices.price;
+				this.item_tax = prices.tax;
+
+				this.price = this.price.toFixed(2);
+				this.item_tax = this.item_tax.toFixed(2);
+			}
 
 			this.item_add_loading = false;
 		},
@@ -76217,12 +76283,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedCourier = item.courier_id ? _.filter(this.couriers, function (courier) {
 				return item.courier_id == courier.value;
 			}.bind(item))[0] : '';
-			this.selectedProduct = _.filter(this.products, function (product) {
-				return item.product_id == product.value;
-			}.bind(item))[0];
 			this.selectedProductType = _.filter(this.product_types, function (type) {
 				return item.product_type_id == type.value;
 			}.bind(item))[0];
+
+			this.selectedProduct = { value: item.product_id, label: item.sku, description: item.description };
+			// this.selectedProduct = _.filter(this.products, function(product){ return item.product_id == product.value; }.bind(item))[0];
 			this.zone = item.zone;
 			this.weight = item.weight;
 			this.dimension_weight = item.dimension_weight;
@@ -76319,6 +76385,38 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.customers.push(customer);
 
 			this.selectedCustomer = customer;
+		},
+		getPriceForItems: function getPriceForItems() {
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+
+			// console.log(error);
+			this.isLoading = this.form.items.length > 0;
+			this.form.items.forEach(function (element, index) {
+				var _this13 = this;
+
+				var url = this.getProductPriceUrl(element.product_id);
+
+				axios.get(url).then(function (response) {
+					return _this13.changePriceForItem(index, response.data);
+				}).catch(function (error) {
+					return _this13.getPriceForItems(error);
+				});
+			}.bind(this));
+
+			if (this.isAddingItem) {
+				this.getProductPrice();
+			}
+		},
+		changePriceForItem: function changePriceForItem(item, price_group) {
+			var prices = this.calculatePriceBasedOnCustomer(price_group);
+			if (this.form.items[item].product_type_id !== 1) {
+				this.form.items[item].price = prices.price;
+				this.form.items[item].tax = prices.tax;
+				this.form.items[item].total_price = prices.total;
+			}
+
+			if (item + 1 == this.form.items.length || this.form.items.length == 0) this.isLoading = false;
 		}
 	},
 
@@ -76391,7 +76489,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (!this.canEdit) {
 				if (this.invoice && !this.invoice.can_edit) return "Invoice has been locked";
 
-				if (!this.selectedCustomer && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
+				if (this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
+
+				if (this.selectedType.value == 'Customer' && !this.selectedCustomer) return "Customer not selected";
 
 				return "No items";
 			}
@@ -76406,8 +76506,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	watch: {
 		selectedType: function selectedType(newVal, oldVal) {
 			this.form.type = newVal.value;
-			this.form.items = [];
-			if (this.isAddingItem) this.toggleAddItem();
+
+			this.getPriceForItems();
 		},
 		zone: function zone(newVal, oldVal) {
 			this.getFilteredProduct();
@@ -76428,9 +76528,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.payment_type = newVal.value;
 		},
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
-			this.form.customer_id = newVal.value;
-			this.form.items = [];
-			if (this.isAddingItem) this.toggleAddItem();
+			if (newVal) this.form.customer_id = newVal.value;
+
+			this.getPriceForItems();
 		},
 		selectedProductType: function selectedProductType(newVal, oldVal) {
 			if (newVal && oldVal !== newVal) this.getRelatedProduct();
@@ -76488,27 +76588,64 @@ var render = function() {
                     _vm._v(": " + _vm._s(_vm.currentTime))
                   ]),
                   _vm._v(" "),
-                  _c("selector-input", {
-                    attrs: {
-                      potentialData: _vm.types,
-                      defaultData: _vm.selectedType,
-                      placeholder: "Select type",
-                      required: true,
-                      label: "Type",
-                      name: "type",
-                      editable: true,
-                      focus: false,
-                      hideLabel: false,
-                      error: _vm.form.errors.get("type")
-                    },
-                    model: {
-                      value: _vm.selectedType,
-                      callback: function($$v) {
-                        _vm.selectedType = $$v
-                      },
-                      expression: "selectedType"
-                    }
-                  }),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col-5 small-select" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.types,
+                            defaultData: _vm.selectedType,
+                            placeholder: "Select type",
+                            required: true,
+                            label: "Type",
+                            name: "type",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("type")
+                          },
+                          model: {
+                            value: _vm.selectedType,
+                            callback: function($$v) {
+                              _vm.selectedType = $$v
+                            },
+                            expression: "selectedType"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.remarks,
+                            required: false,
+                            type: "text",
+                            label: "Remarks",
+                            name: "remarks",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("remarks")
+                          },
+                          model: {
+                            value: _vm.form.remarks,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "remarks", $$v)
+                            },
+                            expression: "form.remarks"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
                   _vm._v(" "),
                   _vm.form.type == "Customer"
                     ? _c("selector-input", {
@@ -76536,31 +76673,10 @@ var render = function() {
                       })
                     : _vm._e(),
                   _vm._v(" "),
-                  _c("text-input", {
-                    attrs: {
-                      defaultValue: _vm.form.remarks,
-                      required: false,
-                      type: "text",
-                      label: "Remarks",
-                      name: "remarks",
-                      editable: true,
-                      focus: false,
-                      hideLabel: false,
-                      error: _vm.form.errors.get("remarks")
-                    },
-                    model: {
-                      value: _vm.form.remarks,
-                      callback: function($$v) {
-                        _vm.$set(_vm.form, "remarks", $$v)
-                      },
-                      expression: "form.remarks"
-                    }
-                  }),
-                  _vm._v(" "),
                   _c("div", { staticClass: "table-responsive" }, [
                     _c("table", { staticClass: "table table-striped" }, [
                       _c("thead", [
-                        _c("tr", [
+                        _c("tr", { staticClass: "small-text" }, [
                           _c("th", [_vm._v("Tracking code")]),
                           _vm._v(" "),
                           _c("th", [_vm._v("Item")]),
@@ -76586,10 +76702,15 @@ var render = function() {
                                   staticClass: "fas fa-circle fa-stack-2x"
                                 }),
                                 _vm._v(" "),
-                                _c("i", {
-                                  staticClass:
-                                    "fas fa-plus fa-stack-1x fa-inverse text-white"
-                                })
+                                _vm.canAddItem
+                                  ? _c("i", {
+                                      staticClass:
+                                        "fas fa-plus fa-stack-1x fa-inverse text-white"
+                                    })
+                                  : _c("i", {
+                                      staticClass:
+                                        "fas fa-stack-1x fa-inverse text-white fa-circle-notch fa-spin"
+                                    })
                               ]
                             )
                           ])
@@ -76602,7 +76723,7 @@ var render = function() {
                           return _c(
                             "tr",
                             {
-                              staticClass: "transition-ease",
+                              staticClass: "transition-ease small-text",
                               class: _vm.getItemRowClass(index)
                             },
                             [
@@ -76646,7 +76767,7 @@ var render = function() {
                       _vm._v(" "),
                       _vm.form.items.length > 0
                         ? _c("tfoot", [
-                            _c("tr", [
+                            _c("tr", { staticClass: "small-padding" }, [
                               _vm._m(0),
                               _vm._v(" "),
                               _c("td", [
@@ -76656,7 +76777,7 @@ var render = function() {
                               _c("td")
                             ]),
                             _vm._v(" "),
-                            _c("tr", [
+                            _c("tr", { staticClass: "small-padding" }, [
                               _vm._m(1),
                               _vm._v(" "),
                               _c("td", [
@@ -76666,7 +76787,7 @@ var render = function() {
                               _c("td")
                             ]),
                             _vm._v(" "),
-                            _c("tr", [
+                            _c("tr", { staticClass: "small-padding" }, [
                               _vm._m(2),
                               _vm._v(" "),
                               _c("td", [
@@ -76871,7 +76992,7 @@ var render = function() {
                         staticClass: "btn btn-primary",
                         attrs: {
                           type: "submit",
-                          disabled: !_vm.canEdit,
+                          disabled: !_vm.canEdit || _vm.isLoading,
                           title: _vm.editTooltip
                         }
                       },
@@ -79743,6 +79864,533 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 246 */,
+/* 247 */,
+/* 248 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(249)
+/* template */
+var __vue_template__ = __webpack_require__(250)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\permissions\\Dialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-7e7d7357", Component.options)
+  } else {
+    hotAPI.reload("data-v-7e7d7357", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 249 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['default_branch'],
+
+	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
+
+	data: function data() {
+		return {
+			isActive: false,
+			selectedUser: '',
+			selectedBranch: '',
+			selectedLevel: '',
+			selectedPermission: '',
+
+			isEdit: false,
+			branches: [],
+			levels: [{ value: 'read', label: 'Cashier' }, { value: 'write', label: 'Branch admin' }],
+			users: [],
+
+			form: new Form({
+				user_id: '',
+				branch_id: '',
+				access_level: ''
+			})
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('createPermission', function (evt) {
+			return _this.createPermission(evt);
+		});
+		window.events.$on('editPermission', function (evt) {
+			return _this.editPermission(evt);
+		});
+
+		$("#permission-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+
+		this.getBranches();
+	},
+
+
+	methods: {
+		getBranches: function getBranches() {
+			var _this2 = this;
+
+			axios.get("/data/branches").then(function (response) {
+				return _this2.setBranches(response);
+			}).catch(function (error) {
+				return _this2.getBranches();
+			});
+		},
+		setBranches: function setBranches(response) {
+			this.branches = response.data.map(function (branch) {
+				var obj = {};
+
+				obj['label'] = branch.name;
+				obj['value'] = branch.id;
+
+				return obj;
+			});
+
+			this.form.branch_id = this.default_branch;
+
+			if (this.form.branch_id) {
+				this.selectedBranch = _.filter(this.branches, function (branch) {
+					return this.form.branch_id == branch.value;
+				}.bind(this))[0];
+			}
+			this.getUsers();
+		},
+		getUsers: function getUsers() {
+			var _this3 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			axios.get("/data/users").then(function (response) {
+				return _this3.setUsers(response);
+			}).catch(function (error) {
+				return _this3.getUsers(error);
+			});
+		},
+		setUsers: function setUsers(response) {
+			this.users = response.data.map(function (user) {
+				var obj = {};
+
+				obj['label'] = user.name;
+				obj['value'] = user.id;
+
+				return obj;
+			});
+		},
+		createPermission: function createPermission(evt) {
+			this.openDialog();
+		},
+		editPermission: function editPermission(evt) {
+			this.selectedPermission = evt[0];
+			this.isEdit = true;
+			this.setForm();
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#permission-dialog").modal();
+			this.isActive = true;
+
+			this.form.branch_id = this.default_branch;
+
+			if (this.form.branch_id) {
+				this.selectedBranch = _.filter(this.branches, function (branch) {
+					return this.form.branch_id == branch.value;
+				}.bind(this))[0];
+			}
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.form.reset();
+			this.selectedPermission = '';
+			this.selectedUser = '';
+			this.selectedBranch = '';
+			this.selectedLevel = '';
+		},
+		setForm: function setForm() {
+			this.form.branch_id = this.selectedPermission.branch_id;
+			this.form.user_id = this.selectedPermission.user_id;
+			this.form.access_level = this.selectedPermission.type;
+
+			this.selectedBranch = '';
+			this.selectedUser = '';
+			this.selectedLevel = '';
+
+			if (this.form.branch_id) {
+				this.selectedBranch = _.filter(this.branches, function (branch) {
+					return this.form.branch_id == branch.value;
+				}.bind(this))[0];
+			}
+
+			if (this.form.access_level) {
+				this.selectedLevel = _.filter(this.levels, function (level) {
+					return this.form.access_level == level.value;
+				}.bind(this))[0];
+			}
+
+			if (this.form.user_id) {
+				this.selectedUser = _.filter(this.users, function (user) {
+					return this.form.user_id == user.value;
+				}.bind(this))[0];
+			}
+		},
+		submit: function submit() {
+			this.isConfirming = true;
+		},
+		confirmSubmit: function confirmSubmit() {
+			var _this4 = this;
+
+			this.isConfirming = false;
+			this.form.post(this.url).then(function (response) {
+				return _this4.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			$("#permission-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.selectedPermission ? "Edit permission - " + this.selectedUser.label : "Create permission";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.selectedPermission ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.selectedPermission ? "/admin/permissions/" + this.selectedPermission.id : "/admin/permissions";
+		},
+		canEditBranch: function canEditBranch() {
+			return this.default_branch ? false : true;
+		}
+	},
+
+	watch: {
+		selectedBranch: function selectedBranch(newVal, oldVal) {
+			if (newVal) this.form.branch_id = newVal.value;
+		},
+		selectedUser: function selectedUser(newVal, oldVal) {
+			if (newVal) this.form.user_id = newVal.value;
+		},
+		selectedLevel: function selectedLevel(newVal, oldVal) {
+			if (newVal) this.form.access_level = newVal.value;
+		}
+	}
+
+});
+
+/***/ }),
+/* 250 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "permission-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.users,
+                            defaultData: _vm.selectedUser,
+                            placeholder: "Select user",
+                            required: true,
+                            label: "User",
+                            name: "user_id",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("user_id")
+                          },
+                          model: {
+                            value: _vm.selectedUser,
+                            callback: function($$v) {
+                              _vm.selectedUser = $$v
+                            },
+                            expression: "selectedUser"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.levels,
+                            defaultData: _vm.selectedLevel,
+                            placeholder: "Select access level",
+                            required: true,
+                            label: "Access",
+                            name: "access_level",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("access_level")
+                          },
+                          model: {
+                            value: _vm.selectedLevel,
+                            callback: function($$v) {
+                              _vm.selectedLevel = $$v
+                            },
+                            expression: "selectedLevel"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("selector-input", {
+                    attrs: {
+                      potentialData: _vm.branches,
+                      defaultData: _vm.selectedBranch,
+                      placeholder: "Select branch",
+                      required: true,
+                      label: "Branch",
+                      name: "branch_id",
+                      editable: _vm.canEditBranch,
+                      focus: false,
+                      hideLabel: false,
+                      error: _vm.form.errors.get("branch_id")
+                    },
+                    model: {
+                      value: _vm.selectedBranch,
+                      callback: function($$v) {
+                        _vm.selectedBranch = $$v
+                      },
+                      expression: "selectedBranch"
+                    }
+                  })
+                ],
+                1
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("confirmation", {
+        attrs: {
+          message: _vm.confirm_message,
+          secondary: _vm.secondary_message,
+          confirming: _vm.isConfirming
+        },
+        on: {
+          cancel: function($event) {
+            _vm.isConfirming = false
+          },
+          confirm: _vm.confirmSubmit
+        }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-7e7d7357", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

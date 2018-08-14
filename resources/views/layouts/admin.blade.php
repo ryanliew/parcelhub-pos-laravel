@@ -41,7 +41,7 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
-                        @if(auth()->check() && auth()->user()->is_admin)
+                        @if(auth()->check() && auth()->user()->isAdmin())
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('invoices.page') }}">
                                     User panel
@@ -81,12 +81,15 @@
                     </button>
                 <div class="collapse navbar-collapse" id="adminNavbar">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item"><a class="nav-link" href="{{ route('branches.page') }}">Branches</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('terminals.page') }}">Terminals</a></li>
+                        @if(auth()->user()->is_admin)
+                            <li class="nav-item"><a class="nav-link" href="{{ route('branches.page') }}">Branches</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('terminals.page') }}">Terminals</a></li>
+                        @endif
                         <li class="nav-item"><a class="nav-link" href="{{ route('vendors.page') }}">Vendors</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('zones.page') }}">Zones</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('taxes.page') }}">Taxes</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('users.page') }}">Users</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('permissions.page') }}">Permissions</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
@@ -96,9 +99,11 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-left" aria-labelledby="invoice-dropdown">
+                                @if(auth()->user()->is_admin)
                                 <a class="dropdown-item" href="{{ route('settings') }}">
                                     Global settings
                                 </a>
+                                @endif
                                 <a class="dropdown-item" href="{{ route('branch-knowledge.page') }}">
                                     Branch settings
                                 </a>

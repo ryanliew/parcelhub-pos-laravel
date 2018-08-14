@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page')
-	Users
+	Permissions
 @endsection
 
 @section('styles')
@@ -12,26 +12,22 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Users</b>
+				<b>Permissions</b>
 			</div>
 			<div class="card-body">
-				<table class="table table-bordered" id="users-table">
+				<table class="table table-bordered" id="permissions-table">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Username</th>
-							<th>Email</th>
-							@if(auth()->user()->is_admin)
-							<th>Default branch</th>
-							<th>Default terminal</th>
-							@endif
+							<th>User</th>
+							<th>Branch</th>
+							<th>Access</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<users-dialog isAdmin="{{ auth()->user()->is_admin }}" :default_branch="{{ auth()->user()->current_branch }}"></users-dialog>
+		<permissions-dialog @if(!auth()->user()->is_admin) default_branch="{{auth()->user()->current->id}}" @endif></permissions-dialog>
 	</div>
 
 @endsection
@@ -42,7 +38,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
-			var table = $("#users-table").DataTable({
+			var table = $("#permissions-table").DataTable({
 				processing: true,
 				serverSide: true,
 				responsive: true,
@@ -55,13 +51,13 @@
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('createUser');
+							window.events.$emit('createPermission');
 						}
 					},
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editUser', table.rows({selected: true}).data().toArray());
+							window.events.$emit('editPermission', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},
@@ -69,21 +65,17 @@
 					// {
 					// 	text: 'Delete',
 					// 	action: function( e, dt, node, config ) {
-					// 		window.events.$emit('deleteUser', table.rows({selected: true}).data().toArray());
+					// 		window.events.$emit('deletePermission', table.rows({selected: true}).data().toArray());
 					// 	},
 					// 	enabled: false
 					// },
 					'excel', 'colvis'
 				],
-				ajax: '{!! route("users.index") !!}',
+				ajax: '{!! route("permissions.index") !!}',
 				columns: [
-					{data: 'name'},
-					{data: 'username'},
-					{data: 'email'},
-					@if(auth()->user()->is_admin)
-					{data: 'current.name'},
-					{data: 'terminal.name'}
-					@endif
+					{data: 'user_name'},
+					{data: 'branch_name'},
+					{data: 'level'}
 				]
 			});
 

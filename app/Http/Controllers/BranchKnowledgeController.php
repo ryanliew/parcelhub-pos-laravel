@@ -24,7 +24,11 @@ class BranchKnowledgeController extends Controller
 
     public function index()
     {
-    	return datatables()->of(BranchKnowledge::all())
+        $query = auth()->user()->is_admin 
+                ? BranchKnowledge::all() 
+                : BranchKnowledge::where('branch_code', auth()->user()->current->code);
+
+    	return datatables()->of($query)
                         ->toJson();	
     }
 

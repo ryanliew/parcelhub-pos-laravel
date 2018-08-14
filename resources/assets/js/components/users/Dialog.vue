@@ -81,7 +81,7 @@
 								</text-input>
 							</div>
 						</div>
-						<div class="row">
+						<div class="row" v-if="isAdmin">
 							<div class="col">
 								<selector-input :potentialData="branches"
 									v-model="selectedBranch" 
@@ -90,24 +90,24 @@
 									:required="true"
 									label="Branch"
 									name="current_branch"
-									:editable="true"
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('current_branch')">
 								</selector-input>
 							</div>
 							<div class="col">
-								<text-input v-model="form.current_terminal" 
-									:defaultValue="form.current_terminal"
+								<selector-input :potentialData="terminals"
+									v-model="selectedTerminal" 
+									:defaultData="selectedTerminal"
+									placeholder="Select a terminal"
 									:required="true"
-									type="number"
-									label="Default Terminal"
+									label="Terminal"
 									name="current_terminal"
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('current_terminal')">
-								</text-input>
+								</selector-input>
 							</div>
 						</div>
 					</form>
@@ -126,7 +126,7 @@
 	import ConfirmationMixin from "../../mixins/ConfirmationMixin.js";
 	
 	export default {
-		props: [''],
+		props: ['isAdmin', 'default_branch'],
 
 		mixins: [ConfirmationMixin],
 
@@ -134,8 +134,10 @@
 			return {
 				isActive: false,
 				selectedBranch: '',
+				selectedTerminal: '',
 				selectedUser: '',
 				branches: [],
+				terminals: [],
 				isEdit: false,
 				form: new Form({
 					name: '',
@@ -143,8 +145,8 @@
 					email: '',
 					password: '',
 					password_confirmation: '',
-					current_terminal: '',
-					current_branch: '',
+					current_terminal: 1,
+					current_branch: this.default_branch,
 				})
 			};
 		},
@@ -179,11 +181,34 @@
 				if(this.form.current_branch) {
 					this.selectedBranch = _.filter(this.branches, function(type){ return this.form.current_branch == type.value; }.bind(this))[0];
 				}
+
+				this.getTerminals();
+			},
+
+			getTerminals(error = 'No error') {
+				// console.log(error);
+				axios.get("/data/terminals")
+					.then(response => this.setTerminals(response))
+					.catch(error => this.getTerminals(error));
+			},
+
+			setTerminals(response) {
+				this.terminals = response.data.map(function(terminal){
+					let obj ={};
+
+					obj['value'] = terminal.id;
+					obj['label'] = terminal.name;
+
+					return obj;
+				});
+
+				if(this.form.current_terminal) {
+					this.selectedTerminal = _.filter(this.terminals, function(terminal){ return this.form.current_terminal == terminal.value; }.bind(this))[0];
+				}
 			},
 
 			createUser(evt) {
 				this.openDialog();
-				
 			},
 
 			editUser(evt) {
@@ -256,6 +281,11 @@
 		watch: {
 			selectedUserType(newVal, oldVal) {
 				this.form.user_type_id = newVal.value;
+			},
+
+			selectedTerminal(newVal, oldVal) {
+				if(newVal)
+					this.form.currentTerminal = newVal.value;
 			}
 		}
 

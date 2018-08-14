@@ -59,7 +59,9 @@ class TerminalController extends Controller
 
     public function list()
     {
-        return Terminal::all();
+        return auth()->user()->is_admin 
+                ? Terminal::all()
+                : Terminal::where('branch_id', auth()->user()->current_branch)->get();
     }
 
     public function get($terminal)

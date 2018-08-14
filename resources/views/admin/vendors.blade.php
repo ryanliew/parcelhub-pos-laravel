@@ -48,6 +48,7 @@
 				},
 				dom: 'Blftip',
 				buttons: [
+					@if(auth()->user()->is_admin)
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
@@ -61,6 +62,7 @@
 						},
 						enabled: false
 					},
+					@endif
 					// Enable the following if delete is allowed
 					// {
 					// 	text: 'Delete',
@@ -79,6 +81,7 @@
 				]
 			});
 
+			@if(auth()->user()->is_admin)
 			table.on( 'select deselect', function () {
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
@@ -86,6 +89,7 @@
 		        // Enable if delete is allowed
 		        // table.button( 2 ).enable( selectedRows > 0 );
 		    });
+		    @endif
 
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();

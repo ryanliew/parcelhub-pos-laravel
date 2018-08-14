@@ -51,9 +51,10 @@ class User extends Authenticatable
         return $this->belongsToMany("App\User", "users_permissions", "user_id", "target_id")->withTimestamps();
     }
 
+    // This is a method that controls admin panel access
     public function isAdmin()
     {
-        return $this->is_admin;
+        return $this->is_admin || $this->hasPermission($this->current_branch, 'write');
     }
 
     public function getDefaultBranchAttribute()
@@ -64,5 +65,10 @@ class User extends Authenticatable
     public function canBeImpersonated()
     {
         return !$this->is_admin;
+    }
+
+    public function hasPermission($branch, $type)
+    {   
+        return Permission::hasPermission($this->current_branch, $this->id, 'write');
     }
 }

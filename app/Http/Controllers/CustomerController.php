@@ -38,7 +38,7 @@ class CustomerController extends Controller
         }
         else
         {
-            $branch = auth()->user()->current()->first();
+            $branch = auth()->user()->current;
 
             $obj = datatables()->of($branch->customers()->with('branch'))->toJson();
         }

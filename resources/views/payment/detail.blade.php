@@ -37,7 +37,6 @@
 				</table>
 			</div>
 		</div>
-		<payments-dialog></payments-dialog>
 	</div>
 @endsection
 
