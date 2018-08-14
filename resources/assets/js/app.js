@@ -80,6 +80,8 @@ Vue.component('statement-dialog', require('./components/customers/Statement.vue'
 Vue.component('terminals-dialog', require('./components/terminals/Dialog.vue'));
 
 Vue.component('pricing-dialog', require('./components/pricing/Dialog.vue'));
+
+Vue.component('permissions-dialog', require('./components/permissions/Dialog.vue'));
  
 const app = new Vue({
     el: '#app',

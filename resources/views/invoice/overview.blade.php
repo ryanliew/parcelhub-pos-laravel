@@ -35,8 +35,6 @@
 				</table>
 			</div>
 		</div>
-
-		<payments-dialog :data = "{{ auth()->user() }}"></payments-dialog>
 	</div>
 
 @endsection
@@ -63,26 +61,6 @@
 							location.href = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
 						},
 						enabled: false
-					},
-					{
-						text: 'Add payment',
-						action: function( e, dt, node, config ) {
-							window.events.$emit('createPayment', table.rows({selected: true}).data().toArray());
-						},
-						enabled: false
-					},
-					{
-						text: 'View payments',
-						action: function( e, dt, node, config ) {
-
-							// var dataArr = [];
-						 //    $.each($("#invoice-table tr.selected"),function(){ //get each tr which has selected class
-						 //        dataArr.push($(this).find('td').eq(1).text()); //find its first td and push the value
-						 //        //dataArr.push($(this).find('td:first').text()); You can use this too
-						 //    });
-
-							window.location.href = '/payments/invoice/' + table.rows({selected: true}).data().toArray()[0].id;
-						},
 					},
 					'excel', 'colvis',
 				],
@@ -157,8 +135,6 @@
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
 		        table.button( 0 ).enable( selectedRows === 1 );
-		        table.button( 1 ).enable( selectedRows === 1 );
-		        table.button( 2 ).enable( selectedRows === 1 );
 		    });
 
 		    window.events.$on("reload-table", function(){

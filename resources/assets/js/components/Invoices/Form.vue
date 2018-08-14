@@ -1007,6 +1007,7 @@
 			},
 
 			getPriceForItems(error = 'No error') {
+
 				// console.log(error);
 				this.isLoading = this.form.items.length > 0;
 				this.form.items.forEach(function(element, index) {
@@ -1024,9 +1025,11 @@
 
 			changePriceForItem(item, price_group) {
 				let prices = this.calculatePriceBasedOnCustomer(price_group);
-				this.form.items[item].price = prices.price;
-				this.form.items[item].tax = prices.tax;
-				this.form.items[item].total_price = prices.total;
+				if(this.form.items[item].product_type_id !== 1) {
+					this.form.items[item].price = prices.price;
+					this.form.items[item].tax = prices.tax;
+					this.form.items[item].total_price = prices.total;
+				}
 
 				if(item + 1 == this.form.items.length || this.form.items.length == 0) 
 					this.isLoading = false;

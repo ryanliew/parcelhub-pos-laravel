@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Branch;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -27,6 +28,11 @@ class UserController extends Controller
     public function change_user()
     {
         auth()->user()->impersonate(User::find(request()->user));
+    }
+
+    public function list()
+    {
+        return User::all();
     }
 
     public function get_impersonation()
@@ -77,7 +83,13 @@ class UserController extends Controller
 
     public function index()
     {
-    	return datatables()->of(User::with(['current', 'terminal']))->toJson();	
+        $query = auth()->user()->is_admin 
+                ? User::with(['current', 'terminal'])
+                : User::with(['current', 'terminal'])
+                    ->select('users.*')
+                    ->whereRaw('(SELECT COUNT(*) FROM permissions WHERE user_id = users.id AND branch_id = ' . auth()->user()->current->id. ') > 0');
+
+    	return datatables()->of($query)->toJson();	
     }
 
     public function store()

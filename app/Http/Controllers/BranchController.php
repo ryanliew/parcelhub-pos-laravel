@@ -117,10 +117,11 @@ class BranchController extends Controller
 
         if($result->orderBy('customer_id', 'DESC')->get()->count() == 0)
             $result = DB::table('products')
-                        ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'tax')
-                        ->where('id', request()->product)
+                        ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'taxes.percentage as tax')
+                        ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id')
+                        ->where('products.id', request()->product)
                         ->get();
         
         return json_encode($result->first());
-    }   
+    }
 }
