@@ -75911,7 +75911,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			currentTime: '',
 
 			item_add_loading: false,
-			price_group: ''
+			price_group: '',
+			can_edit_invoice: true
 		};
 	},
 	mounted: function mounted() {
@@ -75959,6 +75960,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.total = invoice.total;
 			this.form.discount = invoice.discount;
 			this.form.remarks = invoice.remarks;
+
+			this.can_edit_invoice = invoice.can_edit;
 		},
 		moveToNext: function moveToNext() {
 			this.$refs.producttypes.focus();
@@ -76499,14 +76502,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return value;
 		},
 		canEdit: function canEdit() {
-			return this.form.items.length > 0 && (!this.invoice || this.invoice.can_edit) && (this.selectedCustomer || this.form.paid >= this.rounded_total);
+			return this.form.items.length > 0 && (!this.invoice || this.can_edit_invoice) && (this.selectedCustomer || this.form.paid >= this.rounded_total);
 		},
 		canEditItem: function canEditItem() {
-			return (!this.invoice || this.invoice.can_edit) && !this.item_add_loading;
+			return (!this.invoice || this.can_edit_invoice) && !this.item_add_loading;
 		},
 		editTooltip: function editTooltip() {
 			if (!this.canEdit) {
-				if (this.invoice && !this.invoice.can_edit) return "Invoice has been locked";
+				if (this.invoice && !this.can_edit_invoice) return "Invoice has been locked";
 
 				if (this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
 
@@ -76962,27 +76965,27 @@ var render = function() {
                     : _vm._e(),
                   _vm._v(" "),
                   _c("div", { staticClass: "d-flex justify-content-end" }, [
-                    this.selectedCustomer && this.invoice
+                    _vm.selectedCustomer && _vm.invoice
                       ? _c(
                           "a",
                           {
                             staticClass: "btn btn-success mr-2",
                             attrs: {
                               target: "_blank",
-                              href: "/invoices/do/" + this.invoice,
+                              href: "/invoices/do/" + _vm.invoice,
                               type: "button"
                             }
                           },
                           [_vm._v("Print delivery note")]
                         )
-                      : this.invoice
+                      : _vm.invoice
                         ? _c(
                             "a",
                             {
                               staticClass: "btn btn-success mr-2",
                               attrs: {
                                 target: "_blank",
-                                href: "/invoices/receipt/" + this.invoice,
+                                href: "/invoices/receipt/" + _vm.invoice,
                                 type: "button"
                               }
                             },
@@ -76990,14 +76993,14 @@ var render = function() {
                           )
                         : _vm._e(),
                     _vm._v(" "),
-                    this.invoice
+                    _vm.invoice
                       ? _c(
                           "a",
                           {
                             staticClass: "btn btn-success mr-2",
                             attrs: {
                               target: "_blank",
-                              href: "/invoices/preview/" + this.invoice,
+                              href: "/invoices/preview/" + _vm.invoice,
                               type: "button"
                             }
                           },

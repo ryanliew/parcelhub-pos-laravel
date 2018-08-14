@@ -166,9 +166,9 @@
 					<h4 class="text-right" v-if="form.type !== 'Customer'">Change: RM{{ change | price }}</h4>
 
 					<div class="d-flex justify-content-end">
-						<a v-if="this.selectedCustomer && this.invoice" target="_blank" :href="'/invoices/do/' + this.invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
-						<a v-else-if="this.invoice" target="_blank" :href="'/invoices/receipt/' + this.invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
-						<a v-if="this.invoice" target="_blank" :href="'/invoices/preview/' + this.invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
+						<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
+						<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
+						<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
 						<button type="submit" class="btn btn-primary" :disabled="!canEdit || isLoading" :title="editTooltip">Confirm</button>
 					</div>
 				</div>
@@ -514,7 +514,8 @@
 				currentTime: '',
 
 				item_add_loading: false,
-				price_group: ''
+				price_group: '',
+				can_edit_invoice: true
 			};
 		},
 
@@ -556,6 +557,8 @@
 				this.form.total = invoice.total;
 				this.form.discount = invoice.discount;
 				this.form.remarks = invoice.remarks;
+
+				this.can_edit_invoice = invoice.can_edit;
 			},
 
 			moveToNext() {
@@ -1110,17 +1113,17 @@
 			},
 
 			canEdit() {
-				return this.form.items.length > 0 && ( !this.invoice ||  this.invoice.can_edit ) && ( this.selectedCustomer || this.form.paid >= this.rounded_total );
+				return this.form.items.length > 0 && ( !this.invoice ||  this.can_edit_invoice ) && ( this.selectedCustomer || this.form.paid >= this.rounded_total );
 			},
 
 			canEditItem() {
-				return ( !this.invoice ||  this.invoice.can_edit ) && !this.item_add_loading;
+				return ( !this.invoice ||  this.can_edit_invoice ) && !this.item_add_loading;
 			},
 
 			editTooltip() {
 				if(!this.canEdit)
 				{
-					if(this.invoice && !this.invoice.can_edit)
+					if(this.invoice && !this.can_edit_invoice)
 						return "Invoice has been locked"
 
 					if(this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0)
