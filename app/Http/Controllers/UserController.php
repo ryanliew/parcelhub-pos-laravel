@@ -77,7 +77,7 @@ class UserController extends Controller
             "email" => ["required","email", $rule],
             "password" => "sometimes|confirmed",
             "current_branch" => "required|integer",
-            "current_terminal" => "required|integer"
+            "current_terminal" => "sometimes|required|integer"
         ]);
 	}
 
@@ -96,7 +96,20 @@ class UserController extends Controller
     {
     	$this->validate_input();
 
-        $branch = User::create(request()->all());
+        $store = [
+            "username" => request()->username,
+            "name" => request()->name,
+            "email" => request()->email,
+            "password" => bcrypt(request()->password),
+            "current_branch" => request()->current_branch,
+            "current_terminal" => request()->has('current_terminal') 
+                                ? request()->current_terminal 
+                                : Branch::find(request()->current_branch)->terminals()->first()->id
+        ];
+
+        $user = User::create($store);
+
+        $user->giveDefaultPermission();
 
     	return json_encode(['message' => "New user created."]);
     }

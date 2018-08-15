@@ -72601,7 +72601,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['is_admin'],
+	props: ['is_admin', 'default_branch'],
 
 	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
 
@@ -72639,6 +72639,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.closeDialog();
 		}.bind(this));
 
+		this.form.current_branch = this.default_branch;
+
 		this.getBranches();
 	},
 
@@ -72649,6 +72651,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			axios.get("/data/branches").then(function (response) {
 				return _this2.setBranches(response);
+			}).catch(function (error) {
+				return _this2.getBranches();
 			});
 		},
 		setBranches: function setBranches(response) {

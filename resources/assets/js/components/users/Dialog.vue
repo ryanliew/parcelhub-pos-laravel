@@ -126,7 +126,7 @@
 	import ConfirmationMixin from "../../mixins/ConfirmationMixin.js";
 	
 	export default {
-		props: ['is_admin'],
+		props: ['is_admin', 'default_branch'],
 
 		mixins: [ConfirmationMixin],
 
@@ -159,13 +159,16 @@
 				this.closeDialog();
 			}.bind(this));
 
+			this.form.current_branch = this.default_branch;
+
 			this.getBranches();
 		},
 
 		methods: {
 			getBranches() {
 				axios.get("/data/branches")
-					.then(response => this.setBranches(response));
+					.then(response => this.setBranches(response))
+					.catch(error => this.getBranches());
 			},
 
 			setBranches(response) {
