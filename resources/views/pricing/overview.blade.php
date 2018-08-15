@@ -79,7 +79,15 @@
 						text: 'Delete',
 						action: function( e, dt, node, config ) {
 							swalalert("Are you sure?", "", 'warning', function(){
-								axios.delete("/branch/product/" + table.rows({selected: true}).data().toArray()[0].id)
+								var item = table.rows({selected: true}).data().toArray()[0];
+								// console.log(item);
+								var formData = new FormData();
+
+								var requestString = item.pivot.customer_id ? "?customer=" + item.pivot.customer_id : "";
+
+						        formData.append('customer_id', item.pivot.customer_id);
+						        
+								axios.delete("/branch/product/" + item.id + requestString)
 									.then(response => table.ajax.reload());
 							});
 						},

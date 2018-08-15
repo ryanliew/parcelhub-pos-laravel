@@ -75,7 +75,17 @@ class BranchProductController extends Controller
 
     public function destroy($product)
     {
-    	auth()->user()->current->products()->detach($product);
+        
+    	$query = DB::table('branch_product')
+                    ->where('product_id', $product)
+                    ->where('branch_id', auth()->user()->current_branch);
+
+        if(request()->has('customer'))
+            $query->where('customer_id', request()->customer);
+        else
+            $query->whereNull('customer_id');
+
+        $query->delete();
 
     	return json_encode(['message' => "Product price override deleted"]);
     }
