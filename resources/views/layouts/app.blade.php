@@ -18,7 +18,7 @@
 
     <!-- Styles -->
     @yield('styles')
-    <link href="{{ asset('css/app.css?v=1.0') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css?v=1.1') }}" rel="stylesheet">
 
 </head>
 <body>

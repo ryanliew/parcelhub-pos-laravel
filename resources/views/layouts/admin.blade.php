@@ -18,7 +18,7 @@
 
     <!-- Styles -->
     @yield('styles')
-    <link href="{{ asset('css/app.css?v=1.0') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css?v=1.1') }}" rel="stylesheet">
 
 </head>
 <body>
@@ -57,15 +57,12 @@
                                 <a class="dropdown-item" href="{{ route('home') }}">
                                     User panel
                                 </a>
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                                 document.getElementById('logout-form').submit();">
+                                 <a class="dropdown-item" href="{{ route('impersonate.page') }}">
+                                    Login as other user
+                                </a>
+                                <a class="dropdown-item" href="{{ route('logout') }}?user={{ auth()->id() }}&allowed_users={{ Cookie::get('allowed_users') }}">
                                     {{ __('Logout') }}
                                 </a>
-
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
                             </div>
                         </li>
                     </ul>
@@ -102,10 +99,10 @@
                                 <a class="dropdown-item" href="{{ route('settings') }}">
                                     Global settings
                                 </a>
-                                @endif
                                 <a class="dropdown-item" href="{{ route('branch-knowledge.page') }}">
                                     Branch settings
                                 </a>
+                                @endif
                             </div>
                         </li>
                     </ul>
