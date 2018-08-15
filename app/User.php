@@ -71,4 +71,13 @@ class User extends Authenticatable
     {   
         return Permission::hasPermission($this->current_branch, $this->id, 'write');
     }
+
+    public function giveDefaultPermission()
+    {
+        Permission::create([
+            'user_id' => $this->id,
+            'branch_id' => $this->current_branch,
+            'type' => 'read'
+        ]);
+    }
 }
