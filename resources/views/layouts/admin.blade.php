@@ -92,7 +92,6 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('permissions.page') }}">Permissions</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li>
                         <li class="nav-item dropdown">
                             <a id="settings-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 Settings <span class="caret"></span>
