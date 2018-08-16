@@ -74488,6 +74488,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.isActive = false;
 			this.selectedProduct = '';
 			this.form.reset();
+			this.selectedVendor = '';
+			this.selectedZoneType = '';
+			this.selectedTax = '';
+			this.selectedType = '';
 		},
 		setForm: function setForm() {
 			this.form.sku = this.selectedProduct.sku;
@@ -74516,19 +74520,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 
 			if (this.form.vendor_id) {
-				this.selectedVendor = _.filter(this.zonetypes, function (type) {
+				this.selectedVendor = _.filter(this.vendors, function (type) {
 					return this.form.vendor_id == type.value;
 				}.bind(this))[0];
 			}
 
 			if (this.form.tax_id) {
-				this.selectedTax = _.filter(this.zonetypes, function (type) {
+				this.selectedTax = _.filter(this.taxes, function (type) {
 					return this.form.tax_id == type.value;
 				}.bind(this))[0];
 			}
 
 			if (this.form.product_type_id) {
-				this.selectedType = _.filter(this.zonetypes, function (type) {
+				this.selectedType = _.filter(this.types, function (type) {
 					return this.form.product_type_id == type.value;
 				}.bind(this))[0];
 			}
@@ -75836,6 +75840,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -75898,6 +75906,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			length: 0,
 			height: 0,
 			item_tax: 0,
+			is_custom_pricing: false,
 
 			tracking_no_error: '',
 			selectedProductType_error: '',
@@ -75911,6 +75920,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			price_error: '',
 			unit_error: '',
 			item_tax_error: '',
+
+			should_update_product: false,
 
 			currentTime: '',
 
@@ -76155,7 +76166,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}.bind(this));
 
 			// If we only have 1 product, set it as default
-			if (this.products.length == 1) {
+			if (this.products.length == 1 && (!this.isEditing || this.should_update_product)) {
 				this.selectedProduct = this.products[0];
 			}
 			// If we dont have any products that matches
@@ -76172,13 +76183,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 		},
 		productChange: function productChange() {
-			this.description = "";
-			this.price = "";
-			this.item_tax = 0;
-			if (this.selectedProduct) {
-				this.description = this.selectedProduct.description;
+			if (!this.isEditing || this.should_update_product) {
+				this.description = "";
+				this.price = "";
+				this.item_tax = 0;
+				if (this.selectedProduct) {
+					this.description = this.selectedProduct.description;
 
-				this.getProductPrice();
+					this.getProductPrice();
+				}
 			}
 		},
 		getProductPriceUrl: function getProductPriceUrl(product) {
@@ -76195,7 +76208,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			console.log(error);
+			// console.log(error);
 			if (this.selectedProduct) {
 				this.item_add_loading = true;
 
@@ -76235,6 +76248,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 				this.price = this.price.toFixed(2);
 				this.item_tax = this.item_tax.toFixed(2);
+
+				// Set custom pricing to false if it is set by system
+				// Vue.nextTick(function() {
+				// 	this.is_custom_pricing = false;
+				// }.bind(this));
 			}
 
 			this.item_add_loading = false;
@@ -76248,6 +76266,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			this.dimension_weight = eval(expression);
 			this.isCalculatingDimWeight = false;
+			this.should_update_product = true;
 		},
 		add_item: function add_item() {
 			if (this.validateInputs()) {
@@ -76269,6 +76288,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				item['product_type_id'] = this.selectedProductType.value;
 				item['total_price'] = this.total_price;
 				item['unit'] = this.unit;
+				item['is_custom_pricing'] = this.is_custom_pricing;
 
 				if (this.isEditing) {
 					Vue.set(this.form.items, this.editingIndex, item);
@@ -76300,6 +76320,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			this.isEditing = true;
 			this.editingIndex = index;
+			this.should_update_product = false;
 
 			this.toggleAddItem();
 
@@ -76326,6 +76347,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.length = item.length;
 			this.tracking_no = item.tracking_code;
 			this.item_tax = item.tax;
+			this.is_custom_pricing = item.is_custom_pricing;
 		},
 		deleteItem: function deleteItem(index) {
 			this.form.items.splice(index, 1);
@@ -76436,7 +76458,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		changePriceForItem: function changePriceForItem(item, price_group) {
 			var prices = this.calculatePriceBasedOnCustomer(price_group);
-			if (this.form.items[item].product_type_id !== 1) {
+			if (!this.form.items[item].is_custom_pricing) {
 				this.form.items[item].price = prices.price;
 				this.form.items[item].tax = prices.tax;
 				this.form.items[item].total_price = prices.total;
@@ -76532,6 +76554,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	watch: {
 		selectedType: function selectedType(newVal, oldVal) {
 			this.form.type = newVal.value;
+
+			if (newVal.value !== 'Customer') {
+				this.selectedCustomer = '';
+			}
 
 			this.getPriceForItems();
 		},
@@ -77163,6 +77189,11 @@ var render = function() {
                                       error: _vm.zone_error,
                                       step: "1"
                                     },
+                                    on: {
+                                      input: function($event) {
+                                        _vm.should_update_product = true
+                                      }
+                                    },
                                     model: {
                                       value: _vm.zone,
                                       callback: function($$v) {
@@ -77192,6 +77223,11 @@ var render = function() {
                                       focus: false,
                                       hideLabel: false,
                                       error: _vm.weight_error
+                                    },
+                                    on: {
+                                      input: function($event) {
+                                        _vm.should_update_product = true
+                                      }
                                     },
                                     model: {
                                       value: _vm.weight,
@@ -77227,6 +77263,9 @@ var render = function() {
                                     on: {
                                       addon: function($event) {
                                         _vm.isCalculatingDimWeight = true
+                                      },
+                                      input: function($event) {
+                                        _vm.should_update_product = true
                                       }
                                     },
                                     model: {
@@ -77274,11 +77313,11 @@ var render = function() {
                               _c("text-input", {
                                 attrs: {
                                   defaultValue: _vm.description,
-                                  required: false,
+                                  required: true,
                                   type: "text",
                                   label: "Description",
                                   name: "description",
-                                  editable: false,
+                                  editable: true,
                                   focus: false,
                                   hideLabel: false,
                                   error: _vm.description_error
@@ -77334,10 +77373,15 @@ var render = function() {
                                   type: "number",
                                   label: "Price",
                                   name: "price",
-                                  editable: _vm.selectedProductType.value == 1,
+                                  editable: true,
                                   focus: false,
                                   hideLabel: false,
                                   error: _vm.price_error
+                                },
+                                on: {
+                                  input: function($event) {
+                                    _vm.is_custom_pricing = true
+                                  }
                                 },
                                 model: {
                                   value: _vm.price,
@@ -80132,6 +80176,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.selectedUser = '';
 			this.selectedBranch = '';
 			this.selectedLevel = '';
+			this.isEdit = false;
 		},
 		setForm: function setForm() {
 			this.form.branch_id = this.selectedPermission.branch_id;
@@ -80268,10 +80313,10 @@ var render = function() {
                             potentialData: _vm.users,
                             defaultData: _vm.selectedUser,
                             placeholder: "Select user",
-                            required: true,
+                            required: !_vm.isEdit,
                             label: "User",
                             name: "user_id",
-                            editable: true,
+                            editable: !_vm.isEdit,
                             focus: true,
                             hideLabel: false,
                             error: _vm.form.errors.get("user_id")

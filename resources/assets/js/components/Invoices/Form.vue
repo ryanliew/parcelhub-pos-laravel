@@ -247,7 +247,8 @@
 								:hideLabel="false"
 								:error="zone_error"
 								step="1"
-								v-if="isParcelOrDocument">
+								v-if="isParcelOrDocument"
+								@input="should_update_product = true">
 							</text-input>
 						</div>
 						<div class="col">
@@ -261,7 +262,8 @@
 								:focus="false"
 								:hideLabel="false"
 								:error="weight_error"
-								v-if="isParcelOrDocument">
+								v-if="isParcelOrDocument"
+								@input="should_update_product = true">
 							</text-input>
 						</div>
 						<div class="col">
@@ -277,7 +279,8 @@
 								:error="dimension_weight_error"
 								v-if="isParcelOrDocument"
 								addon="Calculate"
-								@addon="isCalculatingDimWeight = true">
+								@addon="isCalculatingDimWeight = true"
+								@input="should_update_product = true">
 							</text-input>
 						</div>
 					</div>
@@ -299,11 +302,11 @@
 						<div class="col-4">
 							<text-input v-model="description" 
 								:defaultValue="description"
-								:required="false"
+								:required="true"
 								type="text"
 								label="Description"
 								name="description"
-								:editable="false"
+								:editable="true"
 								:focus="false"
 								:hideLabel="false"
 								:error="description_error">
@@ -329,10 +332,11 @@
 								type="number"
 								label="Price"
 								name="price"
-								:editable="selectedProductType.value == 1"
+								:editable="true"
 								:focus="false"
 								:hideLabel="false"
-								:error="price_error">
+								:error="price_error"
+								@input="is_custom_pricing = true">
 							</text-input>
 						</div>
 						<div class="col">
@@ -497,6 +501,7 @@
 				length: 0,
 				height: 0,
 				item_tax: 0,
+				is_custom_pricing: false,
 
 				tracking_no_error: '',
 				selectedProductType_error: '',
@@ -510,6 +515,8 @@
 				price_error: '',
 				unit_error: '',
 				item_tax_error: '',
+
+				should_update_product: false,
 
 				currentTime: '',
 
@@ -728,7 +735,7 @@
 				}.bind(this));
 
 				// If we only have 1 product, set it as default
-				if(this.products.length == 1) {
+				if(this.products.length == 1 && (!this.isEditing || this.should_update_product)) {
 					this.selectedProduct = this.products[0];
 				}
 				// If we dont have any products that matches
@@ -747,15 +754,17 @@
 			},
 
 			productChange() {
-				this.description = "";
-				this.price = "";
-				this.item_tax = 0;
-				if(this.selectedProduct) {
-					this.description = this.selectedProduct.description;
+				if(!this.isEditing || this.should_update_product) {
+					this.description = "";
+					this.price = "";
+					this.item_tax = 0;
+					if(this.selectedProduct) {
+						this.description = this.selectedProduct.description;
 
-					this.getProductPrice();
+						this.getProductPrice();
 
-					
+						
+					}
 				}
 			},
 
@@ -770,7 +779,7 @@
 			},
 
 			getProductPrice(error = 'No error') {
-				console.log(error);
+				// console.log(error);
 				if(this.selectedProduct) {
 					this.item_add_loading = true;
 
@@ -815,6 +824,11 @@
 
 					this.price = this.price.toFixed(2);
 					this.item_tax = this.item_tax.toFixed(2);
+
+					// Set custom pricing to false if it is set by system
+					// Vue.nextTick(function() {
+					// 	this.is_custom_pricing = false;
+					// }.bind(this));
 				}
 
 				this.item_add_loading = false;
@@ -829,6 +843,7 @@
 
 				this.dimension_weight = eval(expression);
 				this.isCalculatingDimWeight = false;
+				this.should_update_product = true;
 			},
 
 			add_item() {
@@ -852,6 +867,7 @@
 					item['product_type_id'] = this.selectedProductType.value;
 					item['total_price'] = this.total_price;
 					item['unit'] = this.unit;
+					item['is_custom_pricing'] = this.is_custom_pricing;
 
 					if(this.isEditing) {
 						Vue.set(this.form.items, this.editingIndex, item);
@@ -886,6 +902,7 @@
 
 				this.isEditing = true;
 				this.editingIndex = index;
+				this.should_update_product = false;
 
 				this.toggleAddItem();
 
@@ -909,6 +926,7 @@
 				this.length = item.length;
 				this.tracking_no = item.tracking_code;
 				this.item_tax = item.tax;
+				this.is_custom_pricing = item.is_custom_pricing;
 
 			},
 
@@ -1028,7 +1046,7 @@
 
 			changePriceForItem(item, price_group) {
 				let prices = this.calculatePriceBasedOnCustomer(price_group);
-				if(this.form.items[item].product_type_id !== 1) {
+				if(!this.form.items[item].is_custom_pricing) {
 					this.form.items[item].price = prices.price;
 					this.form.items[item].tax = prices.tax;
 					this.form.items[item].total_price = prices.total;
@@ -1147,6 +1165,10 @@
 			selectedType(newVal, oldVal) {
 				this.form.type = newVal.value;
 				
+				if(newVal.value !== 'Customer') {
+					this.selectedCustomer = '';
+				} 
+
 				this.getPriceForItems();
 			},
 

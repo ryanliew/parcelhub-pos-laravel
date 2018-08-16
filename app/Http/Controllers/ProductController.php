@@ -23,11 +23,11 @@ class ProductController extends Controller
             "sku" => "required",
             "description" => "required",
             "zone" => "integer",
-            "weight_start" => "integer",
-            "weight_end" => "integer",
-            "corporate_price" => "required|integer",
-            "walk_in_price" => "required|integer",
-            "walk_in_price_special" => "required|integer",
+            "weight_start" => "numeric",
+            "weight_end" => "numeric",
+            "corporate_price" => "required|numeric",
+            "walk_in_price" => "required|numeric",
+            "walk_in_price_special" => "required|numeric",
             "vendor_id" => "integer",
             "product_type_id" => "required|integer",
             "tax_id" => "required|integer",
@@ -37,7 +37,20 @@ class ProductController extends Controller
 
     public function index()
     {
-    	return datatables()->of(Product::with(["vendor", "zone_type", "product_type", "tax"]))->toJson();	
+    	return datatables()->of(Product::with(["vendor", "zone_type", "product_type", "tax"])->select("products.*"))
+                        ->addColumn('product_type_name', function(Product $product){
+                            return $product->product_type->name;
+                        })
+                        ->addColumn('vendor_name', function(Product $product){
+                            return is_null($product->vendor_id) ? "---" : $product->vendor->name;
+                        })
+                        ->addColumn('zone_type_name', function(Product $product){
+                            return is_null($product->zone_type_id) ? "---" : $product->zone_type->name;
+                        })
+                        ->addColumn('tax_code', function(Product $product){
+                            return $product->tax->code;
+                        })
+                        ->toJson();	
     }
 
     public function store()

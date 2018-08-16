@@ -18,10 +18,10 @@
 									v-model="selectedUser" 
 									:defaultData="selectedUser"
 									placeholder="Select user"
-									:required="true"
+									:required="!isEdit"
 									label="User"
 									name="user_id"
-									:editable="true"
+									:editable="!isEdit"
 									:focus="true"
 									:hideLabel="false"
 									:error="form.errors.get('user_id')">
@@ -179,6 +179,7 @@
 				this.selectedUser = '';
 				this.selectedBranch = '';
 				this.selectedLevel = '';
+				this.isEdit = false;
 			},
 
 			setForm() {
