@@ -106,7 +106,8 @@ class InvoiceController extends Controller
                 'product_id' => $item->product_id,
                 'product_type_id' => $item->product_type_id,
                 'total_price' => $item->total_price,
-                'unit' => $item->unit
+                'unit' => $item->unit,
+                'is_custom_pricing' => $item->is_custom_pricing
             ]);
         }
         //$invoice->items()->create($items);
@@ -163,7 +164,8 @@ class InvoiceController extends Controller
                 'product_id' => $item->product_id,
                 'product_type_id' => $item->product_type_id,
                 'total_price' => $item->total_price,
-                'unit' => $item->unit
+                'unit' => $item->unit,
+                'is_custom_pricing' => $item->is_custom_pricing
             ]);
         }
         //$invoice->items()->create($items);

@@ -94,30 +94,16 @@
 				ajax: '{!! route("products.index") !!}',
 				columns: [
 					{data: 'sku'},
-					{data: 'product_type.name'},
-					{data: 'vendor', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return data ? data.name : "---";
-							}
-
-							return data;
-						}
-					},
+					{data: 'product_type_name', name: 'product_type.name'},
+					{data: 'vendor_name', name: 'vendor.name'},
 					{data: 'zone'},
-					{data: 'zone_type', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return data ? data.name : "---";
-							}
-
-							return data;
-						}
-					},
+					{data: 'zone_type_name', name: 'zone_type.name'},
 					{data: 'weight_start'},
 					{data: 'weight_end'},
 					{data: 'corporate_price'},
 					{data: 'walk_in_price'},
 					{data: 'walk_in_price_special'},
-					{data: 'tax.code'},
+					{data: 'tax_code', name: 'tax.code'},
 					{data: 'is_tax_inclusive', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
 								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";

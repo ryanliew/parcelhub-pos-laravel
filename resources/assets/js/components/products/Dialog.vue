@@ -341,6 +341,10 @@
 				this.isActive = false;
 				this.selectedProduct = '';
 				this.form.reset();
+				this.selectedVendor = '';
+				this.selectedZoneType = '';
+				this.selectedTax = '';
+				this.selectedType = '';
 			},
 
 			setForm() {
@@ -368,15 +372,15 @@
 				}
 
 				if(this.form.vendor_id) {
-					this.selectedVendor = _.filter(this.zonetypes, function(type){ return this.form.vendor_id == type.value; }.bind(this))[0];
+					this.selectedVendor = _.filter(this.vendors, function(type){ return this.form.vendor_id == type.value; }.bind(this))[0];
 				}
 
 				if(this.form.tax_id) {
-					this.selectedTax = _.filter(this.zonetypes, function(type){ return this.form.tax_id == type.value; }.bind(this))[0];
+					this.selectedTax = _.filter(this.taxes, function(type){ return this.form.tax_id == type.value; }.bind(this))[0];
 				}
 
 				if(this.form.product_type_id) {
-					this.selectedType = _.filter(this.zonetypes, function(type){ return this.form.product_type_id == type.value; }.bind(this))[0];
+					this.selectedType = _.filter(this.types, function(type){ return this.form.product_type_id == type.value; }.bind(this))[0];
 				}
 
 			},
