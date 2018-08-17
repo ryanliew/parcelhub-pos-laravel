@@ -53,8 +53,10 @@
 					{
 						text: 'Generate report',
 						action: function( e, dt, node, config ) {
-							axios.post("{!! route('cashups.page') !!}")
-								.then(response => onSuccess(response));
+							swalalert("Are you sure?", "", 'warning', function() {
+								axios.post("{!! route('cashups.page') !!}")
+									.then(response => onSuccess(response));
+							});
 						}
 					},
 					{
