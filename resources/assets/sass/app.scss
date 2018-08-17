@@ -231,3 +231,8 @@ tr.item-editing {
 .v-select.open .form-control {
 	position:relative;
 }
+
+span.text-primary.disabled {
+	opacity: 0.65;
+	cursor: not-allowed;
+}

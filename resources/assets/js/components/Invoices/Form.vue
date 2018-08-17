@@ -17,7 +17,7 @@
 								:required="true"
 								label="Type"
 								name="type"
-								:editable="true"
+								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
 								:error="form.errors.get('type')">
@@ -30,7 +30,7 @@
 								type="text"
 								label="Remarks"
 								name="remarks"
-								:editable="true"
+								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
 								:error="form.errors.get('remarks')">
@@ -44,7 +44,7 @@
 						:required="true"
 						label="Customer"
 						name="customer_id"
-						:editable="true"
+						:editable="canEdit"
 						:focus="false"
 						:hideLabel="false"
 						:error="form.errors.get('customer_id')"
@@ -63,7 +63,7 @@
 									<th>Unit</th>
 									<th>Price</th>
 									<th>
-										<span class="fa-stack pointer transition-ease" :class="add_button_class" :title="tooltip_add" @click="toggleAddItem" :disabled="!canAddItem">
+										<span class="fa-stack pointer transition-ease" :class="add_button_class" :title="tooltip_add" @click="toggleAddItem">
 											<i class="fas fa-circle fa-stack-2x"></i>
 											<i class="fas fa-plus fa-stack-1x fa-inverse text-white" v-if="canAddItem"></i>
 											<i class="fas fa-stack-1x fa-inverse text-white fa-circle-notch fa-spin" v-else></i>
@@ -77,7 +77,7 @@
 									<td>{{ item.description }}</td>
 									<td>{{ item.unit }}</td>
 									<td>{{ item.total_price | price }}</td>
-									<td><i class="fas fa-edit text-primary pointer" @click="editItem(index)"></i> <i class="fas fa-times text-danger pointer" @click="deleteItem(index)"></i></td>
+									<td><div v-if="canEdit"><i class="fas fa-edit text-primary pointer" @click="editItem(index)"></i> <i class="fas fa-times text-danger pointer" @click="deleteItem(index)"></i></div></td>
 								</tr>
 							</tbody>
 							<tfoot v-if="form.items.length > 0">
@@ -108,7 +108,7 @@
 								type="number"
 								label="Discount"
 								name="discount"
-								:editable="true"
+								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
 								:error="form.errors.get('discount')">
@@ -122,7 +122,7 @@
 								:required="false"
 								label="Discount mode"
 								name="discount_mode"
-								:editable="true"
+								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
 								:error="form.errors.get('discount_mode')">
@@ -138,7 +138,7 @@
 								:required="true"
 								label="Payment type"
 								name="payment_type"
-								:editable="true"
+								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
 								:error="form.errors.get('payment_type')">
@@ -151,7 +151,7 @@
 								type="number"
 								label="Paid"
 								name="paid"
-								:editable="true"
+								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
 								:error="form.errors.get('paid')">
@@ -169,7 +169,7 @@
 						<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
 						<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 						<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
-						<button type="submit" class="btn btn-primary" :disabled="!canEdit || isLoading" :title="editTooltip">Confirm</button>
+						<button type="submit" class="btn btn-primary" :disabled="!canSubmit || !canEdit || isLoading" :title="editTooltip">Confirm</button>
 					</div>
 				</div>
 				<!-- End main section -->
@@ -325,7 +325,7 @@
 								:error="unit_error">
 							</text-input>
 						</div>
-						<div class="col">
+						<div class="col-3">
 							<text-input v-model="price" 
 								:defaultValue="price"
 								:required="true"
@@ -353,8 +353,8 @@
 							</text-input>
 						</div>
 						<div class="col">
-							<text-input v-model="total_price" 
-								:defaultValue="total_price"
+							<text-input v-model="total_price.toFixed(2)" 
+								:defaultValue="total_price.toFixed(2)"
 								:required="true"
 								type="number"
 								label="Total price"
@@ -501,6 +501,7 @@
 				length: 0,
 				height: 0,
 				item_tax: 0,
+				tax_rate: 0,
 				is_custom_pricing: false,
 
 				tracking_no_error: '',
@@ -532,8 +533,12 @@
 			}
 
 			this.getProductTypes();
-			this.currentTime = moment().format('LL LTS');
-			setInterval(() => this.updateCurrentTime(), 1000);
+			
+			// Time will only move forward if we are creating
+			if(!this.invoice) {
+				this.currentTime = moment().format('LL LTS');
+				setInterval(() => this.updateCurrentTime(), 1000);
+			}
 
 			window.addEventListener('keyup', function(event){
 				// console.log("Keyup" + event.key);
@@ -566,6 +571,8 @@
 				this.form.remarks = invoice.remarks;
 
 				this.can_edit_invoice = invoice.can_edit;
+
+				this.currentTime = invoice.created_at;
 			},
 
 			moveToNext() {
@@ -795,6 +802,7 @@
 
 			calculatePriceBasedOnCustomer(price_group) {
 				let price = price_group.walk_in_price;
+				let tax_rate = price_group.tax / 100;
 
 				if(this.selectedType.label == "Customer" && this.selectedCustomer)
 				{
@@ -804,10 +812,10 @@
 						price = price_group.corporate_price;
 				}
 
-				let tax = price_group.tax ? price * price_group.tax : 0;
+				let tax = price_group.tax ? price * tax_rate: 0;
 				let total = price + tax;
 
-				return {price: price, tax: tax, total: total};
+				return {price: price, tax: tax, tax_rate: tax_rate, total: total};
 			},
 
 			setProductPrice(response) {
@@ -821,6 +829,7 @@
 					let prices = this.calculatePriceBasedOnCustomer(this.price_group)
 					this.price = prices.price;
 					this.item_tax = prices.tax;
+					this.tax_rate = prices.tax_rate;
 
 					this.price = this.price.toFixed(2);
 					this.item_tax = this.item_tax.toFixed(2);
@@ -868,6 +877,7 @@
 					item['total_price'] = this.total_price;
 					item['unit'] = this.unit;
 					item['is_custom_pricing'] = this.is_custom_pricing;
+					item['tax_rate'] = this.tax_rate;
 
 					if(this.isEditing) {
 						Vue.set(this.form.items, this.editingIndex, item);
@@ -893,6 +903,7 @@
 					this.length = 0;
 					this.tracking_no = '';
 					this.item_tax = 0;
+					this.tax_rate = 0;
 
 					this.toggleAddItem();
 				}
@@ -927,6 +938,7 @@
 				this.tracking_no = item.tracking_code;
 				this.item_tax = item.tax;
 				this.is_custom_pricing = item.is_custom_pricing;
+				this.tax_rate = item.tax_rate;
 
 			},
 
@@ -980,29 +992,31 @@
 			},
 
 			toggleAddItem() {
-				this.selectedZoneType = '';
-				this.zone = '';
-				this.weight = '';
-				this.dimension_weight = 0;
-				this.selectedCourier = '';
-				this.selectedProduct = '';
-				this.selectedProductType = _.filter(this.product_types, function(type){ return type.value == this.defaultProductType; }.bind(this))[0];
-				this.description = '';
-				this.price = '';
-				this.unit = 1;
-				this.height = '';
-				this.width = '';
-				this.length = '';
-				this.tracking_no = '';
+				if(this.canEdit && this.canAddItem) {
+					this.selectedZoneType = '';
+					this.zone = '';
+					this.weight = '';
+					this.dimension_weight = 0;
+					this.selectedCourier = '';
+					this.selectedProduct = '';
+					this.selectedProductType = _.filter(this.product_types, function(type){ return type.value == this.defaultProductType; }.bind(this))[0];
+					this.description = '';
+					this.price = '';
+					this.unit = 1;
+					this.height = '';
+					this.width = '';
+					this.length = '';
+					this.tracking_no = '';
 
-				this.getRelatedProduct();
+					this.getRelatedProduct();
 
-				this.isAddingItem = !this.isAddingItem;
+					this.isAddingItem = !this.isAddingItem;
 
-				if(!this.isAddingItem && this.isEditing) 
-				{
-					this.isEditing = false;
-					this.editingIndex = '';
+					if(!this.isAddingItem && this.isEditing) 
+					{
+						this.isEditing = false;
+						this.editingIndex = '';
+					}
 				}
 
 			},
@@ -1061,6 +1075,8 @@
 
 		computed: {
 			total() {
+				console.log(this.subtotal);
+				console.log(this.tax);
 				return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
 			},
 
@@ -1071,9 +1087,11 @@
 			rounding() {
 				let rounded_total = Math.round(this.total * 100 / 5 ) / 100 * 5;
 				let value = this.total - rounded_total;
-
+				// console.log(this.discount_value);
+				// console.log(this.total);
+				// console.log(value);
 				if(value !== 0)
-					return -value;
+					return value * -1;
 
 				return 0.00;
 			},
@@ -1127,11 +1145,19 @@
 					value = ['rotate-45', 'text-danger'];
 				}
 
+				if(!this.canAddItem || !this.canEdit) {
+					value.push('disabled');
+				}
+
 				return value;
 			},
 
+			canSubmit() {
+				return this.form.items.length > 0 && ( this.selectedCustomer || this.form.paid >= this.rounded_total ) && this.canEdit;
+			},
+
 			canEdit() {
-				return this.form.items.length > 0 && ( !this.invoice ||  this.can_edit_invoice ) && ( this.selectedCustomer || this.form.paid >= this.rounded_total );
+				return  ( !this.isEditing || !this.invoice ||  this.can_edit_invoice ) ;
 			},
 
 			canEditItem() {
@@ -1139,7 +1165,7 @@
 			},
 
 			editTooltip() {
-				if(!this.canEdit)
+				if(!this.canSubmit)
 				{
 					if(this.invoice && !this.can_edit_invoice)
 						return "Invoice has been locked"
@@ -1168,8 +1194,8 @@
 				if(newVal.value !== 'Customer') {
 					this.selectedCustomer = '';
 				} 
-
-				this.getPriceForItems();
+				if(this.canEdit)
+					this.getPriceForItems();
 			},
 
 			zone(newVal, oldVal) {
@@ -1201,7 +1227,8 @@
 				if(newVal)
 					this.form.customer_id = newVal.value;
 				
-				this.getPriceForItems();
+				if(this.canEdit)
+					this.getPriceForItems();
 			},
 
 			selectedProductType(newVal, oldVal) {
