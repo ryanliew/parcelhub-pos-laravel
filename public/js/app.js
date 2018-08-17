@@ -75847,6 +75847,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -75928,6 +75929,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			should_update_product: false,
 
 			currentTime: '',
+			invoiceNumber: '',
 
 			item_add_loading: false,
 			price_group: '',
@@ -75987,6 +75989,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.can_edit_invoice = invoice.can_edit;
 
 			this.currentTime = invoice.created_at;
+			this.invoiceNumber = invoice.invoice_no;
 		},
 		moveToNext: function moveToNext() {
 			this.$refs.producttypes.focus();
@@ -76556,7 +76559,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return this.form.items.length > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && this.canEdit;
 		},
 		canEdit: function canEdit() {
-			return !this.isEditing || !this.invoice || this.can_edit_invoice;
+			return !this.invoice || this.can_edit_invoice;
 		},
 		canEditItem: function canEditItem() {
 			return (!this.invoice || this.can_edit_invoice) && !this.item_add_loading;
@@ -76662,8 +76665,17 @@ var render = function() {
                 "div",
                 { staticClass: "col-5 invoice-right" },
                 [
+                  _vm.invoiceNumber
+                    ? _c("p", { staticClass: "mb-0" }, [
+                        _c("b", [_vm._v("Invoice number")]),
+                        _vm._v(": " + _vm._s(_vm.invoiceNumber))
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
                   _c("p", [
-                    _c("b", [_vm._v("Current time")]),
+                    !_vm.invoiceNumber
+                      ? _c("b", [_vm._v("Current time")])
+                      : _c("b", [_vm._v("Created time")]),
                     _vm._v(": " + _vm._s(_vm.currentTime))
                   ]),
                   _vm._v(" "),
