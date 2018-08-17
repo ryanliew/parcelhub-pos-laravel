@@ -7,7 +7,8 @@
 			<div class="row">
 				<!-- Start main section -->
 				<div class="col-5 invoice-right">
-					<p><b>Current time</b>: {{ currentTime }}</p>
+					<p v-if="invoiceNumber" class="mb-0"><b>Invoice number</b>: {{ invoiceNumber }}</p>
+					<p><b v-if="!invoiceNumber">Current time</b><b v-else>Created time</b>: {{ currentTime }}</p>
 					<div class="row">
 						<div class="col-5 small-select">
 							<selector-input :potentialData="types"
@@ -520,6 +521,7 @@
 				should_update_product: false,
 
 				currentTime: '',
+				invoiceNumber: '',
 
 				item_add_loading: false,
 				price_group: '',
@@ -573,6 +575,7 @@
 				this.can_edit_invoice = invoice.can_edit;
 
 				this.currentTime = invoice.created_at;
+				this.invoiceNumber = invoice.invoice_no;
 			},
 
 			moveToNext() {
@@ -1157,7 +1160,7 @@
 			},
 
 			canEdit() {
-				return  ( !this.isEditing || !this.invoice ||  this.can_edit_invoice ) ;
+				return  ( !this.invoice ||  this.can_edit_invoice ) ;
 			},
 
 			canEditItem() {
