@@ -29,6 +29,7 @@
 							<th>Last update</th>
 							<th>Outstanding</th>  
 							<th>Remarks</th>
+							<th>Tracking codes</th>
 							<!-- <th>Payment</th>   -->
 						</tr>
 					</thead>
@@ -126,7 +127,8 @@
 
 							return data;
 						}
-					}
+					},
+					{data: 'tracking_codes', name: 'items.tracking_code'}
 				]
 
 				

@@ -104,8 +104,7 @@ class BranchController extends Controller
     public function getPricing()
     {
         $result = DB::table('branch_product')
-                    ->select('corporate_price', 'walk_in_price', 'walk_in_price_special')
-                    ->where('product_id', '=', request()->product);
+                    ->select('corporate_price', 'walk_in_price', 'walk_in_price_special');
 
         if(request()->has('customer')) {
             $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
@@ -113,6 +112,9 @@ class BranchController extends Controller
         else {
             $result->whereRaw('ISNULL(customer_id)');
         }
+
+        $result->where('branch_id', auth()->user()->current_branch)
+                ->where('product_id', '=', request()->product);
 
 
         if($result->orderBy('customer_id', 'DESC')->get()->count() == 0)
