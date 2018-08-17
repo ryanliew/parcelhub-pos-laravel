@@ -68803,7 +68803,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		updateValue: function updateValue(value) {
 			this.$emit('input', value);
-			this.data = value;
+			this.data = value.value;
 		},
 		focus: function focus() {
 			this.$refs.selector.open = true;

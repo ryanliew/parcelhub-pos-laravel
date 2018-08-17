@@ -38,7 +38,7 @@
 		methods: {
 			updateValue(value) {
 				this.$emit('input', value);
-				this.data = value;
+				this.data = value.value;
 			}, 
 
 			focus() {
