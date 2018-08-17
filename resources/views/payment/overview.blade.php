@@ -44,6 +44,7 @@
 				serverSide: true,
 				responsive: true,
 				colReorder: true,
+				order: [0, 'desc'],
 				select: {
 					style: 'single'
 				},

@@ -29,6 +29,7 @@
 							<th>Last update</th>
 							<th>Outstanding</th>  
 							<th>Remarks</th>
+							<th>Tracking codes</th>
 							<!-- <th>Payment</th>   -->
 						</tr>
 					</thead>
@@ -50,6 +51,7 @@
 				serverSide: true,
 				responsive: true,
 				colReorder: true,
+				order: [0, 'desc'],
 				select: {
 					style: 'single'
 				},
@@ -126,7 +128,8 @@
 
 							return data;
 						}
-					}
+					},
+					{data: 'tracking_codes', name: 'items.tracking_code'}
 				]
 
 				

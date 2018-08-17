@@ -40,7 +40,7 @@ class InvoiceController extends Controller
         $terminal = auth()->user()->terminal()->first();
 
     	return datatables()
-			->of($terminal->invoices()->latest()->with(['customer','payment', 'branch', 'terminal'])->select('invoices.*'))
+			->of($terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*'))
     			->addColumn('payment', function(Invoice $invoice) {
                     return $invoice->payment->sum('total') + $invoice->paid;
                 })
@@ -49,6 +49,9 @@ class InvoiceController extends Controller
                 })
                 ->addColumn('customer', function(Invoice $invoice){ 
                     return $invoice->customer ? $invoice->customer->name : "---";
+                })
+                ->addColumn('tracking_codes', function(Invoice $invoice){
+                    return $invoice->items->implode('tracking_code', ', ');
                 })
     			->toJson();   
     }
