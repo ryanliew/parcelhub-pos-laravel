@@ -1,9 +1,9 @@
 <template>
 	<div class="mb-3">
-		<label class="select-label" v-if="!hideLabel">
+		<label class="select-label" v-if="!hideLabel" :class="labelClass">
 			<div class="d-flex align-items-center">
 				<span v-text="label"></span>
-				<span v-if="required" class="text-danger">*</span>
+				<span v-if="required && editable" class="text-danger">*</span>
 				<span class="fa-stack pointer text-info ml-2" :title="addonTooltip" @click="$emit(addon)" v-if="addon">
 					<i class="fas fa-circle fa-stack-2x"></i>
 					<i class="fas fa-plus fa-stack-1x fa-inverse text-white"></i>
@@ -50,6 +50,10 @@
 		computed: {
 			canClearCss() {
 				return this.unclearable ? "unclearable" : "";
+			},
+
+			labelClass() {
+				return this.editable ? '' : 'label-small';
 			}
 		}
 

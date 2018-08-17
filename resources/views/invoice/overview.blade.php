@@ -56,7 +56,8 @@
 				dom: 'Blftip',
 				buttons: [
 					{
-						text: 'Edit',
+						text: 'View',
+						// text: 'Edit',
 						action: function( e, dt, node, config ) {
 							location.href = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
 						},

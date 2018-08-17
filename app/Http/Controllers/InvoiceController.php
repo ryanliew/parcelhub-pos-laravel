@@ -165,7 +165,8 @@ class InvoiceController extends Controller
                 'product_type_id' => $item->product_type_id,
                 'total_price' => $item->total_price,
                 'unit' => $item->unit,
-                'is_custom_pricing' => $item->is_custom_pricing
+                'is_custom_pricing' => $item->is_custom_pricing,
+                'tax_rate' => $item->tax_rate
             ]);
         }
         //$invoice->items()->create($items);

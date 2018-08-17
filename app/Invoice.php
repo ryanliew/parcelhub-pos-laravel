@@ -52,9 +52,14 @@ class Invoice extends Model
 
     public function getCanEditAttribute()
     {
+        /*
+        
         $setting = Setting::find(1);
 
         return $setting->lock_date->lte($this->created_at);
+        */
+       
+       return false; // Disallow edit for now
     }
 
     public function getRoundingAttribute()

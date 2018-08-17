@@ -68814,6 +68814,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	computed: {
 		canClearCss: function canClearCss() {
 			return this.unclearable ? "unclearable" : "";
+		},
+		labelClass: function labelClass() {
+			return this.editable ? '' : 'label-small';
 		}
 	}
 
@@ -68837,11 +68840,11 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "mb-3" }, [
     !_vm.hideLabel
-      ? _c("label", { staticClass: "select-label" }, [
+      ? _c("label", { staticClass: "select-label", class: _vm.labelClass }, [
           _c("div", { staticClass: "d-flex align-items-center" }, [
             _c("span", { domProps: { textContent: _vm._s(_vm.label) } }),
             _vm._v(" "),
-            _vm.required
+            _vm.required && _vm.editable
               ? _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
               : _vm._e(),
             _vm._v(" "),
@@ -75906,6 +75909,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			length: 0,
 			height: 0,
 			item_tax: 0,
+			tax_rate: 0,
 			is_custom_pricing: false,
 
 			tracking_no_error: '',
@@ -75938,10 +75942,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}
 
 		this.getProductTypes();
-		this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
-		setInterval(function () {
-			return _this.updateCurrentTime();
-		}, 1000);
+
+		// Time will only move forward if we are creating
+		if (!this.invoice) {
+			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
+			setInterval(function () {
+				return _this.updateCurrentTime();
+			}, 1000);
+		}
 
 		window.addEventListener('keyup', function (event) {
 			// console.log("Keyup" + event.key);
@@ -75977,6 +75985,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.remarks = invoice.remarks;
 
 			this.can_edit_invoice = invoice.can_edit;
+
+			this.currentTime = invoice.created_at;
 		},
 		moveToNext: function moveToNext() {
 			this.$refs.producttypes.focus();
@@ -76225,15 +76235,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		calculatePriceBasedOnCustomer: function calculatePriceBasedOnCustomer(price_group) {
 			var price = price_group.walk_in_price;
+			var tax_rate = price_group.tax / 100;
 
 			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
 				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
 			}
 
-			var tax = price_group.tax ? price * price_group.tax : 0;
+			var tax = price_group.tax ? price * tax_rate : 0;
 			var total = price + tax;
 
-			return { price: price, tax: tax, total: total };
+			return { price: price, tax: tax, tax_rate: tax_rate, total: total };
 		},
 		setProductPrice: function setProductPrice(response) {
 			// console.log("Setting product price");
@@ -76245,6 +76256,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				var prices = this.calculatePriceBasedOnCustomer(this.price_group);
 				this.price = prices.price;
 				this.item_tax = prices.tax;
+				this.tax_rate = prices.tax_rate;
 
 				this.price = this.price.toFixed(2);
 				this.item_tax = this.item_tax.toFixed(2);
@@ -76289,6 +76301,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				item['total_price'] = this.total_price;
 				item['unit'] = this.unit;
 				item['is_custom_pricing'] = this.is_custom_pricing;
+				item['tax_rate'] = this.tax_rate;
 
 				if (this.isEditing) {
 					Vue.set(this.form.items, this.editingIndex, item);
@@ -76312,6 +76325,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.length = 0;
 				this.tracking_no = '';
 				this.item_tax = 0;
+				this.tax_rate = 0;
 
 				this.toggleAddItem();
 			}
@@ -76348,6 +76362,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.tracking_no = item.tracking_code;
 			this.item_tax = item.tax;
 			this.is_custom_pricing = item.is_custom_pricing;
+			this.tax_rate = item.tax_rate;
 		},
 		deleteItem: function deleteItem(index) {
 			this.form.items.splice(index, 1);
@@ -76391,30 +76406,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}, 3000);
 		},
 		toggleAddItem: function toggleAddItem() {
-			this.selectedZoneType = '';
-			this.zone = '';
-			this.weight = '';
-			this.dimension_weight = 0;
-			this.selectedCourier = '';
-			this.selectedProduct = '';
-			this.selectedProductType = _.filter(this.product_types, function (type) {
-				return type.value == this.defaultProductType;
-			}.bind(this))[0];
-			this.description = '';
-			this.price = '';
-			this.unit = 1;
-			this.height = '';
-			this.width = '';
-			this.length = '';
-			this.tracking_no = '';
+			if (this.canEdit && this.canAddItem) {
+				this.selectedZoneType = '';
+				this.zone = '';
+				this.weight = '';
+				this.dimension_weight = 0;
+				this.selectedCourier = '';
+				this.selectedProduct = '';
+				this.selectedProductType = _.filter(this.product_types, function (type) {
+					return type.value == this.defaultProductType;
+				}.bind(this))[0];
+				this.description = '';
+				this.price = '';
+				this.unit = 1;
+				this.height = '';
+				this.width = '';
+				this.length = '';
+				this.tracking_no = '';
 
-			this.getRelatedProduct();
+				this.getRelatedProduct();
 
-			this.isAddingItem = !this.isAddingItem;
+				this.isAddingItem = !this.isAddingItem;
 
-			if (!this.isAddingItem && this.isEditing) {
-				this.isEditing = false;
-				this.editingIndex = '';
+				if (!this.isAddingItem && this.isEditing) {
+					this.isEditing = false;
+					this.editingIndex = '';
+				}
 			}
 		},
 		getItemRowClass: function getItemRowClass(index) {
@@ -76470,6 +76487,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 	computed: {
 		total: function total() {
+			console.log(this.subtotal);
+			console.log(this.tax);
 			return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
 		},
 		rounded_total: function rounded_total() {
@@ -76478,8 +76497,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		rounding: function rounding() {
 			var rounded_total = Math.round(this.total * 100 / 5) / 100 * 5;
 			var value = this.total - rounded_total;
-
-			if (value !== 0) return -value;
+			// console.log(this.discount_value);
+			// console.log(this.total);
+			// console.log(value);
+			if (value !== 0) return value * -1;
 
 			return 0.00;
 		},
@@ -76525,16 +76546,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				value = ['rotate-45', 'text-danger'];
 			}
 
+			if (!this.canAddItem || !this.canEdit) {
+				value.push('disabled');
+			}
+
 			return value;
 		},
+		canSubmit: function canSubmit() {
+			return this.form.items.length > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && this.canEdit;
+		},
 		canEdit: function canEdit() {
-			return this.form.items.length > 0 && (!this.invoice || this.can_edit_invoice) && (this.selectedCustomer || this.form.paid >= this.rounded_total);
+			return !this.isEditing || !this.invoice || this.can_edit_invoice;
 		},
 		canEditItem: function canEditItem() {
 			return (!this.invoice || this.can_edit_invoice) && !this.item_add_loading;
 		},
 		editTooltip: function editTooltip() {
-			if (!this.canEdit) {
+			if (!this.canSubmit) {
 				if (this.invoice && !this.can_edit_invoice) return "Invoice has been locked";
 
 				if (this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
@@ -76558,8 +76586,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (newVal.value !== 'Customer') {
 				this.selectedCustomer = '';
 			}
-
-			this.getPriceForItems();
+			if (this.canEdit) this.getPriceForItems();
 		},
 		zone: function zone(newVal, oldVal) {
 			this.getFilteredProduct();
@@ -76582,7 +76609,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
 			if (newVal) this.form.customer_id = newVal.value;
 
-			this.getPriceForItems();
+			if (this.canEdit) this.getPriceForItems();
 		},
 		selectedProductType: function selectedProductType(newVal, oldVal) {
 			if (newVal && oldVal !== newVal) this.getRelatedProduct();
@@ -76653,7 +76680,7 @@ var render = function() {
                             required: true,
                             label: "Type",
                             name: "type",
-                            editable: true,
+                            editable: _vm.canEdit,
                             focus: false,
                             hideLabel: false,
                             error: _vm.form.errors.get("type")
@@ -76681,7 +76708,7 @@ var render = function() {
                             type: "text",
                             label: "Remarks",
                             name: "remarks",
-                            editable: true,
+                            editable: _vm.canEdit,
                             focus: false,
                             hideLabel: false,
                             error: _vm.form.errors.get("remarks")
@@ -76708,7 +76735,7 @@ var render = function() {
                           required: true,
                           label: "Customer",
                           name: "customer_id",
-                          editable: true,
+                          editable: _vm.canEdit,
                           focus: false,
                           hideLabel: false,
                           error: _vm.form.errors.get("customer_id"),
@@ -76743,10 +76770,7 @@ var render = function() {
                               {
                                 staticClass: "fa-stack pointer transition-ease",
                                 class: _vm.add_button_class,
-                                attrs: {
-                                  title: _vm.tooltip_add,
-                                  disabled: !_vm.canAddItem
-                                },
+                                attrs: { title: _vm.tooltip_add },
                                 on: { click: _vm.toggleAddItem }
                               },
                               [
@@ -76792,25 +76816,29 @@ var render = function() {
                               ]),
                               _vm._v(" "),
                               _c("td", [
-                                _c("i", {
-                                  staticClass:
-                                    "fas fa-edit text-primary pointer",
-                                  on: {
-                                    click: function($event) {
-                                      _vm.editItem(index)
-                                    }
-                                  }
-                                }),
-                                _vm._v(" "),
-                                _c("i", {
-                                  staticClass:
-                                    "fas fa-times text-danger pointer",
-                                  on: {
-                                    click: function($event) {
-                                      _vm.deleteItem(index)
-                                    }
-                                  }
-                                })
+                                _vm.canEdit
+                                  ? _c("div", [
+                                      _c("i", {
+                                        staticClass:
+                                          "fas fa-edit text-primary pointer",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.editItem(index)
+                                          }
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("i", {
+                                        staticClass:
+                                          "fas fa-times text-danger pointer",
+                                        on: {
+                                          click: function($event) {
+                                            _vm.deleteItem(index)
+                                          }
+                                        }
+                                      })
+                                    ])
+                                  : _vm._e()
                               ])
                             ]
                           )
@@ -76865,7 +76893,7 @@ var render = function() {
                             type: "number",
                             label: "Discount",
                             name: "discount",
-                            editable: true,
+                            editable: _vm.canEdit,
                             focus: false,
                             hideLabel: false,
                             error: _vm.form.errors.get("discount")
@@ -76894,7 +76922,7 @@ var render = function() {
                             required: false,
                             label: "Discount mode",
                             name: "discount_mode",
-                            editable: true,
+                            editable: _vm.canEdit,
                             focus: false,
                             hideLabel: false,
                             error: _vm.form.errors.get("discount_mode")
@@ -76926,7 +76954,7 @@ var render = function() {
                                 required: true,
                                 label: "Payment type",
                                 name: "payment_type",
-                                editable: true,
+                                editable: _vm.canEdit,
                                 focus: false,
                                 hideLabel: false,
                                 error: _vm.form.errors.get("payment_type")
@@ -76954,7 +76982,7 @@ var render = function() {
                                 type: "number",
                                 label: "Paid",
                                 name: "paid",
-                                editable: true,
+                                editable: _vm.canEdit,
                                 focus: false,
                                 hideLabel: false,
                                 error: _vm.form.errors.get("paid")
@@ -77044,7 +77072,8 @@ var render = function() {
                         staticClass: "btn btn-primary",
                         attrs: {
                           type: "submit",
-                          disabled: !_vm.canEdit || _vm.isLoading,
+                          disabled:
+                            !_vm.canSubmit || !_vm.canEdit || _vm.isLoading,
                           title: _vm.editTooltip
                         }
                       },
@@ -77364,7 +77393,7 @@ var render = function() {
                           _vm._v(" "),
                           _c(
                             "div",
-                            { staticClass: "col" },
+                            { staticClass: "col-3" },
                             [
                               _c("text-input", {
                                 attrs: {
@@ -77429,7 +77458,7 @@ var render = function() {
                             [
                               _c("text-input", {
                                 attrs: {
-                                  defaultValue: _vm.total_price,
+                                  defaultValue: _vm.total_price.toFixed(2),
                                   required: true,
                                   type: "number",
                                   label: "Total price",
@@ -77439,11 +77468,11 @@ var render = function() {
                                   hideLabel: false
                                 },
                                 model: {
-                                  value: _vm.total_price,
+                                  value: _vm.total_price.toFixed(2),
                                   callback: function($$v) {
-                                    _vm.total_price = $$v
+                                    _vm.$set(_vm.total_price, "toFixed(2)", $$v)
                                   },
-                                  expression: "total_price"
+                                  expression: "total_price.toFixed(2)"
                                 }
                               })
                             ],
