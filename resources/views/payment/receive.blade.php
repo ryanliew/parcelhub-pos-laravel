@@ -257,7 +257,7 @@
 		    		table.ajax.url('{!! route("invoices.index") !!}').load();
 
 		    		table
-	   				.columns( 2 ).search( customer, true, false, true)
+	   				.columns( 2 ).search( customer, false, false, true)
 	   				.draw();
 		    	}
 
