@@ -56,6 +56,13 @@
 									:error="form.errors.get('corporate_override')"
 									:helpText="'Original: RM' + selectedProduct.corporate_price.toFixed(2)">
 								</text-input>
+								<checkbox-input v-model="form.is_tax_inclusive"
+									:defaultChecked="form.is_tax_inclusive"
+									label="Tax inclusive"
+									name="is_tax_inclusive"
+									:editable="true"
+									:helpText="selectedProduct.is_tax_inclusive ? 'Original: Yes' : 'Original: No'">
+								</checkbox-input>
 							</div>
 							<div class="col">
 								<text-input v-model="form.walk_in_override" 
@@ -121,7 +128,8 @@
 					corporate_override: '',
 					walk_in_override: '',
 					walk_in_special_override: '',
-					id: ''
+					id: '',
+					is_tax_inclusive: ''
 				})
 			};
 		},
@@ -172,6 +180,7 @@
 					obj['walk_in_price'] = product.walk_in_price;
 					obj['walk_in_price_special'] = product.walk_in_price_special;
 					obj['corporate_price'] = product.corporate_price;
+					obj['is_tax_inclusive'] = product.is_tax_inclusive;
 
 					return obj;
 				});
@@ -200,6 +209,7 @@
 				this.selectedProduct = '';
 				this.originalProduct = '';
 				this.selectedCustomer = '';
+
 				this.isEdit = false;
 				this.form.reset();
 			},
@@ -211,6 +221,7 @@
 				this.form.corporate_override = this.originalProduct.pivot.corporate_price;
 				this.form.walk_in_override = this.originalProduct.pivot.walk_in_price;
 				this.form.walk_in_special_override = this.originalProduct.pivot.walk_in_price_special;
+				this.form.is_tax_inclusive = this.originalProduct.pivot.is_tax_inclusive;
 
 				this.selectedProduct = '';
 				this.selectedCustomer = '';

@@ -77,7 +77,7 @@
 									<td>{{ item.tracking_code }}</td>
 									<td>{{ item.description }}</td>
 									<td>{{ item.unit }}</td>
-									<td>{{ item.total_price | price }}</td>
+									<td>{{ item.total_price }}</td>
 									<td><div v-if="canEdit"><i class="fas fa-edit text-primary pointer" @click="editItem(index)"></i> <i class="fas fa-times text-danger pointer" @click="deleteItem(index)"></i></div></td>
 								</tr>
 							</tbody>
@@ -354,8 +354,8 @@
 							</text-input>
 						</div>
 						<div class="col">
-							<text-input v-model="total_price.toFixed(2)" 
-								:defaultValue="total_price.toFixed(2)"
+							<text-input v-model="total_price" 
+								:defaultValue="total_price"
 								:required="true"
 								type="number"
 								label="Total price"
@@ -501,9 +501,11 @@
 				width: 0,
 				length: 0,
 				height: 0,
-				item_tax: 0,
+				// Based on entered price
+				// item_tax: 0,
 				tax_rate: 0,
 				is_custom_pricing: false,
+				item_tax_inclusive: '',
 
 				tracking_no_error: '',
 				selectedProductType_error: '',
@@ -739,6 +741,7 @@
 					obj['value'] = product.id;
 					obj['label'] = product.sku;
 					obj['description'] = product.description;
+					obj['is_tax_inclusive'] = product.is_tax_inclusive;
 
 
 					return obj;
@@ -766,11 +769,12 @@
 			productChange() {
 				if(!this.isEditing || this.should_update_product) {
 					this.description = "";
-					this.price = "";
-					this.item_tax = 0;
+					this.price = 0;
+					// Based on entered price
+					// this.item_tax = 0;
 					if(this.selectedProduct) {
 						this.description = this.selectedProduct.description;
-
+						this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 						this.getProductPrice();
 
 						
@@ -818,7 +822,7 @@
 				let tax = price_group.tax ? price * tax_rate: 0;
 				let total = price + tax;
 
-				return {price: price, tax: tax, tax_rate: tax_rate, total: total};
+				return {price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive};
 			},
 
 			setProductPrice(response) {
@@ -830,12 +834,15 @@
 						this.price_group = response.data;
 
 					let prices = this.calculatePriceBasedOnCustomer(this.price_group)
-					this.price = prices.price;
-					this.item_tax = prices.tax;
+					this.price = Math.round(prices.price * 100) / 100;
+					// Based on entered price
+					// this.item_tax = prices.tax;
 					this.tax_rate = prices.tax_rate;
+					this.item_tax_inclusive = prices.is_tax_inclusive;
 
-					this.price = this.price.toFixed(2);
-					this.item_tax = this.item_tax.toFixed(2);
+					// this.price = this.price ? this.price.toFixed(2) : 0.00;
+					// Based on entered price
+					// this.item_tax = this.item_tax.toFixed(2);
 
 					// Set custom pricing to false if it is set by system
 					// Vue.nextTick(function() {
@@ -881,6 +888,7 @@
 					item['unit'] = this.unit;
 					item['is_custom_pricing'] = this.is_custom_pricing;
 					item['tax_rate'] = this.tax_rate;
+					item['is_tax_inclusive'] = this.item_tax_inclusive;
 
 					if(this.isEditing) {
 						Vue.set(this.form.items, this.editingIndex, item);
@@ -899,13 +907,15 @@
 					this.selectedProduct = {label: 'Packaging', value: 4};
 					this.selectedProductType = 
 					this.description = '';
-					this.price = '';
+					this.price = 0;
 					this.unit = 1;
 					this.height = 0;
 					this.width = 0;
 					this.length = 0;
 					this.tracking_no = '';
-					this.item_tax = 0;
+					this.item_tax_inclusive = '';
+					// Based on entered price
+					// this.item_tax = 0;
 					this.tax_rate = 0;
 
 					this.toggleAddItem();
@@ -939,9 +949,11 @@
 				this.width = item.width;
 				this.length = item.length;
 				this.tracking_no = item.tracking_code;
-				this.item_tax = item.tax;
+				// Based on entered price
+				// this.item_tax = item.tax;
 				this.is_custom_pricing = item.is_custom_pricing;
 				this.tax_rate = item.tax_rate;
+				this.item_tax_inclusive = item.is_tax_inclusive;
 
 			},
 
@@ -1077,10 +1089,16 @@
 		},
 
 		computed: {
+			item_tax() {
+				let tax = this.item_tax_inclusive ? this.price - ( Math.round(this.price / ( this.tax_rate + 1) * 100 ) / 100 ) : Math.round(this.price * this.tax_rate * 100) / 100;
+
+				return tax.toFixed(2);
+			},
+
 			total() {
-				console.log(this.subtotal);
-				console.log(this.tax);
-				return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
+				// console.log(this.subtotal);
+				// console.log(this.tax);
+				return parseFloat(this.subtotal) - parseFloat(this.discount_value);
 			},
 
 			rounded_total() {
@@ -1100,7 +1118,11 @@
 			},
 
 			total_price() {
-				return this.price ? parseFloat(this.price) + parseFloat(this.item_tax) : 0.00;
+				let price = 0;
+				if(this.price)
+					price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax) ;
+
+				return price.toFixed(2);
 			},
 
 			subtotal() {

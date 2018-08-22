@@ -104,7 +104,9 @@ class BranchController extends Controller
     public function getPricing()
     {
         $result = DB::table('branch_product')
-                    ->select('corporate_price', 'walk_in_price', 'walk_in_price_special');
+                    ->select('branch_product.corporate_price', 'branch_product.walk_in_price', 'branch_product.walk_in_price_special', 'taxes.percentage as tax', 'branch_product.is_tax_inclusive')
+                    ->leftJoin('products', 'products.id', '=', 'branch_product.product_id')
+                    ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id');
 
         if(request()->has('customer')) {
             $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
@@ -119,7 +121,7 @@ class BranchController extends Controller
 
         if($result->orderBy('customer_id', 'DESC')->get()->count() == 0)
             $result = DB::table('products')
-                        ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'taxes.percentage as tax')
+                        ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'taxes.percentage as tax', 'is_tax_inclusive')
                         ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id')
                         ->where('products.id', request()->product)
                         ->get();

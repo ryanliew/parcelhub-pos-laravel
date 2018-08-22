@@ -68983,9 +68983,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['defaultChecked', 'editable', 'label', 'name'],
+	props: ['defaultChecked', 'editable', 'label', 'name', 'helpText'],
 	data: function data() {
 		return {};
 	},
@@ -69022,7 +69023,18 @@ var render = function() {
           }),
           _vm._v("\n\t\t    " + _vm._s(_vm.label) + "\n\t\t")
         ]
-      )
+      ),
+      _vm._v(" "),
+      _vm.helpText && _vm.editable
+        ? _c(
+            "small",
+            {
+              staticClass: "form-text text-muted",
+              attrs: { id: _vm.name + "Help" }
+            },
+            [_vm._v(_vm._s(_vm.helpText))]
+          )
+        : _vm._e()
     ])
   ])
 }
@@ -74336,6 +74348,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -74362,7 +74380,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				zone: '',
 				weight_start: '',
 				weight_end: '',
-				is_tax_inclusive: 1,
+				is_tax_inclusive: '',
 				corporate_price: '',
 				walk_in_price: '',
 				walk_in_price_special: '',
@@ -74502,7 +74520,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.zone = this.selectedProduct.zone;
 			this.form.weight_start = this.selectedProduct.weight_start;
 			this.form.weight_end = this.selectedProduct.weight_end;
-			this.form.is_tax_inclusive = 1;
+			this.form.is_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 			this.form.corporate_price = this.selectedProduct.corporate_price + "";
 			this.form.walk_in_price = this.selectedProduct.walk_in_price + "";
 			this.form.walk_in_price_special = this.selectedProduct.walk_in_price_special + "";
@@ -74895,6 +74913,22 @@ var render = function() {
                               _vm.selectedTax = $$v
                             },
                             expression: "selectedTax"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("checkbox-input", {
+                          attrs: {
+                            defaultChecked: _vm.form.is_tax_inclusive,
+                            label: "Tax inclusive",
+                            name: "is_tax_inclusive",
+                            editable: true
+                          },
+                          model: {
+                            value: _vm.form.is_tax_inclusive,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "is_tax_inclusive", $$v)
+                            },
+                            expression: "form.is_tax_inclusive"
                           }
                         })
                       ],
@@ -75909,9 +75943,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			width: 0,
 			length: 0,
 			height: 0,
-			item_tax: 0,
+			// Based on entered price
+			// item_tax: 0,
 			tax_rate: 0,
 			is_custom_pricing: false,
+			item_tax_inclusive: '',
 
 			tracking_no_error: '',
 			selectedProductType_error: '',
@@ -76174,6 +76210,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				obj['value'] = product.id;
 				obj['label'] = product.sku;
 				obj['description'] = product.description;
+				obj['is_tax_inclusive'] = product.is_tax_inclusive;
 
 				return obj;
 			}.bind(this));
@@ -76198,11 +76235,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		productChange: function productChange() {
 			if (!this.isEditing || this.should_update_product) {
 				this.description = "";
-				this.price = "";
-				this.item_tax = 0;
+				this.price = 0;
+				// Based on entered price
+				// this.item_tax = 0;
 				if (this.selectedProduct) {
 					this.description = this.selectedProduct.description;
-
+					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 					this.getProductPrice();
 				}
 			}
@@ -76247,7 +76285,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			var tax = price_group.tax ? price * tax_rate : 0;
 			var total = price + tax;
 
-			return { price: price, tax: tax, tax_rate: tax_rate, total: total };
+			return { price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive };
 		},
 		setProductPrice: function setProductPrice(response) {
 			// console.log("Setting product price");
@@ -76257,12 +76295,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				if (response.data) this.price_group = response.data;
 
 				var prices = this.calculatePriceBasedOnCustomer(this.price_group);
-				this.price = prices.price;
-				this.item_tax = prices.tax;
+				this.price = Math.round(prices.price * 100) / 100;
+				// Based on entered price
+				// this.item_tax = prices.tax;
 				this.tax_rate = prices.tax_rate;
+				this.item_tax_inclusive = prices.is_tax_inclusive;
 
-				this.price = this.price.toFixed(2);
-				this.item_tax = this.item_tax.toFixed(2);
+				// this.price = this.price ? this.price.toFixed(2) : 0.00;
+				// Based on entered price
+				// this.item_tax = this.item_tax.toFixed(2);
 
 				// Set custom pricing to false if it is set by system
 				// Vue.nextTick(function() {
@@ -76305,6 +76346,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				item['unit'] = this.unit;
 				item['is_custom_pricing'] = this.is_custom_pricing;
 				item['tax_rate'] = this.tax_rate;
+				item['is_tax_inclusive'] = this.item_tax_inclusive;
 
 				if (this.isEditing) {
 					Vue.set(this.form.items, this.editingIndex, item);
@@ -76321,13 +76363,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.selectedCourier = '';
 				this.selectedProduct = { label: 'Packaging', value: 4 };
 				this.selectedProductType = this.description = '';
-				this.price = '';
+				this.price = 0;
 				this.unit = 1;
 				this.height = 0;
 				this.width = 0;
 				this.length = 0;
 				this.tracking_no = '';
-				this.item_tax = 0;
+				this.item_tax_inclusive = '';
+				// Based on entered price
+				// this.item_tax = 0;
 				this.tax_rate = 0;
 
 				this.toggleAddItem();
@@ -76363,9 +76407,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.width = item.width;
 			this.length = item.length;
 			this.tracking_no = item.tracking_code;
-			this.item_tax = item.tax;
+			// Based on entered price
+			// this.item_tax = item.tax;
 			this.is_custom_pricing = item.is_custom_pricing;
 			this.tax_rate = item.tax_rate;
+			this.item_tax_inclusive = item.is_tax_inclusive;
 		},
 		deleteItem: function deleteItem(index) {
 			this.form.items.splice(index, 1);
@@ -76489,10 +76535,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	},
 
 	computed: {
+		item_tax: function item_tax() {
+			var tax = this.item_tax_inclusive ? this.price - Math.round(this.price / (this.tax_rate + 1) * 100) / 100 : Math.round(this.price * this.tax_rate * 100) / 100;
+
+			return tax.toFixed(2);
+		},
 		total: function total() {
-			console.log(this.subtotal);
-			console.log(this.tax);
-			return parseFloat(this.subtotal) + parseFloat(this.tax) - parseFloat(this.discount_value);
+			// console.log(this.subtotal);
+			// console.log(this.tax);
+			return parseFloat(this.subtotal) - parseFloat(this.discount_value);
 		},
 		rounded_total: function rounded_total() {
 			return this.total + this.rounding;
@@ -76508,7 +76559,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return 0.00;
 		},
 		total_price: function total_price() {
-			return this.price ? parseFloat(this.price) + parseFloat(this.item_tax) : 0.00;
+			var price = 0;
+			if (this.price) price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax);
+
+			return price.toFixed(2);
 		},
 		subtotal: function subtotal() {
 			if (this.form.items.length > 0) return _.sumBy(this.form.items, function (item) {
@@ -76821,11 +76875,7 @@ var render = function() {
                               _vm._v(" "),
                               _c("td", [_vm._v(_vm._s(item.unit))]),
                               _vm._v(" "),
-                              _c("td", [
-                                _vm._v(
-                                  _vm._s(_vm._f("price")(item.total_price))
-                                )
-                              ]),
+                              _c("td", [_vm._v(_vm._s(item.total_price))]),
                               _vm._v(" "),
                               _c("td", [
                                 _vm.canEdit
@@ -77470,7 +77520,7 @@ var render = function() {
                             [
                               _c("text-input", {
                                 attrs: {
-                                  defaultValue: _vm.total_price.toFixed(2),
+                                  defaultValue: _vm.total_price,
                                   required: true,
                                   type: "number",
                                   label: "Total price",
@@ -77480,11 +77530,11 @@ var render = function() {
                                   hideLabel: false
                                 },
                                 model: {
-                                  value: _vm.total_price.toFixed(2),
+                                  value: _vm.total_price,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.total_price, "toFixed(2)", $$v)
+                                    _vm.total_price = $$v
                                   },
-                                  expression: "total_price.toFixed(2)"
+                                  expression: "total_price"
                                 }
                               })
                             ],
@@ -79506,6 +79556,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -79529,7 +79586,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				corporate_override: '',
 				walk_in_override: '',
 				walk_in_special_override: '',
-				id: ''
+				id: '',
+				is_tax_inclusive: ''
 			})
 		};
 	},
@@ -79593,6 +79651,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				obj['walk_in_price'] = product.walk_in_price;
 				obj['walk_in_price_special'] = product.walk_in_price_special;
 				obj['corporate_price'] = product.corporate_price;
+				obj['is_tax_inclusive'] = product.is_tax_inclusive;
 
 				return obj;
 			});
@@ -79616,6 +79675,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.selectedProduct = '';
 			this.originalProduct = '';
 			this.selectedCustomer = '';
+
 			this.isEdit = false;
 			this.form.reset();
 		},
@@ -79626,6 +79686,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.corporate_override = this.originalProduct.pivot.corporate_price;
 			this.form.walk_in_override = this.originalProduct.pivot.walk_in_price;
 			this.form.walk_in_special_override = this.originalProduct.pivot.walk_in_price_special;
+			this.form.is_tax_inclusive = this.originalProduct.pivot.is_tax_inclusive;
 
 			this.selectedProduct = '';
 			this.selectedCustomer = '';
@@ -79823,6 +79884,25 @@ var render = function() {
                                   _vm.$set(_vm.form, "corporate_override", $$v)
                                 },
                                 expression: "form.corporate_override"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("checkbox-input", {
+                              attrs: {
+                                defaultChecked: _vm.form.is_tax_inclusive,
+                                label: "Tax inclusive",
+                                name: "is_tax_inclusive",
+                                editable: true,
+                                helpText: _vm.selectedProduct.is_tax_inclusive
+                                  ? "Original: Yes"
+                                  : "Original: No"
+                              },
+                              model: {
+                                value: _vm.form.is_tax_inclusive,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "is_tax_inclusive", $$v)
+                                },
+                                expression: "form.is_tax_inclusive"
                               }
                             })
                           ],

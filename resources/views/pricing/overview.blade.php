@@ -28,7 +28,7 @@
 							<th>Corporate Price</th>
 							<th>Corporate Override</th>
 							<th>Last update time</th>
-							<th>GST Inclusive</th>
+							<th>Tax Inclusive</th>
 							<th>Zone</th>
 							<th>Weight Start(Kg)</th>
 							<th>Weight End(Kg)</th>
@@ -104,7 +104,7 @@
 					{data: 'corporate_price'},
 					{data: 'pivot.corporate_price'},
 					{data: 'last_update'},
-					{data: 'is_tax_inclusive', render: function(data,type,row){
+					{data: 'pivot.is_tax_inclusive', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
 								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
 							}

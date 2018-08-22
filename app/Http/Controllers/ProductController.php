@@ -31,7 +31,8 @@ class ProductController extends Controller
             "vendor_id" => "integer",
             "product_type_id" => "required|integer",
             "tax_id" => "required|integer",
-            "zone_type_id" => "integer"
+            "zone_type_id" => "integer",
+            "is_tax_inclusive" => "boolean"
         ]);
 	}
 
@@ -57,7 +58,7 @@ class ProductController extends Controller
     {
     	$this->validate_input();
 
-        $branch = Product::create(request()->all());
+        $branch = Product::create($this->mutateValues());
 
     	return json_encode(['message' => "New SKU created."]);
     }
@@ -66,9 +67,18 @@ class ProductController extends Controller
     {
     	$this->validate_input();
 
-        $sku->update(request()->all());
+        $sku->update($this->mutateValues());
     	
     	return json_encode(['message' => "SKU updated"]);
+    }
+
+    public function mutateValues()
+    {
+        $values = request()->all();
+
+        $values['is_tax_inclusive'] = request()->has('is_tax_inclusive');
+
+        return $values;
     }
 
     public function import()
