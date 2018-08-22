@@ -139,6 +139,12 @@
 									:hideLabel="false"
 									:error="form.errors.get('tax_id')">
 								</selector-input>
+								<checkbox-input v-model="form.is_tax_inclusive"
+									:defaultChecked="form.is_tax_inclusive"
+									label="Tax inclusive"
+									name="is_tax_inclusive"
+									:editable="true">
+								</checkbox-input>
 							</div>
 							<div class="col">
 								<selector-input :potentialData="vendors"
@@ -222,7 +228,7 @@
 					zone: '',
 					weight_start: '',
 					weight_end: '',
-					is_tax_inclusive: 1,
+					is_tax_inclusive: '',
 					corporate_price: '',
 					walk_in_price: '',
 					walk_in_price_special: '',
@@ -353,7 +359,7 @@
 				this.form.zone = this.selectedProduct.zone;
 				this.form.weight_start = this.selectedProduct.weight_start;
 				this.form.weight_end = this.selectedProduct.weight_end;
-				this.form.is_tax_inclusive = 1;
+				this.form.is_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 				this.form.corporate_price = this.selectedProduct.corporate_price + "";
 				this.form.walk_in_price = this.selectedProduct.walk_in_price + "";
 				this.form.walk_in_price_special = this.selectedProduct.walk_in_price_special + "";

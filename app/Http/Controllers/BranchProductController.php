@@ -19,7 +19,8 @@ class BranchProductController extends Controller
             "product_id" => "required",
             "corporate_override" => "required",
             "walk_in_special_override" => "required",
-            "walk_in_override" => "required"
+            "walk_in_override" => "required",
+            "is_tax_inclusive" => "boolean"
         ]);
 	}
 
@@ -48,7 +49,7 @@ class BranchProductController extends Controller
         							'walk_in_price_special' => request()->walk_in_special_override,
         							'corporate_price' => request()->corporate_override,
         							'customer_id' => request()->customer_id,
-        							'is_tax_inclusive' => true
+        							'is_tax_inclusive' => request()->has('is_tax_inclusive')
         							]
         ]);
 
@@ -66,7 +67,7 @@ class BranchProductController extends Controller
                     'walk_in_price_special' => request()->walk_in_special_override,
                     'corporate_price' => request()->corporate_override,
                     'customer_id' => request()->customer_id,
-                    'is_tax_inclusive' => true
+                    'is_tax_inclusive' => request()->has('is_tax_inclusive')
             ]);
 
 
