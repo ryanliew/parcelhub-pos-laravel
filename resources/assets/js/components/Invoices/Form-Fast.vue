@@ -115,7 +115,7 @@
 								:error="form.errors.get('paid')">
 							</text-input>
 						</div>
-						<div class="col-4">
+						<div class="col-4 invoice-summary">
 							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Items:</b> {{ itemCount }}
 							</div>
@@ -245,7 +245,7 @@
 								:error="form.errors.get('paid')">
 							</text-input>
 						</div>
-						<div class="col-4">
+						<div class="col-4 invoice-summary">
 							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Items:</b> {{ itemCount }}
 							</div>
