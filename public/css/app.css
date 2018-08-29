@@ -11317,3 +11317,30 @@ span.text-primary.disabled {
           box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.65);
 }
 
+.d-flex label {
+  margin-bottom: 0;
+  min-width: 100px;
+  padding-right: 5px;
+}
+
+.invoice-label {
+  padding-right: 15px;
+  min-width: 100px;
+}
+
+.extra-header {
+  display: none;
+}
+
+.header-fixed {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 98%;
+  position: fixed;
+  top: 0;
+  z-index: 5;
+  -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
+}
+

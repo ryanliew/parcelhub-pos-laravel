@@ -87,10 +87,11 @@
 			:editable="true"
 			:focus="false"
 			:hideLabel="true"
+			ref="dimension"
 			:error="dimension_weight_error"
 			@input="updateProducts"
 			:disabled="!has_detail || !canEdit"
-			@dblclick="isCalculatingDimWeight = true">
+			@dblclick="openDimWeightModal">
 		</text-input>
 
 		<div class="small-select">
@@ -191,6 +192,7 @@
 				type="number"
 				label="Height (cm)"
 				name="height"
+				ref="heightinput"
 				:editable="true"
 				:focus="false"
 				:hideLabel="false">
@@ -305,11 +307,16 @@
 			}
 			else if(this.defaultProductType.has_detail) {
 				this.selectedZoneType = {label: 'Domestic', value: 1};
-				this.getDefaultDetails();
+				Vue.nextTick( function() { this.getDefaultDetails(); }.bind(this));
 			}
 		},
 
 		methods: {
+			openDimWeightModal() {
+				this.isCalculatingDimWeight = true;
+				setTimeout(function(){ this.$refs.heightinput.triggerFocus() }.bind(this), 500 );
+			},
+
 			calculateDimWeight() {
 				let formula = this.selectedCourier.formula;
 
@@ -320,6 +327,7 @@
 				this.dimension_weight = eval(expression);
 				this.isCalculatingDimWeight = false;
 				this.should_update_product = true;
+				this.$refs.dimension.triggerFocus();
 			},
 
 			getProducts(error = 'No error') {
@@ -349,8 +357,14 @@
 					return obj;
 				}.bind(this));
 
+				// If we already have item
+				if(this.item.product_type_id) {
+					this.selectedProduct = _.filter(this.products, function(type){ return this.item.product_id == type.value; }.bind(this))[0];
+				}
+
 				// If we only have 1 product, set it as default
-				if(this.products.length == 1 && (!this.isEditing || this.should_update_product)) {
+				if(this.products.length == 1 && !this.selectedProduct) {
+					console.log("Only 1 product");
 					this.selectedProduct = this.products[0];
 				}
 				// If we dont have any products that matches
@@ -360,14 +374,10 @@
 
 				// If selected product types doesn't have details, clear the courier field and disable zone/weight/dim weight fields
 				if(!this.selectedProductType.has_detail) {
-					
 					this.selectedCourier = '';
 				}
 
-				// If we already have item
-				if(this.item.product_type_id) {
-					this.selectedProduct = _.filter(this.products, function(type){ return this.item.product_id == type.value; }.bind(this))[0];
-				}
+				
 			},
 
 			updateProducts(error = "No error") {
@@ -397,11 +407,10 @@
 				}
 			},
 
-			getDefaultDetails() {
-				// console.log('Getting default details');
+			getDefaultDetails(error = 'No error') {
 				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
 					.then(response => this.setDefaultDetails(response))
-					.catch(error => this.getDefaultDetails());
+					.catch(error => this.getDefaultDetails(error));
 			},
 
 			setDefaultDetails(response) {
@@ -410,10 +419,13 @@
 
 				if(eligibleZoneTypes.length > 0)
 				{
+
 					this.selectedZoneType = eligibleZoneTypes[0];
 				}
 
 				let eligibleCourier = _.filter(this.couriers, function(courier){ return courier.label == response.data.result.vendor_name; }.bind(response));
+
+				
 				
 				if(eligibleCourier.length > 0)
 				{
@@ -519,7 +531,6 @@
 				this.$emit('update', {attribute: 'zone_type_id', value: ''});
 				if(newVal) {
 					this.$emit('update', {attribute: 'zone_type_id', value: newVal.value});
-					this.getDefaultDetails();
 				}
 
 			},
