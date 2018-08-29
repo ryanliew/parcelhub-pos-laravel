@@ -76857,9 +76857,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		openDimWeightModal: function openDimWeightModal() {
 			this.isCalculatingDimWeight = true;
-			this.height = "";
-			this.width = "";
-			this.length = "";
+			if (!this.dimension_weight) {
+				this.height = "";
+				this.width = "";
+				this.length = "";
+			}
 			setTimeout(function () {
 				this.$refs.heightinput.triggerFocus();
 			}.bind(this), 500);
@@ -76874,16 +76876,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.isCalculatingDimWeight = false;
 		},
 		calculateDimWeight: function calculateDimWeight() {
+			var shouldFocus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
 			var formula = this.selectedCourier.formula;
 
 			var expression = formula.replace("l", this.length);
 			expression = expression.replace("w", this.width);
 			expression = expression.replace("h", this.height);
-
-			this.dimension_weight = eval(expression);
-			this.closeDimWeight();
-			this.should_update_product = true;
-			this.$refs.dimension.triggerFocus();
+			if (this.height > 0) {
+				this.dimension_weight = eval(expression);
+				this.closeDimWeight();
+				this.should_update_product = true;
+				if (shouldFocus) this.$refs.dimension.triggerFocus();
+			}
 		},
 		getProducts: function getProducts() {
 			var _this = this;
@@ -76916,8 +76921,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return obj;
 			}.bind(this));
 
-			this.getDefaultDetails();
-
 			// If we already have item
 			if (this.item.product_type_id) {
 				this.selectedProduct = _.filter(this.products, function (type) {
@@ -76938,8 +76941,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (!this.selectedProductType.has_detail) {
 				this.selectedCourier = '';
 			}
-
-			this.getDefaultDetails();
 		},
 		updateProducts: function updateProducts() {
 			var _this2 = this;
@@ -77086,7 +77087,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		selectedProductType: function selectedProductType(newVal) {
 			this.$emit('update', { attribute: 'product_type_id', value: '' });
-			if (newVal) this.$emit('update', { attribute: 'product_type_id', value: newVal.value });
+			if (newVal) {
+				this.$emit('update', { attribute: 'product_type_id', value: newVal.value });
+				this.getDefaultDetails();
+			}
 		},
 		selectedZoneType: function selectedZoneType(newVal) {
 			this.$emit('update', { attribute: 'zone_type_id', value: '' });
@@ -77114,7 +77118,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		selectedCourier: function selectedCourier(newVal) {
 			this.$emit('update', { attribute: 'courier_id', value: 0 });
-			if (newVal) this.$emit('update', { attribute: 'courier_id', value: newVal.value });
+			if (newVal) {
+				this.$emit('update', { attribute: 'courier_id', value: newVal.value });
+				this.calculateDimWeight(false);
+			}
 		},
 		price: function price(newVal) {
 			this.$emit('update', { attribute: 'price', value: newVal });
