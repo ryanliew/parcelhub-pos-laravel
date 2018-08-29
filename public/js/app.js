@@ -76762,6 +76762,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
@@ -76855,21 +76857,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		openDimWeightModal: function openDimWeightModal() {
 			this.isCalculatingDimWeight = true;
+			if (!this.dimension_weight) {
+				this.height = "";
+				this.width = "";
+				this.length = "";
+			}
 			setTimeout(function () {
 				this.$refs.heightinput.triggerFocus();
 			}.bind(this), 500);
 		},
+		closeDimWeight: function closeDimWeight() {
+			if (!this.dimension_weight) {
+				this.height = 0;
+				this.width = 0;
+				this.length = 0;
+			}
+
+			this.isCalculatingDimWeight = false;
+		},
 		calculateDimWeight: function calculateDimWeight() {
+			var shouldFocus = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
 			var formula = this.selectedCourier.formula;
 
 			var expression = formula.replace("l", this.length);
 			expression = expression.replace("w", this.width);
 			expression = expression.replace("h", this.height);
-
-			this.dimension_weight = eval(expression);
-			this.isCalculatingDimWeight = false;
-			this.should_update_product = true;
-			this.$refs.dimension.triggerFocus();
+			if (this.height > 0) {
+				this.dimension_weight = eval(expression);
+				this.closeDimWeight();
+				this.should_update_product = true;
+				if (shouldFocus) this.$refs.dimension.triggerFocus();
+			}
 		},
 		getProducts: function getProducts() {
 			var _this = this;
@@ -76911,7 +76930,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			// If we only have 1 product, set it as default
 			if (this.products.length == 1 && !this.selectedProduct) {
-				console.log("Only 1 product");
 				this.selectedProduct = this.products[0];
 			}
 			// If we dont have any products that matches
@@ -77069,7 +77087,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		selectedProductType: function selectedProductType(newVal) {
 			this.$emit('update', { attribute: 'product_type_id', value: '' });
-			if (newVal) this.$emit('update', { attribute: 'product_type_id', value: newVal.value });
+			if (newVal) {
+				this.$emit('update', { attribute: 'product_type_id', value: newVal.value });
+				this.getDefaultDetails();
+			}
 		},
 		selectedZoneType: function selectedZoneType(newVal) {
 			this.$emit('update', { attribute: 'zone_type_id', value: '' });
@@ -77097,7 +77118,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		selectedCourier: function selectedCourier(newVal) {
 			this.$emit('update', { attribute: 'courier_id', value: 0 });
-			if (newVal) this.$emit('update', { attribute: 'courier_id', value: newVal.value });
+			if (newVal) {
+				this.$emit('update', { attribute: 'courier_id', value: newVal.value });
+				this.calculateDimWeight(false);
+			}
 		},
 		price: function price(newVal) {
 			this.$emit('update', { attribute: 'price', value: newVal });
@@ -77295,7 +77319,11 @@ var render = function() {
           error: _vm.dimension_weight_error,
           disabled: !_vm.has_detail || !_vm.canEdit
         },
-        on: { input: _vm.updateProducts, dblclick: _vm.openDimWeightModal },
+        on: {
+          input: _vm.updateProducts,
+          enter: _vm.openDimWeightModal,
+          dblclick: _vm.openDimWeightModal
+        },
         model: {
           value: _vm.dimension_weight,
           callback: function($$v) {
@@ -77482,13 +77510,9 @@ var render = function() {
         {
           attrs: {
             active: _vm.isCalculatingDimWeight,
-            id: "dim-weight-calculator"
+            id: "dim-weight-calculator-" + this.index
           },
-          on: {
-            close: function($event) {
-              _vm.isCalculatingDimWeight = false
-            }
-          }
+          on: { close: _vm.closeDimWeight }
         },
         [
           _c("span", { attrs: { slot: "header" }, slot: "header" }, [
@@ -77547,6 +77571,7 @@ var render = function() {
               focus: false,
               hideLabel: false
             },
+            on: { enter: _vm.calculateDimWeight },
             model: {
               value: _vm.length,
               callback: function($$v) {
@@ -77562,11 +77587,7 @@ var render = function() {
               {
                 staticClass: "btn btn-secondary",
                 attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    _vm.isCalculatingDimWeight = false
-                  }
-                }
+                on: { click: _vm.closeDimWeight }
               },
               [_vm._v("Cancel")]
             ),

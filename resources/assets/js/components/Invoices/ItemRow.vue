@@ -90,6 +90,7 @@
 			ref="dimension"
 			:error="dimension_weight_error"
 			@input="updateProducts"
+			@enter="openDimWeightModal"
 			:disabled="!has_detail || !canEdit"
 			@dblclick="openDimWeightModal">
 		</text-input>
@@ -181,8 +182,8 @@
 		<div><button type="button" class="btn btn-sm btn-danger" @click="$emit('delete')" :disabled="!canEdit">Delete</button></div>
 
 		<modal :active="isCalculatingDimWeight"
-			id="dim-weight-calculator"
-			@close="isCalculatingDimWeight = false">
+			:id="'dim-weight-calculator-' + this.index"
+			@close="closeDimWeight">
 
 			<span slot="header">Calculate dimension weight</span>
 
@@ -215,11 +216,12 @@
 				name="length"
 				:editable="true"
 				:focus="false"
-				:hideLabel="false">
+				:hideLabel="false"
+				@enter="calculateDimWeight">
 			</text-input>
 
 			<template slot="footer">
-				<button type="button" class="btn btn-secondary" @click="isCalculatingDimWeight = false">Cancel</button>
+				<button type="button" class="btn btn-secondary" @click="closeDimWeight">Cancel</button>
 				<button type="button" class="btn btn-primary" @click="calculateDimWeight">Confirm</button>
 			</template>
 		</modal>
@@ -314,20 +316,37 @@
 		methods: {
 			openDimWeightModal() {
 				this.isCalculatingDimWeight = true;
+				if(!this.dimension_weight) {
+					this.height = "";
+					this.width = "";
+					this.length = "";
+				}
 				setTimeout(function(){ this.$refs.heightinput.triggerFocus() }.bind(this), 500 );
 			},
 
-			calculateDimWeight() {
+			closeDimWeight() {
+				if(!this.dimension_weight) {
+					this.height = 0;
+					this.width = 0;
+					this.length = 0;
+				}
+
+				this.isCalculatingDimWeight = false;
+			},
+
+			calculateDimWeight(shouldFocus = true) {
 				let formula = this.selectedCourier.formula;
 
 				let expression = formula.replace("l", this.length);
 				expression = expression.replace("w", this.width);
 				expression = expression.replace("h", this.height);
-
-				this.dimension_weight = eval(expression);
-				this.isCalculatingDimWeight = false;
-				this.should_update_product = true;
-				this.$refs.dimension.triggerFocus();
+				if(this.height > 0) {
+					this.dimension_weight = eval(expression);
+					this.closeDimWeight();
+					this.should_update_product = true;
+					if(shouldFocus)
+						this.$refs.dimension.triggerFocus();
+				}
 			},
 
 			getProducts(error = 'No error') {
@@ -364,7 +383,6 @@
 
 				// If we only have 1 product, set it as default
 				if(this.products.length == 1 && !this.selectedProduct) {
-					console.log("Only 1 product");
 					this.selectedProduct = this.products[0];
 				}
 				// If we dont have any products that matches
@@ -376,8 +394,6 @@
 				if(!this.selectedProductType.has_detail) {
 					this.selectedCourier = '';
 				}
-
-				
 			},
 
 			updateProducts(error = "No error") {
@@ -523,8 +539,10 @@
 
 			selectedProductType(newVal) {
 				this.$emit('update', {attribute: 'product_type_id', value: ''});
-				if(newVal)
+				if(newVal) {
 					this.$emit('update', {attribute: 'product_type_id', value: newVal.value});
+					this.getDefaultDetails();
+				}
 			},
 
 			selectedZoneType(newVal) {
@@ -561,8 +579,10 @@
 
 			selectedCourier(newVal) {
 				this.$emit('update', {attribute: 'courier_id', value: 0});
-				if(newVal)
+				if(newVal) {
 					this.$emit('update', {attribute: 'courier_id', value: newVal.value});				
+					this.calculateDimWeight(false);
+				}
 			},
 
 			price(newVal) {
