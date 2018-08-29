@@ -95,7 +95,7 @@
 				<tr>
 					<td>Receipt no</td>
 					<td>:</td>
-					<td>{{ $invoice->branch->code }}{{ sprintf('%05d', $invoice->id) }}</td>
+					<td>{{ $invoice->invoice_no }}</td>
 				</tr>
 				<tr>
 					<td>Served by</td>
