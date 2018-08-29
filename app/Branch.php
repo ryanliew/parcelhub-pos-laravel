@@ -51,6 +51,11 @@ class Branch extends Model
                     ->withTimestamps()
                     ->withPivot('id', 'customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price', 'is_tax_inclusive');
     }
+
+    public function default_product_type()
+    {
+        return $this->belongsTo("App\ProductType", 'product_type_id');
+    }
     
     public function create_default_user($terminal)
     {

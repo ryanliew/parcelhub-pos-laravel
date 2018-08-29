@@ -10,7 +10,11 @@
 				@input="updateValue($event.target.value)"
 				ref="input"
 				:step="step ? step : 0.001"
-				:placeholder="placeholder" />
+				:placeholder="placeholder"
+				:disabled="disabled"
+				@keyup.enter="$emit('enter')"
+				@keydown.tab="$emit('tab')"
+				@dblclick="$emit('dblclick')" />
 			<div class="input-group-append" v-if="addon">
 				<button class="btn btn-secondary" type="button" @click="addonAction">{{ addon }}</button>
 			</div>
@@ -27,7 +31,7 @@
 <script>
 	import moment from 'moment';
 	export default {
-		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText', 'step'],
+		props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText', 'step', 'disabled'],
 		data() {
 			return {
 				localValue: ''
@@ -49,6 +53,10 @@
 
 			addonAction() {
 				this.$emit('addon');
+			},
+
+			triggerFocus() {
+				this.$refs.input.focus();
 			}
 		},
 

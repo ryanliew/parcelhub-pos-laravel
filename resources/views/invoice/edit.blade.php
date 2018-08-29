@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-	<div class="container">
+	<div class="container-fluid">
 		<invoices-create created_by="{{ auth()->id() }}" invoice="{{ $invoice->id }}"></invoices-create>
 	</div>
 @endsection

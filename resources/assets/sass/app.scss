@@ -228,6 +228,10 @@ tr.item-editing {
 	top: 0;
 }
 
+.unclearable .v-select .clear {
+	display: none;
+}
+
 .v-select.open .form-control {
 	position:relative;
 }
@@ -235,4 +239,20 @@ tr.item-editing {
 span.text-primary.disabled {
 	opacity: 0.65;
 	cursor: not-allowed;
+}
+
+.invoice-items {
+	display: grid;
+	grid-template-columns: 30px 10% 9% 9% 5% 5% 5% 7% 9% 11% 7% 4% 5% auto;
+	grid-template-rows: repeat(auto-fill, auto);
+	grid-row-gap: .5em;
+	grid-column-gap: .5em;
+}
+
+.invoice-item {
+	
+}
+
+.form-control:focus {
+	box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.65);
 }
