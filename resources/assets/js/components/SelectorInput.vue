@@ -11,7 +11,7 @@
 			</div>
 		</label>
 		<div class="control" :class="canClearCss" v-if="editable">
-			<v-select :multiple="multiple" :options="potentialData" :value="this.defaultData" @input="updateValue" :name="name" :placeholder="placeholder" :closeOnSelect="!multiple || true" ref="selector">
+			<v-select :multiple="multiple" :options="potentialData" :value="this.defaultData" @input="updateValue" :name="name" :placeholder="placeholder" :closeOnSelect="!multiple || true" :disabled="disabled" ref="selector">
 			</v-select>
 			<input :value="data" :id="name" type="hidden">
 		</div>
@@ -25,7 +25,7 @@
 <script>
 	import vSelect from 'vue-select';
 	export default {
-		props: { potentialData: Array, label: String, defaultData: {default: ''}, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}, addon: String, addonTooltip: String},
+		props: { potentialData: Array, label: String, defaultData: {default: ''}, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}, addon: String, addonTooltip: String, disabled: {default: false}},
 
 		components: { vSelect },
 
@@ -39,6 +39,7 @@
 			updateValue(value) {
 				this.$emit('input', value);
 				this.data = value.value;
+				this.$emit('next');
 			}, 
 
 			focus() {

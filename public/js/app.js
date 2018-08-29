@@ -30377,7 +30377,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(139);
-module.exports = __webpack_require__(248);
+module.exports = __webpack_require__(251);
 
 
 /***/ }),
@@ -30463,16 +30463,17 @@ Vue.component('taxes-dialog', __webpack_require__(221));
 Vue.component('products-dialog', __webpack_require__(224));
 Vue.component('products-importer', __webpack_require__(227));
 
+// Vue.component('invoices-create', require('./components/invoices/Form.vue'));
 Vue.component('invoices-create', __webpack_require__(230));
 
-Vue.component('customers-dialog', __webpack_require__(233));
-Vue.component('statement-dialog', __webpack_require__(236));
+Vue.component('customers-dialog', __webpack_require__(236));
+Vue.component('statement-dialog', __webpack_require__(239));
 
-Vue.component('terminals-dialog', __webpack_require__(239));
+Vue.component('terminals-dialog', __webpack_require__(242));
 
-Vue.component('pricing-dialog', __webpack_require__(242));
+Vue.component('pricing-dialog', __webpack_require__(245));
 
-Vue.component('permissions-dialog', __webpack_require__(245));
+Vue.component('permissions-dialog', __webpack_require__(248));
 
 var app = new Vue({
   el: '#app',
@@ -68126,10 +68127,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText', 'step'],
+	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'placeholder', 'extraClass', 'addon', 'helpText', 'step', 'disabled'],
 	data: function data() {
 		return {
 			localValue: ''
@@ -68149,6 +68154,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		addonAction: function addonAction() {
 			this.$emit('addon');
+		},
+		triggerFocus: function triggerFocus() {
+			this.$refs.input.focus();
 		}
 	},
 
@@ -68469,12 +68477,34 @@ var render = function() {
               id: _vm.name,
               type: _vm.type || "text",
               step: _vm.step ? _vm.step : 0.001,
-              placeholder: _vm.placeholder
+              placeholder: _vm.placeholder,
+              disabled: _vm.disabled
             },
             domProps: { value: _vm.value },
             on: {
               input: function($event) {
                 _vm.updateValue($event.target.value)
+              },
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                _vm.$emit("enter")
+              },
+              keydown: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "tab", 9, $event.key, "Tab")
+                ) {
+                  return null
+                }
+                _vm.$emit("tab")
+              },
+              dblclick: function($event) {
+                _vm.$emit("dblclick")
               }
             }
           }),
@@ -68789,7 +68819,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true }, addon: String, addonTooltip: String },
+	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true }, addon: String, addonTooltip: String, disabled: { default: false } },
 
 	components: { vSelect: __WEBPACK_IMPORTED_MODULE_0_vue_select___default.a },
 
@@ -68804,6 +68834,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		updateValue: function updateValue(value) {
 			this.$emit('input', value);
 			this.data = value.value;
+			this.$emit('next');
 		},
 		focus: function focus() {
 			this.$refs.selector.open = true;
@@ -68887,7 +68918,8 @@ var render = function() {
                 value: this.defaultData,
                 name: _vm.name,
                 placeholder: _vm.placeholder,
-                closeOnSelect: !_vm.multiple || true
+                closeOnSelect: !_vm.multiple || true,
+                disabled: _vm.disabled
               },
               on: { input: _vm.updateValue }
             }),
@@ -75406,7 +75438,7 @@ var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(231)
 /* template */
-var __vue_template__ = __webpack_require__(232)
+var __vue_template__ = __webpack_require__(235)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -75423,7 +75455,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\js\\components\\invoices\\Form.vue"
+Component.options.__file = "resources\\assets\\js\\components\\invoices\\Form-Fast.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -75432,9 +75464,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1830b55a", Component.options)
+    hotAPI.createRecord("data-v-6f9d6e66", Component.options)
   } else {
-    hotAPI.reload("data-v-1830b55a", Component.options)
+    hotAPI.reload("data-v-6f9d6e66", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -75453,6 +75485,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ItemRow_vue__ = __webpack_require__(232);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ItemRow_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ItemRow_vue__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -75746,150 +75780,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['created_by', 'invoice', 'auth_user', 'setting'],
+	props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type'],
 
 	mixins: [__WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__["a" /* default */]],
+
+	components: { ItemRow: __WEBPACK_IMPORTED_MODULE_2__ItemRow_vue___default.a },
 
 	data: function data() {
 		return {
@@ -75906,12 +75807,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				customer_id: '',
 				type: 'Cash',
 				payment_type: 'Cash'
-			}, 'type', 'Cash')),
-
-			isAddingItem: false,
-			isEditing: false,
-			editingIndex: '',
-			isLoading: true,
+			}, "type", 'Cash')),
 
 			product_types: [],
 			zone_types: [],
@@ -75927,57 +75823,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			selectedDiscountMode: { label: "%", value: "%" },
 			selectedType: { label: 'Cash', value: 'Cash' },
 
-			defaultProductType: '',
-			isCalculatingDimWeight: false,
-			tracking_no: '',
-			selectedProductType: '',
-			selectedZoneType: '',
-			zone: '',
-			weight: '',
-			dimension_weight: 0,
-			selectedCourier: '',
-			selectedProduct: '',
-			description: '',
-			price: '',
-			unit: 1,
-			width: 0,
-			length: 0,
-			height: 0,
-			// Based on entered price
-			// item_tax: 0,
-			tax_rate: 0,
-			is_custom_pricing: false,
-			item_tax_inclusive: '',
-
-			tracking_no_error: '',
-			selectedProductType_error: '',
-			selectedZoneType_error: '',
-			zone_error: '',
-			weight_error: '',
-			dimension_weight_error: '',
-			selectedCourier_error: '',
-			selectedProduct_error: '',
-			description_error: '',
-			price_error: '',
-			unit_error: '',
-			item_tax_error: '',
-
-			should_update_product: false,
-
 			currentTime: '',
 			invoiceNumber: '',
-
-			item_add_loading: false,
-			price_group: '',
 			can_edit_invoice: true
 		};
 	},
 	mounted: function mounted() {
 		var _this = this;
-
-		if (this.invoice) {
-			this.getInvoice();
-		}
 
 		this.getProductTypes();
 
@@ -75990,12 +75842,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		}
 
 		window.addEventListener('keyup', function (event) {
-			// console.log("Keyup" + event.key);
-
 			if (event.key == "F8" && this.canAddItem) {
-				this.toggleAddItem();
+				// this.toggleAddItem();
+				this.addItem();
+			}
+
+			if (event.key == "F7") {
+				// this.toggleAddItem();
+				this.submit();
 			}
 		}.bind(this));
+
+		this.addItem();
 	},
 
 
@@ -76027,9 +75885,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = invoice.created_at;
 			this.invoiceNumber = invoice.invoice_no;
 		},
-		moveToNext: function moveToNext() {
-			this.$refs.producttypes.focus();
-		},
 		getProductTypes: function getProductTypes() {
 			var _this3 = this;
 
@@ -76050,9 +75905,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				return obj;
 			});
 
-			this.selectedProductType = _.filter(this.product_types, function (type) {
-				return type.value == this.defaultProductType;
-			}.bind(this));
 			this.getZoneType();
 		},
 		getZoneType: function getZoneType() {
@@ -76118,315 +75970,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				return obj;
 			});
 
-			this.getDefaultType();
-		},
-		getRelatedProduct: function getRelatedProduct() {
-			var _this7 = this;
-
-			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
-
-			if (this.selectedProductType) {
-				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
-					return _this7.setProduct(response);
-				}).catch(function (error) {
-					return _this7.getRelatedProduct(error);
-				});
-
-				this.isLoading = false;
-				if (this.selectedProductType.has_detail && !this.isEditing) {
-					this.getDefaultDetails();
-				}
+			// this.getDefaultType();
+			if (this.invoice) {
+				this.getInvoice();
 			}
 		},
-		getDefaultDetails: function getDefaultDetails() {
-			var _this8 = this;
+		addItem: function addItem() {
 
-			axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
-				return _this8.setDefaultDetails(response);
-			}).catch(function (error) {
-				return _this8.getDefaultDetails();
+			this.form.items.push({
+				product_id: '',
+				courier_id: 0,
+				zone_type_id: '',
+				product_type_id: this.default_product_type.value,
+				zone: '',
+				weight: 0,
+				description: '',
+				tracking_code: '',
+				unit: 1,
+				price: 0,
+				total_price: 0,
+				width: 0,
+				length: 0,
+				height: 0,
+				tax: 0,
+				tax_rate: 0,
+				is_custom_pricing: 0,
+				item_tax_inclusive: '',
+				dimension_weight: 0,
+				sku: ''
+
 			});
+
+			// this.$refs['track_code_' + ( this.form.items.length - 1 )][0].triggerFocus();
 		},
-		setDefaultDetails: function setDefaultDetails(response) {
-
-			var eligibleZoneTypes = _.filter(this.zone_types, function (type) {
-				return type.label == response.data.result.zone_type;
-			}.bind(response));
-
-			if (eligibleZoneTypes.length > 0) {
-				this.selectedZoneType = eligibleZoneTypes[0];
-			}
-
-			var eligibleCourier = _.filter(this.couriers, function (courier) {
-				return courier.label == response.data.result.vendor_name;
-			}.bind(response));
-
-			if (eligibleCourier.length > 0) {
-				this.selectedCourier = eligibleCourier[0];
-			}
-		},
-		getDefaultType: function getDefaultType() {
-			var _this9 = this;
-
-			axios.get("/data/branch/type").then(function (response) {
-				return _this9.setDefaultType(response);
-			}).catch(function (error) {
-				return _this9.getDefaultProductType();
-			});
-		},
-		setDefaultType: function setDefaultType(response) {
-			this.defaultProductType = response.data.type;
-			this.selectedProductType = _.filter(this.product_types, function (type) {
-				return type.value == response.data.type;
-			}.bind(response))[0];
-
-			this.getRelatedProduct();
-		},
-		getFilteredProduct: function getFilteredProduct() {
-			var _this10 = this;
-
-			if (this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
-				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
-
-				if (this.weight) url += "&weight=" + this.weight;
-
-				if (this.dimension_weight) url += "&dimension=" + this.dimension_weight;
-
-				if (this.selectedCourier) url += "&vendor=" + this.selectedCourier.value;
-
-				axios.get(url).then(function (response) {
-					return _this10.setProduct(response);
-				}).catch(function (error) {
-					return _this10.getFilteredProduct();
-				});
-			}
-		},
-		setProduct: function setProduct(response) {
-			if (!this.isEditing) this.selectedProduct = '';
-			this.selectedProduct_error = "";
-			this.products = response.data.map(function (product) {
-				var obj = {};
-
-				obj['value'] = product.id;
-				obj['label'] = product.sku;
-				obj['description'] = product.description;
-				obj['is_tax_inclusive'] = product.is_tax_inclusive;
-
-				return obj;
-			}.bind(this));
-
-			// If we only have 1 product, set it as default
-			if (this.products.length == 1 && (!this.isEditing || this.should_update_product)) {
-				this.selectedProduct = this.products[0];
-			}
-			// If we dont have any products that matches
-			if (this.products.length == 0) {
-				this.selectedProduct_error = "No matching SKU found";
-			}
-
-			// If selected product type = Document or Parcel
-			if (this.selectedProductType.value == 2 || this.selectedProductType.value == 5) {
-				this.selectedZoneType = { label: 'Domestic', value: 1 };
-				if (this.products.length > 1) {
-					this.getFilteredProduct();
-				}
-			}
-		},
-		productChange: function productChange() {
-			if (!this.isEditing || this.should_update_product) {
-				this.description = "";
-				this.price = 0;
-				// Based on entered price
-				// this.item_tax = 0;
-				if (this.selectedProduct) {
-					this.description = this.selectedProduct.description;
-					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-					this.getProductPrice();
-				}
-			}
-		},
-		getProductPriceUrl: function getProductPriceUrl(product) {
-
-			var url = "/data/pricing?product=" + product;
-			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
-				url += "&customer=" + this.selectedCustomer.value;
-			}
-
-			return url;
-		},
-		getProductPrice: function getProductPrice() {
-			var _this11 = this;
-
-			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
-
-			// console.log(error);
-			if (this.selectedProduct) {
-				this.item_add_loading = true;
-
-				var url = this.getProductPriceUrl(this.selectedProduct.value);
-
-				axios.get(url).then(function (response) {
-					return _this11.setProductPrice(response);
-				}).catch(function (error) {
-					return _this11.getProductPrice(error);
-				});
-			}
-
-			this.setProductPrice('');
-		},
-		calculatePriceBasedOnCustomer: function calculatePriceBasedOnCustomer(price_group) {
-			var price = price_group.walk_in_price;
-			var tax_rate = price_group.tax / 100;
-
-			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
-				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
-			}
-
-			var tax = price_group.tax ? price * tax_rate : 0;
-			var total = price + tax;
-
-			return { price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive };
-		},
-		setProductPrice: function setProductPrice(response) {
-			// console.log("Setting product price");
-			if (response) {
-				this.price_group = this.selectedProduct;
-
-				if (response.data) this.price_group = response.data;
-
-				var prices = this.calculatePriceBasedOnCustomer(this.price_group);
-				this.price = Math.round(prices.price * 100) / 100;
-				// Based on entered price
-				// this.item_tax = prices.tax;
-				this.tax_rate = prices.tax_rate;
-				this.item_tax_inclusive = prices.is_tax_inclusive;
-
-				// this.price = this.price ? this.price.toFixed(2) : 0.00;
-				// Based on entered price
-				// this.item_tax = this.item_tax.toFixed(2);
-
-				// Set custom pricing to false if it is set by system
-				// Vue.nextTick(function() {
-				// 	this.is_custom_pricing = false;
-				// }.bind(this));
-			}
-
-			this.item_add_loading = false;
-		},
-		calculateDimWeight: function calculateDimWeight() {
-			var formula = this.selectedCourier.formula;
-
-			var expression = formula.replace("l", this.length);
-			expression = expression.replace("w", this.width);
-			expression = expression.replace("h", this.height);
-
-			this.dimension_weight = eval(expression);
-			this.isCalculatingDimWeight = false;
-			this.should_update_product = true;
-		},
-		add_item: function add_item() {
-			if (this.validateInputs()) {
-				var item = {};
-
-				item['tracking_code'] = this.tracking_no;
-				item['description'] = this.description;
-				item['zone'] = this.zone;
-				item['weight'] = this.weight ? this.weight : 0;
-				item['dimension_weight'] = this.dimension_weight ? this.dimension_weight : 0;
-				item['height'] = this.height ? this.height : 0;
-				item['length'] = this.length ? this.length : 0;
-				item['width'] = this.width ? this.width : 0;
-				item['sku'] = this.selectedProduct.label;
-				item['tax'] = this.item_tax;
-				item['price'] = this.price;
-				item['courier_id'] = this.selectedCourier.value;
-				item['product_id'] = this.selectedProduct.value;
-				item['product_type_id'] = this.selectedProductType.value;
-				item['total_price'] = this.total_price;
-				item['unit'] = this.unit;
-				item['is_custom_pricing'] = this.is_custom_pricing;
-				item['tax_rate'] = this.tax_rate;
-				item['is_tax_inclusive'] = this.item_tax_inclusive;
-
-				if (this.isEditing) {
-					Vue.set(this.form.items, this.editingIndex, item);
-					// this.form.items[this.editingIndex] = item;
-					this.editingIndex = '';
-				} else {
-					this.form.items.push(item);
-				}
-
-				this.selectedZoneType = '';
-				this.zone = '';
-				this.weight = '';
-				this.dimension_weight = 0;
-				this.selectedCourier = '';
-				this.selectedProduct = { label: 'Packaging', value: 4 };
-				this.selectedProductType = this.description = '';
-				this.price = 0;
-				this.unit = 1;
-				this.height = 0;
-				this.width = 0;
-				this.length = 0;
-				this.tracking_no = '';
-				this.item_tax_inclusive = '';
-				// Based on entered price
-				// this.item_tax = 0;
-				this.tax_rate = 0;
-
-				this.toggleAddItem();
-			}
-		},
-		editItem: function editItem(index) {
-
-			this.isEditing = true;
-			this.editingIndex = index;
-			this.should_update_product = false;
-
-			this.toggleAddItem();
-
-			var item = this.form.items[index];
-
-			this.selectedZoneType = this.zone_types[0];
-			this.selectedCourier = item.courier_id ? _.filter(this.couriers, function (courier) {
-				return item.courier_id == courier.value;
-			}.bind(item))[0] : '';
-			this.selectedProductType = _.filter(this.product_types, function (type) {
-				return item.product_type_id == type.value;
-			}.bind(item))[0];
-
-			this.selectedProduct = { value: item.product_id, label: item.sku, description: item.description };
-			// this.selectedProduct = _.filter(this.products, function(product){ return item.product_id == product.value; }.bind(item))[0];
-			this.zone = item.zone;
-			this.weight = item.weight;
-			this.dimension_weight = item.dimension_weight;
-			this.description = item.description;
-			this.price = item.price;
-			this.unit = item.unit;
-			this.height = item.height;
-			this.width = item.width;
-			this.length = item.length;
-			this.tracking_no = item.tracking_code;
-			// Based on entered price
-			// this.item_tax = item.tax;
-			this.is_custom_pricing = item.is_custom_pricing;
-			this.tax_rate = item.tax_rate;
-			this.item_tax_inclusive = item.is_tax_inclusive;
+		updateItem: function updateItem(event, index) {
+			this.form.items[index][event.attribute] = event.value;
 		},
 		deleteItem: function deleteItem(index) {
+			// console.log(index);
 			this.form.items.splice(index, 1);
-		},
-		validateInputs: function validateInputs() {
-			this.tracking_no_error = this.tracking_no || !this.selectedProductType.has_detail ? '' : 'This field is required';
-			this.selectedProductType_error = this.selectedProductType ? '' : 'This field is required';
-			this.selectedZoneType_error = this.selectedZoneType || !this.isParcelOrDocument ? '' : 'This field is required';
-			this.zone_error = this.zone || !this.isParcelOrDocument ? '' : 'This field is required';
-			this.weight_error = this.weight || !this.isParcelOrDocument ? '' : 'This field is required';
-			// this.dimension_weight_error = this.dimension_weight || !this.isParcelOrDocument ? '' : 'This field is required';
-			this.selectedCourier_error = this.selectedCourier || !this.isParcelOrDocument ? '' : 'This field is required';
-			this.selectedProduct_error = this.selectedProduct ? '' : 'This field is required';
-
-			return this.tracking_no_error == "" && this.selectedProductType_error == "" && this.selectedZoneType_error == "" && this.zone_error == "" && this.weight_error == "" && this.dimension_weight_error == "" && this.selectedCourier_error == "" && this.selectedProduct_error == "" && this.description_error == "" && this.price_error == "" && this.unit_error == "";
 		},
 		updateCurrentTime: function updateCurrentTime() {
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
@@ -76436,7 +76018,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.isConfirming = true;
 		},
 		confirmSubmit: function confirmSubmit() {
-			var _this12 = this;
+			var _this7 = this;
 
 			this.form.total = this.rounded_total;
 			this.form.subtotal = this.subtotal;
@@ -76444,7 +76026,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 			this.form.post(url).then(function (response) {
-				return _this12.onSuccess(response);
+				return _this7.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -76453,38 +76035,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			setInterval(function () {
 				window.location.href = "/invoices/create";
 			}, 3000);
-		},
-		toggleAddItem: function toggleAddItem() {
-			if (this.canEdit && this.canAddItem) {
-				this.selectedZoneType = '';
-				this.zone = '';
-				this.weight = '';
-				this.dimension_weight = 0;
-				this.selectedCourier = '';
-				this.selectedProduct = '';
-				this.selectedProductType = _.filter(this.product_types, function (type) {
-					return type.value == this.defaultProductType;
-				}.bind(this))[0];
-				this.description = '';
-				this.price = '';
-				this.unit = 1;
-				this.height = '';
-				this.width = '';
-				this.length = '';
-				this.tracking_no = '';
-
-				this.getRelatedProduct();
-
-				this.isAddingItem = !this.isAddingItem;
-
-				if (!this.isAddingItem && this.isEditing) {
-					this.isEditing = false;
-					this.editingIndex = '';
-				}
-			}
-		},
-		getItemRowClass: function getItemRowClass(index) {
-			return this.editingIndex == index && this.isEditing ? "item-editing" : '';
 		},
 		createCustomer: function createCustomer() {
 			window.events.$emit('createCustomer');
@@ -76505,41 +76055,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 			// console.log(error);
-			this.isLoading = this.form.items.length > 0;
-			this.form.items.forEach(function (element, index) {
-				var _this13 = this;
-
-				var url = this.getProductPriceUrl(element.product_id);
-
-				axios.get(url).then(function (response) {
-					return _this13.changePriceForItem(index, response.data);
-				}).catch(function (error) {
-					return _this13.getPriceForItems(error);
-				});
-			}.bind(this));
-
-			if (this.isAddingItem) {
-				this.getProductPrice();
-			}
-		},
-		changePriceForItem: function changePriceForItem(item, price_group) {
-			var prices = this.calculatePriceBasedOnCustomer(price_group);
-			if (!this.form.items[item].is_custom_pricing) {
-				this.form.items[item].price = prices.price;
-				this.form.items[item].tax = prices.tax;
-				this.form.items[item].total_price = prices.total;
-			}
-
-			if (item + 1 == this.form.items.length || this.form.items.length == 0) this.isLoading = false;
+			window.events.$emit('update_price');
 		}
 	},
 
 	computed: {
-		item_tax: function item_tax() {
-			var tax = this.item_tax_inclusive ? this.price - Math.round(this.price / (this.tax_rate + 1) * 100) / 100 : Math.round(this.price * this.tax_rate * 100) / 100;
-
-			return tax.toFixed(2);
-		},
 		total: function total() {
 			// console.log(this.subtotal);
 			// console.log(this.tax);
@@ -76557,12 +76077,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (value !== 0) return value * -1;
 
 			return 0.00;
-		},
-		total_price: function total_price() {
-			var price = 0;
-			if (this.price) price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax);
-
-			return price.toFixed(2);
 		},
 		subtotal: function subtotal() {
 			if (this.form.items.length > 0) return _.sumBy(this.form.items, function (item) {
@@ -76584,9 +76098,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			});
 
 			return 0;
-		},
-		isParcelOrDocument: function isParcelOrDocument() {
-			return this.selectedProductType ? this.selectedProductType.has_detail : false;
 		},
 		change: function change() {
 			if (this.form.paid && this.total) return parseFloat(this.form.paid) - this.rounded_total;
@@ -76616,7 +76127,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return !this.invoice || this.can_edit_invoice;
 		},
 		canEditItem: function canEditItem() {
-			return (!this.invoice || this.can_edit_invoice) && !this.item_add_loading;
+			return !this.invoice || this.can_edit_invoice;
 		},
 		editTooltip: function editTooltip() {
 			if (!this.canSubmit) {
@@ -76632,7 +76143,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return "";
 		},
 		canAddItem: function canAddItem() {
-			return !this.isLoading;
+			return this.canEdit;
 		}
 	},
 
@@ -76645,18 +76156,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}
 			if (this.canEdit) this.getPriceForItems();
 		},
-		zone: function zone(newVal, oldVal) {
-			this.getFilteredProduct();
-		},
-		weight: function weight(newVal, oldVal) {
-			this.getFilteredProduct();
-		},
-		dimension_weight: function dimension_weight(newVal, oldVal) {
-			this.getFilteredProduct();
-		},
-		selectedCourier: function selectedCourier(newVal, oldVal) {
-			if (oldVal !== newVal) this.getFilteredProduct();
-		},
 		selectedDiscountMode: function selectedDiscountMode(newVal, oldVal) {
 			this.form.discount_mode = newVal.value;
 		},
@@ -76667,15 +76166,1120 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (newVal) this.form.customer_id = newVal.value;
 
 			if (this.canEdit) this.getPriceForItems();
-		},
-		selectedProductType: function selectedProductType(newVal, oldVal) {
-			if (newVal && oldVal !== newVal) this.getRelatedProduct();
 		}
 	}
 });
 
 /***/ }),
 /* 232 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(233)
+/* template */
+var __vue_template__ = __webpack_require__(234)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\invoices\\ItemRow.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4a11fcf0", Component.options)
+  } else {
+    hotAPI.reload("data-v-4a11fcf0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 233 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+
+	data: function data() {
+		return {
+			isCalculatingDimWeight: false,
+			tracking_no: '',
+			selectedProductType: this.defaultProductType,
+			selectedZoneType: '',
+			zone: '',
+			weight: '',
+			dimension_weight: 0,
+			selectedCourier: '',
+			selectedProduct: '',
+			description: '',
+			price: '',
+			unit: 1,
+			width: 0,
+			length: 0,
+			height: 0,
+			// Based on entered price
+			// item_tax: 0,
+			tax_rate: 0,
+			is_custom_pricing: false,
+			item_tax_inclusive: '',
+			has_detail: true,
+
+			tracking_no_error: '',
+			selectedProductType_error: '',
+			selectedZoneType_error: '',
+			zone_error: '',
+			weight_error: '',
+			dimension_weight_error: '',
+			selectedCourier_error: '',
+			selectedProduct_error: '',
+			description_error: '',
+			price_error: '',
+			unit_error: '',
+			item_tax_error: '',
+
+			products: []
+		};
+	},
+	mounted: function mounted() {
+		window.events.$on('update_price', function () {
+			Vue.nextTick(function () {
+				this.getProductPrice();
+			}.bind(this));
+		}.bind(this));
+
+		// If we are getting item from db
+		if (this.item.product_id) {
+			this.tracking_no = this.item.tracking_code;
+
+			this.zone = this.item.zone;
+			this.weight = this.item.weight;
+			this.dimension_weight = this.item.dimension_weight;
+
+			this.description = this.item.description;
+			this.price = this.item.price;
+			this.unit = this.item.unit;
+			this.width = this.item.width;
+			this.length = this.item.length;
+			this.height = this.item.height;
+
+			this.tax_rate = this.item.tax_rate;
+			this.is_custom_pricing = this.item.is_custom_pricing;
+			this.item_tax_inclusive = this.item.item_tax_inclusive;
+
+			this.selectedProductType = _.filter(this.product_types, function (type) {
+				return this.item.product_type_id == type.value;
+			}.bind(this))[0];
+			this.selectedZoneType = this.zone_types[0];
+			this.selectedCourier = _.filter(this.couriers, function (courier) {
+				return this.item.courier_id == type.value;
+			}.bind(this))[0];
+
+			this.has_detail = this.selectedProductType.has_detail;
+
+			this.getProducts();
+		} else if (this.defaultProductType.has_detail) {
+			this.selectedZoneType = { label: 'Domestic', value: 1 };
+			this.getDefaultDetails();
+		}
+	},
+
+
+	methods: {
+		calculateDimWeight: function calculateDimWeight() {
+			var formula = this.selectedCourier.formula;
+
+			var expression = formula.replace("l", this.length);
+			expression = expression.replace("w", this.width);
+			expression = expression.replace("h", this.height);
+
+			this.dimension_weight = eval(expression);
+			this.isCalculatingDimWeight = false;
+			this.should_update_product = true;
+		},
+		getProducts: function getProducts() {
+			var _this = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			// console.log("Getting product");
+			// console.log(this.selectedProductType);
+			// Product type selected, get the products of the same type
+			if (this.selectedProductType) {
+				this.has_detail = this.selectedProductType.has_detail;
+				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
+					return _this.setProducts(response);
+				}).catch(function (error) {
+					return _this.getRelatedProduct(error);
+				});
+			}
+		},
+		setProducts: function setProducts(response) {
+			this.selectedProduct = '';
+			this.selectedProduct_error = "";
+			this.products = response.data.map(function (product) {
+				var obj = {};
+
+				obj['value'] = product.id;
+				obj['label'] = product.sku;
+				obj['description'] = product.description;
+				obj['is_tax_inclusive'] = product.is_tax_inclusive;
+
+				return obj;
+			}.bind(this));
+
+			// If we only have 1 product, set it as default
+			if (this.products.length == 1 && (!this.isEditing || this.should_update_product)) {
+				this.selectedProduct = this.products[0];
+			}
+			// If we dont have any products that matches
+			if (this.products.length == 0) {
+				this.selectedProduct_error = "No matching SKU found";
+			}
+
+			// If selected product types doesn't have details, clear the courier field and disable zone/weight/dim weight fields
+			if (!this.selectedProductType.has_detail) {
+
+				this.selectedCourier = '';
+			}
+
+			// If we already have item
+			if (this.item.product_type_id) {
+				this.selectedProduct = _.filter(this.products, function (type) {
+					return this.item.product_id == type.value;
+				}.bind(this))[0];
+			}
+		},
+		updateProducts: function updateProducts() {
+			var _this2 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+
+			if (this.selectedProductType.has_detail && this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
+				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
+
+				if (this.weight) url += "&weight=" + this.weight;
+
+				if (this.dimension_weight) url += "&dimension=" + this.dimension_weight;
+
+				if (this.selectedCourier) url += "&vendor=" + this.selectedCourier.value;
+
+				axios.get(url).then(function (response) {
+					return _this2.setProducts(response);
+				}).catch(function (error) {
+					return _this2.updateProducts(error);
+				});
+			}
+		},
+		productChange: function productChange() {
+			if (this.selectedProduct) {
+				this.description = this.selectedProduct.description;
+				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
+				this.getProductPrice();
+			}
+		},
+		getDefaultDetails: function getDefaultDetails() {
+			var _this3 = this;
+
+			// console.log('Getting default details');
+			axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
+				return _this3.setDefaultDetails(response);
+			}).catch(function (error) {
+				return _this3.getDefaultDetails();
+			});
+		},
+		setDefaultDetails: function setDefaultDetails(response) {
+
+			var eligibleZoneTypes = _.filter(this.zone_types, function (type) {
+				return type.label == response.data.result.zone_type;
+			}.bind(response));
+
+			if (eligibleZoneTypes.length > 0) {
+				this.selectedZoneType = eligibleZoneTypes[0];
+			}
+
+			var eligibleCourier = _.filter(this.couriers, function (courier) {
+				return courier.label == response.data.result.vendor_name;
+			}.bind(response));
+
+			if (eligibleCourier.length > 0) {
+				this.selectedCourier = eligibleCourier[0];
+			}
+		},
+
+
+		/* Methods to get product price */
+
+		getProductPriceUrl: function getProductPriceUrl(product) {
+
+			var url = "/data/pricing?product=" + product;
+			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
+				url += "&customer=" + this.selectedCustomer.value;
+			}
+
+			return url;
+		},
+		getProductPrice: function getProductPrice() {
+			var _this4 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			// console.log(error);
+			if (this.selectedProduct) {
+				this.item_add_loading = true;
+
+				var url = this.getProductPriceUrl(this.selectedProduct.value);
+
+				// console.log(url);
+
+				axios.get(url).then(function (response) {
+					return _this4.setProductPrice(response);
+				}).catch(function (error) {
+					return _this4.getProductPrice(error);
+				});
+			}
+
+			this.setProductPrice('');
+		},
+		setProductPrice: function setProductPrice(response) {
+			// console.log("Setting product price");
+			if (response) {
+				this.price_group = this.selectedProduct;
+
+				if (response.data) this.price_group = response.data;
+
+				var prices = this.calculatePriceBasedOnCustomer(this.price_group);
+				this.price = Math.round(prices.price * 100) / 100;
+				// Based on entered price
+				// this.item_tax = prices.tax;
+				this.tax_rate = prices.tax_rate;
+				this.item_tax_inclusive = prices.is_tax_inclusive;
+			}
+
+			this.item_add_loading = false;
+		},
+		calculatePriceBasedOnCustomer: function calculatePriceBasedOnCustomer(price_group) {
+			var price = price_group.walk_in_price;
+			var tax_rate = price_group.tax / 100;
+
+			if (this.selectedType.label == "Customer" && this.selectedCustomer) {
+				if (this.selectedCustomer.type == 'walk_in_special') price = price_group.walk_in_price_special;else if (this.selectedCustomer.type == 'Corporate') price = price_group.corporate_price;
+			}
+
+			var tax = price_group.tax ? price * tax_rate : 0;
+			var total = price + tax;
+
+			return { price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive };
+		}
+	},
+
+	computed: {
+		item_tax: function item_tax() {
+			var tax = this.item_tax_inclusive ? this.price - Math.round(this.price / (this.tax_rate + 1) * 100) / 100 : Math.round(this.price * this.tax_rate * 100) / 100;
+
+			return tax.toFixed(2);
+		},
+		total_price: function total_price() {
+			var price = 0;
+			if (this.price) price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax);
+
+			return price.toFixed(2);
+		}
+	},
+
+	watch: {
+		tracking_no: function tracking_no(newVal) {
+			this.$emit('update', { attribute: 'tracking_code', value: newVal });
+		},
+		selectedProductType: function selectedProductType(newVal) {
+			this.$emit('update', { attribute: 'product_type_id', value: '' });
+			if (newVal) this.$emit('update', { attribute: 'product_type_id', value: newVal.value });
+		},
+		selectedZoneType: function selectedZoneType(newVal) {
+			this.$emit('update', { attribute: 'zone_type_id', value: '' });
+			if (newVal) {
+				this.$emit('update', { attribute: 'zone_type_id', value: newVal.value });
+				this.getDefaultDetails();
+			}
+		},
+		zone: function zone(newVal) {
+			this.$emit('update', { attribute: 'zone', value: newVal });
+		},
+		weight: function weight(newVal) {
+			this.$emit('update', { attribute: 'weight', value: newVal ? newVal : 0 });
+		},
+		dimension_weight: function dimension_weight(newVal) {
+			this.$emit('update', { attribute: 'dimension_weight', value: newVal ? newVal : 0 });
+		},
+		height: function height(newVal) {
+			this.$emit('update', { attribute: 'height', value: newVal ? newVal : 0 });
+		},
+		length: function length(newVal) {
+			this.$emit('update', { attribute: 'length', value: newVal ? newVal : 0 });
+		},
+		width: function width(newVal) {
+			this.$emit('update', { attribute: 'width', value: newVal ? newVal : 0 });
+		},
+		selectedCourier: function selectedCourier(newVal) {
+			this.$emit('update', { attribute: 'courier_id', value: 0 });
+			if (newVal) this.$emit('update', { attribute: 'courier_id', value: newVal.value });
+		},
+		price: function price(newVal) {
+			this.$emit('update', { attribute: 'price', value: newVal });
+		},
+		description: function description(newVal) {
+			this.$emit('update', { attribute: 'description', value: newVal });
+		},
+		selectedProduct: function selectedProduct(newVal) {
+			this.$emit('update', { attribute: 'product_id', value: '' });
+			this.$emit('update', { attribute: 'sku', value: '' });
+			if (newVal) {
+				this.$emit('update', { attribute: 'product_id', value: newVal.value });
+				this.$emit('update', { attribute: 'sku', value: newVal.label });
+			}
+		},
+		total_price: function total_price(newVal) {
+			this.$emit('update', { attribute: 'total_price', value: newVal });
+		},
+		item_tax: function item_tax(newVal) {
+			this.$emit('update', { attribute: 'tax', value: newVal });
+		},
+		item_tax_inclusive: function item_tax_inclusive(newVal) {
+			this.$emit('update', { attribute: 'item_tax_inclusive', value: newVal });
+		},
+		is_custom_pricing: function is_custom_pricing(newVal) {
+			this.$emit('update', { attribute: 'is_custom_pricing', value: newVal ? newVal : 0 });
+		}
+	}
+});
+
+/***/ }),
+/* 234 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "invoice-items" },
+    [
+      _c("span", [_vm._v(_vm._s(_vm.index + 1))]),
+      _vm._v(" "),
+      _c("text-input", {
+        ref: "tracking_input",
+        attrs: {
+          defaultValue: _vm.tracking_no,
+          required: this.selectedProductType.has_detail,
+          type: "text",
+          label: "Tracking no",
+          name: "tracking_no",
+          editable: true,
+          focus: true,
+          hideLabel: true,
+          error: _vm.tracking_no_error,
+          disabled: !_vm.canEdit
+        },
+        on: {
+          next: function($event) {
+            _vm.$refs.producttypes.focus()
+          }
+        },
+        model: {
+          value: _vm.tracking_no,
+          callback: function($$v) {
+            _vm.tracking_no = $$v
+          },
+          expression: "tracking_no"
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "small-select" },
+        [
+          _c("selector-input", {
+            ref: "producttypes",
+            attrs: {
+              potentialData: _vm.product_types,
+              defaultData: _vm.selectedProductType,
+              placeholder: "Select product type",
+              required: true,
+              label: "Product type",
+              name: "product_type",
+              editable: _vm.canEdit,
+              focus: false,
+              hideLabel: true,
+              error: _vm.selectedProductType_error,
+              unclearable: true
+            },
+            on: { input: _vm.getProducts },
+            model: {
+              value: _vm.selectedProductType,
+              callback: function($$v) {
+                _vm.selectedProductType = $$v
+              },
+              expression: "selectedProductType"
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "small-select" },
+        [
+          _c("selector-input", {
+            attrs: {
+              potentialData: _vm.zone_types,
+              defaultData: _vm.selectedZoneType,
+              placeholder: "Select zone type",
+              required: false,
+              label: "Zone type",
+              name: "zone_type",
+              editable: _vm.canEdit,
+              focus: false,
+              hideLabel: true,
+              unclearable: true,
+              error: _vm.selectedZoneType_error
+            },
+            on: { input: _vm.getDefaultDetails },
+            model: {
+              value: _vm.selectedZoneType,
+              callback: function($$v) {
+                _vm.selectedZoneType = $$v
+              },
+              expression: "selectedZoneType"
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("text-input", {
+        ref: "zone",
+        attrs: {
+          defaultValue: _vm.zone,
+          required: true,
+          type: "number",
+          label: "Zone",
+          name: "zone",
+          editable: true,
+          focus: false,
+          hideLabel: true,
+          error: _vm.zone_error,
+          step: "1",
+          disabled: !_vm.has_detail || !_vm.canEdit
+        },
+        on: { input: _vm.updateProducts },
+        model: {
+          value: _vm.zone,
+          callback: function($$v) {
+            _vm.zone = $$v
+          },
+          expression: "zone"
+        }
+      }),
+      _vm._v(" "),
+      _c("text-input", {
+        attrs: {
+          defaultValue: _vm.weight,
+          required: true,
+          type: "number",
+          label: "Weight (KG)",
+          name: "weight",
+          editable: true,
+          focus: false,
+          hideLabel: true,
+          error: _vm.weight_error,
+          disabled: !_vm.has_detail || !_vm.canEdit
+        },
+        on: { input: _vm.updateProducts },
+        model: {
+          value: _vm.weight,
+          callback: function($$v) {
+            _vm.weight = $$v
+          },
+          expression: "weight"
+        }
+      }),
+      _vm._v(" "),
+      _c("text-input", {
+        attrs: {
+          defaultValue: _vm.dimension_weight,
+          required: false,
+          type: "number",
+          label: "Dimension weight (KG)",
+          name: "dimension_weight",
+          editable: true,
+          focus: false,
+          hideLabel: true,
+          error: _vm.dimension_weight_error,
+          disabled: !_vm.has_detail || !_vm.canEdit
+        },
+        on: {
+          input: _vm.updateProducts,
+          dblclick: function($event) {
+            _vm.isCalculatingDimWeight = true
+          }
+        },
+        model: {
+          value: _vm.dimension_weight,
+          callback: function($$v) {
+            _vm.dimension_weight = $$v
+          },
+          expression: "dimension_weight"
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "small-select" },
+        [
+          _c("selector-input", {
+            attrs: {
+              potentialData: _vm.couriers,
+              defaultData: _vm.selectedCourier,
+              placeholder: "Select courier",
+              required: false,
+              label: "Courier",
+              name: "courier",
+              editable: _vm.canEdit,
+              focus: false,
+              hideLabel: true,
+              unclearable: true,
+              error: _vm.selectedCourier_error,
+              disabled: !_vm.has_detail && _vm.canEdit
+            },
+            on: { input: _vm.updateProducts },
+            model: {
+              value: _vm.selectedCourier,
+              callback: function($$v) {
+                _vm.selectedCourier = $$v
+              },
+              expression: "selectedCourier"
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "small-select" },
+        [
+          _c("selector-input", {
+            attrs: {
+              potentialData: _vm.products,
+              defaultData: _vm.selectedProduct,
+              placeholder: "Select SKU",
+              required: true,
+              label: "SKU",
+              name: "product",
+              editable: _vm.canEdit,
+              focus: false,
+              hideLabel: true,
+              error: _vm.selectedProduct_error,
+              unclearable: true
+            },
+            on: { input: _vm.productChange },
+            model: {
+              value: _vm.selectedProduct,
+              callback: function($$v) {
+                _vm.selectedProduct = $$v
+              },
+              expression: "selectedProduct"
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("text-input", {
+        attrs: {
+          defaultValue: _vm.description,
+          required: true,
+          type: "text",
+          label: "Description",
+          name: "description",
+          editable: true,
+          focus: false,
+          hideLabel: true,
+          disabled: !_vm.canEdit,
+          error: _vm.description_error
+        },
+        model: {
+          value: _vm.description,
+          callback: function($$v) {
+            _vm.description = $$v
+          },
+          expression: "description"
+        }
+      }),
+      _vm._v(" "),
+      _c("text-input", {
+        attrs: {
+          defaultValue: _vm.price,
+          required: true,
+          type: "number",
+          label: "Price",
+          name: "price",
+          editable: true,
+          focus: false,
+          hideLabel: true,
+          error: _vm.price_error,
+          disabled: !_vm.canEdit
+        },
+        on: {
+          input: function($event) {
+            _vm.is_custom_pricing = true
+          },
+          tab: function($event) {
+            _vm.$emit("addItem")
+          }
+        },
+        model: {
+          value: _vm.price,
+          callback: function($$v) {
+            _vm.price = $$v
+          },
+          expression: "price"
+        }
+      }),
+      _vm._v(" "),
+      _c("text-input", {
+        attrs: {
+          defaultValue: _vm.unit,
+          required: true,
+          type: "number",
+          label: "Unit",
+          name: "unit",
+          editable: false,
+          focus: false,
+          hideLabel: true,
+          error: _vm.unit_error
+        },
+        model: {
+          value: _vm.unit,
+          callback: function($$v) {
+            _vm.unit = $$v
+          },
+          expression: "unit"
+        }
+      }),
+      _vm._v(" "),
+      _c("text-input", {
+        attrs: {
+          defaultValue: _vm.total_price,
+          required: true,
+          type: "number",
+          label: "Total price",
+          name: "total_price",
+          editable: false,
+          focus: false,
+          hideLabel: true
+        },
+        model: {
+          value: _vm.total_price,
+          callback: function($$v) {
+            _vm.total_price = $$v
+          },
+          expression: "total_price"
+        }
+      }),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-sm btn-danger",
+            attrs: { type: "button", disabled: !_vm.canEdit },
+            on: {
+              click: function($event) {
+                _vm.$emit("delete")
+              }
+            }
+          },
+          [_vm._v("Delete")]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "modal",
+        {
+          attrs: {
+            active: _vm.isCalculatingDimWeight,
+            id: "dim-weight-calculator"
+          },
+          on: {
+            close: function($event) {
+              _vm.isCalculatingDimWeight = false
+            }
+          }
+        },
+        [
+          _c("span", { attrs: { slot: "header" }, slot: "header" }, [
+            _vm._v("Calculate dimension weight")
+          ]),
+          _vm._v(" "),
+          _c("text-input", {
+            attrs: {
+              defaultValue: _vm.height,
+              required: true,
+              type: "number",
+              label: "Height (cm)",
+              name: "height",
+              editable: true,
+              focus: false,
+              hideLabel: false
+            },
+            model: {
+              value: _vm.height,
+              callback: function($$v) {
+                _vm.height = $$v
+              },
+              expression: "height"
+            }
+          }),
+          _vm._v(" "),
+          _c("text-input", {
+            attrs: {
+              defaultValue: _vm.width,
+              required: true,
+              type: "number",
+              label: "Width (cm)",
+              name: "width",
+              editable: true,
+              focus: false,
+              hideLabel: false
+            },
+            model: {
+              value: _vm.width,
+              callback: function($$v) {
+                _vm.width = $$v
+              },
+              expression: "width"
+            }
+          }),
+          _vm._v(" "),
+          _c("text-input", {
+            attrs: {
+              defaultValue: _vm.length,
+              required: true,
+              type: "number",
+              label: "Length (cm)",
+              name: "length",
+              editable: true,
+              focus: false,
+              hideLabel: false
+            },
+            model: {
+              value: _vm.length,
+              callback: function($$v) {
+                _vm.length = $$v
+              },
+              expression: "length"
+            }
+          }),
+          _vm._v(" "),
+          _c("template", { slot: "footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    _vm.isCalculatingDimWeight = false
+                  }
+                }
+              },
+              [_vm._v("Cancel")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: { click: _vm.calculateDimWeight }
+              },
+              [_vm._v("Confirm")]
+            )
+          ])
+        ],
+        2
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4a11fcf0", module.exports)
+  }
+}
+
+/***/ }),
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -76698,252 +77302,171 @@ var render = function() {
             },
             input: function($event) {
               _vm.form.errors.clear($event.target.name)
-            },
-            keyup: function($event) {
-              if (
-                !("button" in $event) &&
-                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-              ) {
-                return null
-              }
-              return _vm.moveToNext($event)
             }
           }
         },
         [
-          _c(
-            "div",
-            { staticClass: "row" },
-            [
-              _c(
-                "div",
-                { staticClass: "col-5 invoice-right" },
-                [
-                  _vm.invoiceNumber
-                    ? _c("p", { staticClass: "mb-0" }, [
-                        _c("b", [_vm._v("Invoice number")]),
-                        _vm._v(": " + _vm._s(_vm.invoiceNumber))
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("p", [
-                    !_vm.invoiceNumber
-                      ? _c("b", [_vm._v("Current time")])
-                      : _c("b", [_vm._v("Created time")]),
-                    _vm._v(": " + _vm._s(_vm.currentTime))
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col-5 small-select" },
-                      [
-                        _c("selector-input", {
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-body" }, [
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col-6" },
+                  [
+                    _vm.invoiceNumber
+                      ? _c("p", { staticClass: "mb-0" }, [
+                          _c("b", [_vm._v("Invoice number")]),
+                          _vm._v(": " + _vm._s(_vm.invoiceNumber))
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("p", [
+                      !_vm.invoiceNumber
+                        ? _c("b", [_vm._v("Current time")])
+                        : _c("b", [_vm._v("Created time")]),
+                      _vm._v(": " + _vm._s(_vm.currentTime))
+                    ]),
+                    _vm._v(" "),
+                    _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.types,
+                        defaultData: _vm.selectedType,
+                        placeholder: "Select type",
+                        required: true,
+                        label: "Type",
+                        name: "type",
+                        editable: _vm.canEdit,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("type")
+                      },
+                      model: {
+                        value: _vm.selectedType,
+                        callback: function($$v) {
+                          _vm.selectedType = $$v
+                        },
+                        expression: "selectedType"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.form.type == "Customer"
+                      ? _c("selector-input", {
                           attrs: {
-                            potentialData: _vm.types,
-                            defaultData: _vm.selectedType,
-                            placeholder: "Select type",
+                            potentialData: _vm.customers,
+                            defaultData: _vm.selectedCustomer,
+                            placeholder: "Select customer",
                             required: true,
-                            label: "Type",
-                            name: "type",
+                            label: "Customer",
+                            name: "customer_id",
                             editable: _vm.canEdit,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("type")
+                            error: _vm.form.errors.get("customer_id"),
+                            addon: "createCustomer"
                           },
+                          on: { createCustomer: _vm.createCustomer },
                           model: {
-                            value: _vm.selectedType,
+                            value: _vm.selectedCustomer,
                             callback: function($$v) {
-                              _vm.selectedType = $$v
+                              _vm.selectedCustomer = $$v
                             },
-                            expression: "selectedType"
+                            expression: "selectedCustomer"
                           }
                         })
-                      ],
-                      1
-                    ),
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.form.remarks,
+                        required: false,
+                        type: "text",
+                        label: "Remarks",
+                        name: "remarks",
+                        editable: _vm.canEdit,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("remarks")
+                      },
+                      model: {
+                        value: _vm.form.remarks,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "remarks", $$v)
+                        },
+                        expression: "form.remarks"
+                      }
+                    }),
                     _vm._v(" "),
                     _c(
                       "div",
-                      { staticClass: "col" },
+                      { staticClass: "d-flex justify-content-start mb-3" },
                       [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.remarks,
-                            required: false,
-                            type: "text",
-                            label: "Remarks",
-                            name: "remarks",
-                            editable: _vm.canEdit,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("remarks")
-                          },
-                          model: {
-                            value: _vm.form.remarks,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "remarks", $$v)
-                            },
-                            expression: "form.remarks"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _vm.form.type == "Customer"
-                    ? _c("selector-input", {
-                        attrs: {
-                          potentialData: _vm.customers,
-                          defaultData: _vm.selectedCustomer,
-                          placeholder: "Select customer",
-                          required: true,
-                          label: "Customer",
-                          name: "customer_id",
-                          editable: _vm.canEdit,
-                          focus: false,
-                          hideLabel: false,
-                          error: _vm.form.errors.get("customer_id"),
-                          addon: "createCustomer"
-                        },
-                        on: { createCustomer: _vm.createCustomer },
-                        model: {
-                          value: _vm.selectedCustomer,
-                          callback: function($$v) {
-                            _vm.selectedCustomer = $$v
-                          },
-                          expression: "selectedCustomer"
-                        }
-                      })
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "table-responsive" }, [
-                    _c("table", { staticClass: "table table-striped" }, [
-                      _c("thead", [
-                        _c("tr", { staticClass: "small-text" }, [
-                          _c("th", [_vm._v("Tracking code")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Item")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Unit")]),
-                          _vm._v(" "),
-                          _c("th", [_vm._v("Price")]),
-                          _vm._v(" "),
-                          _c("th", [
-                            _c(
-                              "span",
+                        _vm.selectedCustomer && _vm.invoice
+                          ? _c(
+                              "a",
                               {
-                                staticClass: "fa-stack pointer transition-ease",
-                                class: _vm.add_button_class,
-                                attrs: { title: _vm.tooltip_add },
-                                on: { click: _vm.toggleAddItem }
+                                staticClass: "btn btn-sm btn-success mr-2",
+                                attrs: {
+                                  target: "_blank",
+                                  href: "/invoices/do/" + _vm.invoice,
+                                  type: "button"
+                                }
                               },
-                              [
-                                _c("i", {
-                                  staticClass: "fas fa-circle fa-stack-2x"
-                                }),
-                                _vm._v(" "),
-                                _vm.canAddItem
-                                  ? _c("i", {
-                                      staticClass:
-                                        "fas fa-plus fa-stack-1x fa-inverse text-white"
-                                    })
-                                  : _c("i", {
-                                      staticClass:
-                                        "fas fa-stack-1x fa-inverse text-white fa-circle-notch fa-spin"
-                                    })
-                              ]
+                              [_vm._v("Print delivery note")]
                             )
-                          ])
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "tbody",
-                        _vm._l(_vm.form.items, function(item, index) {
-                          return _c(
-                            "tr",
-                            {
-                              staticClass: "transition-ease small-text",
-                              class: _vm.getItemRowClass(index)
-                            },
-                            [
-                              _c("td", [_vm._v(_vm._s(item.tracking_code))]),
-                              _vm._v(" "),
-                              _c("td", [_vm._v(_vm._s(item.description))]),
-                              _vm._v(" "),
-                              _c("td", [_vm._v(_vm._s(item.unit))]),
-                              _vm._v(" "),
-                              _c("td", [_vm._v(_vm._s(item.total_price))]),
-                              _vm._v(" "),
-                              _c("td", [
-                                _vm.canEdit
-                                  ? _c("div", [
-                                      _c("i", {
-                                        staticClass:
-                                          "fas fa-edit text-primary pointer",
-                                        on: {
-                                          click: function($event) {
-                                            _vm.editItem(index)
-                                          }
-                                        }
-                                      }),
-                                      _vm._v(" "),
-                                      _c("i", {
-                                        staticClass:
-                                          "fas fa-times text-danger pointer",
-                                        on: {
-                                          click: function($event) {
-                                            _vm.deleteItem(index)
-                                          }
-                                        }
-                                      })
-                                    ])
-                                  : _vm._e()
-                              ])
-                            ]
-                          )
-                        })
-                      ),
-                      _vm._v(" "),
-                      _vm.form.items.length > 0
-                        ? _c("tfoot", [
-                            _c("tr", { staticClass: "small-padding" }, [
-                              _vm._m(0),
-                              _vm._v(" "),
-                              _c("td", [
-                                _vm._v(_vm._s(_vm._f("price")(_vm.subtotal)))
-                              ]),
-                              _vm._v(" "),
-                              _c("td")
-                            ]),
-                            _vm._v(" "),
-                            _c("tr", { staticClass: "small-padding" }, [
-                              _vm._m(1),
-                              _vm._v(" "),
-                              _c("td", [
-                                _vm._v(_vm._s(_vm._f("price")(_vm.tax)))
-                              ]),
-                              _vm._v(" "),
-                              _c("td")
-                            ]),
-                            _vm._v(" "),
-                            _c("tr", { staticClass: "small-padding" }, [
-                              _vm._m(2),
-                              _vm._v(" "),
-                              _c("td", [
-                                _vm._v(_vm._s(_vm._f("price")(_vm.rounding)))
-                              ]),
-                              _vm._v(" "),
-                              _c("td")
-                            ])
-                          ])
-                        : _vm._e()
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
+                          : _vm.invoice
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "btn btn-sm btn-success mr-2",
+                                  attrs: {
+                                    target: "_blank",
+                                    href: "/invoices/receipt/" + _vm.invoice,
+                                    type: "button"
+                                  }
+                                },
+                                [_vm._v("Print receipt")]
+                              )
+                            : _vm._e(),
+                        _vm._v(" "),
+                        _vm.invoice
+                          ? _c(
+                              "a",
+                              {
+                                staticClass: "btn btn-sm btn-success mr-2",
+                                attrs: {
+                                  target: "_blank",
+                                  href: "/invoices/preview/" + _vm.invoice,
+                                  type: "button"
+                                }
+                              },
+                              [_vm._v("Print invoice")]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-sm btn-primary",
+                            attrs: {
+                              type: "submit",
+                              disabled: !_vm.canSubmit || !_vm.canEdit,
+                              title: _vm.editTooltip
+                            }
+                          },
+                          [_vm._v("Confirm (F7)")]
+                        )
+                      ]
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-6" }, [
+                  _c("b", [_vm._v("Tax:")]),
+                  _vm._v(
+                    " " + _vm._s(_vm._f("price")(_vm.tax)) + "\n\t\t\t\t\t\t"
+                  ),
+                  _c("div", { staticClass: "row mt-2" }, [
                     _c(
                       "div",
                       { staticClass: "col" },
@@ -77002,37 +77525,18 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
+                  _c("b", [_vm._v("Rounding:")]),
+                  _vm._v(" RM" + _vm._s(_vm._f("price")(_vm.rounding))),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("b", [_vm._v("Total:")]),
+                  _vm._v(
+                    " RM" +
+                      _vm._s(_vm._f("price")(_vm.rounded_total)) +
+                      "\n\n\t\t\t\t\t\t"
+                  ),
                   _vm.form.type !== "Customer"
-                    ? _c("div", { staticClass: "row" }, [
-                        _c(
-                          "div",
-                          { staticClass: "col-7" },
-                          [
-                            _c("selector-input", {
-                              attrs: {
-                                potentialData: _vm.payment_types,
-                                defaultData: _vm.selectedPaymentType,
-                                placeholder: "Select payment type",
-                                required: true,
-                                label: "Payment type",
-                                name: "payment_type",
-                                editable: _vm.canEdit,
-                                focus: false,
-                                hideLabel: false,
-                                error: _vm.form.errors.get("payment_type")
-                              },
-                              model: {
-                                value: _vm.selectedPaymentType,
-                                callback: function($$v) {
-                                  _vm.selectedPaymentType = $$v
-                                },
-                                expression: "selectedPaymentType"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
+                    ? _c("div", { staticClass: "row mt-2" }, [
                         _c(
                           "div",
                           { staticClass: "col" },
@@ -77059,631 +77563,395 @@ var render = function() {
                             })
                           ],
                           1
-                        )
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("h4", { staticClass: "text-right" }, [
-                    _vm._v(
-                      "Discount: RM" +
-                        _vm._s(_vm._f("price")(_vm.discount_value))
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("h4", { staticClass: "text-right" }, [
-                    _vm._v(
-                      "Total: RM" + _vm._s(_vm._f("price")(_vm.rounded_total))
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _vm.form.type !== "Customer"
-                    ? _c("h4", { staticClass: "text-right" }, [
-                        _vm._v(
-                          "Change: RM" + _vm._s(_vm._f("price")(_vm.change))
-                        )
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex justify-content-end" }, [
-                    _vm.selectedCustomer && _vm.invoice
-                      ? _c(
-                          "a",
-                          {
-                            staticClass: "btn btn-success mr-2",
-                            attrs: {
-                              target: "_blank",
-                              href: "/invoices/do/" + _vm.invoice,
-                              type: "button"
-                            }
-                          },
-                          [_vm._v("Print delivery note")]
-                        )
-                      : _vm.invoice
-                        ? _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-success mr-2",
-                              attrs: {
-                                target: "_blank",
-                                href: "/invoices/receipt/" + _vm.invoice,
-                                type: "button"
-                              }
-                            },
-                            [_vm._v("Print receipt")]
-                          )
-                        : _vm._e(),
-                    _vm._v(" "),
-                    _vm.invoice
-                      ? _c(
-                          "a",
-                          {
-                            staticClass: "btn btn-success mr-2",
-                            attrs: {
-                              target: "_blank",
-                              href: "/invoices/preview/" + _vm.invoice,
-                              type: "button"
-                            }
-                          },
-                          [_vm._v("Print invoice")]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-primary",
-                        attrs: {
-                          type: "submit",
-                          disabled:
-                            !_vm.canSubmit || !_vm.canEdit || _vm.isLoading,
-                          title: _vm.editTooltip
-                        }
-                      },
-                      [_vm._v("Confirm")]
-                    )
-                  ])
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("transition", { attrs: { name: "left-slide" } }, [
-                _vm.isAddingItem
-                  ? _c(
-                      "div",
-                      { staticClass: "col-7 invoice-left" },
-                      [
-                        _c("text-input", {
-                          ref: "tracking_input",
-                          attrs: {
-                            defaultValue: _vm.tracking_no,
-                            required: this.selectedProductType.has_detail,
-                            type: "text",
-                            label: "Tracking no",
-                            name: "tracking_no",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.tracking_no_error
-                          },
-                          model: {
-                            value: _vm.tracking_no,
-                            callback: function($$v) {
-                              _vm.tracking_no = $$v
-                            },
-                            expression: "tracking_no"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("selector-input", {
-                          ref: "producttypes",
-                          attrs: {
-                            potentialData: _vm.product_types,
-                            defaultData: _vm.selectedProductType,
-                            placeholder: "Select product type",
-                            required: true,
-                            label: "Product type",
-                            name: "product_type",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.selectedProductType_error
-                          },
-                          model: {
-                            value: _vm.selectedProductType,
-                            callback: function($$v) {
-                              _vm.selectedProductType = $$v
-                            },
-                            expression: "selectedProductType"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _vm.isParcelOrDocument
-                                ? _c("selector-input", {
-                                    attrs: {
-                                      potentialData: _vm.zone_types,
-                                      defaultData: _vm.selectedZoneType,
-                                      placeholder: "Select zone type",
-                                      required: false,
-                                      label: "Zone type",
-                                      name: "zone_type",
-                                      editable: true,
-                                      focus: false,
-                                      hideLabel: false,
-                                      error: _vm.selectedZoneType_error
-                                    },
-                                    model: {
-                                      value: _vm.selectedZoneType,
-                                      callback: function($$v) {
-                                        _vm.selectedZoneType = $$v
-                                      },
-                                      expression: "selectedZoneType"
-                                    }
-                                  })
-                                : _vm._e()
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _vm.isParcelOrDocument
-                                ? _c("selector-input", {
-                                    attrs: {
-                                      potentialData: _vm.couriers,
-                                      defaultData: _vm.selectedCourier,
-                                      placeholder: "Select courier",
-                                      required: false,
-                                      label: "Courier",
-                                      name: "courier",
-                                      editable: true,
-                                      focus: false,
-                                      hideLabel: false,
-                                      error: _vm.selectedCourier_error
-                                    },
-                                    model: {
-                                      value: _vm.selectedCourier,
-                                      callback: function($$v) {
-                                        _vm.selectedCourier = $$v
-                                      },
-                                      expression: "selectedCourier"
-                                    }
-                                  })
-                                : _vm._e()
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _vm.isParcelOrDocument
-                                ? _c("text-input", {
-                                    attrs: {
-                                      defaultValue: _vm.zone,
-                                      required: true,
-                                      type: "number",
-                                      label: "Zone",
-                                      name: "zone",
-                                      editable: true,
-                                      focus: false,
-                                      hideLabel: false,
-                                      error: _vm.zone_error,
-                                      step: "1"
-                                    },
-                                    on: {
-                                      input: function($event) {
-                                        _vm.should_update_product = true
-                                      }
-                                    },
-                                    model: {
-                                      value: _vm.zone,
-                                      callback: function($$v) {
-                                        _vm.zone = $$v
-                                      },
-                                      expression: "zone"
-                                    }
-                                  })
-                                : _vm._e()
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _vm.isParcelOrDocument
-                                ? _c("text-input", {
-                                    attrs: {
-                                      defaultValue: _vm.weight,
-                                      required: true,
-                                      type: "number",
-                                      label: "Weight (KG)",
-                                      name: "weight",
-                                      editable: true,
-                                      focus: false,
-                                      hideLabel: false,
-                                      error: _vm.weight_error
-                                    },
-                                    on: {
-                                      input: function($event) {
-                                        _vm.should_update_product = true
-                                      }
-                                    },
-                                    model: {
-                                      value: _vm.weight,
-                                      callback: function($$v) {
-                                        _vm.weight = $$v
-                                      },
-                                      expression: "weight"
-                                    }
-                                  })
-                                : _vm._e()
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _vm.isParcelOrDocument
-                                ? _c("text-input", {
-                                    attrs: {
-                                      defaultValue: _vm.dimension_weight,
-                                      required: false,
-                                      type: "number",
-                                      label: "Dimension weight (KG)",
-                                      name: "dimension_weight",
-                                      editable: true,
-                                      focus: false,
-                                      hideLabel: false,
-                                      error: _vm.dimension_weight_error,
-                                      addon: "Calculate"
-                                    },
-                                    on: {
-                                      addon: function($event) {
-                                        _vm.isCalculatingDimWeight = true
-                                      },
-                                      input: function($event) {
-                                        _vm.should_update_product = true
-                                      }
-                                    },
-                                    model: {
-                                      value: _vm.dimension_weight,
-                                      callback: function($$v) {
-                                        _vm.dimension_weight = $$v
-                                      },
-                                      expression: "dimension_weight"
-                                    }
-                                  })
-                                : _vm._e()
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("selector-input", {
-                          attrs: {
-                            potentialData: _vm.products,
-                            defaultData: _vm.selectedProduct,
-                            placeholder: "Select SKU",
-                            required: true,
-                            label: "SKU",
-                            name: "product",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.selectedProduct_error
-                          },
-                          on: { input: _vm.productChange },
-                          model: {
-                            value: _vm.selectedProduct,
-                            callback: function($$v) {
-                              _vm.selectedProduct = $$v
-                            },
-                            expression: "selectedProduct"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col-4" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.description,
-                                  required: true,
-                                  type: "text",
-                                  label: "Description",
-                                  name: "description",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.description_error
-                                },
-                                model: {
-                                  value: _vm.description,
-                                  callback: function($$v) {
-                                    _vm.description = $$v
-                                  },
-                                  expression: "description"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.unit,
-                                  required: true,
-                                  type: "number",
-                                  label: "Unit",
-                                  name: "unit",
-                                  editable: false,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.unit_error
-                                },
-                                model: {
-                                  value: _vm.unit,
-                                  callback: function($$v) {
-                                    _vm.unit = $$v
-                                  },
-                                  expression: "unit"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col-3" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.price,
-                                  required: true,
-                                  type: "number",
-                                  label: "Price",
-                                  name: "price",
-                                  editable: true,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.price_error
-                                },
-                                on: {
-                                  input: function($event) {
-                                    _vm.is_custom_pricing = true
-                                  }
-                                },
-                                model: {
-                                  value: _vm.price,
-                                  callback: function($$v) {
-                                    _vm.price = $$v
-                                  },
-                                  expression: "price"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.item_tax,
-                                  required: true,
-                                  type: "number",
-                                  label: "Tax",
-                                  name: "item_tax",
-                                  editable: false,
-                                  focus: false,
-                                  hideLabel: false,
-                                  error: _vm.item_tax_error
-                                },
-                                model: {
-                                  value: _vm.item_tax,
-                                  callback: function($$v) {
-                                    _vm.item_tax = $$v
-                                  },
-                                  expression: "item_tax"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col" },
-                            [
-                              _c("text-input", {
-                                attrs: {
-                                  defaultValue: _vm.total_price,
-                                  required: true,
-                                  type: "number",
-                                  label: "Total price",
-                                  name: "total_price",
-                                  editable: false,
-                                  focus: false,
-                                  hideLabel: false
-                                },
-                                model: {
-                                  value: _vm.total_price,
-                                  callback: function($$v) {
-                                    _vm.total_price = $$v
-                                  },
-                                  expression: "total_price"
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary",
-                            attrs: {
-                              type: "button",
-                              disabled: !_vm.canEditItem
-                            },
-                            on: { click: _vm.add_item }
-                          },
-                          [_vm._v("Confirm")]
                         ),
                         _vm._v(" "),
                         _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-secondary",
-                            attrs: { type: "button" },
-                            on: { click: _vm.toggleAddItem }
-                          },
-                          [_vm._v("Cancel")]
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("selector-input", {
+                              attrs: {
+                                potentialData: _vm.payment_types,
+                                defaultData: _vm.selectedPaymentType,
+                                placeholder: "Select payment type",
+                                required: true,
+                                label: "Payment type",
+                                name: "payment_type",
+                                editable: _vm.canEdit,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("payment_type")
+                              },
+                              model: {
+                                value: _vm.selectedPaymentType,
+                                callback: function($$v) {
+                                  _vm.selectedPaymentType = $$v
+                                },
+                                expression: "selectedPaymentType"
+                              }
+                            })
+                          ],
+                          1
                         )
-                      ],
-                      1
-                    )
-                  : _vm._e()
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.form.type !== "Customer"
+                    ? _c("div", [
+                        _c("b", [_vm._v("Change:")]),
+                        _vm._v(" RM" + _vm._s(_vm._f("price")(_vm.change)))
+                      ])
+                    : _vm._e()
+                ])
               ])
-            ],
-            1
-          ),
+            ])
+          ]),
           _vm._v(" "),
-          _c(
-            "modal",
-            {
-              attrs: {
-                active: _vm.isCalculatingDimWeight,
-                id: "dim-weight-calculator"
-              },
-              on: {
-                close: function($event) {
-                  _vm.isCalculatingDimWeight = false
-                }
-              }
-            },
-            [
-              _c("span", { attrs: { slot: "header" }, slot: "header" }, [
-                _vm._v("Calculate dimension weight")
-              ]),
-              _vm._v(" "),
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.height,
-                  required: true,
-                  type: "number",
-                  label: "Height (cm)",
-                  name: "height",
-                  editable: true,
-                  focus: false,
-                  hideLabel: false,
-                  error: _vm.form.errors.get("height")
-                },
-                model: {
-                  value: _vm.height,
-                  callback: function($$v) {
-                    _vm.height = $$v
-                  },
-                  expression: "height"
-                }
-              }),
-              _vm._v(" "),
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.width,
-                  required: true,
-                  type: "number",
-                  label: "Width (cm)",
-                  name: "width",
-                  editable: true,
-                  focus: false,
-                  hideLabel: false,
-                  error: _vm.form.errors.get("width")
-                },
-                model: {
-                  value: _vm.width,
-                  callback: function($$v) {
-                    _vm.width = $$v
-                  },
-                  expression: "width"
-                }
-              }),
-              _vm._v(" "),
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.length,
-                  required: true,
-                  type: "number",
-                  label: "Length (cm)",
-                  name: "length",
-                  editable: true,
-                  focus: false,
-                  hideLabel: false,
-                  error: _vm.form.errors.get("length")
-                },
-                model: {
-                  value: _vm.length,
-                  callback: function($$v) {
-                    _vm.length = $$v
-                  },
-                  expression: "length"
-                }
-              }),
-              _vm._v(" "),
-              _c("template", { slot: "footer" }, [
+          _c("div", { staticClass: "card mt-3" }, [
+            _c(
+              "div",
+              { staticClass: "card-body" },
+              [
                 _c(
                   "button",
                   {
-                    staticClass: "btn btn-secondary",
-                    attrs: { type: "button" },
-                    on: {
-                      click: function($event) {
-                        _vm.isCalculatingDimWeight = false
-                      }
-                    }
+                    staticClass: "btn btn-sm btn-primary mb-3",
+                    attrs: { type: "button", disabled: !_vm.canAddItem },
+                    on: { click: _vm.addItem }
                   },
-                  [_vm._v("Cancel")]
+                  [_vm._v("Add Item (F8)")]
                 ),
+                _vm._v(" "),
+                _vm._m(0),
+                _vm._v(" "),
+                _vm._l(_vm.form.items, function(item, index) {
+                  return [
+                    _c("item-row", {
+                      attrs: {
+                        index: index,
+                        canEdit: _vm.canEditItem,
+                        item: item,
+                        product_types: _vm.product_types,
+                        zone_types: _vm.zone_types,
+                        couriers: _vm.couriers,
+                        defaultProductType: _vm.default_product_type,
+                        selectedType: _vm.selectedType,
+                        selectedCustomer: _vm.selectedCustomer
+                      },
+                      on: {
+                        delete: function($event) {
+                          _vm.deleteItem(index)
+                        },
+                        update: function($event) {
+                          _vm.updateItem($event, index)
+                        },
+                        addItem: _vm.addItem
+                      }
+                    })
+                  ]
+                })
+              ],
+              2
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card mt-3" }, [
+            _c("div", { staticClass: "card-body" }, [
+              _c("div", { staticClass: "d-flex justify-content-start mb-3" }, [
+                _vm.selectedCustomer && _vm.invoice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-sm btn-success mr-2",
+                        attrs: {
+                          target: "_blank",
+                          href: "/invoices/do/" + _vm.invoice,
+                          type: "button"
+                        }
+                      },
+                      [_vm._v("Print delivery note")]
+                    )
+                  : _vm.invoice
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-sm btn-success mr-2",
+                          attrs: {
+                            target: "_blank",
+                            href: "/invoices/receipt/" + _vm.invoice,
+                            type: "button"
+                          }
+                        },
+                        [_vm._v("Print receipt")]
+                      )
+                    : _vm._e(),
+                _vm._v(" "),
+                _vm.invoice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-sm btn-success mr-2",
+                        attrs: {
+                          target: "_blank",
+                          href: "/invoices/preview/" + _vm.invoice,
+                          type: "button"
+                        }
+                      },
+                      [_vm._v("Print invoice")]
+                    )
+                  : _vm._e(),
                 _vm._v(" "),
                 _c(
                   "button",
                   {
-                    staticClass: "btn btn-primary",
-                    attrs: { type: "button" },
-                    on: { click: _vm.calculateDimWeight }
+                    staticClass: "btn btn-sm btn-primary",
+                    attrs: {
+                      type: "submit",
+                      disabled: !_vm.canSubmit || !_vm.canEdit,
+                      title: _vm.editTooltip
+                    }
                   },
-                  [_vm._v("Confirm")]
+                  [_vm._v("Confirm (F7)")]
                 )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col-6" },
+                  [
+                    _vm.invoiceNumber
+                      ? _c("p", { staticClass: "mb-0" }, [
+                          _c("b", [_vm._v("Invoice number")]),
+                          _vm._v(": " + _vm._s(_vm.invoiceNumber))
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("p", [
+                      !_vm.invoiceNumber
+                        ? _c("b", [_vm._v("Current time")])
+                        : _c("b", [_vm._v("Created time")]),
+                      _vm._v(": " + _vm._s(_vm.currentTime))
+                    ]),
+                    _vm._v(" "),
+                    _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.types,
+                        defaultData: _vm.selectedType,
+                        placeholder: "Select type",
+                        required: true,
+                        label: "Type",
+                        name: "type",
+                        editable: _vm.canEdit,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("type")
+                      },
+                      model: {
+                        value: _vm.selectedType,
+                        callback: function($$v) {
+                          _vm.selectedType = $$v
+                        },
+                        expression: "selectedType"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.form.type == "Customer"
+                      ? _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.customers,
+                            defaultData: _vm.selectedCustomer,
+                            placeholder: "Select customer",
+                            required: true,
+                            label: "Customer",
+                            name: "customer_id",
+                            editable: _vm.canEdit,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("customer_id"),
+                            addon: "createCustomer"
+                          },
+                          on: { createCustomer: _vm.createCustomer },
+                          model: {
+                            value: _vm.selectedCustomer,
+                            callback: function($$v) {
+                              _vm.selectedCustomer = $$v
+                            },
+                            expression: "selectedCustomer"
+                          }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.form.remarks,
+                        required: false,
+                        type: "text",
+                        label: "Remarks",
+                        name: "remarks",
+                        editable: _vm.canEdit,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("remarks")
+                      },
+                      model: {
+                        value: _vm.form.remarks,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "remarks", $$v)
+                        },
+                        expression: "form.remarks"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-6" }, [
+                  _c("b", [_vm._v("Tax:")]),
+                  _vm._v(
+                    " " + _vm._s(_vm._f("price")(_vm.tax)) + "\n\t\t\t\t\t\t"
+                  ),
+                  _c("div", { staticClass: "row mt-2" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.discount,
+                            required: false,
+                            type: "number",
+                            label: "Discount",
+                            name: "discount",
+                            editable: _vm.canEdit,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("discount")
+                          },
+                          model: {
+                            value: _vm.form.discount,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "discount", $$v)
+                            },
+                            expression: "form.discount"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          attrs: {
+                            potentialData: _vm.modes,
+                            defaultData: _vm.selectedDiscountMode,
+                            placeholder: "Select discount mode",
+                            required: false,
+                            label: "Discount mode",
+                            name: "discount_mode",
+                            editable: _vm.canEdit,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("discount_mode")
+                          },
+                          model: {
+                            value: _vm.selectedDiscountMode,
+                            callback: function($$v) {
+                              _vm.selectedDiscountMode = $$v
+                            },
+                            expression: "selectedDiscountMode"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("b", [_vm._v("Rounding:")]),
+                  _vm._v(" RM" + _vm._s(_vm._f("price")(_vm.rounding))),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("b", [_vm._v("Total:")]),
+                  _vm._v(
+                    " RM" +
+                      _vm._s(_vm._f("price")(_vm.rounded_total)) +
+                      "\n\n\t\t\t\t\t\t"
+                  ),
+                  _vm.form.type !== "Customer"
+                    ? _c("div", { staticClass: "row mt-2" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.paid,
+                                required: true,
+                                type: "number",
+                                label: "Paid",
+                                name: "paid",
+                                editable: _vm.canEdit,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("paid")
+                              },
+                              model: {
+                                value: _vm.form.paid,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "paid", $$v)
+                                },
+                                expression: "form.paid"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("selector-input", {
+                              attrs: {
+                                potentialData: _vm.payment_types,
+                                defaultData: _vm.selectedPaymentType,
+                                placeholder: "Select payment type",
+                                required: true,
+                                label: "Payment type",
+                                name: "payment_type",
+                                editable: _vm.canEdit,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("payment_type")
+                              },
+                              model: {
+                                value: _vm.selectedPaymentType,
+                                callback: function($$v) {
+                                  _vm.selectedPaymentType = $$v
+                                },
+                                expression: "selectedPaymentType"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.form.type !== "Customer"
+                    ? _c("div", [
+                        _c("b", [_vm._v("Change:")]),
+                        _vm._v(" RM" + _vm._s(_vm._f("price")(_vm.change)))
+                      ])
+                    : _vm._e()
+                ])
               ])
-            ],
-            2
-          )
-        ],
-        1
+            ])
+          ])
+        ]
       ),
       _vm._v(" "),
       _c("confirmation", {
@@ -77713,24 +77981,34 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "text-right", attrs: { colspan: "3" } }, [
-      _c("b", [_vm._v("Subtotal:")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "text-right", attrs: { colspan: "3" } }, [
-      _c("b", [_vm._v("Tax:")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", { staticClass: "text-right", attrs: { colspan: "3" } }, [
-      _c("b", [_vm._v("Rounding:")])
+    return _c("div", { staticClass: "invoice-items" }, [
+      _c("div", { staticClass: "header" }, [_vm._v("Nr:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Track code:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Product type:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Zone type:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Zone:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Weight(kg):")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Dim wt(kg):")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Courier:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("SKU:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Description:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Price:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Unit:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Total price:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" })
     ])
   }
 ]
@@ -77739,20 +78017,20 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1830b55a", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-6f9d6e66", module.exports)
   }
 }
 
 /***/ }),
-/* 233 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(234)
+var __vue_script__ = __webpack_require__(237)
 /* template */
-var __vue_template__ = __webpack_require__(235)
+var __vue_template__ = __webpack_require__(238)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -77791,7 +78069,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 234 */
+/* 237 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -78151,7 +78429,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 235 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -78582,15 +78860,15 @@ if (false) {
 }
 
 /***/ }),
-/* 236 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(237)
+var __vue_script__ = __webpack_require__(240)
 /* template */
-var __vue_template__ = __webpack_require__(238)
+var __vue_template__ = __webpack_require__(241)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -78629,7 +78907,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 237 */
+/* 240 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -78768,7 +79046,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 238 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -78926,15 +79204,15 @@ if (false) {
 }
 
 /***/ }),
-/* 239 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(240)
+var __vue_script__ = __webpack_require__(243)
 /* template */
-var __vue_template__ = __webpack_require__(241)
+var __vue_template__ = __webpack_require__(244)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -78973,7 +79251,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 240 */
+/* 243 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79191,7 +79469,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 241 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -79403,15 +79681,15 @@ if (false) {
 }
 
 /***/ }),
-/* 242 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(243)
+var __vue_script__ = __webpack_require__(246)
 /* template */
-var __vue_template__ = __webpack_require__(244)
+var __vue_template__ = __webpack_require__(247)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -79450,7 +79728,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 243 */
+/* 246 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -79750,7 +80028,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 244 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -80051,15 +80329,15 @@ if (false) {
 }
 
 /***/ }),
-/* 245 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(246)
+var __vue_script__ = __webpack_require__(249)
 /* template */
-var __vue_template__ = __webpack_require__(247)
+var __vue_template__ = __webpack_require__(250)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -80098,7 +80376,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 246 */
+/* 249 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -80379,7 +80657,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 247 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -80577,7 +80855,7 @@ if (false) {
 }
 
 /***/ }),
-/* 248 */
+/* 251 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
