@@ -90,6 +90,7 @@
 			ref="dimension"
 			:error="dimension_weight_error"
 			@input="updateProducts"
+			@enter="openDimWeightModal"
 			:disabled="!has_detail || !canEdit"
 			@dblclick="openDimWeightModal">
 		</text-input>
@@ -181,8 +182,8 @@
 		<div><button type="button" class="btn btn-sm btn-danger" @click="$emit('delete')" :disabled="!canEdit">Delete</button></div>
 
 		<modal :active="isCalculatingDimWeight"
-			id="dim-weight-calculator"
-			@close="isCalculatingDimWeight = false">
+			:id="'dim-weight-calculator-' + this.index"
+			@close="closeDimWeight">
 
 			<span slot="header">Calculate dimension weight</span>
 
@@ -215,11 +216,12 @@
 				name="length"
 				:editable="true"
 				:focus="false"
-				:hideLabel="false">
+				:hideLabel="false"
+				@enter="calculateDimWeight">
 			</text-input>
 
 			<template slot="footer">
-				<button type="button" class="btn btn-secondary" @click="isCalculatingDimWeight = false">Cancel</button>
+				<button type="button" class="btn btn-secondary" @click="closeDimWeight">Cancel</button>
 				<button type="button" class="btn btn-primary" @click="calculateDimWeight">Confirm</button>
 			</template>
 		</modal>
@@ -314,7 +316,20 @@
 		methods: {
 			openDimWeightModal() {
 				this.isCalculatingDimWeight = true;
+				this.height = "";
+				this.width = "";
+				this.length = "";
 				setTimeout(function(){ this.$refs.heightinput.triggerFocus() }.bind(this), 500 );
+			},
+
+			closeDimWeight() {
+				if(!this.dimension_weight) {
+					this.height = 0;
+					this.width = 0;
+					this.length = 0;
+				}
+
+				this.isCalculatingDimWeight = false;
 			},
 
 			calculateDimWeight() {
@@ -325,7 +340,7 @@
 				expression = expression.replace("h", this.height);
 
 				this.dimension_weight = eval(expression);
-				this.isCalculatingDimWeight = false;
+				this.closeDimWeight();
 				this.should_update_product = true;
 				this.$refs.dimension.triggerFocus();
 			},
@@ -357,6 +372,8 @@
 					return obj;
 				}.bind(this));
 
+				this.getDefaultDetails();
+
 				// If we already have item
 				if(this.item.product_type_id) {
 					this.selectedProduct = _.filter(this.products, function(type){ return this.item.product_id == type.value; }.bind(this))[0];
@@ -364,7 +381,6 @@
 
 				// If we only have 1 product, set it as default
 				if(this.products.length == 1 && !this.selectedProduct) {
-					console.log("Only 1 product");
 					this.selectedProduct = this.products[0];
 				}
 				// If we dont have any products that matches
@@ -377,7 +393,7 @@
 					this.selectedCourier = '';
 				}
 
-				
+				this.getDefaultDetails()
 			},
 
 			updateProducts(error = "No error") {

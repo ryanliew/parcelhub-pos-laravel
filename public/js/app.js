@@ -76762,6 +76762,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
@@ -76855,9 +76857,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		openDimWeightModal: function openDimWeightModal() {
 			this.isCalculatingDimWeight = true;
+			this.height = "";
+			this.width = "";
+			this.length = "";
 			setTimeout(function () {
 				this.$refs.heightinput.triggerFocus();
 			}.bind(this), 500);
+		},
+		closeDimWeight: function closeDimWeight() {
+			if (!this.dimension_weight) {
+				this.height = 0;
+				this.width = 0;
+				this.length = 0;
+			}
+
+			this.isCalculatingDimWeight = false;
 		},
 		calculateDimWeight: function calculateDimWeight() {
 			var formula = this.selectedCourier.formula;
@@ -76867,7 +76881,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			expression = expression.replace("h", this.height);
 
 			this.dimension_weight = eval(expression);
-			this.isCalculatingDimWeight = false;
+			this.closeDimWeight();
 			this.should_update_product = true;
 			this.$refs.dimension.triggerFocus();
 		},
@@ -76902,6 +76916,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return obj;
 			}.bind(this));
 
+			this.getDefaultDetails();
+
 			// If we already have item
 			if (this.item.product_type_id) {
 				this.selectedProduct = _.filter(this.products, function (type) {
@@ -76911,7 +76927,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			// If we only have 1 product, set it as default
 			if (this.products.length == 1 && !this.selectedProduct) {
-				console.log("Only 1 product");
 				this.selectedProduct = this.products[0];
 			}
 			// If we dont have any products that matches
@@ -76923,6 +76938,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (!this.selectedProductType.has_detail) {
 				this.selectedCourier = '';
 			}
+
+			this.getDefaultDetails();
 		},
 		updateProducts: function updateProducts() {
 			var _this2 = this;
@@ -77295,7 +77312,11 @@ var render = function() {
           error: _vm.dimension_weight_error,
           disabled: !_vm.has_detail || !_vm.canEdit
         },
-        on: { input: _vm.updateProducts, dblclick: _vm.openDimWeightModal },
+        on: {
+          input: _vm.updateProducts,
+          enter: _vm.openDimWeightModal,
+          dblclick: _vm.openDimWeightModal
+        },
         model: {
           value: _vm.dimension_weight,
           callback: function($$v) {
@@ -77482,13 +77503,9 @@ var render = function() {
         {
           attrs: {
             active: _vm.isCalculatingDimWeight,
-            id: "dim-weight-calculator"
+            id: "dim-weight-calculator-" + this.index
           },
-          on: {
-            close: function($event) {
-              _vm.isCalculatingDimWeight = false
-            }
-          }
+          on: { close: _vm.closeDimWeight }
         },
         [
           _c("span", { attrs: { slot: "header" }, slot: "header" }, [
@@ -77547,6 +77564,7 @@ var render = function() {
               focus: false,
               hideLabel: false
             },
+            on: { enter: _vm.calculateDimWeight },
             model: {
               value: _vm.length,
               callback: function($$v) {
@@ -77562,11 +77580,7 @@ var render = function() {
               {
                 staticClass: "btn btn-secondary",
                 attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    _vm.isCalculatingDimWeight = false
-                  }
-                }
+                on: { click: _vm.closeDimWeight }
               },
               [_vm._v("Cancel")]
             ),
