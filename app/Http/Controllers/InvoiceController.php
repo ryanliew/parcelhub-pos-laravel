@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Invoice;
+use App\Tax;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -110,12 +111,14 @@ class InvoiceController extends Controller
                 'product_type_id' => $item->product_type_id,
                 'total_price' => $item->total_price,
                 'unit' => $item->unit,
-                'is_custom_pricing' => $item->is_custom_pricing
+                'is_custom_pricing' => $item->is_custom_pricing,
+                'tax_rate' => $item->tax_rate,
+                'tax_type' => $item->tax_type
             ]);
         }
         //$invoice->items()->create($items);
 
-        $url = $invoice->customer_id ? "/invoices/preview/" . $invoice->id : "/invoices/receipt/" . $invoice->id;
+        $url = $invoice->payment_type == "Cash" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
 
         $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
@@ -187,7 +190,7 @@ class InvoiceController extends Controller
         $defaultFontConfig = (new FontVariables())->getDefaults();
         $fontData = $defaultFontConfig['fontdata'];
 
-        $html = View::make('invoice.receipt', ["invoice" => $invoice])->render();
+        $html = View::make('invoice.receipt', ["invoice" => $invoice, "taxes" => Tax::all()])->render();
         
         $mPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
                         "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),

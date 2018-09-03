@@ -76299,7 +76299,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				is_custom_pricing: 0,
 				item_tax_inclusive: '',
 				dimension_weight: 0,
-				sku: ''
+				sku: '',
+				tax_type: 'SR'
 
 			});
 
@@ -76764,6 +76765,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
@@ -76791,6 +76793,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			is_custom_pricing: false,
 			item_tax_inclusive: '',
 			has_detail: true,
+			tax_type: '',
 
 			tracking_no_error: '',
 			selectedProductType_error: '',
@@ -77048,6 +77051,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				// this.item_tax = prices.tax;
 				this.tax_rate = prices.tax_rate;
 				this.item_tax_inclusive = prices.is_tax_inclusive;
+				this.tax_type = prices.tax_type;
 			}
 
 			this.item_add_loading = false;
@@ -77063,7 +77067,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var tax = price_group.tax ? price * tax_rate : 0;
 			var total = price + tax;
 
-			return { price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive };
+			return { price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive, tax_type: price_group.code };
 		}
 	},
 
@@ -77148,6 +77152,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		is_custom_pricing: function is_custom_pricing(newVal) {
 			this.$emit('update', { attribute: 'is_custom_pricing', value: newVal ? newVal : 0 });
+		},
+		tax_rate: function tax_rate(newVal) {
+			this.$emit('update', { attribute: 'tax_rate', value: newVal ? newVal : 0 });
+		},
+		tax_type: function tax_type(newVal) {
+			this.$emit('update', { attribute: 'tax_type', value: newVal ? newVal : 'SR' });
 		}
 	}
 });
@@ -77181,7 +77191,7 @@ var render = function() {
           disabled: !_vm.canEdit
         },
         on: {
-          next: function($event) {
+          enter: function($event) {
             _vm.$refs.producttypes.focus()
           }
         },
@@ -77322,6 +77332,9 @@ var render = function() {
         on: {
           input: _vm.updateProducts,
           enter: _vm.openDimWeightModal,
+          tab: function($event) {
+            _vm.$emit("addItem")
+          },
           dblclick: _vm.openDimWeightModal
         },
         model: {
@@ -77942,7 +77955,7 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm.form.type !== "Customer"
+                  _vm.form.payment_type == "Cash"
                     ? _c(
                         "div",
                         { staticClass: "d-flex align-items-center mb-3" },

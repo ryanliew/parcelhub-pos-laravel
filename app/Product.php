@@ -39,4 +39,9 @@ class Product extends Model
                     ->withTimestamps()
                     ->withPivot('id', 'customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
     }
+
+    public function getTaxTypeAttribute()
+    {
+      return $this->tax->code;
+    }
 }
