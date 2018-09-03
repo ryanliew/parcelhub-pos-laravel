@@ -71,4 +71,9 @@ class Invoice extends Model
     {
         return $this->invoice_no;
     }
+
+    public function getReceiptTypeAttribute()
+    {
+        return $this->customer_id ? "Tax Invoice" : "Receipt";
+    }
 }

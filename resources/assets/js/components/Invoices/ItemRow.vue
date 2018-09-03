@@ -13,7 +13,7 @@
 			:error="tracking_no_error"
 			ref="tracking_input"
 			:disabled="!canEdit"
-			@next="$refs.producttypes.focus()">
+			@enter="$refs.producttypes.focus()">
 		</text-input>
 		<div class="small-select">
 			<selector-input :potentialData="product_types"
@@ -91,6 +91,7 @@
 			:error="dimension_weight_error"
 			@input="updateProducts"
 			@enter="openDimWeightModal"
+			@tab="$emit('addItem')"
 			:disabled="!has_detail || !canEdit"
 			@dblclick="openDimWeightModal">
 		</text-input>
@@ -255,6 +256,7 @@
 				is_custom_pricing: false,
 				item_tax_inclusive: '',
 				has_detail: true,
+				tax_type: '',
 
 				tracking_no_error: '',
 				selectedProductType_error: '',
@@ -492,6 +494,7 @@
 					// this.item_tax = prices.tax;
 					this.tax_rate = prices.tax_rate;
 					this.item_tax_inclusive = prices.is_tax_inclusive;
+					this.tax_type = prices.tax_type;
 				}
 
 				this.item_add_loading = false;
@@ -512,7 +515,7 @@
 				let tax = price_group.tax ? price * tax_rate: 0;
 				let total = price + tax;
 
-				return {price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive};
+				return {price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive, tax_type: price_group.code};
 			},
 		},
 
@@ -616,7 +619,15 @@
 
 			is_custom_pricing(newVal) {
 				this.$emit('update', {attribute: 'is_custom_pricing', value: newVal ? newVal : 0});
-			}
+			},
+
+			tax_rate(newVal) {
+				this.$emit('update', {attribute: 'tax_rate', value: newVal ? newVal : 0});
+			},
+
+			tax_type(newVal) {
+				this.$emit('update', {attribute: 'tax_type', value: newVal ? newVal : 'SR'});
+			},
 		}	
 	}
 </script>

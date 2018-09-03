@@ -86,14 +86,14 @@
 		<br>
 		<br>
 		<br>
-		Receipt<br><br>
+		{{ $invoice->receipt_type }}<br><br>
 	</div>
 
 	<div class="content">
 		<table>
 			<tbody>
 				<tr>
-					<td>Receipt no</td>
+					<td>{{ $invoice->receipt_type }} no</td>
 					<td>:</td>
 					<td>{{ $invoice->invoice_no }}</td>
 				</tr>
@@ -110,8 +110,23 @@
 				<tr>
 					<td>Sold to</td>
 					<td>:</td>
-					<td>{{ $invoice->type }} @if($invoice->customer)- {{ $invoice->customer->name }}@endif</td>
+					<td>@if($invoice->customer){{ $invoice->customer->name }} @else {{ $invoice->type }}  @endif</td>
 				</tr>
+				@if($invoice->customer)
+				<tr>
+					<td></td>
+					<td></td>
+					<td>
+						{{ $invoice->customer->address1 }}<br>
+						@if($invoice->customer->address2) {{ $invoice->customer->address2 }}<br> @endif
+						@if($invoice->customer->address3) {{ $invoice->customer->address3 }}<br> @endif
+						@if($invoice->customer->address4) {{ $invoice->customer->address4 }}<br> @endif
+
+						@if($invoice->customer->contact) PH: {{ $invoice->customer->contact }} @endif
+
+					</td>
+				</tr>
+				@endif
 			</tbody>
 		</table>
 		<br>
@@ -193,6 +208,22 @@
 					<td class="text-right">{{ number_format( max($invoice->paid - $invoice->total, 0.00), 2, '.', ',') }}</td>
 				</tr>
 			</tbody>
+		</table>
+		<br>
+		<table>
+			<tr>
+				<td>Tax Summary:</td>
+				<td>Amount (RM)</td>
+				<td>Tax (RM)</td>
+			</tr>
+			@foreach($taxes as $tax)
+			<tr>
+				<td>{{ $tax->code }} @ {{ $tax->percentage }}%</td>
+				<?php $filtered = $invoice->items->filter(function($item) use ($tax){ return $item->tax_type == $tax->code; }) ?>
+				<td>{{ number_format( $filtered->sum('price'), 2, '.', ',') }}</td>
+				<td>{{ number_format( $filtered->sum('tax'), 2, '.', ',') }}</td>
+			</tr>
+			@endforeach
 		</table>
 		<br>
 		<br>
