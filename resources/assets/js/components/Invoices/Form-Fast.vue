@@ -336,6 +336,7 @@
 						{label: 'Credit Card', value: 'Credit Card'}
 						],
 				payment_types: [
+						{label: 'Account', value: 'Account'},
 						{label: 'Cash', value: 'Cash'},
 						{label: 'Credit Card', value: 'Credit Card'},
 						{label: 'Cheque', value: 'Cheque'},
