@@ -22,7 +22,7 @@
 			<span class="text-danger" v-if="error" v-text="error"></span>
 		</div>
 		<div class="d-flex align-items-center" v-else>
-			<label class="select-label" v-if="!hideLabel" :class="labelClass">
+			<label class="select-label" v-if="!hideLabel && editable" :class="labelClass">
 				<div class="d-flex align-items-center justify-content-end">
 					<span v-text="label"></span>
 					<span v-if="required && editable" class="text-danger">*</span>
@@ -32,6 +32,7 @@
 					</span>
 				</div>
 			</label>
+			<b class="invoice-label text-right" v-else>{{ label }}: </b>
 			<div class="control" :class="canClearCss" v-if="editable">
 				<v-select :multiple="multiple" :options="potentialData" :value="this.defaultData" @input="updateValue" :name="name" :placeholder="placeholder" :closeOnSelect="!multiple || true" :disabled="disabled" ref="selector">
 				</v-select>
