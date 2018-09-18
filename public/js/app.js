@@ -68160,6 +68160,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -68594,7 +68595,7 @@ var render = function() {
             class: _vm.extraClass
           },
           [
-            !_vm.hideLabel
+            !_vm.hideLabel && _vm.editable
               ? _c(
                   "label",
                   {
@@ -68611,7 +68612,9 @@ var render = function() {
                       : _vm._e()
                   ]
                 )
-              : _vm._e(),
+              : _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v(_vm._s(_vm.label) + ":")
+                ]),
             _vm._v(" "),
             _vm.editable
               ? _c("div", { staticClass: "input-group" }, [
@@ -68675,7 +68678,7 @@ var render = function() {
                       ])
                     : _vm._e()
                 ])
-              : _c("p", {
+              : _c("span", {
                   staticClass: "input__field input__field--hoshi",
                   domProps: { innerHTML: _vm._s(_vm.value) }
                 }),
@@ -68996,6 +68999,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -69135,7 +69139,7 @@ var render = function() {
             : _vm._e()
         ])
       : _c("div", { staticClass: "d-flex align-items-center" }, [
-          !_vm.hideLabel
+          !_vm.hideLabel && _vm.editable
             ? _c(
                 "label",
                 { staticClass: "select-label", class: _vm.labelClass },
@@ -69185,7 +69189,9 @@ var render = function() {
                   )
                 ]
               )
-            : _vm._e(),
+            : _c("b", { staticClass: "invoice-label text-right" }, [
+                _vm._v(_vm._s(_vm.label) + ": ")
+              ]),
           _vm._v(" "),
           _vm.editable
             ? _c(
@@ -76070,6 +76076,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -76118,7 +76158,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			can_edit_invoice: true,
 
 			headerTop: 0,
-			headerClass: ''
+			headerClass: '',
+
+			isMassInput: false,
+			mass_tracking_no: '',
+			trackings: [],
+			mass_input_target: ''
 		};
 	},
 	mounted: function mounted() {
@@ -76185,6 +76230,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			this.currentTime = invoice.created_at;
 			this.invoiceNumber = invoice.invoice_no;
+
+			Vue.nextTick(function () {
+				return window.events.$emit("updateItemsValue");
+			});
 		},
 		getProductTypes: function getProductTypes() {
 			var _this3 = this;
@@ -76254,10 +76303,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		getCustomers: function getCustomers() {
 			var _this6 = this;
 
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+			console.log(error);
 			axios.get("/customers/list").then(function (response) {
 				return _this6.setCustomers(response);
 			}).catch(function (error) {
-				return _this6.getCustomers();
+				return _this6.getCustomers(error);
 			});
 		},
 		setCustomers: function setCustomers(response) {
@@ -76300,18 +76352,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				item_tax_inclusive: '',
 				dimension_weight: 0,
 				sku: '',
-				tax_type: 'SR'
+				tax_type: 'SR',
+				shouldFocus: true
 
 			});
 
 			// this.$refs['track_code_' + ( this.form.items.length - 1 )][0].triggerFocus();
 		},
 		updateItem: function updateItem(event, index) {
+			// console.log("Index: " + index + " Courier:" + this.form.items[index].courier_id);
 			this.form.items[index][event.attribute] = event.value;
 		},
 		deleteItem: function deleteItem(index) {
 			// console.log(index);
 			this.form.items.splice(index, 1);
+			Vue.nextTick(function () {
+				return window.events.$emit("updateItemsValue");
+			});
 		},
 		updateCurrentTime: function updateCurrentTime() {
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
@@ -76363,6 +76420,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			// console.log(error);
 			window.events.$emit('update_price');
+		},
+		massInput: function massInput(index) {
+			this.mass_input_target = index;
+			this.isMassInput = true;
+
+			setTimeout(function () {
+				this.$refs.tracking_number.triggerFocus();
+			}.bind(this), 500);
+		},
+		closeMassInput: function closeMassInput() {
+			this.isMassInput = false;
+			this.trackings = [];
+		},
+		addTrackingNumber: function addTrackingNumber() {
+			this.trackings.push(this.mass_tracking_no);
+			this.mass_tracking_no = '';
+		},
+		confirmTrackingNumber: function confirmTrackingNumber() {
+			var _this8 = this;
+
+			this.trackings.forEach(function (tracking, key) {
+
+				var newItem = JSON.parse(JSON.stringify(this.form.items[this.mass_input_target]));
+
+				newItem['tracking_code'] = tracking;
+				newItem['shouldFocus'] = false;
+				// console.log(newItem.tracking_code);
+				this.form.items.push(newItem);
+			}.bind(this));
+
+			this.isMassInput = false;
+			this.trackings = [];
+
+			this.deleteItem(this.mass_input_target);
+			Vue.nextTick(function () {
+				return _this8.addItem();
+			});
 		}
 	},
 
@@ -76766,6 +76860,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
@@ -76812,14 +76910,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		};
 	},
 	mounted: function mounted() {
+		var _this = this;
+
 		window.events.$on('update_price', function () {
 			Vue.nextTick(function () {
 				this.getProductPrice();
 			}.bind(this));
 		}.bind(this));
 
+		window.events.$on("updateItemsValue", function () {
+			this.updateItem();
+		}.bind(this));
+
 		// If we are getting item from db
-		if (this.item.product_id) {
+		Vue.nextTick(function () {
+			console.log(_this.item.product_id);
+			if (_this.item.product_id) {
+				_this.updateItem();
+			} else if (_this.defaultProductType.has_detail) {
+				_this.selectedZoneType = { label: 'Domestic', value: 1 };
+				Vue.nextTick(function () {
+					this.getDefaultDetails();
+				}.bind(_this));
+			}
+		});
+
+		if (this.item.shouldFocus) this.$refs.producttypes.focus();
+	},
+
+
+	methods: {
+		updateItem: function updateItem() {
+			// console.log("Updating item!" + this.item.description);
 			this.tracking_no = this.item.tracking_code;
 
 			this.zone = this.item.zone;
@@ -76842,22 +76964,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this))[0];
 			this.selectedZoneType = this.zone_types[0];
 			this.selectedCourier = _.filter(this.couriers, function (courier) {
-				return this.item.courier_id == type.value;
+				return this.item.courier_id == courier.value;
 			}.bind(this))[0];
 
 			this.has_detail = this.selectedProductType.has_detail;
 
 			this.getProducts();
-		} else if (this.defaultProductType.has_detail) {
-			this.selectedZoneType = { label: 'Domestic', value: 1 };
-			Vue.nextTick(function () {
-				this.getDefaultDetails();
-			}.bind(this));
-		}
-	},
-
-
-	methods: {
+		},
 		openDimWeightModal: function openDimWeightModal() {
 			this.isCalculatingDimWeight = true;
 			if (!this.dimension_weight) {
@@ -76894,7 +77007,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 		},
 		getProducts: function getProducts() {
-			var _this = this;
+			var _this2 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
@@ -76904,9 +77017,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.selectedProductType) {
 				this.has_detail = this.selectedProductType.has_detail;
 				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
-					return _this.setProducts(response);
+					return _this2.setProducts(response);
 				}).catch(function (error) {
-					return _this.getRelatedProduct(error);
+					return _this2.getRelatedProduct(error);
 				});
 			}
 		},
@@ -76946,7 +77059,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 		},
 		updateProducts: function updateProducts() {
-			var _this2 = this;
+			var _this3 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
@@ -76960,9 +77073,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				if (this.selectedCourier) url += "&vendor=" + this.selectedCourier.value;
 
 				axios.get(url).then(function (response) {
-					return _this2.setProducts(response);
+					return _this3.setProducts(response);
 				}).catch(function (error) {
-					return _this2.updateProducts(error);
+					return _this3.updateProducts(error);
 				});
 			}
 		},
@@ -76974,15 +77087,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 		},
 		getDefaultDetails: function getDefaultDetails() {
-			var _this3 = this;
+			var _this4 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
-				return _this3.setDefaultDetails(response);
-			}).catch(function (error) {
-				return _this3.getDefaultDetails(error);
-			});
+			if (!this.item.product_id) {
+				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
+					return _this4.setDefaultDetails(response);
+				}).catch(function (error) {
+					return _this4.getDefaultDetails(error);
+				});
+			}
 		},
 		setDefaultDetails: function setDefaultDetails(response) {
 
@@ -77017,7 +77132,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return url;
 		},
 		getProductPrice: function getProductPrice() {
-			var _this4 = this;
+			var _this5 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
@@ -77030,9 +77145,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				// console.log(url);
 
 				axios.get(url).then(function (response) {
-					return _this4.setProductPrice(response);
+					return _this5.setProductPrice(response);
 				}).catch(function (error) {
-					return _this4.getProductPrice(error);
+					return _this5.getProductPrice(error);
 				});
 			}
 
@@ -77068,6 +77183,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var total = price + tax;
 
 			return { price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive, tax_type: price_group.code };
+		},
+		massInput: function massInput() {
+			if (parseInt(this.unit) > 1) this.$emit("mass");else this.$refs.tracking_input.triggerFocus();
 		}
 	},
 
@@ -77124,6 +77242,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$emit('update', { attribute: 'courier_id', value: 0 });
 			if (newVal) {
 				this.$emit('update', { attribute: 'courier_id', value: newVal.value });
+
+				// console.log("Updated courier id: " + newVal.value);			
 				this.calculateDimWeight(false);
 			}
 		},
@@ -77175,34 +77295,6 @@ var render = function() {
     { staticClass: "invoice-items" },
     [
       _c("span", [_vm._v(_vm._s(_vm.index + 1))]),
-      _vm._v(" "),
-      _c("text-input", {
-        ref: "tracking_input",
-        attrs: {
-          defaultValue: _vm.tracking_no,
-          required: this.selectedProductType.has_detail,
-          type: "text",
-          label: "Tracking no",
-          name: "tracking_no",
-          editable: true,
-          focus: true,
-          hideLabel: true,
-          error: _vm.tracking_no_error,
-          disabled: !_vm.canEdit
-        },
-        on: {
-          enter: function($event) {
-            _vm.$refs.producttypes.focus()
-          }
-        },
-        model: {
-          value: _vm.tracking_no,
-          callback: function($$v) {
-            _vm.tracking_no = $$v
-          },
-          expression: "tracking_no"
-        }
-      }),
       _vm._v(" "),
       _c(
         "div",
@@ -77332,9 +77424,6 @@ var render = function() {
         on: {
           input: _vm.updateProducts,
           enter: _vm.openDimWeightModal,
-          tab: function($event) {
-            _vm.$emit("addItem")
-          },
           dblclick: _vm.openDimWeightModal
         },
         model: {
@@ -77433,6 +77522,60 @@ var render = function() {
       _vm._v(" "),
       _c("text-input", {
         attrs: {
+          defaultValue: _vm.unit,
+          required: true,
+          type: "number",
+          label: "Unit",
+          name: "unit",
+          editable: true,
+          disabled: !_vm.has_detail || !_vm.canEdit,
+          focus: false,
+          hideLabel: true,
+          error: _vm.unit_error
+        },
+        on: { tab: _vm.massInput },
+        model: {
+          value: _vm.unit,
+          callback: function($$v) {
+            _vm.unit = $$v
+          },
+          expression: "unit"
+        }
+      }),
+      _vm._v(" "),
+      _c("text-input", {
+        ref: "tracking_input",
+        attrs: {
+          defaultValue: _vm.tracking_no,
+          required: this.selectedProductType.has_detail,
+          type: "text",
+          label: "Tracking no",
+          name: "tracking_no",
+          editable: true,
+          focus: false,
+          hideLabel: true,
+          error: _vm.tracking_no_error,
+          disabled: !_vm.canEdit
+        },
+        on: {
+          enter: function($event) {
+            _vm.$emit("addItem")
+          },
+          tab: function($event) {
+            _vm.$emit("addItem")
+          }
+        },
+        model: {
+          value: _vm.tracking_no,
+          callback: function($$v) {
+            _vm.tracking_no = $$v
+          },
+          expression: "tracking_no"
+        }
+      }),
+      _vm._v(" "),
+      _c("text-input", {
+        attrs: {
           defaultValue: _vm.price,
           required: true,
           type: "number",
@@ -77458,27 +77601,6 @@ var render = function() {
             _vm.price = $$v
           },
           expression: "price"
-        }
-      }),
-      _vm._v(" "),
-      _c("text-input", {
-        attrs: {
-          defaultValue: _vm.unit,
-          required: true,
-          type: "number",
-          label: "Unit",
-          name: "unit",
-          editable: false,
-          focus: false,
-          hideLabel: true,
-          error: _vm.unit_error
-        },
-        model: {
-          value: _vm.unit,
-          callback: function($$v) {
-            _vm.unit = $$v
-          },
-          expression: "unit"
         }
       }),
       _vm._v(" "),
@@ -77740,6 +77862,8 @@ var render = function() {
                             focus: false,
                             hideLabel: false,
                             error: _vm.form.errors.get("customer_id"),
+                            isHorizontal: true,
+                            addonTooltip: "Create new customer",
                             addon: "createCustomer"
                           },
                           on: { createCustomer: _vm.createCustomer },
@@ -78352,7 +78476,10 @@ var render = function() {
                         update: function($event) {
                           _vm.updateItem($event, index)
                         },
-                        addItem: _vm.addItem
+                        addItem: _vm.addItem,
+                        mass: function($event) {
+                          _vm.massInput(index)
+                        }
                       }
                     })
                   ]
@@ -78381,7 +78508,74 @@ var render = function() {
       _c("customers-dialog", {
         attrs: { data: _vm.auth_user },
         on: { customerCreated: _vm.addCustomer }
-      })
+      }),
+      _vm._v(" "),
+      _c(
+        "modal",
+        {
+          attrs: { active: _vm.isMassInput, id: "mass-input-dialog" },
+          on: { close: _vm.closeMassInput }
+        },
+        [
+          _c("span", { attrs: { slot: "header" }, slot: "header" }, [
+            _vm._v("Enter tracking numbers")
+          ]),
+          _vm._v(" "),
+          _c("text-input", {
+            ref: "tracking_number",
+            attrs: {
+              defaultValue: _vm.mass_tracking_no,
+              required: true,
+              type: "text",
+              label: "Tracking number",
+              name: "tracking_number",
+              editable: true,
+              focus: false,
+              hideLabel: false
+            },
+            on: { enter: _vm.addTrackingNumber },
+            model: {
+              value: _vm.mass_tracking_no,
+              callback: function($$v) {
+                _vm.mass_tracking_no = $$v
+              },
+              expression: "mass_tracking_no"
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "ol",
+            _vm._l(_vm.trackings, function(tracking) {
+              return _c("li", [
+                _vm._v("\n\t\t\t\t" + _vm._s(tracking) + "\n\t\t\t")
+              ])
+            })
+          ),
+          _vm._v(" "),
+          _c("template", { slot: "footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button" },
+                on: { click: _vm.closeMassInput }
+              },
+              [_vm._v("Cancel")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: { click: _vm.confirmTrackingNumber }
+              },
+              [_vm._v("Confirm")]
+            )
+          ])
+        ],
+        2
+      )
     ],
     1
   )
@@ -78393,8 +78587,6 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "invoice-items" }, [
       _c("div", { staticClass: "header" }, [_vm._v("Nr:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Track code:")]),
       _vm._v(" "),
       _c("div", { staticClass: "header" }, [_vm._v("Product type:")]),
       _vm._v(" "),
@@ -78412,9 +78604,11 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("div", { staticClass: "header" }, [_vm._v("Description:")]),
       _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Price:")]),
-      _vm._v(" "),
       _c("div", { staticClass: "header" }, [_vm._v("Unit:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Track code:")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "header" }, [_vm._v("Price:")]),
       _vm._v(" "),
       _c("div", { staticClass: "header" }, [_vm._v("Total price:")]),
       _vm._v(" "),

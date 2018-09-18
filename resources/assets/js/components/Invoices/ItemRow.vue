@@ -1,20 +1,6 @@
 <template>
 	<div class="invoice-items">
 		<span>{{ index + 1 }}</span>
-		<text-input v-model="tracking_no" 
-			:defaultValue="tracking_no"
-			:required="this.selectedProductType.has_detail"
-			type="text"
-			label="Tracking no"
-			name="tracking_no"
-			:editable="true"
-			:focus="true"
-			:hideLabel="true"
-			:error="tracking_no_error"
-			ref="tracking_input"
-			:disabled="!canEdit"
-			@enter="$refs.producttypes.focus()">
-		</text-input>
 		<div class="small-select">
 			<selector-input :potentialData="product_types"
 				v-model="selectedProductType" 
@@ -91,7 +77,6 @@
 			:error="dimension_weight_error"
 			@input="updateProducts"
 			@enter="openDimWeightModal"
-			@tab="$emit('addItem')"
 			:disabled="!has_detail || !canEdit"
 			@dblclick="openDimWeightModal">
 		</text-input>
@@ -129,6 +114,7 @@
 				@input="productChange">
 			</selector-input>
 		</div>
+
 		<text-input v-model="description" 
 			:defaultValue="description"
 			:required="true"
@@ -140,6 +126,36 @@
 			:hideLabel="true"
 			:disabled="!canEdit"
 			:error="description_error">
+		</text-input>
+
+		<text-input v-model="unit" 
+			:defaultValue="unit"
+			:required="true"
+			type="number"
+			label="Unit"
+			name="unit"
+			:editable="true"
+			:disabled="!has_detail || !canEdit"
+			:focus="false"
+			:hideLabel="true"
+			:error="unit_error"
+			@tab="massInput">
+		</text-input>
+
+		<text-input v-model="tracking_no" 
+			:defaultValue="tracking_no"
+			:required="this.selectedProductType.has_detail"
+			type="text"
+			label="Tracking no"
+			name="tracking_no"
+			:editable="true"
+			:focus="false"
+			:hideLabel="true"
+			:error="tracking_no_error"
+			ref="tracking_input"
+			:disabled="!canEdit"
+			@enter="$emit('addItem')"
+			@tab="$emit('addItem')">
 		</text-input>
 			
 		<text-input v-model="price" 
@@ -155,18 +171,6 @@
 			:disabled="!canEdit"
 			@input="is_custom_pricing = true"
 			@tab="$emit('addItem')">
-		</text-input>
-			
-		<text-input v-model="unit" 
-			:defaultValue="unit"
-			:required="true"
-			type="number"
-			label="Unit"
-			name="unit"
-			:editable="false"
-			:focus="false"
-			:hideLabel="true"
-			:error="unit_error">
 		</text-input>
 			
 		<text-input v-model="total_price" 
@@ -282,8 +286,30 @@
 				}.bind(this));
 			}.bind(this));
 
+			window.events.$on("updateItemsValue", function() {
+				this.updateItem();
+			}.bind(this));
+
 			// If we are getting item from db
-			if(this.item.product_id) {
+			Vue.nextTick( () => {
+				console.log(this.item.product_id);
+				if(this.item.product_id) {
+					this.updateItem();
+				}
+				else if(this.defaultProductType.has_detail) {
+					this.selectedZoneType = {label: 'Domestic', value: 1};
+					Vue.nextTick( function() { this.getDefaultDetails(); }.bind(this));
+				}
+
+			});
+			
+			if(this.item.shouldFocus)
+				this.$refs.producttypes.focus();
+		},
+
+		methods: {
+			updateItem(){
+				// console.log("Updating item!" + this.item.description);
 				this.tracking_no = this.item.tracking_code;
 				
 				this.zone = this.item.zone;
@@ -303,19 +329,13 @@
 
 				this.selectedProductType = _.filter(this.product_types, function(type){ return this.item.product_type_id == type.value; }.bind(this))[0];
 				this.selectedZoneType = this.zone_types[0];
-				this.selectedCourier = _.filter(this.couriers, function(courier){ return this.item.courier_id == type.value; }.bind(this))[0];
+				this.selectedCourier = _.filter(this.couriers, function(courier){ return this.item.courier_id == courier.value; }.bind(this))[0];
 				
 				this.has_detail = this.selectedProductType.has_detail;
 
 				this.getProducts();
-			}
-			else if(this.defaultProductType.has_detail) {
-				this.selectedZoneType = {label: 'Domestic', value: 1};
-				Vue.nextTick( function() { this.getDefaultDetails(); }.bind(this));
-			}
-		},
+			},
 
-		methods: {
 			openDimWeightModal() {
 				this.isCalculatingDimWeight = true;
 				if(!this.dimension_weight) {
@@ -426,9 +446,11 @@
 			},
 
 			getDefaultDetails(error = 'No error') {
-				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
-					.then(response => this.setDefaultDetails(response))
-					.catch(error => this.getDefaultDetails(error));
+				if(!this.item.product_id) {
+					axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
+						.then(response => this.setDefaultDetails(response))
+						.catch(error => this.getDefaultDetails(error));
+				}
 			},
 
 			setDefaultDetails(response) {
@@ -517,6 +539,13 @@
 
 				return {price: price, tax: tax, tax_rate: tax_rate, total: total, is_tax_inclusive: price_group.is_tax_inclusive, tax_type: price_group.code};
 			},
+
+			massInput() {
+				if(parseInt(this.unit) > 1)
+					this.$emit("mass");
+				else
+					this.$refs.tracking_input.triggerFocus();
+			}
 		},
 
 		computed: {
@@ -583,7 +612,9 @@
 			selectedCourier(newVal) {
 				this.$emit('update', {attribute: 'courier_id', value: 0});
 				if(newVal) {
-					this.$emit('update', {attribute: 'courier_id', value: newVal.value});				
+					this.$emit('update', {attribute: 'courier_id', value: newVal.value});	
+
+					// console.log("Updated courier id: " + newVal.value);			
 					this.calculateDimWeight(false);
 				}
 			},
@@ -627,7 +658,7 @@
 
 			tax_type(newVal) {
 				this.$emit('update', {attribute: 'tax_type', value: newVal ? newVal : 'SR'});
-			},
+			}
 		}	
 	}
 </script>

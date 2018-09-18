@@ -48,6 +48,8 @@
 								:hideLabel="false"
 								:error="form.errors.get('customer_id')"
 								v-if="form.type == 'Customer'"
+								:isHorizontal="true"
+								addonTooltip="Create new customer"
 								addon="createCustomer"
 								@createCustomer="createCustomer">
 							</selector-input>
@@ -269,7 +271,6 @@
 					<div class="invoice-items">
 
 						<div class="header">Nr:</div>
-						<div class="header">Track code:</div>
 						<div class="header">Product type:</div>
 						<div class="header">Zone type:</div>
 						<div class="header">Zone:</div>
@@ -278,19 +279,52 @@
 						<div class="header">Courier:</div>
 						<div class="header">SKU:</div>
 						<div class="header">Description:</div>
-						<div class="header">Price:</div>
 						<div class="header">Unit:</div>
+						<div class="header">Track code:</div>
+						<div class="header">Price:</div>
 						<div class="header">Total price:</div>
 						<div class="header"></div>
 					</div>
 					<template v-for="(item, index) in form.items">
-						<item-row :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem"></item-row>
+						<item-row :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
 					</template>
 				</div>
 			</div>			
 		</form>
 		<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
 		<customers-dialog :data="auth_user" @customerCreated="addCustomer"></customers-dialog>
+
+		<modal :active="isMassInput"
+			id="mass-input-dialog"
+			@close="closeMassInput">
+
+			<span slot="header">Enter tracking numbers</span>
+
+			<text-input v-model="mass_tracking_no" 
+				:defaultValue="mass_tracking_no"
+				:required="true"
+				type="text"
+				label="Tracking number"
+				name="tracking_number"
+				ref="tracking_number"
+				:editable="true"
+				:focus="false"
+				:hideLabel="false"
+				@enter="addTrackingNumber">
+			</text-input>
+
+			<ol>
+				<li v-for="tracking in trackings">
+					{{ tracking }}
+				</li>
+			</ol>
+			
+
+			<template slot="footer">
+				<button type="button" class="btn btn-secondary" @click="closeMassInput">Cancel</button>
+				<button type="button" class="btn btn-primary" @click="confirmTrackingNumber">Confirm</button>
+			</template>
+		</modal>
 	</div>
 </template>
 
@@ -358,7 +392,12 @@
 				can_edit_invoice: true,
 
 				headerTop: 0,
-				headerClass: ''
+				headerClass: '',
+
+				isMassInput: false,
+				mass_tracking_no: '',
+				trackings: [],
+				mass_input_target: ''
 			};
 		},
 
@@ -421,6 +460,9 @@
 
 				this.currentTime = invoice.created_at;
 				this.invoiceNumber = invoice.invoice_no;
+
+				
+				Vue.nextTick( () => window.events.$emit("updateItemsValue") );
 			},
 
 			getProductTypes() {
@@ -482,10 +524,11 @@
 				this.getCustomers();
 			},
 
-			getCustomers() {
+			getCustomers(error = 'No error') {
+				console.log(error);
 				axios.get("/customers/list")
 					.then(response => this.setCustomers(response))
-					.catch(error => this.getCustomers());
+					.catch(error => this.getCustomers(error));
 			},
 
 			setCustomers(response) {
@@ -530,7 +573,8 @@
 					item_tax_inclusive: '',
 					dimension_weight: 0,
 					sku: '',
-					tax_type: 'SR'
+					tax_type: 'SR',
+					shouldFocus: true
 
 				});
 
@@ -538,6 +582,7 @@
 			},
 
 			updateItem(event, index) {
+				// console.log("Index: " + index + " Courier:" + this.form.items[index].courier_id);
 				this.form.items[index][event.attribute] = event.value;
 			},
 
@@ -545,6 +590,7 @@
 			deleteItem(index) {
 				// console.log(index);
 				this.form.items.splice(index,1);
+				Vue.nextTick( () => window.events.$emit("updateItemsValue") );
 			},
 
 			updateCurrentTime() {
@@ -601,6 +647,44 @@
 
 				// console.log(error);
 				window.events.$emit('update_price');
+			},
+
+			massInput(index) {
+				this.mass_input_target = index;
+				this.isMassInput = true;
+
+				setTimeout(function(){ this.$refs.tracking_number.triggerFocus() }.bind(this), 500 );
+			},
+
+			closeMassInput() {
+				this.isMassInput = false;
+				this.trackings = [];
+			},
+
+			addTrackingNumber() {
+				this.trackings.push(this.mass_tracking_no);
+				this.mass_tracking_no = '';
+			},
+
+			confirmTrackingNumber() {
+				
+				this.trackings.forEach(function(tracking, key){
+
+						let newItem = JSON.parse(JSON.stringify(this.form.items[this.mass_input_target]));
+
+						newItem['tracking_code'] = tracking;
+						newItem['shouldFocus'] = false;
+						// console.log(newItem.tracking_code);
+						this.form.items.push(newItem);
+
+				}.bind(this));
+
+				this.isMassInput = false;
+				this.trackings = [];
+
+
+				this.deleteItem(this.mass_input_target);
+				Vue.nextTick( () => this.addItem() );
 			}
 
 		},
