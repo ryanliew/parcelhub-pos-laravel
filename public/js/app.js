@@ -68528,24 +68528,32 @@ var render = function() {
                     input: function($event) {
                       _vm.updateValue($event.target.value)
                     },
-                    keyup: function($event) {
-                      if (
-                        !("button" in $event) &&
-                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                      ) {
-                        return null
+                    keydown: [
+                      function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        _vm.$emit("enter")
+                      },
+                      function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k($event.keyCode, "tab", 9, $event.key, "Tab")
+                        ) {
+                          return null
+                        }
+                        _vm.$emit("tab")
                       }
-                      _vm.$emit("enter")
-                    },
-                    keydown: function($event) {
-                      if (
-                        !("button" in $event) &&
-                        _vm._k($event.keyCode, "tab", 9, $event.key, "Tab")
-                      ) {
-                        return null
-                      }
-                      _vm.$emit("tab")
-                    },
+                    ],
                     dblclick: function($event) {
                       _vm.$emit("dblclick")
                     }
@@ -76354,7 +76362,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				dimension_weight: 0,
 				sku: '',
 				tax_type: 'SR',
-				shouldFocus: true
+				shouldFocus: true,
+				has_error: false
 
 			});
 
@@ -76528,7 +76537,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}).length;
 		},
 		canSubmit: function canSubmit() {
-			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && this.canEdit;
+			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
+				return item.has_error;
+			}) && this.canEdit;
 		},
 		canEdit: function canEdit() {
 			return !this.invoice || this.can_edit_invoice;
@@ -76543,6 +76554,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				if (this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
 
 				if (this.selectedType.value == 'Customer' && !this.selectedCustomer) return "Customer not selected";
+
+				if (_.find(this.form.items, function (item) {
+					return item.has_error;
+				})) return "Items detail incomplete";
 
 				return "No items";
 			}
@@ -76866,7 +76881,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
@@ -76896,7 +76910,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			has_detail: true,
 			tax_type: '',
 
-			tracking_no_error: '',
 			selectedProductType_error: '',
 			selectedZoneType_error: '',
 			zone_error: '',
@@ -76975,6 +76988,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.getProducts();
 		},
 		openDimWeightModal: function openDimWeightModal() {
+			console.log("Opening dim weight");
 			this.isCalculatingDimWeight = true;
 			if (!this.dimension_weight) {
 				this.height = "";
@@ -76986,6 +77000,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this), 500);
 		},
 		closeDimWeight: function closeDimWeight() {
+			console.log("Closing dim weight");
 			if (!this.dimension_weight) {
 				this.height = 0;
 				this.width = 0;
@@ -77005,7 +77020,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.height > 0) {
 				this.dimension_weight = eval(expression);
 				this.closeDimWeight();
-				this.should_update_product = true;
+				this.updateProducts();
 				if (shouldFocus) this.$refs.dimension.triggerFocus();
 			}
 		},
@@ -77203,12 +77218,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.price) price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax);
 
 			return price.toFixed(2);
+		},
+		tracking_no_error: function tracking_no_error() {
+			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
+				// We already have a product which needs tracking code selected but tracking code not entered
+				return 'Tracking code is required';
+
+			return '';
 		}
 	},
 
 	watch: {
 		tracking_no: function tracking_no(newVal) {
 			this.$emit('update', { attribute: 'tracking_code', value: newVal });
+		},
+		tracking_no_error: function tracking_no_error(newVal) {
+			this.$emit('update', { attribute: 'has_error', value: newVal != '' });
 		},
 		selectedProductType: function selectedProductType(newVal) {
 			this.$emit('update', { attribute: 'product_type_id', value: '' });
@@ -77561,9 +77586,6 @@ var render = function() {
           disabled: !_vm.canEdit
         },
         on: {
-          enter: function($event) {
-            _vm.$emit("addItem")
-          },
           tab: function($event) {
             _vm.$emit("addItem")
           }

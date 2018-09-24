@@ -154,7 +154,6 @@
 			:error="tracking_no_error"
 			ref="tracking_input"
 			:disabled="!canEdit"
-			@enter="$emit('addItem')"
 			@tab="$emit('addItem')">
 		</text-input>
 			
@@ -264,7 +263,6 @@
 				has_detail: true,
 				tax_type: '',
 
-				tracking_no_error: '',
 				selectedProductType_error: '',
 				selectedZoneType_error: '',
 				zone_error: '',
@@ -339,6 +337,7 @@
 			},
 
 			openDimWeightModal() {
+				console.log("Opening dim weight");
 				this.isCalculatingDimWeight = true;
 				if(!this.dimension_weight) {
 					this.height = "";
@@ -349,6 +348,7 @@
 			},
 
 			closeDimWeight() {
+				console.log("Closing dim weight")
 				if(!this.dimension_weight) {
 					this.height = 0;
 					this.width = 0;
@@ -367,7 +367,7 @@
 				if(this.height > 0) {
 					this.dimension_weight = eval(expression);
 					this.closeDimWeight();
-					this.should_update_product = true;
+					this.updateProducts();
 					if(shouldFocus)
 						this.$refs.dimension.triggerFocus();
 				}
@@ -564,11 +564,23 @@
 
 				return price.toFixed(2);
 			},
+
+			tracking_no_error() {
+				if(this.selectedProductType.has_detail && this.description && !this.tracking_no)
+					// We already have a product which needs tracking code selected but tracking code not entered
+					return 'Tracking code is required';
+
+				return '';
+			}
 		},
 
 		watch: {
 			tracking_no(newVal) {
 				this.$emit('update', {attribute: 'tracking_code', value: newVal});
+			},
+
+			tracking_no_error(newVal) {
+				this.$emit('update', {attribute: 'has_error', value: newVal != ''});
 			},
 
 			selectedProductType(newVal) {
@@ -660,7 +672,7 @@
 
 			tax_type(newVal) {
 				this.$emit('update', {attribute: 'tax_type', value: newVal ? newVal : 'SR'});
-			}
+			},
 		}	
 	}
 </script>

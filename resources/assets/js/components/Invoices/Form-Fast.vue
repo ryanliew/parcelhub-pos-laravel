@@ -578,7 +578,8 @@
 					dimension_weight: 0,
 					sku: '',
 					tax_type: 'SR',
-					shouldFocus: true
+					shouldFocus: true,
+					has_error: false
 
 				});
 
@@ -770,7 +771,10 @@
 			},
 
 			canSubmit() {
-				return this.itemCount > 0 && ( this.selectedCustomer || this.form.paid >= this.rounded_total ) && this.canEdit;
+				return this.itemCount > 0 
+						&& ( this.selectedCustomer || this.form.paid >= this.rounded_total ) 
+						&& !_.find(this.form.items, function(item){ return item.has_error; })
+						&& this.canEdit;
 			},
 
 			canEdit() {
@@ -792,6 +796,9 @@
 
 					if(this.selectedType.value == 'Customer' && !this.selectedCustomer)
 						return "Customer not selected";
+
+					if(_.find(this.form.items, function(item){ return item.has_error })) 
+						return "Items detail incomplete";
 
 					return "No items";
 				}
