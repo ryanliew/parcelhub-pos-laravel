@@ -52,6 +52,11 @@ class Branch extends Model
                     ->withPivot('id', 'customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price', 'is_tax_inclusive');
     }
 
+    public function cashups()
+    {
+        return $this->hasMany("App\Cashup");
+    }
+
     public function default_product_type()
     {
         return $this->belongsTo("App\ProductType", 'product_type_id');

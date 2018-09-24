@@ -76198,7 +76198,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 	methods: {
 		adjustHeader: function adjustHeader(event) {
-			if (event.pageY > this.headerTop) {
+
+			if (document.documentElement.scrollTop > this.headerTop) {
 				this.headerClass = "header-fixed";
 			} else {
 				this.headerClass = "";
@@ -76305,7 +76306,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			console.log(error);
+			// console.log(error);
 			axios.get("/customers/list").then(function (response) {
 				return _this6.setCustomers(response);
 			}).catch(function (error) {
@@ -76629,6 +76630,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
 //
 //
 //
@@ -77654,6 +77657,19 @@ var render = function() {
             _vm._v("Calculate dimension weight")
           ]),
           _vm._v(" "),
+          _vm.selectedCourier
+            ? _c("p", [
+                _vm._v(
+                  " Selected courier: " +
+                    _vm._s(_vm.selectedCourier.label) +
+                    " - " +
+                    _vm._s(_vm.selectedCourier.formula)
+                )
+              ])
+            : _c("p", { staticClass: "text-danger" }, [
+                _vm._v("Please select courier first")
+              ]),
+          _vm._v(" "),
           _c("text-input", {
             ref: "heightinput",
             attrs: {
@@ -77731,7 +77747,7 @@ var render = function() {
               "button",
               {
                 staticClass: "btn btn-primary",
-                attrs: { type: "button" },
+                attrs: { type: "button", disabled: !_vm.selectedCourier },
                 on: { click: _vm.calculateDimWeight }
               },
               [_vm._v("Confirm")]
