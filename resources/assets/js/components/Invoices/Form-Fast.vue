@@ -110,6 +110,7 @@
 								type="number"
 								label="Paid"
 								name="paid"
+								ref="paid"
 								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
@@ -420,9 +421,11 @@
 	    			this.addItem();
 	    		}
 
-	    		if(event.key == "F7" && this.canSubmit) {
-	    			// this.toggleAddItem();
-	    			this.submit();
+	    		if(event.key == "F7") {
+	    			if(this.canSubmit)
+	    				this.submit();
+	    			else
+	    				this.$refs.paid.triggerFocus();
 	    		}
 	    	}.bind(this));
 		},

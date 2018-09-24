@@ -76110,6 +76110,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -76188,9 +76189,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.addItem();
 			}
 
-			if (event.key == "F7" && this.canSubmit) {
-				// this.toggleAddItem();
-				this.submit();
+			if (event.key == "F7") {
+				if (this.canSubmit) this.submit();else this.$refs.paid.triggerFocus();
 			}
 		}.bind(this));
 	},
@@ -78041,6 +78041,7 @@ var render = function() {
                     ),
                     _vm._v(" "),
                     _c("text-input", {
+                      ref: "paid",
                       attrs: {
                         defaultValue: _vm.form.paid,
                         required: true,
