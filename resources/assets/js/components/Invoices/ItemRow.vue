@@ -172,7 +172,7 @@
 			@input="is_custom_pricing = true"
 			@tab="$emit('addItem')">
 		</text-input>
-			
+		
 		<text-input v-model="total_price" 
 			:defaultValue="total_price"
 			:required="true"
@@ -192,6 +192,8 @@
 
 			<span slot="header">Calculate dimension weight</span>
 
+			<p v-if="selectedCourier"> Selected courier: {{ selectedCourier.label }} - {{ selectedCourier.formula }}</p>
+			<p class="text-danger" v-else>Please select courier first</p>
 			<text-input v-model="height" 
 				:defaultValue="height"
 				:required="true"
@@ -227,7 +229,7 @@
 
 			<template slot="footer">
 				<button type="button" class="btn btn-secondary" @click="closeDimWeight">Cancel</button>
-				<button type="button" class="btn btn-primary" @click="calculateDimWeight">Confirm</button>
+				<button type="button" class="btn btn-primary" @click="calculateDimWeight" :disabled="!selectedCourier">Confirm</button>
 			</template>
 		</modal>
 	</div>

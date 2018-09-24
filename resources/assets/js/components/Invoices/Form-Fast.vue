@@ -429,7 +429,8 @@
 
 		methods: {
 			adjustHeader(event) {
-				if(event.pageY > this.headerTop) {
+				
+				if(document.documentElement.scrollTop > this.headerTop) {
 					this.headerClass = "header-fixed";
 				} else {
 					this.headerClass = "";
@@ -525,7 +526,7 @@
 			},
 
 			getCustomers(error = 'No error') {
-				console.log(error);
+				// console.log(error);
 				axios.get("/customers/list")
 					.then(response => this.setCustomers(response))
 					.catch(error => this.getCustomers(error));
