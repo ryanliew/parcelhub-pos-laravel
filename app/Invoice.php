@@ -42,12 +42,12 @@ class Invoice extends Model
 
     public function cashup()
     {
-        return $this->belongsTo("App\Cashup");
+        return $this->belongsToMany("App\Cashup")->withTimestamps()->withPivot('total', 'payment_method', 'payment_id');
     }
 
     public function scopeCashupRequired($query)
     {
-        return $query->where('cashed', false)->where('type', 'Cash');
+        return $query->where('cashed', false);
     }
 
     public function getCanEditAttribute()
