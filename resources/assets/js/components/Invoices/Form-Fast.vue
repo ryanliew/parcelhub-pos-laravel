@@ -679,7 +679,6 @@
 
 						newItem['tracking_code'] = tracking;
 						newItem['shouldFocus'] = false;
-						newItem['has_error'] = false;
 						// console.log(newItem.tracking_code);
 						this.form.items.push(newItem);
 
