@@ -27,6 +27,11 @@ class Cashup extends Model
 
     public function invoices()
     {
-    	return $this->hasMany("App\Invoice");
+    	return $this->belongsToMany("App\Invoice")->withTimestamps()->withPivot('total', 'payment_method', 'payment_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany("App\Payment");
     }
 }

@@ -15,6 +15,8 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+Route::get("/test", "CashupController@store");
+
 Auth::routes();
 
 Route::get('/home', function() {

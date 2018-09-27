@@ -76576,8 +76576,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			if (newVal.value !== 'Customer') {
 				this.selectedCustomer = '';
-			} else {
-				this.selectedPaymentType = { value: 'Account', label: 'Account' };
 			}
 			if (this.canEdit) this.getPriceForItems();
 		},
