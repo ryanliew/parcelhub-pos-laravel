@@ -79,14 +79,10 @@
 	    	width: 300px; float: right;
 	    }
 
-	    .page-break {
-	    	page-break-before: always;
-	    }
-
-	    #items, #invoices { clear: both; width: 100%; margin: 30px 0 0 0; border: 1px solid black; }
-		#items th, #invoices th { background: #eee; }
-		#items textarea, #invoices textarea { width: 80px; height: 50px; }
-		#items tr.item-row td, #invoices tr.item-row td { border: 0; vertical-align: top; }
+	    #items { clear: both; width: 100%; margin: 30px 0 0 0; border: 1px solid black; }
+		#items th { background: #eee; }
+		#items textarea { width: 80px; height: 50px; }
+		#items tr.item-row td { border: 0; vertical-align: top; }
 
 	</style>
 	
@@ -150,27 +146,19 @@
 				      	<th>%</th>
 				      	<th>Count</th>
 				  	</tr>
-				  	@foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records)
-					  	<tr class="item-row text-center">
-					  		<td class="text-center">
-					  			@if($type == 'IBG')17
-					  			@elseif($type == 'Cash')01
-					  			@elseif($type == 'Credit card')02
-					  			@elseif($type == 'Cheque')05
-					  			@endif
-					  		</td>
-					  		<td class="text-center">{{ $type }}</td>
-					  		<?php $sum = $records->sum(function($invoice){ return $invoice->pivot->total; }); ?>
-					  		<td class="text-center">{{ number_format( $sum, 2, ".", ",") }}</td>
-					  		<td class="text-center">{{ number_format( $sum / $cashup->total * 100, 2, ".", ",") }}</td>
-					  		<td class="text-center">{{ $records->count() }}</td>
-					  	</tr>
-					@endforeach
+
+				  	<tr class="item-row text-center">
+				  		<td class="text-center">01</td>
+				  		<td class="text-center">Cash</td>
+				  		<td class="text-center">{{ number_format($invoices->sum(function($invoice){ return $invoice->total; }), 2, ".", ",") }}</td>
+				  		<td class="text-center">100.00</td>
+				  		<td class="text-center">{{ $invoices->count() }}</td>
+				  	</tr>
 
 				  	<tr class="item-row text-center">
 				  		<td class="text-center">00</td>
 				  		<td class="text-center">Float</td>
-				  		<td class="text-center">{{ number_format($cashup->terminal->float / $cashup->total * 100, 2, ".", ",") }}</td>
+				  		<td class="text-center">{{ number_format($cashup->terminal->float, 2, ".", ",") }}</td>
 				  		<td></td>
 				  		<td></td>
 				  	</tr>
@@ -181,39 +169,6 @@
 						<td></td>
 						<td class="text-right"><b>Total</b></td>
 						<td class="text-center"><b>{{ number_format($cashup->total, 2, ".", ",") }}</b></td>
-						<td></td>
-						<td></td>
-					</tr>
-				</tfoot>
-			</table> 
-		</div>
-
-		<div class="page-break">
-			<h1>Including invoices</h1>
-			<table id="invoices" cellpadding="5" height=100% >
-			  	<tbody>
-				  	<tr>
-				   		<th>Invoice no</th>
-					    <th>Payment Type</th>
-				      	<th>Expected RM</th>
-				      	<th>%</th>
-				      	<th>Payment #</th>
-				  	</tr>
-				  	@foreach($invoices as $invoice)
-					  	<tr class="item-row text-center">
-					  		<td class="text-center">{{ $invoice->invoice_no }}</td>
-					  		<td class="text-center">{{ $invoice->pivot->payment_method }}</td>
-					  		<td class="text-center">{{ number_format( $invoice->pivot->total, 2, ".", ",") }}</td>
-					  		<td class="text-center">{{ number_format( $invoice->pivot->total / $cashup->total * 100, 2, ".", ",") }}</td>
-					  		<td class="text-center">{{ $invoice->pivot->payment_id ?: 'N/A' }}</td>
-					  	</tr>
-					@endforeach
-				</tbody>
-				<tfoot>
-					<tr>
-						<td></td>
-						<td class="text-right"><b>Total</b></td>
-						<td class="text-center"><b>{{ number_format($cashup->total - $cashup->terminal->float, 2, ".", ",") }}</b></td>
 						<td></td>
 						<td></td>
 					</tr>
