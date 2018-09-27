@@ -818,7 +818,10 @@
 				
 				if(newVal.value !== 'Customer') {
 					this.selectedCustomer = '';
-				} 
+				} else {
+					this.selectedPaymentType = {value: 'Account', label: 'Account'};
+				}
+				
 				if(this.canEdit)
 					this.getPriceForItems();
 			},
