@@ -78150,22 +78150,16 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm.form.payment_type == "Cash"
-                    ? _c(
-                        "div",
-                        { staticClass: "d-flex align-items-center mb-3" },
-                        [
-                          _c("b", { staticClass: "invoice-label text-right" }, [
-                            _vm._v("Change:")
-                          ]),
-                          _vm._v(
-                            " RM" +
-                              _vm._s(_vm._f("price")(_vm.change)) +
-                              "\n\t\t\t\t\t\t"
-                          )
-                        ]
-                      )
-                    : _vm._e()
+                  _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                    _c("b", { staticClass: "invoice-label text-right" }, [
+                      _vm._v("Change:")
+                    ]),
+                    _vm._v(
+                      " RM" +
+                        _vm._s(_vm._f("price")(_vm.change)) +
+                        "\n\t\t\t\t\t\t"
+                    )
+                  ])
                 ])
               ])
             ])
