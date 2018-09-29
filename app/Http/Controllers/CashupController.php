@@ -41,8 +41,8 @@ class CashupController extends Controller
     	if($invoices->count() > 0 || $payments->count() > 0)
     	{
 
-            $last_id = $invoices->count() > 0 ? $invoices->last()->invoice_no : $payments->last()->invoice->invoice_no;
-            $first_id = $invoices->count() > 0 ? $invoices->first()->invoice_no : $payments->first()->invoice->invoice_no;
+            $last_id = $invoices->count() > 0 ? $invoices->last()->invoice_no : $payments->last()->payments()->first()->invoice_no;
+            $first_id = $invoices->count() > 0 ? $invoices->first()->invoice_no : $payments->first()->payments()->last()->invoice_no;
             $session_start = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
 
 	    	$cashup = $terminal->cashups()->create([
