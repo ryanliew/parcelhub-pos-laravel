@@ -162,7 +162,7 @@
 					  		<td class="text-center">{{ $type }}</td>
 					  		<?php $sum = $records->sum(function($invoice){ return $invoice->pivot->total; }); ?>
 					  		<td class="text-center">{{ number_format( $sum, 2, ".", ",") }}</td>
-					  		<td class="text-center">{{ number_format( $sum / $cashup->total * 100, 2, ".", ",") }}</td>
+					  		<td class="text-center">{{ $cashup->total > 0 ? number_format( $sum / $cashup->total * 100, 2, ".", ",") : 0.00 }}</td>
 					  		<td class="text-center">{{ $records->count() }}</td>
 					  	</tr>
 					@endforeach
@@ -170,7 +170,7 @@
 				  	<tr class="item-row text-center">
 				  		<td class="text-center">00</td>
 				  		<td class="text-center">Float</td>
-				  		<td class="text-center">{{ number_format($cashup->terminal->float / $cashup->total * 100, 2, ".", ",") }}</td>
+				  		<td class="text-center">{{ $cashup->total > 0 ? number_format($cashup->terminal->float / $cashup->total * 100, 2, ".", ",") : 0.00}}</td>
 				  		<td></td>
 				  		<td></td>
 				  	</tr>
@@ -204,7 +204,7 @@
 					  		<td class="text-center">{{ $invoice->invoice_no }}</td>
 					  		<td class="text-center">{{ $invoice->pivot->payment_method }}</td>
 					  		<td class="text-center">{{ number_format( $invoice->pivot->total, 2, ".", ",") }}</td>
-					  		<td class="text-center">{{ number_format( $invoice->pivot->total / $cashup->total * 100, 2, ".", ",") }}</td>
+					  		<td class="text-center">{{ $cashup->total > 0 ? number_format( $invoice->pivot->total / $cashup->total * 100, 2, ".", ",") : 0.00 }}</td>
 					  		<td class="text-center">{{ $invoice->pivot->payment_id ?: 'N/A' }}</td>
 					  	</tr>
 					@endforeach
@@ -213,7 +213,7 @@
 					<tr>
 						<td></td>
 						<td class="text-right"><b>Total</b></td>
-						<td class="text-center"><b>{{ number_format($cashup->total - $cashup->terminal->float, 2, ".", ",") }}</b></td>
+						<td class="text-center"><b>{{ $cashup->total > 0 ? number_format($cashup->total - $cashup->terminal->float, 2, ".", ",") : 0.00 }}</b></td>
 						<td></td>
 						<td></td>
 					</tr>
