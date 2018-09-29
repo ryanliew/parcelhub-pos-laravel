@@ -128,7 +128,7 @@
 							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Total:</b> RM{{ rounded_total | price }}
 							</div>
-							<div class="d-flex align-items-center mb-3" v-if="form.payment_type == 'Cash'">
+							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
 							</div>
 						</div>
