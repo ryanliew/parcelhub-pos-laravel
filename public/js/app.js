@@ -76887,7 +76887,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
 
 	data: function data() {
 		return {
@@ -76925,6 +76925,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			price_error: '',
 			unit_error: '',
 			item_tax_error: '',
+
+			tracking_no_repeating: '',
 
 			products: []
 		};
@@ -76992,7 +76994,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.getProducts();
 		},
 		openDimWeightModal: function openDimWeightModal() {
-			console.log("Opening dim weight");
+			// console.log("Opening dim weight");
 			this.isCalculatingDimWeight = true;
 			if (!this.dimension_weight) {
 				this.height = "";
@@ -77004,7 +77006,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this), 500);
 		},
 		closeDimWeight: function closeDimWeight() {
-			console.log("Closing dim weight");
+			// console.log("Closing dim weight");
 			if (!this.dimension_weight) {
 				this.height = 0;
 				this.width = 0;
@@ -77208,6 +77210,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		massInput: function massInput() {
 			if (parseInt(this.unit) > 1) this.$emit("mass");else this.$refs.tracking_input.triggerFocus();
+		},
+
+
+		checkTrackingNo: _.debounce(function () {
+			var _this6 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+
+			console.log(error);
+			axios.get("/data/trackings/check?code=" + this.tracking_no).then(function (response) {
+				return _this6.setTrackingNoResult(response);
+			}).catch(function (error) {
+				return _this6.checkTrackingNo(error);
+			});
+		}, 1000),
+
+		setTrackingNoResult: function setTrackingNoResult(response) {
+			// console.log(response.data.result);
+			this.tracking_no_repeating = response.data.result;
+
+			if (!response.data.result) {
+				this.tracking_no_repeating = _.filter(this.items, function (item) {
+					return item.tracking_code && item.tracking_code == this.tracking_no;
+				}.bind(this)).length > 1;
+			}
 		}
 	},
 
@@ -77226,7 +77253,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		tracking_no_error: function tracking_no_error() {
 			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
 				// We already have a product which needs tracking code selected but tracking code not entered
-				return 'Tracking code is required';
+				return 'Tracking code is required';else if (this.tracking_no_repeating) return 'Invalid tracking code';
 
 			return '';
 		}
@@ -77234,6 +77261,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	watch: {
 		tracking_no: function tracking_no(newVal) {
+			this.checkTrackingNo();
 			this.$emit('update', { attribute: 'tracking_code', value: newVal });
 		},
 		tracking_no_error: function tracking_no_error(newVal) {
@@ -78502,6 +78530,7 @@ var render = function() {
                   return [
                     _c("item-row", {
                       attrs: {
+                        items: _vm.form.items,
                         index: index,
                         canEdit: _vm.canEditItem,
                         item: item,

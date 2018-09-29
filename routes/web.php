@@ -124,6 +124,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/branch/{branch}', "BranchController@get");
 		Route::get("/pricing", "BranchController@getPricing");
 		Route::get("/users", "UserController@list");
+		Route::get("/trackings/check", "InvoiceController@validateTracking");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){

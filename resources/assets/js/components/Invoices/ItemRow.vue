@@ -236,7 +236,7 @@
 
 <script>
 	export default {
-		props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+		props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
 
 		data() {
 			return {
@@ -274,6 +274,8 @@
 				price_error: '',
 				unit_error: '',
 				item_tax_error: '',
+
+				tracking_no_repeating: '',
 
 				products: []
 			};
@@ -337,7 +339,7 @@
 			},
 
 			openDimWeightModal() {
-				console.log("Opening dim weight");
+				// console.log("Opening dim weight");
 				this.isCalculatingDimWeight = true;
 				if(!this.dimension_weight) {
 					this.height = "";
@@ -348,7 +350,7 @@
 			},
 
 			closeDimWeight() {
-				console.log("Closing dim weight")
+				// console.log("Closing dim weight");
 				if(!this.dimension_weight) {
 					this.height = 0;
 					this.width = 0;
@@ -547,6 +549,24 @@
 					this.$emit("mass");
 				else
 					this.$refs.tracking_input.triggerFocus();
+			},
+
+			checkTrackingNo: _.debounce(function (error = "No error") {
+				console.log(error);
+				axios.get("/data/trackings/check?code=" + this.tracking_no)
+					.then(response => this.setTrackingNoResult(response))
+					.catch(error => this.checkTrackingNo(error));
+			}, 1000),
+
+			setTrackingNoResult(response) {
+				// console.log(response.data.result);
+				this.tracking_no_repeating = response.data.result;
+
+				if(!response.data.result) {
+					this.tracking_no_repeating = _.filter(this.items, function(item){
+						return item.tracking_code && item.tracking_code == this.tracking_no;
+					}.bind(this)).length > 1;
+				}
 			}
 		},
 
@@ -569,6 +589,8 @@
 				if(this.selectedProductType.has_detail && this.description && !this.tracking_no)
 					// We already have a product which needs tracking code selected but tracking code not entered
 					return 'Tracking code is required';
+				else if(this.tracking_no_repeating)
+					return 'Invalid tracking code';
 
 				return '';
 			}
@@ -576,6 +598,7 @@
 
 		watch: {
 			tracking_no(newVal) {
+				this.checkTrackingNo();
 				this.$emit('update', {attribute: 'tracking_code', value: newVal});
 			},
 
