@@ -40,12 +40,12 @@ body {
 }
 
 .dataTables_length {
-	width: 70%;
+	width: 30%;
 	float: left;
 }
 
 .dataTables_filter {
-	width: 30%;
+	width: 70%;
 	float: right;
 }
 
@@ -289,4 +289,14 @@ span.text-primary.disabled {
 
 .invoice-summary .invoice-label {
 	min-width: 120px;
+}
+
+.loading {
+	background: rgba(0,0,0,0.1);
+	height: calc(100% - 150px);
+	width: 100%;
+	position: absolute;
+	top: 150px;
+	left: 0;
+	z-index: 99;
 }

@@ -294,7 +294,7 @@
 
 			// If we are getting item from db
 			Vue.nextTick( () => {
-				console.log(this.item.product_id);
+				// console.log(this.item.product_id);
 				if(this.item.product_id) {
 					this.updateItem();
 				}
@@ -445,7 +445,8 @@
 				if(this.selectedProduct) {
 					this.description = this.selectedProduct.description;
 					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-					this.getProductPrice();
+					console.log("It is me!");
+					Vue.nextTick( () => this.getProductPrice() );
 				}
 			},
 
@@ -490,8 +491,9 @@
 			},
 
 			getProductPrice(error = 'No error') {
+				console.log("Getting product price " + this.canEdit);
 				// console.log(error);
-				if(this.selectedProduct) {
+				if(this.selectedProduct && this.canEdit) {
 					this.item_add_loading = true;
 
 					let url = this.getProductPriceUrl(this.selectedProduct.value);
@@ -503,12 +505,12 @@
 						.catch(error => this.getProductPrice(error));
 				}
 
-				this.setProductPrice('');
+				Vue.nextTick( () => this.setProductPrice(''));
 			},
 
 			setProductPrice(response) {
 				// console.log("Setting product price");
-				if(response) {
+				if(response && this.canEdit) {
 					this.price_group = this.selectedProduct;
 
 					if(response.data)
@@ -589,7 +591,7 @@
 				if(this.selectedProductType.has_detail && this.description && !this.tracking_no)
 					// We already have a product which needs tracking code selected but tracking code not entered
 					return 'Tracking code is required';
-				else if(this.tracking_no_repeating)
+				else if(this.tracking_no_repeating && this.canEdit)
 					return 'Invalid tracking code';
 
 				return '';

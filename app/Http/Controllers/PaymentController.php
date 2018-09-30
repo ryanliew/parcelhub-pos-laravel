@@ -7,6 +7,12 @@ use App\Customer;
 use App\PaymentInvoice;
 use App\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
+
 
 class PaymentController extends Controller
 {
@@ -138,6 +144,26 @@ class PaymentController extends Controller
         }
 
         return json_encode(['message' => "Payment created",'payment_id' => $payment_id ] );
+    }
+
+    public function receipt(Payment $payment)
+    {
+       return PaymentController::generate_pdf('payment.receipt', $payment);
+    }
+
+    public function generate_pdf($view, Payment $payment)
+    {
+        $html = View::make($view, ["payment" => $payment])->render();
+
+        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF->WriteHTML($html);
+        $newPDF->setFooter('{PAGENO}/{nbpg}');
+
+        $path = storage_path('receipts\invoice_payment_' . $payment->id . '.pdf');
+        $newPDF->Output($path, Destination::FILE);
+
+        return response()->file($path);
+        // return $html;
     }
 
 }

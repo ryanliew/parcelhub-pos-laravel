@@ -153,6 +153,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/receipt/{invoice}", "InvoiceController@receipt")->name("invoices.receipt");
 		Route::get("/preview/{invoice}", "InvoiceController@preview")->name("invoices.preview");
 		Route::get("/do/{invoice}","InvoiceController@delivery_order")->name("invoices.delivery_order");
+		Route::get("/search/trackings", "InvoiceController@searchByTracking")->name('invoices.tracking_search');
 		Route::get("/{invoice}", "InvoiceController@get");
 		
 	});
@@ -172,6 +173,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/details/{payment}', "PaymentInvoiceController@index");
 		Route::get('/detail/{payment}', "PaymentInvoiceController@page");
 		Route::post("/create/", "PaymentController@store");
+		Route::get('/receipt/{payment}', "PaymentController@receipt");
 	});
 
 	Route::group(['prefix' => 'customers'], function(){

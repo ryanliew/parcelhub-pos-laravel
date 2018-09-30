@@ -66,6 +66,13 @@
 				},
 				dom: 'Bt',
 				buttons: [
+					{
+						text: 'Print',
+						action: function( e, dt, node, config ) {
+
+							window.open("/payments/receipt/{{ $payment_id }}");
+						},
+					},
 					 'excel', 'colvis'
 				],
 				ajax: url,
@@ -105,6 +112,7 @@
 					},
 				]
 			});
+			
 
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();

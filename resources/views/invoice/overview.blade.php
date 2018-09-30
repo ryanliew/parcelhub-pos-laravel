@@ -78,7 +78,7 @@
 							}
 
 							return data;
-						}
+						}, "searchable": false
 					},
 					{data: 'discount', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
@@ -86,7 +86,7 @@
 							}
 
 							return data;
-						}
+						}, "searchable": false
 					},
 					{data: 'tax', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
@@ -94,7 +94,7 @@
 							}
 
 							return data;
-						}
+						}, "searchable": false
 					},
 					{data: 'total', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
@@ -102,7 +102,7 @@
 							}
 
 							return data;
-						}
+						}, "searchable": false
 					},
 					{data: 'payment', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
@@ -110,16 +110,16 @@
 							}
 
 							return data;
-						}
+						}, "searchable": false
 					},
-					{data: 'updated_at'},
+					{data: 'updated_at', "searchable": false},
 					{data: 'outstanding', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);
 							}
 
 							return data;
-						}
+						}, "searchable": false
 					},
 					{data: 'remarks', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
@@ -129,7 +129,7 @@
 							return data;
 						}
 					},
-					{data: 'tracking_codes', name: 'items.tracking_code'}
+					{data: 'tracking_codes', name: 'items.tracking_code', "searchable": false}
 				]
 
 				
@@ -145,6 +145,8 @@
 		    	table.ajax.reload();
 		    });
 		});
+
+
 
 	</script>
 @endsection

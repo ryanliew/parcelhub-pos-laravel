@@ -112,6 +112,7 @@
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.19/api/sum().js"></script>
+	<script type="text/javascript" src="https://momentjs.com/downloads/moment.min.js"></script>
 	<script>
 		$(function(){
 			var totalAMT = 0.0;
@@ -218,6 +219,9 @@
 			    	var value = false;
 			    	var min  = $('#min').val();
 			        var max  = $('#max').val();
+			        // Include invoices from that day as well
+			        max = moment(max).add(1, "days").format("YYYY-MM-DD");
+
 			        var option  = $('#option').val();
 			        var createdAt = data[0] || 0; 
 			        var outstanding = data[5] || 0;
@@ -330,7 +334,12 @@
 						  url: "/payments/create",
 						  data: data,
 						  success: function(response){ 
-						  	window.location.href ='/payments/detail/' + response.payment_id;
+
+							  window.open('/payments/receipt/' + response.payment_id, '_blank');
+
+								setInterval(function(){
+									window.location.href ='/payments/detail/' + response.payment_id;
+								}, 3000);
 						  },
 						  dataType: "json",
 						  contentType : "application/json"

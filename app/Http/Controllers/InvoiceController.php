@@ -39,10 +39,24 @@ class InvoiceController extends Controller
 
     public function index()
     {
+        // Improve tracking number search performance by searching from items table directly then incorporate the invoice id to the invoices search
         $terminal = auth()->user()->terminal()->first();
+        $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*');
+
+        $items = collect();
+
+        if(request()['search']['value'])
+            $items = Item::where('tracking_code', 'like', '%' . request()['search']['value'] . '%')->get();
 
     	return datatables()
-			->of($terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*'))
+			->of($query)
+                ->filter(function($query) use ($items){
+                    if($items->count() > 0) {
+                        $query->orWhere(function($query) use ($items) {
+                            $query->whereIn('id', $items->pluck('invoice_id'));
+                        });
+                    }
+                }, true)
     			->addColumn('payment', function(Invoice $invoice) {
                     return $invoice->payment->sum('total') + $invoice->paid;
                 })
@@ -56,6 +70,28 @@ class InvoiceController extends Controller
                     return $invoice->items->implode('tracking_code', ', ');
                 })
     			->toJson();   
+    }
+
+    public function searchByTracking()
+    {
+        $terminal = auth()->user()->terminal()->first();
+        $items = Item::where('tracking_code', 'like', '%' . ''. '%');
+
+        return datatables()
+            ->of($terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*'))
+                ->addColumn('payment', function(Invoice $invoice) {
+                    return $invoice->payment->sum('total') + $invoice->paid;
+                })
+                ->addColumn('outstanding', function(Invoice $invoice) {
+                    return max($invoice->total - $invoice->payment->sum('total') - $invoice->paid, 0);
+                })
+                ->addColumn('customer', function(Invoice $invoice){ 
+                    return $invoice->customer ? $invoice->customer->name : "---";
+                })
+                ->addColumn('tracking_codes', function(Invoice $invoice){
+                    return $invoice->items->implode('tracking_code', ', ');
+                })
+                ->toJson();
     }
 
     public function validateInput()
