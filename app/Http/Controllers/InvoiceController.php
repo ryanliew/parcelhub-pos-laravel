@@ -46,7 +46,10 @@ class InvoiceController extends Controller
         $items = collect();
 
         if(request()['search']['value'])
-            $items = Item::where('tracking_code', 'like', '%' . request()['search']['value'] . '%')->get();
+            $items = Item::where('tracking_code', 'like', '%' . request()['search']['value'] . '%')
+                    ->where('branch_id', $terminal->branch->id)
+                    ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                    ->get();
 
     	return datatables()
 			->of($query)
