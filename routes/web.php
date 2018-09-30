@@ -15,6 +15,8 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+Route::get("/test", "CashupController@store");
+
 Auth::routes();
 
 Route::get('/home', function() {
@@ -122,6 +124,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/branch/{branch}', "BranchController@get");
 		Route::get("/pricing", "BranchController@getPricing");
 		Route::get("/users", "UserController@list");
+		Route::get("/trackings/check", "InvoiceController@validateTracking");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){

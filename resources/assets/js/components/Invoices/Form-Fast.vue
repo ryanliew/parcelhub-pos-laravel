@@ -110,6 +110,7 @@
 								type="number"
 								label="Paid"
 								name="paid"
+								ref="paid"
 								:editable="canEdit"
 								:focus="false"
 								:hideLabel="false"
@@ -127,7 +128,7 @@
 							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Total:</b> RM{{ rounded_total | price }}
 							</div>
-							<div class="d-flex align-items-center mb-3" v-if="form.payment_type == 'Cash'">
+							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
 							</div>
 						</div>
@@ -286,7 +287,7 @@
 						<div class="header"></div>
 					</div>
 					<template v-for="(item, index) in form.items">
-						<item-row :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
+						<item-row :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
 					</template>
 				</div>
 			</div>			
@@ -420,16 +421,19 @@
 	    			this.addItem();
 	    		}
 
-	    		if(event.key == "F7" && this.canSubmit) {
-	    			// this.toggleAddItem();
-	    			this.submit();
+	    		if(event.key == "F7") {
+	    			if(this.canSubmit)
+	    				this.submit();
+	    			else
+	    				this.$refs.paid.triggerFocus();
 	    		}
 	    	}.bind(this));
 		},
 
 		methods: {
 			adjustHeader(event) {
-				if(event.pageY > this.headerTop) {
+				
+				if(document.documentElement.scrollTop > this.headerTop) {
 					this.headerClass = "header-fixed";
 				} else {
 					this.headerClass = "";
@@ -525,7 +529,7 @@
 			},
 
 			getCustomers(error = 'No error') {
-				console.log(error);
+				// console.log(error);
 				axios.get("/customers/list")
 					.then(response => this.setCustomers(response))
 					.catch(error => this.getCustomers(error));
@@ -574,7 +578,8 @@
 					dimension_weight: 0,
 					sku: '',
 					tax_type: 'SR',
-					shouldFocus: true
+					shouldFocus: true,
+					has_error: false
 
 				});
 
@@ -674,6 +679,7 @@
 
 						newItem['tracking_code'] = tracking;
 						newItem['shouldFocus'] = false;
+						newItem['has_error'] = false;
 						// console.log(newItem.tracking_code);
 						this.form.items.push(newItem);
 
@@ -766,7 +772,10 @@
 			},
 
 			canSubmit() {
-				return this.itemCount > 0 && ( this.selectedCustomer || this.form.paid >= this.rounded_total ) && this.canEdit;
+				return this.itemCount > 0 
+						&& ( this.selectedCustomer || this.form.paid >= this.rounded_total ) 
+						&& !_.find(this.form.items, function(item){ return item.has_error; })
+						&& this.canEdit;
 			},
 
 			canEdit() {
@@ -789,6 +798,9 @@
 					if(this.selectedType.value == 'Customer' && !this.selectedCustomer)
 						return "Customer not selected";
 
+					if(_.find(this.form.items, function(item){ return item.has_error })) 
+						return "Items detail incomplete";
+
 					return "No items";
 				}
 
@@ -806,7 +818,10 @@
 				
 				if(newVal.value !== 'Customer') {
 					this.selectedCustomer = '';
-				} 
+				} else {
+					this.selectedPaymentType = {value: 'Account', label: 'Account'};
+				}
+				
 				if(this.canEdit)
 					this.getPriceForItems();
 			},

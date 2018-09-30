@@ -221,7 +221,7 @@
 				</tr>
 				<tr class="item-row">
 					<td class="meta-detail">Payment due</td>
-					<td><textarea>{{number_format((float)$invoice->total - $invoice->paid,2,'.','')}}</textarea></td>
+					<td><textarea>{{ $invoice->paid > $invoice->total ? 0.00 : number_format((float)$invoice->total - $invoice->paid,2,'.','')}}</textarea></td>
 				</tr>
 				<tr class="item-row">
 					<td class="meta-detail">Attendant</td>

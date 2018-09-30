@@ -68528,24 +68528,32 @@ var render = function() {
                     input: function($event) {
                       _vm.updateValue($event.target.value)
                     },
-                    keyup: function($event) {
-                      if (
-                        !("button" in $event) &&
-                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                      ) {
-                        return null
+                    keydown: [
+                      function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        _vm.$emit("enter")
+                      },
+                      function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k($event.keyCode, "tab", 9, $event.key, "Tab")
+                        ) {
+                          return null
+                        }
+                        _vm.$emit("tab")
                       }
-                      _vm.$emit("enter")
-                    },
-                    keydown: function($event) {
-                      if (
-                        !("button" in $event) &&
-                        _vm._k($event.keyCode, "tab", 9, $event.key, "Tab")
-                      ) {
-                        return null
-                      }
-                      _vm.$emit("tab")
-                    },
+                    ],
                     dblclick: function($event) {
                       _vm.$emit("dblclick")
                     }
@@ -76110,6 +76118,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -76188,9 +76197,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				this.addItem();
 			}
 
-			if (event.key == "F7" && this.canSubmit) {
-				// this.toggleAddItem();
-				this.submit();
+			if (event.key == "F7") {
+				if (this.canSubmit) this.submit();else this.$refs.paid.triggerFocus();
 			}
 		}.bind(this));
 	},
@@ -76198,7 +76206,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 	methods: {
 		adjustHeader: function adjustHeader(event) {
-			if (event.pageY > this.headerTop) {
+
+			if (document.documentElement.scrollTop > this.headerTop) {
 				this.headerClass = "header-fixed";
 			} else {
 				this.headerClass = "";
@@ -76305,7 +76314,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			console.log(error);
+			// console.log(error);
 			axios.get("/customers/list").then(function (response) {
 				return _this6.setCustomers(response);
 			}).catch(function (error) {
@@ -76353,7 +76362,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				dimension_weight: 0,
 				sku: '',
 				tax_type: 'SR',
-				shouldFocus: true
+				shouldFocus: true,
+				has_error: false
 
 			});
 
@@ -76446,6 +76456,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 				newItem['tracking_code'] = tracking;
 				newItem['shouldFocus'] = false;
+				newItem['has_error'] = false;
 				// console.log(newItem.tracking_code);
 				this.form.items.push(newItem);
 			}.bind(this));
@@ -76527,7 +76538,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}).length;
 		},
 		canSubmit: function canSubmit() {
-			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && this.canEdit;
+			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
+				return item.has_error;
+			}) && this.canEdit;
 		},
 		canEdit: function canEdit() {
 			return !this.invoice || this.can_edit_invoice;
@@ -76542,6 +76555,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				if (this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
 
 				if (this.selectedType.value == 'Customer' && !this.selectedCustomer) return "Customer not selected";
+
+				if (_.find(this.form.items, function (item) {
+					return item.has_error;
+				})) return "Items detail incomplete";
 
 				return "No items";
 			}
@@ -76559,7 +76576,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			if (newVal.value !== 'Customer') {
 				this.selectedCustomer = '';
+			} else {
+				this.selectedPaymentType = { value: 'Account', label: 'Account' };
 			}
+
 			if (this.canEdit) this.getPriceForItems();
 		},
 		selectedDiscountMode: function selectedDiscountMode(newVal, oldVal) {
@@ -76864,9 +76884,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
 
 	data: function data() {
 		return {
@@ -76893,7 +76914,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			has_detail: true,
 			tax_type: '',
 
-			tracking_no_error: '',
 			selectedProductType_error: '',
 			selectedZoneType_error: '',
 			zone_error: '',
@@ -76905,6 +76925,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			price_error: '',
 			unit_error: '',
 			item_tax_error: '',
+
+			tracking_no_repeating: '',
 
 			products: []
 		};
@@ -76972,6 +76994,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.getProducts();
 		},
 		openDimWeightModal: function openDimWeightModal() {
+			// console.log("Opening dim weight");
 			this.isCalculatingDimWeight = true;
 			if (!this.dimension_weight) {
 				this.height = "";
@@ -76983,6 +77006,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this), 500);
 		},
 		closeDimWeight: function closeDimWeight() {
+			// console.log("Closing dim weight");
 			if (!this.dimension_weight) {
 				this.height = 0;
 				this.width = 0;
@@ -77002,7 +77026,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.height > 0) {
 				this.dimension_weight = eval(expression);
 				this.closeDimWeight();
-				this.should_update_product = true;
+				this.updateProducts();
 				if (shouldFocus) this.$refs.dimension.triggerFocus();
 			}
 		},
@@ -77186,6 +77210,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		massInput: function massInput() {
 			if (parseInt(this.unit) > 1) this.$emit("mass");else this.$refs.tracking_input.triggerFocus();
+		},
+
+
+		checkTrackingNo: _.debounce(function () {
+			var _this6 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+
+			console.log(error);
+			axios.get("/data/trackings/check?code=" + this.tracking_no).then(function (response) {
+				return _this6.setTrackingNoResult(response);
+			}).catch(function (error) {
+				return _this6.checkTrackingNo(error);
+			});
+		}, 1000),
+
+		setTrackingNoResult: function setTrackingNoResult(response) {
+			// console.log(response.data.result);
+			this.tracking_no_repeating = response.data.result;
+
+			if (!response.data.result) {
+				this.tracking_no_repeating = _.filter(this.items, function (item) {
+					return item.tracking_code && item.tracking_code == this.tracking_no;
+				}.bind(this)).length > 1;
+			}
 		}
 	},
 
@@ -77200,12 +77249,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.price) price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax);
 
 			return price.toFixed(2);
+		},
+		tracking_no_error: function tracking_no_error() {
+			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
+				// We already have a product which needs tracking code selected but tracking code not entered
+				return 'Tracking code is required';else if (this.tracking_no_repeating) return 'Invalid tracking code';
+
+			return '';
 		}
 	},
 
 	watch: {
 		tracking_no: function tracking_no(newVal) {
+			this.checkTrackingNo();
 			this.$emit('update', { attribute: 'tracking_code', value: newVal });
+		},
+		tracking_no_error: function tracking_no_error(newVal) {
+			this.$emit('update', { attribute: 'has_error', value: newVal != '' });
 		},
 		selectedProductType: function selectedProductType(newVal) {
 			this.$emit('update', { attribute: 'product_type_id', value: '' });
@@ -77558,9 +77618,6 @@ var render = function() {
           disabled: !_vm.canEdit
         },
         on: {
-          enter: function($event) {
-            _vm.$emit("addItem")
-          },
           tab: function($event) {
             _vm.$emit("addItem")
           }
@@ -77654,6 +77711,19 @@ var render = function() {
             _vm._v("Calculate dimension weight")
           ]),
           _vm._v(" "),
+          _vm.selectedCourier
+            ? _c("p", [
+                _vm._v(
+                  " Selected courier: " +
+                    _vm._s(_vm.selectedCourier.label) +
+                    " - " +
+                    _vm._s(_vm.selectedCourier.formula)
+                )
+              ])
+            : _c("p", { staticClass: "text-danger" }, [
+                _vm._v("Please select courier first")
+              ]),
+          _vm._v(" "),
           _c("text-input", {
             ref: "heightinput",
             attrs: {
@@ -77731,7 +77801,7 @@ var render = function() {
               "button",
               {
                 staticClass: "btn btn-primary",
-                attrs: { type: "button" },
+                attrs: { type: "button", disabled: !_vm.selectedCourier },
                 on: { click: _vm.calculateDimWeight }
               },
               [_vm._v("Confirm")]
@@ -78025,6 +78095,7 @@ var render = function() {
                     ),
                     _vm._v(" "),
                     _c("text-input", {
+                      ref: "paid",
                       attrs: {
                         defaultValue: _vm.form.paid,
                         required: true,
@@ -78079,22 +78150,16 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm.form.payment_type == "Cash"
-                    ? _c(
-                        "div",
-                        { staticClass: "d-flex align-items-center mb-3" },
-                        [
-                          _c("b", { staticClass: "invoice-label text-right" }, [
-                            _vm._v("Change:")
-                          ]),
-                          _vm._v(
-                            " RM" +
-                              _vm._s(_vm._f("price")(_vm.change)) +
-                              "\n\t\t\t\t\t\t"
-                          )
-                        ]
-                      )
-                    : _vm._e()
+                  _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                    _c("b", { staticClass: "invoice-label text-right" }, [
+                      _vm._v("Change:")
+                    ]),
+                    _vm._v(
+                      " RM" +
+                        _vm._s(_vm._f("price")(_vm.change)) +
+                        "\n\t\t\t\t\t\t"
+                    )
+                  ])
                 ])
               ])
             ])
@@ -78459,6 +78524,7 @@ var render = function() {
                   return [
                     _c("item-row", {
                       attrs: {
+                        items: _vm.form.items,
                         index: index,
                         canEdit: _vm.canEditItem,
                         item: item,

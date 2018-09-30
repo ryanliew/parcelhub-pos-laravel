@@ -119,7 +119,7 @@
     </div>
 
     <script src="{{ asset('js/form.js') }}"></script>
-    <script src="{{ asset('js/app.js?v=1.83') }}"></script>
+    <script src="{{ asset('js/app.js?v=1.92') }}"></script>
     @yield('js')
 </body>
 </html>

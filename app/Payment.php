@@ -27,4 +27,9 @@ class Payment extends Model
 		{
 			return $this->belongsTo('App\Terminal', 'terminal_no');
 		}
+
+    public function scopeCashupRequired($query)
+    {
+        return $query->where('cashed', false);
+    }
 }

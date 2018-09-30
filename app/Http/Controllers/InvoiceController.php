@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Invoice;
+use App\Item;
 use App\Tax;
 use App\User;
 use Illuminate\Http\Request;
@@ -249,6 +250,13 @@ class InvoiceController extends Controller
         $newPDF->Output($path, Destination::FILE);
 
         return response()->file($path);
+    }
+
+    public function validateTracking()
+    {
+        $tracking = request()->code;
+
+        return ['result' => Item::where('tracking_code', $tracking)->count() > 0];
     }
 
 }
