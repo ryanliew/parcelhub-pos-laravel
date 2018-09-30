@@ -491,7 +491,7 @@
 			},
 
 			getProductPrice(error = 'No error') {
-				console.log("Getting product price " + this.canEdit);
+				// console.log("Getting product price " + this.canEdit);
 				// console.log(error);
 				if(this.selectedProduct && this.canEdit) {
 					this.item_add_loading = true;
@@ -554,7 +554,7 @@
 			},
 
 			checkTrackingNo: _.debounce(function (error = "No error") {
-				console.log(error);
+				// console.log(error);
 				axios.get("/data/trackings/check?code=" + this.tracking_no)
 					.then(response => this.setTrackingNoResult(response))
 					.catch(error => this.checkTrackingNo(error));

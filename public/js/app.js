@@ -77165,7 +77165,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			console.log("Getting product price " + this.canEdit);
+			// console.log("Getting product price " + this.canEdit);
 			// console.log(error);
 			if (this.selectedProduct && this.canEdit) {
 				this.item_add_loading = true;
@@ -77226,7 +77226,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
-			console.log(error);
+			// console.log(error);
 			axios.get("/data/trackings/check?code=" + this.tracking_no).then(function (response) {
 				return _this7.setTrackingNoResult(response);
 			}).catch(function (error) {
