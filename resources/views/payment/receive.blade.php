@@ -330,7 +330,12 @@
 						  url: "/payments/create",
 						  data: data,
 						  success: function(response){ 
-						  	window.location.href ='/payments/detail/' + response.payment_id;
+
+							  window.open('/payments/receipt/' + response.payment_id, '_blank');
+
+								setInterval(function(){
+									window.location.href ='/payments/detail/' + response.payment_id;
+								}, 3000);
 						  },
 						  dataType: "json",
 						  contentType : "application/json"
