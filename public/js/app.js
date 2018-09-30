@@ -76946,7 +76946,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 		// If we are getting item from db
 		Vue.nextTick(function () {
-			console.log(_this.item.product_id);
+			// console.log(this.item.product_id);
 			if (_this.item.product_id) {
 				_this.updateItem();
 			} else if (_this.defaultProductType.has_detail) {
@@ -77104,22 +77104,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 		},
 		productChange: function productChange() {
+			var _this4 = this;
+
 			if (this.selectedProduct) {
 				this.description = this.selectedProduct.description;
 				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-				this.getProductPrice();
+				console.log("It is me!");
+				Vue.nextTick(function () {
+					return _this4.getProductPrice();
+				});
 			}
 		},
 		getDefaultDetails: function getDefaultDetails() {
-			var _this4 = this;
+			var _this5 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
 			if (!this.item.product_id) {
 				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
-					return _this4.setDefaultDetails(response);
+					return _this5.setDefaultDetails(response);
 				}).catch(function (error) {
-					return _this4.getDefaultDetails(error);
+					return _this5.getDefaultDetails(error);
 				});
 			}
 		},
@@ -77156,12 +77161,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return url;
 		},
 		getProductPrice: function getProductPrice() {
-			var _this5 = this;
+			var _this6 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
+			console.log("Getting product price " + this.canEdit);
 			// console.log(error);
-			if (this.selectedProduct) {
+			if (this.selectedProduct && this.canEdit) {
 				this.item_add_loading = true;
 
 				var url = this.getProductPriceUrl(this.selectedProduct.value);
@@ -77169,17 +77175,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				// console.log(url);
 
 				axios.get(url).then(function (response) {
-					return _this5.setProductPrice(response);
+					return _this6.setProductPrice(response);
 				}).catch(function (error) {
-					return _this5.getProductPrice(error);
+					return _this6.getProductPrice(error);
 				});
 			}
 
-			this.setProductPrice('');
+			Vue.nextTick(function () {
+				return _this6.setProductPrice('');
+			});
 		},
 		setProductPrice: function setProductPrice(response) {
 			// console.log("Setting product price");
-			if (response) {
+			if (response && this.canEdit) {
 				this.price_group = this.selectedProduct;
 
 				if (response.data) this.price_group = response.data;
@@ -77214,15 +77222,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 		checkTrackingNo: _.debounce(function () {
-			var _this6 = this;
+			var _this7 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
 			console.log(error);
 			axios.get("/data/trackings/check?code=" + this.tracking_no).then(function (response) {
-				return _this6.setTrackingNoResult(response);
+				return _this7.setTrackingNoResult(response);
 			}).catch(function (error) {
-				return _this6.checkTrackingNo(error);
+				return _this7.checkTrackingNo(error);
 			});
 		}, 1000),
 
@@ -77253,7 +77261,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		tracking_no_error: function tracking_no_error() {
 			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
 				// We already have a product which needs tracking code selected but tracking code not entered
-				return 'Tracking code is required';else if (this.tracking_no_repeating) return 'Invalid tracking code';
+				return 'Tracking code is required';else if (this.tracking_no_repeating && this.canEdit) return 'Invalid tracking code';
 
 			return '';
 		}
