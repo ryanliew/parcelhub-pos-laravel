@@ -358,7 +358,8 @@
 					customer_id: '',
 					type: 'Cash',
 					payment_type: 'Cash',
-					type: 'Cash'
+					type: 'Cash',
+					discount_value: 0
 				}),
 
 				product_types: [],
@@ -618,6 +619,7 @@
 				this.form.total = this.rounded_total;
 				this.form.subtotal = this.subtotal;
 				this.form.tax = this.tax;
+				this.form.discount_value = this.discount_value;
 
 				let url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 				this.form.post(url)
@@ -704,7 +706,7 @@
 			},
 
 			rounded_total() {
-				return this.total + this.rounding;
+				return Math.round((this.total + this.rounding) * 100) / 100;
 			},
 
 			rounding() {
@@ -744,7 +746,7 @@
 
 			change() {
 				if(this.form.paid && this.total)
-					return parseFloat(this.form.paid) - this.rounded_total;
+					return parseFloat(this.form.paid) - this.rounded_total < 0.01 ? 0.00 : parseFloat(this.form.paid) - this.rounded_total;
 
 				return 0.00;
 			},

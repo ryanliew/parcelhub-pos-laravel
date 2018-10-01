@@ -177,7 +177,7 @@
 				<tr>
 					<td class="pl-5 text-left" colspan="2"><b>Discount</b></td>
 					<td class="text-center">RM</td>
-					<td class="text-right">{{ number_format($invoice->discount, 2, '.', ',') }}</td>
+					<td class="text-right">{{ number_format($invoice->discount_value, 2, '.', ',') }}</td>
 				</tr>
 				<tr>
 					<td class="pl-5 text-left" colspan="2"><b>Rounding</b></td>

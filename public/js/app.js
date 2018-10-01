@@ -76132,8 +76132,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	components: { ItemRow: __WEBPACK_IMPORTED_MODULE_2__ItemRow_vue___default.a },
 
 	data: function data() {
+		var _ref;
+
 		return {
-			form: new Form(_defineProperty({
+			form: new Form((_ref = {
 				items: [],
 				remarks: '',
 				subtotal: '',
@@ -76146,7 +76148,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				customer_id: '',
 				type: 'Cash',
 				payment_type: 'Cash'
-			}, "type", 'Cash')),
+			}, _defineProperty(_ref, "type", 'Cash'), _defineProperty(_ref, "discount_value", 0), _ref)),
 
 			product_types: [],
 			zone_types: [],
@@ -76397,6 +76399,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.total = this.rounded_total;
 			this.form.subtotal = this.subtotal;
 			this.form.tax = this.tax;
+			this.form.discount_value = this.discount_value;
 
 			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 			this.form.post(url).then(function (response) {
@@ -76478,7 +76481,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return parseFloat(this.subtotal) - parseFloat(this.discount_value);
 		},
 		rounded_total: function rounded_total() {
-			return this.total + this.rounding;
+			return Math.round((this.total + this.rounding) * 100) / 100;
 		},
 		rounding: function rounding() {
 			var rounded_total = Math.round(this.total * 100 / 5) / 100 * 5;
@@ -76512,7 +76515,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return 0;
 		},
 		change: function change() {
-			if (this.form.paid && this.total) return parseFloat(this.form.paid) - this.rounded_total;
+			if (this.form.paid && this.total) return parseFloat(this.form.paid) - this.rounded_total < 0.01 ? 0.00 : parseFloat(this.form.paid) - this.rounded_total;
 
 			return 0.00;
 		},
