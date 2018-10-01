@@ -78560,10 +78560,10 @@ var render = function() {
                         {
                           staticClass: "btn btn-sm btn-primary",
                           attrs: {
-                            type: "submit",
                             disabled: !_vm.canSubmit || !_vm.canEdit,
                             title: _vm.editTooltip
-                          }
+                          },
+                          on: { click: _vm.submit }
                         },
                         [_vm._v("Confirm (F7)")]
                       )

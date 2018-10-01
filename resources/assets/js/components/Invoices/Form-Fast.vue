@@ -258,7 +258,7 @@
 								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
 								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
 								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button type="submit" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip">Confirm (F7)</button>
+								<button class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 							</div>
 						</div>
 					</div>

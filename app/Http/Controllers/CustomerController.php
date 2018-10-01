@@ -149,40 +149,36 @@ class CustomerController extends Controller
 
             $remaining = $invoice['total'] - $invoice['paid'];
 
-            if( $remaining > 0 )
-            {
-                $invoice_month = date_format($invoice['created_at'],"m");
-                $pass_1_month = date("m", strtotime("-1 months"));
-                $pass_2_month = date("m", strtotime("-2 months"));
-                $pass_3_month = date("m", strtotime("-3 months"));
-                $pass_4_month = date("m", strtotime("-4 months"));
-                $pass_5_month = date("m", strtotime("-5 months"));
+            $invoice_month = date_format($invoice['created_at'],"m");
+            $pass_1_month = date("m", strtotime("-1 months"));
+            $pass_2_month = date("m", strtotime("-2 months"));
+            $pass_3_month = date("m", strtotime("-3 months"));
+            $pass_4_month = date("m", strtotime("-4 months"));
+            $pass_5_month = date("m", strtotime("-5 months"));
 
-                if( $invoice_month == date('m') )
-                {
-                    $outstanding['current'] += $remaining;
-                }
-                else if( $invoice_month == $pass_1_month )
-                {
-                    $outstanding['1'] += $remaining;
-                }
-                else if( $invoice_month == $pass_2_month )
-                {
-                    $outstanding['2'] += $remaining;
-                }
-                else if( $invoice_month == $pass_3_month )
-                {
-                    $outstanding['3'] += $remaining;
-                }
-                else if( $invoice_month == $pass_4_month )
-                {
-                    $outstanding['4'] += $remaining;
-                }
-                else if( $invoice_month == $pass_5_month )
-                {
-                    $outstanding['5'] += $remaining;
-                }
-                    
+            if( $invoice_month == date('m') )
+            {
+                $outstanding['current'] += $remaining;
+            }
+            else if( $invoice_month == $pass_1_month )
+            {
+                $outstanding['1'] += $remaining;
+            }
+            else if( $invoice_month == $pass_2_month )
+            {
+                $outstanding['2'] += $remaining;
+            }
+            else if( $invoice_month == $pass_3_month )
+            {
+                $outstanding['3'] += $remaining;
+            }
+            else if( $invoice_month == $pass_4_month )
+            {
+                $outstanding['4'] += $remaining;
+            }
+            else if( $invoice_month == $pass_5_month )
+            {
+                $outstanding['5'] += $remaining;
             }
 
 
