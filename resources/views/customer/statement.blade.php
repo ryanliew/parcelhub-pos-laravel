@@ -110,7 +110,7 @@
 
 		<div class="border-bottom">
 			<div class="header-left">
-				<strong class="font-header">{{ $customer->branch->name }}</strong><br>
+				<strong class="font-header">{{ $customer->branch->owner }}</strong><br>
 				Co Reg No: {{ $customer->branch->registration_no }}
 				<br>
 				<br>
@@ -118,10 +118,6 @@
 				Phone: {{ $customer->branch->contact }}
 				<br>
 				<br>
-			</div>
-
-			<div>
-				<img id="image" src="img/logo.png" alt="logo">
 			</div>
 		</div>
 	Customer
