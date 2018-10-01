@@ -75,28 +75,6 @@ class InvoiceController extends Controller
     			->toJson();   
     }
 
-    public function searchByTracking()
-    {
-        $terminal = auth()->user()->terminal()->first();
-        $items = Item::where('tracking_code', 'like', '%' . ''. '%');
-
-        return datatables()
-            ->of($terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*'))
-                ->addColumn('payment', function(Invoice $invoice) {
-                    return $invoice->payment->sum('total') + $invoice->paid;
-                })
-                ->addColumn('outstanding', function(Invoice $invoice) {
-                    return max($invoice->total - $invoice->payment->sum('total') - $invoice->paid, 0);
-                })
-                ->addColumn('customer', function(Invoice $invoice){ 
-                    return $invoice->customer ? $invoice->customer->name : "---";
-                })
-                ->addColumn('tracking_codes', function(Invoice $invoice){
-                    return $invoice->items->implode('tracking_code', ', ');
-                })
-                ->toJson();
-    }
-
     public function validateInput()
     {
         
@@ -153,7 +131,8 @@ class InvoiceController extends Controller
                 'unit' => $item->unit,
                 'is_custom_pricing' => $item->is_custom_pricing,
                 'tax_rate' => $item->tax_rate,
-                'tax_type' => $item->tax_type
+                'tax_type' => $item->tax_type,
+                'zone_type_id' => $item->zone_type_id,
             ]);
         }
         //$invoice->items()->create($items);
@@ -212,7 +191,9 @@ class InvoiceController extends Controller
                 'total_price' => $item->total_price,
                 'unit' => $item->unit,
                 'is_custom_pricing' => $item->is_custom_pricing,
-                'tax_rate' => $item->tax_rate
+                'zone_type_id' => $item->zone_type_id,
+                'tax_rate' => $item->tax_rate,
+                'tax_type' => $item->tax_type,
             ]);
         }
         //$invoice->items()->create($items);

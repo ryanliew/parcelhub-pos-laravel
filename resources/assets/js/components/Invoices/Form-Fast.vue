@@ -287,7 +287,7 @@
 						<div class="header"></div>
 					</div>
 					<template v-for="(item, index) in form.items">
-						<item-row :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
+						<item-row :isEdit="is_edit" :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
 					</template>
 				</div>
 			</div>			
@@ -335,7 +335,7 @@
 	import ItemRow from "./ItemRow.vue";
 
 	export default {
-		props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type'],
+		props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type', 'is_edit'],
 
 		mixins: [ConfirmationMixin],
 

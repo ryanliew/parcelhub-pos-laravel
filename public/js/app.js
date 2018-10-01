@@ -76125,7 +76125,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type'],
+	props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type', 'is_edit'],
 
 	mixins: [__WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__["a" /* default */]],
 
@@ -76890,7 +76890,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
 
 	data: function data() {
 		return {
@@ -76950,10 +76950,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		// If we are getting item from db
 		Vue.nextTick(function () {
 			// console.log(this.item.product_id);
-			if (_this.item.product_id) {
+			if (_this.is_edit) {
 				_this.updateItem();
 			} else if (_this.defaultProductType.has_detail) {
-				_this.selectedZoneType = { label: 'Domestic', value: 1 };
+				// this.selectedZoneType = {label: 'Domestic', value: 1};
 				Vue.nextTick(function () {
 					this.getDefaultDetails();
 				}.bind(_this));
@@ -76987,7 +76987,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.selectedProductType = _.filter(this.product_types, function (type) {
 				return this.item.product_type_id == type.value;
 			}.bind(this))[0];
-			this.selectedZoneType = this.zone_types[0];
+			this.selectedZoneType = _.filter(this.zone_types, function (type) {
+				return this.item.zone_type_id == type.value;
+			}.bind(this))[0];
 			this.selectedCourier = _.filter(this.couriers, function (courier) {
 				return this.item.courier_id == courier.value;
 			}.bind(this))[0];
@@ -77033,13 +77035,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				if (shouldFocus) this.$refs.dimension.triggerFocus();
 			}
 		},
-		getProducts: function getProducts() {
+
+
+		getProducts: _.debounce(function () {
 			var _this2 = this;
 
-			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
-			// console.log("Getting product");
-			// console.log(this.selectedProductType);
 			// Product type selected, get the products of the same type
 			if (this.selectedProductType) {
 				this.has_detail = this.selectedProductType.has_detail;
@@ -77049,7 +77051,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					return _this2.getRelatedProduct(error);
 				});
 			}
-		},
+		}, 1000),
+
 		setProducts: function setProducts(response) {
 			this.selectedProduct = '';
 			this.selectedProduct_error = "";
@@ -77112,7 +77115,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.selectedProduct) {
 				this.description = this.selectedProduct.description;
 				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-				console.log("It is me!");
 				Vue.nextTick(function () {
 					return _this4.getProductPrice();
 				});
@@ -77123,7 +77125,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			if (!this.item.product_id) {
+			if (!this.isEdit) {
 				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
 					return _this5.setDefaultDetails(response);
 				}).catch(function (error) {
@@ -77279,16 +77281,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$emit('update', { attribute: 'has_error', value: newVal != '' });
 		},
 		selectedProductType: function selectedProductType(newVal) {
-			this.$emit('update', { attribute: 'product_type_id', value: '' });
 			if (newVal) {
 				this.$emit('update', { attribute: 'product_type_id', value: newVal.value });
 				this.getDefaultDetails();
+			} else {
+				this.$emit('update', { attribute: 'product_type_id', value: '' });
 			}
 		},
 		selectedZoneType: function selectedZoneType(newVal) {
-			this.$emit('update', { attribute: 'zone_type_id', value: '' });
 			if (newVal) {
 				this.$emit('update', { attribute: 'zone_type_id', value: newVal.value });
+			} else {
+				this.$emit('update', { attribute: 'zone_type_id', value: '' });
 			}
 		},
 		zone: function zone(newVal) {
@@ -77310,12 +77314,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$emit('update', { attribute: 'width', value: newVal ? newVal : 0 });
 		},
 		selectedCourier: function selectedCourier(newVal) {
-			this.$emit('update', { attribute: 'courier_id', value: 0 });
 			if (newVal) {
 				this.$emit('update', { attribute: 'courier_id', value: newVal.value });
 
 				// console.log("Updated courier id: " + newVal.value);			
 				this.calculateDimWeight(false);
+			} else {
+				this.$emit('update', { attribute: 'courier_id', value: 0 });
 			}
 		},
 		price: function price(newVal) {
@@ -77325,11 +77330,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$emit('update', { attribute: 'description', value: newVal });
 		},
 		selectedProduct: function selectedProduct(newVal) {
-			this.$emit('update', { attribute: 'product_id', value: '' });
-			this.$emit('update', { attribute: 'sku', value: '' });
 			if (newVal) {
 				this.$emit('update', { attribute: 'product_id', value: newVal.value });
 				this.$emit('update', { attribute: 'sku', value: newVal.label });
+			} else {
+				this.$emit('update', { attribute: 'product_id', value: '' });
+				this.$emit('update', { attribute: 'sku', value: '' });
 			}
 		},
 		total_price: function total_price(newVal) {
@@ -78535,6 +78541,7 @@ var render = function() {
                   return [
                     _c("item-row", {
                       attrs: {
+                        isEdit: _vm.is_edit,
                         items: _vm.form.items,
                         index: index,
                         canEdit: _vm.canEditItem,

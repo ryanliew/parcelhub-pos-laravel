@@ -6,6 +6,6 @@
 
 @section('content')
 	<div class="container-fluid">
-		<invoices-create created_by="{{ auth()->id() }}" :auth_user="{{ json_encode(auth()->user()) }}" :default_product_type="{ value: {{ auth()->user()->current->product_type_id }}, label: '{{ auth()->user()->current->default_product_type->name }}', has_detail: '{{ auth()->user()->current->default_product_type->has_detail }}'  }"></invoices-create>
+		<invoices-create is_edit="0" created_by="{{ auth()->id() }}" :auth_user="{{ json_encode(auth()->user()) }}" :default_product_type="{ value: {{ auth()->user()->current->product_type_id }}, label: '{{ auth()->user()->current->default_product_type->name }}', has_detail: '{{ auth()->user()->current->default_product_type->has_detail }}'  }"></invoices-create>
 	</div>
 @endsection

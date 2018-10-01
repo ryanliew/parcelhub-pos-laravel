@@ -236,7 +236,7 @@
 
 <script>
 	export default {
-		props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+		props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
 
 		data() {
 			return {
@@ -295,11 +295,11 @@
 			// If we are getting item from db
 			Vue.nextTick( () => {
 				// console.log(this.item.product_id);
-				if(this.item.product_id) {
+				if(this.is_edit) {
 					this.updateItem();
 				}
 				else if(this.defaultProductType.has_detail) {
-					this.selectedZoneType = {label: 'Domestic', value: 1};
+					// this.selectedZoneType = {label: 'Domestic', value: 1};
 					Vue.nextTick( function() { this.getDefaultDetails(); }.bind(this));
 				}
 
@@ -330,7 +330,7 @@
 				this.item_tax_inclusive = this.item.item_tax_inclusive;
 
 				this.selectedProductType = _.filter(this.product_types, function(type){ return this.item.product_type_id == type.value; }.bind(this))[0];
-				this.selectedZoneType = this.zone_types[0];
+				this.selectedZoneType = _.filter(this.zone_types, function(type){ return this.item.zone_type_id == type.value; }.bind(this))[0];
 				this.selectedCourier = _.filter(this.couriers, function(courier){ return this.item.courier_id == courier.value; }.bind(this))[0];
 				
 				this.has_detail = this.selectedProductType.has_detail;
@@ -375,9 +375,7 @@
 				}
 			},
 
-			getProducts(error = 'No error') {
-				// console.log("Getting product");
-				// console.log(this.selectedProductType);
+			getProducts: _.debounce(function (error = "No error") {
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
 					this.has_detail = this.selectedProductType.has_detail;
@@ -385,7 +383,7 @@
 						.then(response => this.setProducts(response))
 						.catch(error => this.getRelatedProduct(error));
 				}
-			},
+			}, 1000),
 
 			setProducts(response) {
 				this.selectedProduct = '';
@@ -445,13 +443,12 @@
 				if(this.selectedProduct) {
 					this.description = this.selectedProduct.description;
 					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-					console.log("It is me!");
 					Vue.nextTick( () => this.getProductPrice() );
 				}
 			},
 
 			getDefaultDetails(error = 'No error') {
-				if(!this.item.product_id) {
+				if(!this.isEdit) {
 					axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
 						.then(response => this.setDefaultDetails(response))
 						.catch(error => this.getDefaultDetails(error));
@@ -609,17 +606,19 @@
 			},
 
 			selectedProductType(newVal) {
-				this.$emit('update', {attribute: 'product_type_id', value: ''});
 				if(newVal) {
 					this.$emit('update', {attribute: 'product_type_id', value: newVal.value});
 					this.getDefaultDetails();
+				} else {
+					this.$emit('update', {attribute: 'product_type_id', value: ''});
 				}
 			},
 
 			selectedZoneType(newVal) {
-				this.$emit('update', {attribute: 'zone_type_id', value: ''});
 				if(newVal) {
 					this.$emit('update', {attribute: 'zone_type_id', value: newVal.value});
+				} else {
+					this.$emit('update', {attribute: 'zone_type_id', value: ''});
 				}
 
 			},
@@ -649,12 +648,13 @@
 			},
 
 			selectedCourier(newVal) {
-				this.$emit('update', {attribute: 'courier_id', value: 0});
 				if(newVal) {
 					this.$emit('update', {attribute: 'courier_id', value: newVal.value});	
 
 					// console.log("Updated courier id: " + newVal.value);			
 					this.calculateDimWeight(false);
+				} else {
+					this.$emit('update', {attribute: 'courier_id', value: 0});
 				}
 			},
 
@@ -667,11 +667,12 @@
 			},
 
 			selectedProduct(newVal) {
-				this.$emit('update', {attribute: 'product_id', value: ''});
-				this.$emit('update', {attribute: 'sku', value: ''});
 				if(newVal) {
 					this.$emit('update', {attribute: 'product_id', value: newVal.value});
 					this.$emit('update', {attribute: 'sku', value: newVal.label});
+				} else {
+					this.$emit('update', {attribute: 'product_id', value: ''});
+					this.$emit('update', {attribute: 'sku', value: ''});
 				}
 			},
 

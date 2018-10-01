@@ -153,7 +153,6 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/receipt/{invoice}", "InvoiceController@receipt")->name("invoices.receipt");
 		Route::get("/preview/{invoice}", "InvoiceController@preview")->name("invoices.preview");
 		Route::get("/do/{invoice}","InvoiceController@delivery_order")->name("invoices.delivery_order");
-		Route::get("/search/trackings", "InvoiceController@searchByTracking")->name('invoices.tracking_search');
 		Route::get("/{invoice}", "InvoiceController@get");
 		
 	});
