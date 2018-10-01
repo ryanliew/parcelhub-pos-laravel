@@ -60,7 +60,7 @@
 			:focus="false"
 			:hideLabel="true"
 			:error="weight_error"
-			:disabled="!has_detail || !canEdit"
+			:disabled="!canEdit"
 			@input="updateProducts">
 		</text-input>
 			
@@ -255,6 +255,8 @@
 				width: 0,
 				length: 0,
 				height: 0,
+				// Default details should only be triggered once
+				default_details: true,
 				// Based on entered price
 				// item_tax: 0,
 				tax_rate: 0,
@@ -421,7 +423,7 @@
 			},
 
 			updateProducts(error = "No error") {
-				if(this.selectedProductType.has_detail && this.zone && (this.weight || this.dimension_weight) && this.selectedCourier){
+				if(this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier){
 					let url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
 
 					if(this.weight)
@@ -432,6 +434,9 @@
 
 					if(this.selectedCourier)
 						url += "&vendor=" + this.selectedCourier.value;
+
+					if(this.selectedZoneType)
+						url += "&zonetype=" + this.selectedZoneType.value;
 
 					axios.get(url)
 						.then(response => this.setProducts(response))
@@ -448,7 +453,9 @@
 			},
 
 			getDefaultDetails(error = 'No error') {
-				if(!this.isEdit) {
+
+				if(!this.isEdit && this.default_details) {
+					this.default_details = false;
 					axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
 						.then(response => this.setDefaultDetails(response))
 						.catch(error => this.getDefaultDetails(error));

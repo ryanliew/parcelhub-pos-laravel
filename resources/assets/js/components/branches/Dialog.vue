@@ -359,6 +359,7 @@
 			},
 
 			confirmSubmit() {
+				this.isConfirming = false;
 				this.form.post(this.url)
 					.then(response => this.onSuccess(response));
 			},

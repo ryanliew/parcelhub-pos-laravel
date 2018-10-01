@@ -70262,6 +70262,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		confirmSubmit: function confirmSubmit() {
 			var _this3 = this;
 
+			this.isConfirming = false;
 			this.form.post(this.url).then(function (response) {
 				return _this3.onSuccess(response);
 			});
@@ -76961,6 +76962,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			width: 0,
 			length: 0,
 			height: 0,
+			// Default details should only be triggered once
+			default_details: true,
 			// Based on entered price
 			// item_tax: 0,
 			tax_rate: 0,
@@ -77142,7 +77145,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
-			if (this.selectedProductType.has_detail && this.zone && (this.weight || this.dimension_weight) && this.selectedCourier) {
+			if (this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier) {
 				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
 
 				if (this.weight) url += "&weight=" + this.weight;
@@ -77150,6 +77153,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				if (this.dimension_weight) url += "&dimension=" + this.dimension_weight;
 
 				if (this.selectedCourier) url += "&vendor=" + this.selectedCourier.value;
+
+				if (this.selectedZoneType) url += "&zonetype=" + this.selectedZoneType.value;
 
 				axios.get(url).then(function (response) {
 					return _this3.setProducts(response);
@@ -77174,7 +77179,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			if (!this.isEdit) {
+
+			if (!this.isEdit && this.default_details) {
+				this.default_details = false;
 				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
 					return _this5.setDefaultDetails(response);
 				}).catch(function (error) {
@@ -77521,7 +77528,7 @@ var render = function() {
           focus: false,
           hideLabel: true,
           error: _vm.weight_error,
-          disabled: !_vm.has_detail || !_vm.canEdit
+          disabled: !_vm.canEdit
         },
         on: { input: _vm.updateProducts },
         model: {
