@@ -95,7 +95,7 @@
 	<div id="page-wrap">
 
 		<div class="header-left">
-			<strong class="font-header">{{ $invoice->branch->name }}</strong><br>
+			<strong class="font-header">{{ $invoice->branch->owner }}</strong><br>
 			Co Reg No: {{ $invoice->branch->registration_no }}
 			<br>
 			<br>

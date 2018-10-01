@@ -77,7 +77,7 @@
 </head>
 <body>
 	<div class="text-center">
-		<strong>{{ $invoice->branch->name }}</strong><br>
+		<strong>{{ $invoice->branch->owner }}</strong><br>
 		Co Reg No: {{ $invoice->branch->registration_no }}
 		<br>
 		<br>
