@@ -295,7 +295,10 @@ class InvoiceController extends Controller
     {
         $tracking = request()->code;
 
-        return ['result' => Item::where('tracking_code', $tracking)->count() > 0];
+        return ['result' => Item::where('tracking_code', $tracking)
+                        ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                        ->where('invoices.branch_id', auth()->user()->current->id)
+                        ->count() > 0];
     }
 
 }
