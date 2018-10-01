@@ -359,14 +359,13 @@
 			},
 
 			confirmSubmit() {
+				this.isConfirming = false;
 				this.form.post(this.url)
 					.then(response => this.onSuccess(response));
 			},
 
 			onSuccess(response) {
 				$("#branch-dialog").modal('hide');
-
-				this.isConfirming = false;
 
 				this.closeDialog();
 
