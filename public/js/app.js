@@ -70269,6 +70269,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		onSuccess: function onSuccess(response) {
 			$("#branch-dialog").modal('hide');
 
+			this.isConfirming = false;
+
 			this.closeDialog();
 
 			window.events.$emit("reload-table");

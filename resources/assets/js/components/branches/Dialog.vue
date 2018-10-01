@@ -366,6 +366,8 @@
 			onSuccess(response) {
 				$("#branch-dialog").modal('hide');
 
+				this.isConfirming = false;
+
 				this.closeDialog();
 
 				window.events.$emit("reload-table");
