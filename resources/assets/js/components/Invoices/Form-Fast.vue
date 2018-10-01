@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<form @submit.prevent="submit" 
+		<form @submit.prevent="doNothing" 
 			@keydown="form.errors.clear($event.target.name)" 
 			@input="form.errors.clear($event.target.name)">
 			<div class="card" id="invoice-header">
@@ -23,19 +23,6 @@
 								:isHorizontal="true"
 								:error="form.errors.get('type')">
 							</selector-input>
-							<selector-input :potentialData="payment_types"
-								v-model="selectedPaymentType" 
-								:defaultData="selectedPaymentType"
-								placeholder="Select payment type"
-								:required="true"
-								label="Payment type"
-								name="payment_type"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('payment_type')">
-							</selector-input>
 							<selector-input :potentialData="customers"
 								v-model="selectedCustomer" 
 								:defaultData="selectedCustomer"
@@ -53,6 +40,19 @@
 								addon="createCustomer"
 								@createCustomer="createCustomer">
 							</selector-input>
+							<selector-input :potentialData="payment_types"
+								v-model="selectedPaymentType" 
+								:defaultData="selectedPaymentType"
+								placeholder="Select payment type"
+								:required="true"
+								label="Payment type"
+								name="payment_type"
+								:editable="canEdit"
+								:focus="false"
+								:hideLabel="false"
+								:isHorizontal="true"
+								:error="form.errors.get('payment_type')">
+							</selector-input>
 							<text-input v-model="form.remarks" 
 								:defaultValue="form.remarks"
 								:required="false"
@@ -65,13 +65,6 @@
 								:isHorizontal="true"
 								:error="form.errors.get('remarks')">
 							</text-input>
-
-							<div class="d-flex justify-content-start">
-								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
-								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
-								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button type="submit" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip">Confirm (F7)</button>
-							</div>
 						</div>
 
 						<div class="col-4">
@@ -126,10 +119,17 @@
 								<b class="invoice-label text-right">Rounding:</b> RM{{ rounding | price }}
 							</div>
 							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Total:</b> RM{{ rounded_total | price }}
+								<b class="invoice-label text-right">Total:</b><button type="button" class="btn btn-primary" @click="payFull">RM{{ rounded_total | price }}</button>
 							</div>
 							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
+							</div>
+
+							<div class="d-flex justify-content-end">
+								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
+								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
+								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
+								<button type="button" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 							</div>
 						</div>
 					</div>
@@ -196,13 +196,6 @@
 								:isHorizontal="true"
 								:error="form.errors.get('remarks')">
 							</text-input>
-
-							<div class="d-flex justify-content-start">
-								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
-								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
-								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button type="submit" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip">Confirm (F7)</button>
-							</div>
 						</div>
 
 						<div class="col-4">
@@ -261,6 +254,12 @@
 							<div class="d-flex align-items-center mb-3" v-if="form.type !== 'Customer'">
 								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
 							</div>
+							<div class="d-flex justify-content-end">
+								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
+								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
+								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
+								<button class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -268,9 +267,8 @@
 
 			<div class="card mt-3">
 				<div class="card-body">
-					<button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button>
+					
 					<div class="invoice-items">
-
 						<div class="header">Nr:</div>
 						<div class="header">Product type:</div>
 						<div class="header">Zone type:</div>
@@ -284,10 +282,10 @@
 						<div class="header">Track code:</div>
 						<div class="header">Price:</div>
 						<div class="header">Total price:</div>
-						<div class="header"></div>
+						<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
 					</div>
 					<template v-for="(item, index) in form.items">
-						<item-row :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
+						<item-row :isEdit="is_edit" :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
 					</template>
 				</div>
 			</div>			
@@ -335,7 +333,7 @@
 	import ItemRow from "./ItemRow.vue";
 
 	export default {
-		props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type'],
+		props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type', 'is_edit'],
 
 		mixins: [ConfirmationMixin],
 
@@ -432,6 +430,16 @@
 		},
 
 		methods: {
+			payFull() {
+				this.form.paid = this.rounded_total;
+			},
+
+			doNothing() {
+				console.log("Do nothing");
+				// This method does nothing
+				// This is on purpose such that the Enter key will not trigger invoice creation
+			},
+
 			adjustHeader(event) {
 				
 				if(document.documentElement.scrollTop > this.headerTop) {
@@ -604,6 +612,7 @@
 			},
 
 			submit() {
+				console.log("Submitting");
 				this.form.items = _.filter(this.form.items, function(item){ return item.product_id ? true : false; });
 
 				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"

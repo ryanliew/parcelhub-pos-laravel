@@ -110,7 +110,7 @@
 
 		<div class="border-bottom">
 			<div class="header-left">
-				<strong class="font-header">{{ $customer->branch->name }}</strong><br>
+				<strong class="font-header">{{ $customer->branch->owner }}</strong><br>
 				Co Reg No: {{ $customer->branch->registration_no }}
 				<br>
 				<br>
@@ -118,10 +118,6 @@
 				Phone: {{ $customer->branch->contact }}
 				<br>
 				<br>
-			</div>
-
-			<div>
-				<img id="image" src="img/logo.png" alt="logo">
 			</div>
 		</div>
 	Customer
@@ -148,15 +144,15 @@
                 </tr>
                 <tr>
                     <td class="meta-head">Total Debit ( {{$debit_count}} )</td>
-                    <td><textarea>{{number_format((float)$debit,2,'.','')}}</textarea></td>
+                    <td><textarea>RM{{number_format((float)$debit,2,'.','')}}</textarea></td>
                 </tr>
                 <tr>
                     <td class="meta-head">Total credit ( {{$credit_count}} )</td>
-                    <td><textarea>{{number_format((float)$credit,2,'.','')}}</textarea></td>
+                    <td><textarea>RM{{number_format((float)$credit,2,'.','')}}</textarea></td>
                 </tr>
                 <tr>
                     <td class="meta-head">Closing Balance</td>
-                    <td><textarea>{{number_format((float)$balance,2,'.','')}}</textarea></td>
+                    <td><textarea>RM{{number_format((float)$balance,2,'.','')}}</textarea></td>
                 </tr>
                 </tbody>
             </table>

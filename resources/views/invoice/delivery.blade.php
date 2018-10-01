@@ -172,9 +172,11 @@
 					</tr>
 					
 					@foreach($item as $product)
-						<tr class="item-row">
-							<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
-						</tr>
+						@if($product['tracking_code'])
+							<tr class="item-row">
+								<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
+							</tr>
+						@endif
 					@endforeach
 					
 				  @endforeach

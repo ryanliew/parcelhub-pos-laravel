@@ -174,9 +174,11 @@
 					</tr>
 
 					@foreach($item as $product)
-						<tr class="item-row">
-							<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
-						</tr>
+						@if($product['tracking_code'])
+							<tr class="item-row">
+								<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
+							</tr>
+						@endif
 					@endforeach
 					
 				@endforeach
@@ -223,13 +225,17 @@
 					<td><textarea>{{ $invoice->paid > $invoice->total ? 0.00 : number_format((float)$invoice->total - $invoice->paid,2,'.','')}}</textarea></td>
 				</tr>
 				<tr class="item-row">
+					<td class="meta-detail">Total items</td>
+					<td><textarea>{{ $invoice->items->count() }}</textarea></td>
+				</tr>
+				<tr class="item-row">
 					<td class="meta-detail">Attendant</td>
 					<td><textarea>{{$invoice->user->name}}</textarea></td>
 				</tr>
 				<tr class="item-row">
 					<td style="text-align: left; width: 150px; height:80px; font-size: 14px;" rowspan '3' colspan='2'>
 						<p>All cheque must be crossed &amp; made payable to:</p><br>
-						<p>{{$invoice->branch->name}}</p>
+						<p>{{$invoice->branch->registered_company_name}}</p>
 						<p>{{$invoice->branch->payment_bank}} A/C No: {{$invoice->branch->payment_acc_no}}</p>
 					
 					</td>
@@ -241,7 +247,7 @@
 		<div >
 			<table>
 				<tbody>
-				<tr class="item-row"><td class="meta-head text-center" colspan='2'>Invoice Totals (RM )</td></tr>
+				<tr class="item-row"><td class="meta-head text-center" colspan='2'>Invoice Totals (RM)</td></tr>
 				<tr class="item-row"><td class="meta-detail">Subtotal</td><td ><textarea >{{number_format((float)$invoice->subtotal,2,'.','')}}</textarea></td></tr>
 				<tr class="item-row"><td class="meta-detail">Discount</td><td><textarea>{{number_format((float)$invoice->discount,2,'.','')}}</textarea></td></tr>
 				<tr class="item-row"><td class="meta-detail">Tax</td><td><textarea>{{number_format((float)$invoice->tax,2,'.','')}}</textarea></td></tr>

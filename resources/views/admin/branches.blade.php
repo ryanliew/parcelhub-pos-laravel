@@ -20,7 +20,8 @@
 						<tr>
 							<th>Name</th>
 							<th>Code</th>
-							<th>Owner</th>
+							<th>Business Display Name</th>
+							<th>Registered Business Name</th>
 							<th>Contact</th>
 							<th>Email</th>
 							<th>Registration No.</th>
@@ -79,6 +80,7 @@
 					{data: 'name'},
 					{data: 'code'},
 					{data: 'owner'},
+					{data: 'registered_company_name'},
 					{data: 'contact'},
 					{data: 'email'},
 					{data: 'registration_no'},
