@@ -65,13 +65,6 @@
 								:isHorizontal="true"
 								:error="form.errors.get('remarks')">
 							</text-input>
-
-							<div class="d-flex justify-content-start">
-								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
-								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
-								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button type="button" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
-							</div>
 						</div>
 
 						<div class="col-4">
@@ -130,6 +123,13 @@
 							</div>
 							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
+							</div>
+
+							<div class="d-flex justify-content-end">
+								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
+								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
+								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
+								<button type="button" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 							</div>
 						</div>
 					</div>
@@ -196,13 +196,6 @@
 								:isHorizontal="true"
 								:error="form.errors.get('remarks')">
 							</text-input>
-
-							<div class="d-flex justify-content-start">
-								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
-								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
-								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button type="submit" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip">Confirm (F7)</button>
-							</div>
 						</div>
 
 						<div class="col-4">
@@ -261,6 +254,12 @@
 							<div class="d-flex align-items-center mb-3" v-if="form.type !== 'Customer'">
 								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
 							</div>
+							<div class="d-flex justify-content-end">
+								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
+								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
+								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
+								<button type="submit" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip">Confirm (F7)</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -268,9 +267,8 @@
 
 			<div class="card mt-3">
 				<div class="card-body">
-					<button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button>
+					
 					<div class="invoice-items">
-
 						<div class="header">Nr:</div>
 						<div class="header">Product type:</div>
 						<div class="header">Zone type:</div>
@@ -284,7 +282,7 @@
 						<div class="header">Track code:</div>
 						<div class="header">Price:</div>
 						<div class="header">Total price:</div>
-						<div class="header"></div>
+						<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
 					</div>
 					<template v-for="(item, index) in form.items">
 						<item-row :isEdit="is_edit" :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
