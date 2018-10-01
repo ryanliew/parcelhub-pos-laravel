@@ -80,7 +80,7 @@
 							return data;
 						}, "searchable": false
 					},
-					{data: 'discount', render: function(data, type, row){
+					{data: 'discount_value', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);
 							}

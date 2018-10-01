@@ -375,7 +375,7 @@
 				}
 			},
 
-			getProducts: _.debounce(function (error = "No error") {
+			getProducts(error = "No error") {
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
 					this.has_detail = this.selectedProductType.has_detail;
@@ -383,7 +383,7 @@
 						.then(response => this.setProducts(response))
 						.catch(error => this.getRelatedProduct(error));
 				}
-			}, 1000),
+			},
 
 			setProducts(response) {
 				this.selectedProduct = '';

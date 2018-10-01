@@ -70125,6 +70125,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -70155,7 +70168,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				website: '',
 				address: '',
 				default_product_type: '',
-				product_type_id: ''
+				product_type_id: '',
+				registered_company_name: ''
 			})
 		};
 	},
@@ -70236,6 +70250,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.website = this.selectedBranch.website;
 			this.form.address = this.selectedBranch.address;
 			this.form.product_type_id = this.selectedBranch.product_type_id;
+			this.form.registered_company_name = this.selectedBranch.registered_company_name;
 
 			this.selectedType = _.filter(this.types, function (type) {
 				return this.form.product_type_id == type.value;
@@ -70607,7 +70622,7 @@ var render = function() {
                             defaultValue: _vm.form.owner,
                             required: true,
                             type: "text",
-                            label: "Owner name",
+                            label: "Business display name",
                             name: "owner",
                             editable: true,
                             focus: false,
@@ -70632,22 +70647,24 @@ var render = function() {
                       [
                         _c("text-input", {
                           attrs: {
-                            defaultValue: _vm.form.contact,
+                            defaultValue: _vm.form.registered_company_name,
                             required: true,
                             type: "text",
-                            label: "Contact number",
-                            name: "contact",
+                            label: "Registered company name",
+                            name: "registered_company_name",
                             editable: true,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("contact")
+                            error: _vm.form.errors.get(
+                              "registered_company_name"
+                            )
                           },
                           model: {
-                            value: _vm.form.contact,
+                            value: _vm.form.registered_company_name,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "contact", $$v)
+                              _vm.$set(_vm.form, "registered_company_name", $$v)
                             },
-                            expression: "form.contact"
+                            expression: "form.registered_company_name"
                           }
                         })
                       ],
@@ -70678,6 +70695,34 @@ var render = function() {
                               _vm.$set(_vm.form, "email", $$v)
                             },
                             expression: "form.email"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.contact,
+                            required: true,
+                            type: "text",
+                            label: "Contact number",
+                            name: "contact",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("contact")
+                          },
+                          model: {
+                            value: _vm.form.contact,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "contact", $$v)
+                            },
+                            expression: "form.contact"
                           }
                         })
                       ],
@@ -76207,6 +76252,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 	methods: {
+		payFull: function payFull() {
+			this.form.paid = this.rounded_total;
+		},
+		doNothing: function doNothing() {
+			console.log("Do nothing");
+			// This method does nothing
+			// This is on purpose such that the Enter key will not trigger invoice creation
+		},
 		adjustHeader: function adjustHeader(event) {
 
 			if (document.documentElement.scrollTop > this.headerTop) {
@@ -76386,6 +76439,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
 		submit: function submit() {
+			console.log("Submitting");
 			this.form.items = _.filter(this.form.items, function (item) {
 				return item.product_id ? true : false;
 			});
@@ -77035,9 +77089,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				if (shouldFocus) this.$refs.dimension.triggerFocus();
 			}
 		},
-
-
-		getProducts: _.debounce(function () {
+		getProducts: function getProducts() {
 			var _this2 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
@@ -77051,8 +77103,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					return _this2.getRelatedProduct(error);
 				});
 			}
-		}, 1000),
-
+		},
 		setProducts: function setProducts(response) {
 			this.selectedProduct = '';
 			this.selectedProduct_error = "";
@@ -77858,7 +77909,7 @@ var render = function() {
           on: {
             submit: function($event) {
               $event.preventDefault()
-              return _vm.submit($event)
+              return _vm.doNothing($event)
             },
             keydown: function($event) {
               _vm.form.errors.clear($event.target.name)
@@ -78035,10 +78086,11 @@ var render = function() {
                         {
                           staticClass: "btn btn-sm btn-primary",
                           attrs: {
-                            type: "submit",
+                            type: "button",
                             disabled: !_vm.canSubmit || !_vm.canEdit,
                             title: _vm.editTooltip
-                          }
+                          },
+                          on: { click: _vm.submit }
                         },
                         [_vm._v("Confirm (F7)")]
                       )
@@ -78160,10 +78212,18 @@ var render = function() {
                     _c("b", { staticClass: "invoice-label text-right" }, [
                       _vm._v("Total:")
                     ]),
-                    _vm._v(
-                      " RM" +
-                        _vm._s(_vm._f("price")(_vm.rounded_total)) +
-                        "\n\t\t\t\t\t\t"
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "button" },
+                        on: { click: _vm.payFull }
+                      },
+                      [
+                        _vm._v(
+                          "RM" + _vm._s(_vm._f("price")(_vm.rounded_total))
+                        )
+                      ]
                     )
                   ]),
                   _vm._v(" "),

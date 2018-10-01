@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<form @submit.prevent="submit" 
+		<form @submit.prevent="doNothing" 
 			@keydown="form.errors.clear($event.target.name)" 
 			@input="form.errors.clear($event.target.name)">
 			<div class="card" id="invoice-header">
@@ -70,7 +70,7 @@
 								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
 								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
 								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button type="submit" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip">Confirm (F7)</button>
+								<button type="button" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 							</div>
 						</div>
 
@@ -126,7 +126,7 @@
 								<b class="invoice-label text-right">Rounding:</b> RM{{ rounding | price }}
 							</div>
 							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Total:</b> RM{{ rounded_total | price }}
+								<b class="invoice-label text-right">Total:</b><button type="button" class="btn btn-primary" @click="payFull">RM{{ rounded_total | price }}</button>
 							</div>
 							<div class="d-flex align-items-center mb-3">
 								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
@@ -432,6 +432,16 @@
 		},
 
 		methods: {
+			payFull() {
+				this.form.paid = this.rounded_total;
+			},
+
+			doNothing() {
+				console.log("Do nothing");
+				// This method does nothing
+				// This is on purpose such that the Enter key will not trigger invoice creation
+			},
+
 			adjustHeader(event) {
 				
 				if(document.documentElement.scrollTop > this.headerTop) {
@@ -604,6 +614,7 @@
 			},
 
 			submit() {
+				console.log("Submitting");
 				this.form.items = _.filter(this.form.items, function(item){ return item.product_id ? true : false; });
 
 				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"

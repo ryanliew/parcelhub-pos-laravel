@@ -134,11 +134,9 @@ class CustomerController extends Controller
         foreach ($invoices as $key => $invoice ) 
         {
 
-            if( $invoice['total'] > 0 )
-            {
-                $debit_count ++;
-                $debit += $invoice['total'];
-            }
+
+            $debit_count ++;
+            $debit += $invoice['total'];
 
             if( $invoice['paid'] > 0 )
             {

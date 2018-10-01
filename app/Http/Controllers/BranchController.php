@@ -26,7 +26,8 @@ class BranchController extends Controller
             "payment_bank" => "required",
             "payment_acc_no" => "required",
             "address" => "required",
-            "product_type_id" => "required"
+            "product_type_id" => "required",
+            "registered_company_name" => "required"
         ]);
 	}
 
