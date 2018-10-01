@@ -11100,7 +11100,8 @@ body {
 }
 
 .navbar-brand img {
-  max-width: 250px;
+  max-height: 30px;
+  width: auto;
 }
 
 .label-small {
