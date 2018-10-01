@@ -23,19 +23,6 @@
 								:isHorizontal="true"
 								:error="form.errors.get('type')">
 							</selector-input>
-							<selector-input :potentialData="payment_types"
-								v-model="selectedPaymentType" 
-								:defaultData="selectedPaymentType"
-								placeholder="Select payment type"
-								:required="true"
-								label="Payment type"
-								name="payment_type"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('payment_type')">
-							</selector-input>
 							<selector-input :potentialData="customers"
 								v-model="selectedCustomer" 
 								:defaultData="selectedCustomer"
@@ -52,6 +39,19 @@
 								addonTooltip="Create new customer"
 								addon="createCustomer"
 								@createCustomer="createCustomer">
+							</selector-input>
+							<selector-input :potentialData="payment_types"
+								v-model="selectedPaymentType" 
+								:defaultData="selectedPaymentType"
+								placeholder="Select payment type"
+								:required="true"
+								label="Payment type"
+								name="payment_type"
+								:editable="canEdit"
+								:focus="false"
+								:hideLabel="false"
+								:isHorizontal="true"
+								:error="form.errors.get('payment_type')">
 							</selector-input>
 							<text-input v-model="form.remarks" 
 								:defaultValue="form.remarks"

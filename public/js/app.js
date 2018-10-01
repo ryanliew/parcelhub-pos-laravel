@@ -77962,29 +77962,6 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _c("selector-input", {
-                      attrs: {
-                        potentialData: _vm.payment_types,
-                        defaultData: _vm.selectedPaymentType,
-                        placeholder: "Select payment type",
-                        required: true,
-                        label: "Payment type",
-                        name: "payment_type",
-                        editable: _vm.canEdit,
-                        focus: false,
-                        hideLabel: false,
-                        isHorizontal: true,
-                        error: _vm.form.errors.get("payment_type")
-                      },
-                      model: {
-                        value: _vm.selectedPaymentType,
-                        callback: function($$v) {
-                          _vm.selectedPaymentType = $$v
-                        },
-                        expression: "selectedPaymentType"
-                      }
-                    }),
-                    _vm._v(" "),
                     _vm.form.type == "Customer"
                       ? _c("selector-input", {
                           attrs: {
@@ -78012,6 +77989,29 @@ var render = function() {
                           }
                         })
                       : _vm._e(),
+                    _vm._v(" "),
+                    _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.payment_types,
+                        defaultData: _vm.selectedPaymentType,
+                        placeholder: "Select payment type",
+                        required: true,
+                        label: "Payment type",
+                        name: "payment_type",
+                        editable: _vm.canEdit,
+                        focus: false,
+                        hideLabel: false,
+                        isHorizontal: true,
+                        error: _vm.form.errors.get("payment_type")
+                      },
+                      model: {
+                        value: _vm.selectedPaymentType,
+                        callback: function($$v) {
+                          _vm.selectedPaymentType = $$v
+                        },
+                        expression: "selectedPaymentType"
+                      }
+                    }),
                     _vm._v(" "),
                     _c("text-input", {
                       attrs: {
