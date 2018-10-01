@@ -247,7 +247,7 @@
 		<div >
 			<table>
 				<tbody>
-				<tr class="item-row"><td class="meta-head text-center" colspan='2'>Invoice Totals (RM )</td></tr>
+				<tr class="item-row"><td class="meta-head text-center" colspan='2'>Invoice Totals (RM)</td></tr>
 				<tr class="item-row"><td class="meta-detail">Subtotal</td><td ><textarea >{{number_format((float)$invoice->subtotal,2,'.','')}}</textarea></td></tr>
 				<tr class="item-row"><td class="meta-detail">Discount</td><td><textarea>{{number_format((float)$invoice->discount,2,'.','')}}</textarea></td></tr>
 				<tr class="item-row"><td class="meta-detail">Tax</td><td><textarea>{{number_format((float)$invoice->tax,2,'.','')}}</textarea></td></tr>

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
 use App\Customer;
 use App\Invoice;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
@@ -112,13 +113,13 @@ class CustomerController extends Controller
         $this->validate_input_statement();
 
         $date_from = Request()->date_from;
-        $date_to = Request()->date_to;
+        $date_to = Carbon::parse(Request()->date_to);
 
         $invoices = Invoice::with('customer')
                     ->where([
                              ['customer_id', $customer->id],
                              ['created_at', '>=', $date_from],
-                             ['created_at', '<=', $date_to],
+                             ['created_at', '<=', $date_to->addDays(1)->toDateString()],
                             ])
                     ->get();
 
