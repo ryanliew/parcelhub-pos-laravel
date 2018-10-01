@@ -103,7 +103,7 @@
 			Phone: {{ $invoice->branch->contact }}
 			<br>
 		</div>
-		<div><img id="image" src="img/logo.png" alt="logo"></div>
+		
 	
 		<div class="header-left header-center ">Delivery Note</div>
 
