@@ -70125,6 +70125,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -70155,7 +70168,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				website: '',
 				address: '',
 				default_product_type: '',
-				product_type_id: ''
+				product_type_id: '',
+				registered_company_name: ''
 			})
 		};
 	},
@@ -70236,6 +70250,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.website = this.selectedBranch.website;
 			this.form.address = this.selectedBranch.address;
 			this.form.product_type_id = this.selectedBranch.product_type_id;
+			this.form.registered_company_name = this.selectedBranch.registered_company_name;
 
 			this.selectedType = _.filter(this.types, function (type) {
 				return this.form.product_type_id == type.value;
@@ -70607,7 +70622,7 @@ var render = function() {
                             defaultValue: _vm.form.owner,
                             required: true,
                             type: "text",
-                            label: "Owner name",
+                            label: "Business display name",
                             name: "owner",
                             editable: true,
                             focus: false,
@@ -70632,22 +70647,24 @@ var render = function() {
                       [
                         _c("text-input", {
                           attrs: {
-                            defaultValue: _vm.form.contact,
+                            defaultValue: _vm.form.registered_company_name,
                             required: true,
                             type: "text",
-                            label: "Contact number",
-                            name: "contact",
+                            label: "Registered company name",
+                            name: "registered_company_name",
                             editable: true,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("contact")
+                            error: _vm.form.errors.get(
+                              "registered_company_name"
+                            )
                           },
                           model: {
-                            value: _vm.form.contact,
+                            value: _vm.form.registered_company_name,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "contact", $$v)
+                              _vm.$set(_vm.form, "registered_company_name", $$v)
                             },
-                            expression: "form.contact"
+                            expression: "form.registered_company_name"
                           }
                         })
                       ],
@@ -70678,6 +70695,34 @@ var render = function() {
                               _vm.$set(_vm.form, "email", $$v)
                             },
                             expression: "form.email"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.contact,
+                            required: true,
+                            type: "text",
+                            label: "Contact number",
+                            name: "contact",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("contact")
+                          },
+                          model: {
+                            value: _vm.form.contact,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "contact", $$v)
+                            },
+                            expression: "form.contact"
                           }
                         })
                       ],
@@ -76117,15 +76162,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type'],
+	props: ['created_by', 'invoice', 'auth_user', 'setting', 'default_product_type', 'is_edit'],
 
 	mixins: [__WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__["a" /* default */]],
 
@@ -76207,6 +76250,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 	methods: {
+		payFull: function payFull() {
+			this.form.paid = this.rounded_total;
+		},
+		doNothing: function doNothing() {
+			console.log("Do nothing");
+			// This method does nothing
+			// This is on purpose such that the Enter key will not trigger invoice creation
+		},
 		adjustHeader: function adjustHeader(event) {
 
 			if (document.documentElement.scrollTop > this.headerTop) {
@@ -76386,6 +76437,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
 		submit: function submit() {
+			console.log("Submitting");
 			this.form.items = _.filter(this.form.items, function (item) {
 				return item.product_id ? true : false;
 			});
@@ -76890,7 +76942,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
 
 	data: function data() {
 		return {
@@ -76950,10 +77002,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		// If we are getting item from db
 		Vue.nextTick(function () {
 			// console.log(this.item.product_id);
-			if (_this.item.product_id) {
+			if (_this.is_edit) {
 				_this.updateItem();
 			} else if (_this.defaultProductType.has_detail) {
-				_this.selectedZoneType = { label: 'Domestic', value: 1 };
+				// this.selectedZoneType = {label: 'Domestic', value: 1};
 				Vue.nextTick(function () {
 					this.getDefaultDetails();
 				}.bind(_this));
@@ -76987,7 +77039,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.selectedProductType = _.filter(this.product_types, function (type) {
 				return this.item.product_type_id == type.value;
 			}.bind(this))[0];
-			this.selectedZoneType = this.zone_types[0];
+			this.selectedZoneType = _.filter(this.zone_types, function (type) {
+				return this.item.zone_type_id == type.value;
+			}.bind(this))[0];
 			this.selectedCourier = _.filter(this.couriers, function (courier) {
 				return this.item.courier_id == courier.value;
 			}.bind(this))[0];
@@ -77036,10 +77090,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		getProducts: function getProducts() {
 			var _this2 = this;
 
-			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
-			// console.log("Getting product");
-			// console.log(this.selectedProductType);
 			// Product type selected, get the products of the same type
 			if (this.selectedProductType) {
 				this.has_detail = this.selectedProductType.has_detail;
@@ -77112,7 +77164,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.selectedProduct) {
 				this.description = this.selectedProduct.description;
 				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-				console.log("It is me!");
 				Vue.nextTick(function () {
 					return _this4.getProductPrice();
 				});
@@ -77123,7 +77174,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			if (!this.item.product_id) {
+			if (!this.isEdit) {
 				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
 					return _this5.setDefaultDetails(response);
 				}).catch(function (error) {
@@ -77279,16 +77330,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$emit('update', { attribute: 'has_error', value: newVal != '' });
 		},
 		selectedProductType: function selectedProductType(newVal) {
-			this.$emit('update', { attribute: 'product_type_id', value: '' });
 			if (newVal) {
 				this.$emit('update', { attribute: 'product_type_id', value: newVal.value });
 				this.getDefaultDetails();
+			} else {
+				this.$emit('update', { attribute: 'product_type_id', value: '' });
 			}
 		},
 		selectedZoneType: function selectedZoneType(newVal) {
-			this.$emit('update', { attribute: 'zone_type_id', value: '' });
 			if (newVal) {
 				this.$emit('update', { attribute: 'zone_type_id', value: newVal.value });
+			} else {
+				this.$emit('update', { attribute: 'zone_type_id', value: '' });
 			}
 		},
 		zone: function zone(newVal) {
@@ -77310,12 +77363,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$emit('update', { attribute: 'width', value: newVal ? newVal : 0 });
 		},
 		selectedCourier: function selectedCourier(newVal) {
-			this.$emit('update', { attribute: 'courier_id', value: 0 });
 			if (newVal) {
 				this.$emit('update', { attribute: 'courier_id', value: newVal.value });
 
 				// console.log("Updated courier id: " + newVal.value);			
 				this.calculateDimWeight(false);
+			} else {
+				this.$emit('update', { attribute: 'courier_id', value: 0 });
 			}
 		},
 		price: function price(newVal) {
@@ -77325,11 +77379,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$emit('update', { attribute: 'description', value: newVal });
 		},
 		selectedProduct: function selectedProduct(newVal) {
-			this.$emit('update', { attribute: 'product_id', value: '' });
-			this.$emit('update', { attribute: 'sku', value: '' });
 			if (newVal) {
 				this.$emit('update', { attribute: 'product_id', value: newVal.value });
 				this.$emit('update', { attribute: 'sku', value: newVal.label });
+			} else {
+				this.$emit('update', { attribute: 'product_id', value: '' });
+				this.$emit('update', { attribute: 'sku', value: '' });
 			}
 		},
 		total_price: function total_price(newVal) {
@@ -77852,7 +77907,7 @@ var render = function() {
           on: {
             submit: function($event) {
               $event.preventDefault()
-              return _vm.submit($event)
+              return _vm.doNothing($event)
             },
             keydown: function($event) {
               _vm.form.errors.clear($event.target.name)
@@ -77907,29 +77962,6 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _c("selector-input", {
-                      attrs: {
-                        potentialData: _vm.payment_types,
-                        defaultData: _vm.selectedPaymentType,
-                        placeholder: "Select payment type",
-                        required: true,
-                        label: "Payment type",
-                        name: "payment_type",
-                        editable: _vm.canEdit,
-                        focus: false,
-                        hideLabel: false,
-                        isHorizontal: true,
-                        error: _vm.form.errors.get("payment_type")
-                      },
-                      model: {
-                        value: _vm.selectedPaymentType,
-                        callback: function($$v) {
-                          _vm.selectedPaymentType = $$v
-                        },
-                        expression: "selectedPaymentType"
-                      }
-                    }),
-                    _vm._v(" "),
                     _vm.form.type == "Customer"
                       ? _c("selector-input", {
                           attrs: {
@@ -77958,6 +77990,29 @@ var render = function() {
                         })
                       : _vm._e(),
                     _vm._v(" "),
+                    _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.payment_types,
+                        defaultData: _vm.selectedPaymentType,
+                        placeholder: "Select payment type",
+                        required: true,
+                        label: "Payment type",
+                        name: "payment_type",
+                        editable: _vm.canEdit,
+                        focus: false,
+                        hideLabel: false,
+                        isHorizontal: true,
+                        error: _vm.form.errors.get("payment_type")
+                      },
+                      model: {
+                        value: _vm.selectedPaymentType,
+                        callback: function($$v) {
+                          _vm.selectedPaymentType = $$v
+                        },
+                        expression: "selectedPaymentType"
+                      }
+                    }),
+                    _vm._v(" "),
                     _c("text-input", {
                       attrs: {
                         defaultValue: _vm.form.remarks,
@@ -77978,65 +78033,7 @@ var render = function() {
                         },
                         expression: "form.remarks"
                       }
-                    }),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "d-flex justify-content-start" }, [
-                      _vm.selectedCustomer && _vm.invoice
-                        ? _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-sm btn-success mr-2",
-                              attrs: {
-                                target: "_blank",
-                                href: "/invoices/do/" + _vm.invoice,
-                                type: "button"
-                              }
-                            },
-                            [_vm._v("Print delivery note")]
-                          )
-                        : _vm.invoice
-                          ? _c(
-                              "a",
-                              {
-                                staticClass: "btn btn-sm btn-success mr-2",
-                                attrs: {
-                                  target: "_blank",
-                                  href: "/invoices/receipt/" + _vm.invoice,
-                                  type: "button"
-                                }
-                              },
-                              [_vm._v("Print receipt")]
-                            )
-                          : _vm._e(),
-                      _vm._v(" "),
-                      _vm.invoice
-                        ? _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-sm btn-success mr-2",
-                              attrs: {
-                                target: "_blank",
-                                href: "/invoices/preview/" + _vm.invoice,
-                                type: "button"
-                              }
-                            },
-                            [_vm._v("Print invoice")]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-sm btn-primary",
-                          attrs: {
-                            type: "submit",
-                            disabled: !_vm.canSubmit || !_vm.canEdit,
-                            title: _vm.editTooltip
-                          }
-                        },
-                        [_vm._v("Confirm (F7)")]
-                      )
-                    ])
+                    })
                   ],
                   1
                 ),
@@ -78154,10 +78151,18 @@ var render = function() {
                     _c("b", { staticClass: "invoice-label text-right" }, [
                       _vm._v("Total:")
                     ]),
-                    _vm._v(
-                      " RM" +
-                        _vm._s(_vm._f("price")(_vm.rounded_total)) +
-                        "\n\t\t\t\t\t\t"
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "button" },
+                        on: { click: _vm.payFull }
+                      },
+                      [
+                        _vm._v(
+                          "RM" + _vm._s(_vm._f("price")(_vm.rounded_total))
+                        )
+                      ]
                     )
                   ]),
                   _vm._v(" "),
@@ -78169,6 +78174,65 @@ var render = function() {
                       " RM" +
                         _vm._s(_vm._f("price")(_vm.change)) +
                         "\n\t\t\t\t\t\t"
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "d-flex justify-content-end" }, [
+                    _vm.selectedCustomer && _vm.invoice
+                      ? _c(
+                          "a",
+                          {
+                            staticClass: "btn btn-sm btn-success mr-2",
+                            attrs: {
+                              target: "_blank",
+                              href: "/invoices/do/" + _vm.invoice,
+                              type: "button"
+                            }
+                          },
+                          [_vm._v("Print delivery note")]
+                        )
+                      : _vm.invoice
+                        ? _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-sm btn-success mr-2",
+                              attrs: {
+                                target: "_blank",
+                                href: "/invoices/receipt/" + _vm.invoice,
+                                type: "button"
+                              }
+                            },
+                            [_vm._v("Print receipt")]
+                          )
+                        : _vm._e(),
+                    _vm._v(" "),
+                    _vm.invoice
+                      ? _c(
+                          "a",
+                          {
+                            staticClass: "btn btn-sm btn-success mr-2",
+                            attrs: {
+                              target: "_blank",
+                              href: "/invoices/preview/" + _vm.invoice,
+                              type: "button"
+                            }
+                          },
+                          [_vm._v("Print invoice")]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-sm btn-primary",
+                        attrs: {
+                          type: "button",
+                          disabled: !_vm.canSubmit || !_vm.canEdit,
+                          title: _vm.editTooltip
+                        },
+                        on: { click: _vm.submit }
+                      },
+                      [_vm._v("Confirm (F7)")]
                     )
                   ])
                 ])
@@ -78292,69 +78356,7 @@ var render = function() {
                           },
                           expression: "form.remarks"
                         }
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "d-flex justify-content-start" },
-                        [
-                          _vm.selectedCustomer && _vm.invoice
-                            ? _c(
-                                "a",
-                                {
-                                  staticClass: "btn btn-sm btn-success mr-2",
-                                  attrs: {
-                                    target: "_blank",
-                                    href: "/invoices/do/" + _vm.invoice,
-                                    type: "button"
-                                  }
-                                },
-                                [_vm._v("Print delivery note")]
-                              )
-                            : _vm.invoice
-                              ? _c(
-                                  "a",
-                                  {
-                                    staticClass: "btn btn-sm btn-success mr-2",
-                                    attrs: {
-                                      target: "_blank",
-                                      href: "/invoices/receipt/" + _vm.invoice,
-                                      type: "button"
-                                    }
-                                  },
-                                  [_vm._v("Print receipt")]
-                                )
-                              : _vm._e(),
-                          _vm._v(" "),
-                          _vm.invoice
-                            ? _c(
-                                "a",
-                                {
-                                  staticClass: "btn btn-sm btn-success mr-2",
-                                  attrs: {
-                                    target: "_blank",
-                                    href: "/invoices/preview/" + _vm.invoice,
-                                    type: "button"
-                                  }
-                                },
-                                [_vm._v("Print invoice")]
-                              )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-sm btn-primary",
-                              attrs: {
-                                type: "submit",
-                                disabled: !_vm.canSubmit || !_vm.canEdit,
-                                title: _vm.editTooltip
-                              }
-                            },
-                            [_vm._v("Confirm (F7)")]
-                          )
-                        ]
-                      )
+                      })
                     ],
                     1
                   ),
@@ -78507,7 +78509,65 @@ var render = function() {
                             )
                           ]
                         )
-                      : _vm._e()
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "d-flex justify-content-end" }, [
+                      _vm.selectedCustomer && _vm.invoice
+                        ? _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-sm btn-success mr-2",
+                              attrs: {
+                                target: "_blank",
+                                href: "/invoices/do/" + _vm.invoice,
+                                type: "button"
+                              }
+                            },
+                            [_vm._v("Print delivery note")]
+                          )
+                        : _vm.invoice
+                          ? _c(
+                              "a",
+                              {
+                                staticClass: "btn btn-sm btn-success mr-2",
+                                attrs: {
+                                  target: "_blank",
+                                  href: "/invoices/receipt/" + _vm.invoice,
+                                  type: "button"
+                                }
+                              },
+                              [_vm._v("Print receipt")]
+                            )
+                          : _vm._e(),
+                      _vm._v(" "),
+                      _vm.invoice
+                        ? _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-sm btn-success mr-2",
+                              attrs: {
+                                target: "_blank",
+                                href: "/invoices/preview/" + _vm.invoice,
+                                type: "button"
+                              }
+                            },
+                            [_vm._v("Print invoice")]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-sm btn-primary",
+                          attrs: {
+                            disabled: !_vm.canSubmit || !_vm.canEdit,
+                            title: _vm.editTooltip
+                          },
+                          on: { click: _vm.submit }
+                        },
+                        [_vm._v("Confirm (F7)")]
+                      )
+                    ])
                   ])
                 ])
               ])
@@ -78519,22 +78579,57 @@ var render = function() {
               "div",
               { staticClass: "card-body" },
               [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-sm btn-primary mb-3",
-                    attrs: { type: "button", disabled: !_vm.canAddItem },
-                    on: { click: _vm.addItem }
-                  },
-                  [_vm._v("Add Item (F8)")]
-                ),
-                _vm._v(" "),
-                _vm._m(0),
+                _c("div", { staticClass: "invoice-items" }, [
+                  _c("div", { staticClass: "header" }, [_vm._v("Nr:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [
+                    _vm._v("Product type:")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Zone type:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Zone:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Weight(kg):")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Dim wt(kg):")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Courier:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("SKU:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [
+                    _vm._v("Description:")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Unit:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Track code:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [_vm._v("Price:")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [
+                    _vm._v("Total price:")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "header" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-sm btn-primary mb-3",
+                        attrs: { type: "button", disabled: !_vm.canAddItem },
+                        on: { click: _vm.addItem }
+                      },
+                      [_vm._v("Add Item (F8)")]
+                    )
+                  ])
+                ]),
                 _vm._v(" "),
                 _vm._l(_vm.form.items, function(item, index) {
                   return [
                     _c("item-row", {
                       attrs: {
+                        isEdit: _vm.is_edit,
                         items: _vm.form.items,
                         index: index,
                         canEdit: _vm.canEditItem,
@@ -78657,42 +78752,7 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "invoice-items" }, [
-      _c("div", { staticClass: "header" }, [_vm._v("Nr:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Product type:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Zone type:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Zone:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Weight(kg):")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Dim wt(kg):")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Courier:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("SKU:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Description:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Unit:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Track code:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Price:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" }, [_vm._v("Total price:")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "header" })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
