@@ -76159,6 +76159,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -77141,7 +77143,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 			// If we dont have any products that matches
 			if (this.products.length == 0) {
-				this.selectedProduct_error = "No matching SKU found";
+				this.selectedProduct_error = "No matching SKU";
+				this.price = 0;
+				this.description = '';
 			}
 
 			// If selected product types doesn't have details, clear the courier field and disable zone/weight/dim weight fields
@@ -77333,7 +77337,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		tracking_no_error: function tracking_no_error() {
 			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
 				// We already have a product which needs tracking code selected but tracking code not entered
-				return 'Tracking code is required';else if (this.tracking_no_repeating && this.canEdit) return 'Invalid tracking code';
+				return 'Required';else if (this.tracking_no_repeating && this.canEdit) return 'Invalid';
 
 			return '';
 		}
@@ -78174,6 +78178,8 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "d-flex justify-content-start" }, [
+                _c("div", { staticClass: "invoice-label" }),
+                _vm._v(" "),
                 _vm.selectedCustomer && _vm.invoice
                   ? _c(
                       "a",
@@ -78489,6 +78495,8 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _c("div", { staticClass: "d-flex justify-content-start" }, [
+                _c("div", { staticClass: "invoice-label" }),
+                _vm._v(" "),
                 _vm.selectedCustomer && _vm.invoice
                   ? _c(
                       "a",

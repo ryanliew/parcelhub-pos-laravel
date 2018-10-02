@@ -420,7 +420,9 @@
 				}
 				// If we dont have any products that matches
 				if(this.products.length == 0) {
-					this.selectedProduct_error = "No matching SKU found";
+					this.selectedProduct_error = "No matching SKU";
+					this.price = 0;
+					this.description = '';
 				}
 
 				// If selected product types doesn't have details, clear the courier field and disable zone/weight/dim weight fields
@@ -604,9 +606,9 @@
 			tracking_no_error() {
 				if(this.selectedProductType.has_detail && this.description && !this.tracking_no)
 					// We already have a product which needs tracking code selected but tracking code not entered
-					return 'Tracking code is required';
+					return 'Required';
 				else if(this.tracking_no_repeating && this.canEdit)
-					return 'Invalid tracking code';
+					return 'Invalid';
 
 				return '';
 			}
