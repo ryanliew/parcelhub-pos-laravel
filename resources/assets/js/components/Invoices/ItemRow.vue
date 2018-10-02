@@ -424,7 +424,10 @@
 
 			updateProducts(error = "No error") {
 				if(this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier){
-					let url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
+					let url = "/data/products?type=" + this.selectedProductType.value
+
+					if(this.zone)
+						url += "&zone=" + this.zone;
 
 					if(this.weight)
 						url += "&weight=" + this.weight;
@@ -453,6 +456,7 @@
 			},
 
 			getDefaultDetails(error = 'No error') {
+
 				if(!this.isEdit && this.default_details) {
 					this.default_details = false;
 					axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
