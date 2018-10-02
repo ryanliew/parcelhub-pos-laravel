@@ -18,7 +18,7 @@
 
     <!-- Styles -->
     @yield('styles')
-    <link href="{{ asset('css/app.css?v=1.2') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css?v=1.3') }}" rel="stylesheet">
 
 </head>
 <body>
@@ -87,7 +87,7 @@
     </div>
 
     <script src="{{ asset('js/form.js') }}"></script>
-    <script src="{{ asset('js/app.js?v=1.99') }}"></script>
+    <script src="{{ asset('js/app.js?v=1.995') }}"></script>
     @yield('js')
 </body>
 </html>

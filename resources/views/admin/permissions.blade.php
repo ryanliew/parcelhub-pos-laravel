@@ -73,8 +73,8 @@
 				],
 				ajax: '{!! route("permissions.index") !!}',
 				columns: [
-					{data: 'user_name'},
-					{data: 'branch_name'},
+					{data: 'user_name', name: 'user.name'},
+					{data: 'branch_name', name: 'branch.name'},
 					{data: 'level'}
 				]
 			});
