@@ -424,7 +424,10 @@
 
 			updateProducts(error = "No error") {
 				if(this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier){
-					let url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
+					let url = "/data/products?type=" + this.selectedProductType.value
+
+					if(this.zone)
+						url += "&zone=" + this.zone;
 
 					if(this.weight)
 						url += "&weight=" + this.weight;

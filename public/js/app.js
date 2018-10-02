@@ -77146,7 +77146,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
 			if (this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier) {
-				var url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
+				var url = "/data/products?type=" + this.selectedProductType.value;
+
+				if (this.zone) url += "&zone=" + this.zone;
 
 				if (this.weight) url += "&weight=" + this.weight;
 
