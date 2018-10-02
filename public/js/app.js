@@ -76636,6 +76636,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			if (newVal.value !== 'Customer') {
 				this.selectedCustomer = '';
+				this.selectedPaymentType = { value: 'Cash', label: 'Cash' };
 			} else {
 				this.selectedPaymentType = { value: 'Account', label: 'Account' };
 			}
@@ -77953,7 +77954,7 @@ var render = function() {
                     defaultData: _vm.selectedType,
                     placeholder: "Select type",
                     required: true,
-                    label: "Type",
+                    label: "Customer type",
                     name: "type",
                     editable: _vm.canEdit,
                     focus: false,
@@ -78269,7 +78270,7 @@ var render = function() {
                     defaultData: _vm.selectedType,
                     placeholder: "Select type",
                     required: true,
-                    label: "Type",
+                    label: "Customer type",
                     name: "type",
                     editable: _vm.canEdit,
                     focus: false,

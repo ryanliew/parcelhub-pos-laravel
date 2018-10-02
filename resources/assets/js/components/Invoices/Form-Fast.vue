@@ -12,7 +12,7 @@
 							:defaultData="selectedType"
 							placeholder="Select type"
 							:required="true"
-							label="Type"
+							label="Customer type"
 							name="type"
 							:editable="canEdit"
 							:focus="false"
@@ -146,7 +146,7 @@
 							:defaultData="selectedType"
 							placeholder="Select type"
 							:required="true"
-							label="Type"
+							label="Customer type"
 							name="type"
 							:editable="canEdit"
 							:focus="false"
@@ -832,6 +832,7 @@
 				
 				if(newVal.value !== 'Customer') {
 					this.selectedCustomer = '';
+					this.selectedPaymentType = {value: 'Cash', label: 'Cash'};
 				} else {
 					this.selectedPaymentType = {value: 'Account', label: 'Account'};
 				}

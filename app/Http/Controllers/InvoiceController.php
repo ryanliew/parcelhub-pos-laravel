@@ -137,7 +137,7 @@ class InvoiceController extends Controller
         }
         //$invoice->items()->create($items);
 
-        $url = $invoice->payment_type == "Cash" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
+        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
 
         $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
