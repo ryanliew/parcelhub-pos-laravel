@@ -1,295 +1,291 @@
 <template>
 	<div>
-		<form @submit.prevent="doNothing" 
-			@keydown="form.errors.clear($event.target.name)" 
-			@input="form.errors.clear($event.target.name)">
-			<div class="card" id="invoice-header">
-				<div class="card-body">
-					<div class="row">
-						<!-- Start Invoice Section -->
-						<div class="col-4">
-							<p v-if="invoiceNumber" class="mb-0"><b>Invoice number</b>: {{ invoiceNumber }}</p>
-							<p><b v-if="!invoiceNumber">Current time</b><b v-else>Created time</b>: {{ currentTime }}</p>
-							<selector-input :potentialData="types"
-								v-model="selectedType" 
-								:defaultData="selectedType"
-								placeholder="Select type"
-								:required="true"
-								label="Type"
-								name="type"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('type')">
-							</selector-input>
-							<selector-input :potentialData="customers"
-								v-model="selectedCustomer" 
-								:defaultData="selectedCustomer"
-								placeholder="Select customer"
-								:required="true"
-								label="Customer"
-								name="customer_id"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:error="form.errors.get('customer_id')"
-								v-if="form.type == 'Customer'"
-								:isHorizontal="true"
-								addonTooltip="Create new customer"
-								addon="createCustomer"
-								@createCustomer="createCustomer">
-							</selector-input>
-							<selector-input :potentialData="payment_types"
-								v-model="selectedPaymentType" 
-								:defaultData="selectedPaymentType"
-								placeholder="Select payment type"
-								:required="true"
-								label="Payment type"
-								name="payment_type"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('payment_type')">
-							</selector-input>
-							<text-input v-model="form.remarks" 
-								:defaultValue="form.remarks"
-								:required="false"
-								type="text"
-								label="Remarks"
-								name="remarks"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('remarks')">
-							</text-input>
+		<div class="card" id="invoice-header">
+			<div class="card-body">
+				<div class="row">
+					<!-- Start Invoice Section -->
+					<div class="col-4">
+						<p v-if="invoiceNumber" class="mb-0"><b>Invoice number</b>: {{ invoiceNumber }}</p>
+						<p><b v-if="!invoiceNumber">Current time</b><b v-else>Created time</b>: {{ currentTime }}</p>
+						<selector-input :potentialData="types"
+							v-model="selectedType" 
+							:defaultData="selectedType"
+							placeholder="Select type"
+							:required="true"
+							label="Type"
+							name="type"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('type')">
+						</selector-input>
+						<selector-input :potentialData="customers"
+							v-model="selectedCustomer" 
+							:defaultData="selectedCustomer"
+							placeholder="Select customer"
+							:required="true"
+							label="Customer"
+							name="customer_id"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:error="form.errors.get('customer_id')"
+							v-if="form.type == 'Customer'"
+							:isHorizontal="true"
+							addonTooltip="Create new customer"
+							addon="createCustomer"
+							@createCustomer="createCustomer">
+						</selector-input>
+						<selector-input :potentialData="payment_types"
+							v-model="selectedPaymentType" 
+							:defaultData="selectedPaymentType"
+							placeholder="Select payment type"
+							:required="true"
+							label="Payment type"
+							name="payment_type"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('payment_type')">
+						</selector-input>
+						<text-input v-model="form.remarks" 
+							:defaultValue="form.remarks"
+							:required="false"
+							type="text"
+							label="Remarks"
+							name="remarks"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('remarks')">
+						</text-input>
+					</div>
+
+					<div class="col-4">
+						
+						<text-input v-model="form.discount" 
+							:defaultValue="form.discount"
+							:required="false"
+							type="number"
+							label="Discount"
+							name="discount"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('discount')">
+						</text-input>
+						<selector-input :potentialData="modes"
+							v-model="selectedDiscountMode" 
+							:defaultData="selectedDiscountMode"
+							placeholder="Select discount mode"
+							:required="false"
+							label="Discount mode"
+							name="discount_mode"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('discount_mode')">
+						</selector-input>
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Tax:</b> {{ tax | price }}
+						</div>
+						<text-input v-model="form.paid" 
+							:defaultValue="form.paid"
+							:required="true"
+							type="number"
+							label="Paid"
+							name="paid"
+							ref="paid"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('paid')">
+						</text-input>
+					</div>
+					<div class="col-4 invoice-summary">
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Items:</b> {{ itemCount }}
+						</div>
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Rounding:</b> RM{{ rounding | price }}
+						</div>
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Total:</b><button type="button" class="btn btn-primary" @click="payFull">RM{{ rounded_total | price }} (F6)</button>
+						</div>
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
 						</div>
 
-						<div class="col-4">
-							
-							<text-input v-model="form.discount" 
-								:defaultValue="form.discount"
-								:required="false"
-								type="number"
-								label="Discount"
-								name="discount"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('discount')">
-							</text-input>
-							<selector-input :potentialData="modes"
-								v-model="selectedDiscountMode" 
-								:defaultData="selectedDiscountMode"
-								placeholder="Select discount mode"
-								:required="false"
-								label="Discount mode"
-								name="discount_mode"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('discount_mode')">
-							</selector-input>
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Tax:</b> {{ tax | price }}
-							</div>
-							<text-input v-model="form.paid" 
-								:defaultValue="form.paid"
-								:required="true"
-								type="number"
-								label="Paid"
-								name="paid"
-								ref="paid"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('paid')">
-							</text-input>
-						</div>
-						<div class="col-4 invoice-summary">
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Items:</b> {{ itemCount }}
-							</div>
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Rounding:</b> RM{{ rounding | price }}
-							</div>
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Total:</b><button type="button" class="btn btn-primary" @click="payFull">RM{{ rounded_total | price }}</button>
-							</div>
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
-							</div>
-
-							<div class="d-flex justify-content-end">
-								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
-								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
-								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button type="button" class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
-							</div>
+						<div class="d-flex justify-content-start">
+							<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
+							<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
+							<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
+							<button type="button" class="btn btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="card extra-header" :class="headerClass">
-				<div class="card-body">
-					<div class="row">
-						<!-- Start Invoice Section -->
-						<div class="col-4">
-							<p v-if="invoiceNumber" class="mb-0"><b>Invoice number</b>: {{ invoiceNumber }}</p>
-							<p><b v-if="!invoiceNumber">Current time</b><b v-else>Created time</b>: {{ currentTime }}</p>
-							<selector-input :potentialData="types"
-								v-model="selectedType" 
-								:defaultData="selectedType"
-								placeholder="Select type"
-								:required="true"
-								label="Type"
-								name="type"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('type')">
-							</selector-input>
-							<selector-input :potentialData="payment_types"
-								v-model="selectedPaymentType" 
-								:defaultData="selectedPaymentType"
-								placeholder="Select payment type"
-								:required="true"
-								label="Payment type"
-								name="payment_type"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('payment_type')">
-							</selector-input>
-							<selector-input :potentialData="customers"
-								v-model="selectedCustomer" 
-								:defaultData="selectedCustomer"
-								placeholder="Select customer"
-								:required="true"
-								label="Customer"
-								name="customer_id"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:error="form.errors.get('customer_id')"
-								v-if="form.type == 'Customer'"
-								addon="createCustomer"
-								@createCustomer="createCustomer">
-							</selector-input>
-							<text-input v-model="form.remarks" 
-								:defaultValue="form.remarks"
-								:required="false"
-								type="text"
-								label="Remarks"
-								name="remarks"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('remarks')">
-							</text-input>
-						</div>
+		<div class="card extra-header" :class="headerClass">
+			<div class="card-body">
+				<div class="row">
+					<!-- Start Invoice Section -->
+					<div class="col-4">
+						<p v-if="invoiceNumber" class="mb-0"><b>Invoice number</b>: {{ invoiceNumber }}</p>
+						<p><b v-if="!invoiceNumber">Current time</b><b v-else>Created time</b>: {{ currentTime }}</p>
+						<selector-input :potentialData="types"
+							v-model="selectedType" 
+							:defaultData="selectedType"
+							placeholder="Select type"
+							:required="true"
+							label="Type"
+							name="type"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('type')">
+						</selector-input>
+						<selector-input :potentialData="payment_types"
+							v-model="selectedPaymentType" 
+							:defaultData="selectedPaymentType"
+							placeholder="Select payment type"
+							:required="true"
+							label="Payment type"
+							name="payment_type"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('payment_type')">
+						</selector-input>
+						<selector-input :potentialData="customers"
+							v-model="selectedCustomer" 
+							:defaultData="selectedCustomer"
+							placeholder="Select customer"
+							:required="true"
+							label="Customer"
+							name="customer_id"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:error="form.errors.get('customer_id')"
+							v-if="form.type == 'Customer'"
+							addon="createCustomer"
+							@createCustomer="createCustomer">
+						</selector-input>
+						<text-input v-model="form.remarks" 
+							:defaultValue="form.remarks"
+							:required="false"
+							type="text"
+							label="Remarks"
+							name="remarks"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('remarks')">
+						</text-input>
+					</div>
 
-						<div class="col-4">
-							
-							<text-input v-model="form.discount" 
-								:defaultValue="form.discount"
-								:required="false"
-								type="number"
-								label="Discount"
-								name="discount"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('discount')">
-							</text-input>
-							<selector-input :potentialData="modes"
-								v-model="selectedDiscountMode" 
-								:defaultData="selectedDiscountMode"
-								placeholder="Select discount mode"
-								:required="false"
-								label="Discount mode"
-								name="discount_mode"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('discount_mode')">
-							</selector-input>
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Tax:</b> {{ tax | price }}
-							</div>
-							<text-input v-model="form.paid" 
-								:defaultValue="form.paid"
-								:required="true"
-								type="number"
-								label="Paid"
-								name="paid"
-								:editable="canEdit"
-								:focus="false"
-								:hideLabel="false"
-								:isHorizontal="true"
-								:error="form.errors.get('paid')">
-							</text-input>
+					<div class="col-4">
+						
+						<text-input v-model="form.discount" 
+							:defaultValue="form.discount"
+							:required="false"
+							type="number"
+							label="Discount"
+							name="discount"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('discount')">
+						</text-input>
+						<selector-input :potentialData="modes"
+							v-model="selectedDiscountMode" 
+							:defaultData="selectedDiscountMode"
+							placeholder="Select discount mode"
+							:required="false"
+							label="Discount mode"
+							name="discount_mode"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('discount_mode')">
+						</selector-input>
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Tax:</b> {{ tax | price }}
 						</div>
-						<div class="col-4 invoice-summary">
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Items:</b> {{ itemCount }}
-							</div>
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Rounding:</b> RM{{ rounding | price }}
-							</div>
-							<div class="d-flex align-items-center mb-3">
-								<b class="invoice-label text-right">Total:</b> RM{{ rounded_total | price }}
-							</div>
-							<div class="d-flex align-items-center mb-3" v-if="form.type !== 'Customer'">
-								<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
-							</div>
-							<div class="d-flex justify-content-end">
-								<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print delivery note</a>
-								<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print receipt</a>
-								<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-sm btn-success mr-2">Print invoice</a>
-								<button class="btn btn-sm btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
-							</div>
+						<text-input v-model="form.paid" 
+							:defaultValue="form.paid"
+							:required="true"
+							type="number"
+							label="Paid"
+							name="paid"
+							:editable="canEdit"
+							:focus="false"
+							:hideLabel="false"
+							:isHorizontal="true"
+							:error="form.errors.get('paid')">
+						</text-input>
+					</div>
+					<div class="col-4 invoice-summary">
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Items:</b> {{ itemCount }}
+						</div>
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Rounding:</b> RM{{ rounding | price }}
+						</div>
+						<div class="d-flex align-items-center mb-3">
+							<b class="invoice-label text-right">Total:</b><button type="button" class="btn btn-primary" @click="payFull">RM{{ rounded_total | price }} (F6)</button>
+						</div>
+						<div class="d-flex align-items-center mb-3" v-if="form.type !== 'Customer'">
+							<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
+						</div>
+						<div class="d-flex justify-content-start">
+							<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
+							<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
+							<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
+							<button class="btn btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="card mt-3">
-				<div class="card-body">
-					
-					<div class="invoice-items">
-						<div class="header">Nr:</div>
-						<div class="header">Product type:</div>
-						<div class="header">Zone type:</div>
-						<div class="header">Zone:</div>
-						<div class="header">Weight(kg):</div>
-						<div class="header">Dim wt(kg):</div>
-						<div class="header">Courier:</div>
-						<div class="header">SKU:</div>
-						<div class="header">Description:</div>
-						<div class="header">Unit:</div>
-						<div class="header">Track code:</div>
-						<div class="header">Price:</div>
-						<div class="header">Total price:</div>
-						<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
-					</div>
-					<template v-for="(item, index) in form.items">
-						<item-row :isEdit="is_edit" :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
-					</template>
+		<div class="card mt-3">
+			<div class="card-body">
+				
+				<div class="invoice-items">
+					<div class="header">Nr:</div>
+					<div class="header">Product type:</div>
+					<div class="header">Zone type:</div>
+					<div class="header">Zone:</div>
+					<div class="header">Weight(kg):</div>
+					<div class="header">Dim wt(kg):</div>
+					<div class="header">Courier:</div>
+					<div class="header">SKU:</div>
+					<div class="header">Description:</div>
+					<div class="header">Unit:</div>
+					<div class="header">Track code:</div>
+					<div class="header">Price:</div>
+					<div class="header">Total price:</div>
+					<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
 				</div>
-			</div>			
-		</form>
+				<template v-for="(item, index) in form.items">
+					<item-row :isEdit="is_edit" :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
+				</template>
+			</div>
+		</div>
 		<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
 		<customers-dialog :data="auth_user" @customerCreated="addCustomer"></customers-dialog>
 
@@ -414,7 +410,7 @@
 				setInterval(() => this.updateCurrentTime(), 1000);
 			}
 
-			window.addEventListener('keyup', function(event){
+			window.addEventListener('keydown', function(event){
 	    		if(event.key == "F8" && this.canAddItem) {
 	    			// this.toggleAddItem();
 	    			this.addItem();
@@ -425,6 +421,12 @@
 	    				this.submit();
 	    			else
 	    				this.$refs.paid.triggerFocus();
+	    		}
+
+	    		if(event.key == "F6") {
+	    			// console.log("Clicked!");
+	    			event.preventDefault();
+	    			this.payFull();
 	    		}
 	    	}.bind(this));
 		},

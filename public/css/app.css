@@ -11307,7 +11307,7 @@ span.text-primary.disabled {
 
 .invoice-items {
   display: grid;
-  grid-template-columns: 30px 9% 9% 5% 5% 5% 7% 9% 11% 4% 10% 7% 5% auto;
+  grid-template-columns: 20px 9% 9% 5% 5% 5% 7% 9% 11% 4% 10% 7% 4% auto;
   grid-template-rows: repeat(auto-fill, auto);
   grid-row-gap: .5em;
   grid-column-gap: .5em;
@@ -11361,5 +11361,10 @@ span.text-primary.disabled {
   top: 150px;
   left: 0;
   z-index: 99;
+}
+
+th,
+td {
+  white-space: nowrap;
 }
 

@@ -138,6 +138,7 @@
 			:disabled="!has_detail || !canEdit"
 			:focus="false"
 			:hideLabel="true"
+			step="1"
 			:error="unit_error"
 			@tab="massInput">
 		</text-input>
@@ -154,7 +155,8 @@
 			:error="tracking_no_error"
 			ref="tracking_input"
 			:disabled="!canEdit"
-			@tab="$emit('addItem')">
+			@tab="$emit('addItem')"
+			@enter="doNothing">
 		</text-input>
 			
 		<text-input v-model="price" 
@@ -168,6 +170,7 @@
 			:hideLabel="true"
 			:error="price_error"
 			:disabled="!canEdit"
+			step="0.01"
 			@input="is_custom_pricing = true"
 			@tab="$emit('addItem')">
 		</text-input>
@@ -312,6 +315,10 @@
 		},
 
 		methods: {
+			doNothing(event) {
+				console.log(event);
+				console.log("Do nothing from child");
+			},
 			updateItem(){
 				// console.log("Updating item!" + this.item.description);
 				this.tracking_no = this.item.tracking_code;

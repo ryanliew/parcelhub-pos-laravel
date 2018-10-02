@@ -76159,10 +76159,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
 
 
 
@@ -76237,7 +76233,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}, 1000);
 		}
 
-		window.addEventListener('keyup', function (event) {
+		window.addEventListener('keydown', function (event) {
 			if (event.key == "F8" && this.canAddItem) {
 				// this.toggleAddItem();
 				this.addItem();
@@ -76245,6 +76241,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			if (event.key == "F7") {
 				if (this.canSubmit) this.submit();else this.$refs.paid.triggerFocus();
+			}
+
+			if (event.key == "F6") {
+				// console.log("Clicked!");
+				event.preventDefault();
+				this.payFull();
 			}
 		}.bind(this));
 	},
@@ -76941,6 +76943,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
@@ -77020,6 +77025,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 	methods: {
+		doNothing: function doNothing(event) {
+			console.log(event);
+			console.log("Do nothing from child");
+		},
 		updateItem: function updateItem() {
 			// console.log("Updating item!" + this.item.description);
 			this.tracking_no = this.item.tracking_code;
@@ -77666,6 +77675,7 @@ var render = function() {
           disabled: !_vm.has_detail || !_vm.canEdit,
           focus: false,
           hideLabel: true,
+          step: "1",
           error: _vm.unit_error
         },
         on: { tab: _vm.massInput },
@@ -77695,7 +77705,8 @@ var render = function() {
         on: {
           tab: function($event) {
             _vm.$emit("addItem")
-          }
+          },
+          enter: _vm.doNothing
         },
         model: {
           value: _vm.tracking_no,
@@ -77717,7 +77728,8 @@ var render = function() {
           focus: false,
           hideLabel: true,
           error: _vm.price_error,
-          disabled: !_vm.canEdit
+          disabled: !_vm.canEdit,
+          step: "0.01"
         },
         on: {
           input: function($event) {
@@ -77910,767 +77922,714 @@ var render = function() {
   return _c(
     "div",
     [
-      _c(
-        "form",
-        {
-          on: {
-            submit: function($event) {
-              $event.preventDefault()
-              return _vm.doNothing($event)
-            },
-            keydown: function($event) {
-              _vm.form.errors.clear($event.target.name)
-            },
-            input: function($event) {
-              _vm.form.errors.clear($event.target.name)
-            }
-          }
-        },
-        [
-          _c("div", { staticClass: "card", attrs: { id: "invoice-header" } }, [
-            _c("div", { staticClass: "card-body" }, [
-              _c("div", { staticClass: "row" }, [
-                _c(
-                  "div",
-                  { staticClass: "col-4" },
-                  [
-                    _vm.invoiceNumber
-                      ? _c("p", { staticClass: "mb-0" }, [
-                          _c("b", [_vm._v("Invoice number")]),
-                          _vm._v(": " + _vm._s(_vm.invoiceNumber))
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c("p", [
-                      !_vm.invoiceNumber
-                        ? _c("b", [_vm._v("Current time")])
-                        : _c("b", [_vm._v("Created time")]),
-                      _vm._v(": " + _vm._s(_vm.currentTime))
-                    ]),
-                    _vm._v(" "),
-                    _c("selector-input", {
+      _c("div", { staticClass: "card", attrs: { id: "invoice-header" } }, [
+        _c("div", { staticClass: "card-body" }, [
+          _c("div", { staticClass: "row" }, [
+            _c(
+              "div",
+              { staticClass: "col-4" },
+              [
+                _vm.invoiceNumber
+                  ? _c("p", { staticClass: "mb-0" }, [
+                      _c("b", [_vm._v("Invoice number")]),
+                      _vm._v(": " + _vm._s(_vm.invoiceNumber))
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("p", [
+                  !_vm.invoiceNumber
+                    ? _c("b", [_vm._v("Current time")])
+                    : _c("b", [_vm._v("Created time")]),
+                  _vm._v(": " + _vm._s(_vm.currentTime))
+                ]),
+                _vm._v(" "),
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.types,
+                    defaultData: _vm.selectedType,
+                    placeholder: "Select type",
+                    required: true,
+                    label: "Type",
+                    name: "type",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("type")
+                  },
+                  model: {
+                    value: _vm.selectedType,
+                    callback: function($$v) {
+                      _vm.selectedType = $$v
+                    },
+                    expression: "selectedType"
+                  }
+                }),
+                _vm._v(" "),
+                _vm.form.type == "Customer"
+                  ? _c("selector-input", {
                       attrs: {
-                        potentialData: _vm.types,
-                        defaultData: _vm.selectedType,
-                        placeholder: "Select type",
+                        potentialData: _vm.customers,
+                        defaultData: _vm.selectedCustomer,
+                        placeholder: "Select customer",
                         required: true,
-                        label: "Type",
-                        name: "type",
+                        label: "Customer",
+                        name: "customer_id",
                         editable: _vm.canEdit,
                         focus: false,
                         hideLabel: false,
+                        error: _vm.form.errors.get("customer_id"),
                         isHorizontal: true,
-                        error: _vm.form.errors.get("type")
+                        addonTooltip: "Create new customer",
+                        addon: "createCustomer"
                       },
+                      on: { createCustomer: _vm.createCustomer },
                       model: {
-                        value: _vm.selectedType,
+                        value: _vm.selectedCustomer,
                         callback: function($$v) {
-                          _vm.selectedType = $$v
+                          _vm.selectedCustomer = $$v
                         },
-                        expression: "selectedType"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _vm.form.type == "Customer"
-                      ? _c("selector-input", {
-                          attrs: {
-                            potentialData: _vm.customers,
-                            defaultData: _vm.selectedCustomer,
-                            placeholder: "Select customer",
-                            required: true,
-                            label: "Customer",
-                            name: "customer_id",
-                            editable: _vm.canEdit,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("customer_id"),
-                            isHorizontal: true,
-                            addonTooltip: "Create new customer",
-                            addon: "createCustomer"
-                          },
-                          on: { createCustomer: _vm.createCustomer },
-                          model: {
-                            value: _vm.selectedCustomer,
-                            callback: function($$v) {
-                              _vm.selectedCustomer = $$v
-                            },
-                            expression: "selectedCustomer"
-                          }
-                        })
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c("selector-input", {
-                      attrs: {
-                        potentialData: _vm.payment_types,
-                        defaultData: _vm.selectedPaymentType,
-                        placeholder: "Select payment type",
-                        required: true,
-                        label: "Payment type",
-                        name: "payment_type",
-                        editable: _vm.canEdit,
-                        focus: false,
-                        hideLabel: false,
-                        isHorizontal: true,
-                        error: _vm.form.errors.get("payment_type")
-                      },
-                      model: {
-                        value: _vm.selectedPaymentType,
-                        callback: function($$v) {
-                          _vm.selectedPaymentType = $$v
-                        },
-                        expression: "selectedPaymentType"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("text-input", {
-                      attrs: {
-                        defaultValue: _vm.form.remarks,
-                        required: false,
-                        type: "text",
-                        label: "Remarks",
-                        name: "remarks",
-                        editable: _vm.canEdit,
-                        focus: false,
-                        hideLabel: false,
-                        isHorizontal: true,
-                        error: _vm.form.errors.get("remarks")
-                      },
-                      model: {
-                        value: _vm.form.remarks,
-                        callback: function($$v) {
-                          _vm.$set(_vm.form, "remarks", $$v)
-                        },
-                        expression: "form.remarks"
+                        expression: "selectedCustomer"
                       }
                     })
-                  ],
-                  1
-                ),
+                  : _vm._e(),
                 _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "col-4" },
-                  [
-                    _c("text-input", {
-                      attrs: {
-                        defaultValue: _vm.form.discount,
-                        required: false,
-                        type: "number",
-                        label: "Discount",
-                        name: "discount",
-                        editable: _vm.canEdit,
-                        focus: false,
-                        hideLabel: false,
-                        isHorizontal: true,
-                        error: _vm.form.errors.get("discount")
-                      },
-                      model: {
-                        value: _vm.form.discount,
-                        callback: function($$v) {
-                          _vm.$set(_vm.form, "discount", $$v)
-                        },
-                        expression: "form.discount"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("selector-input", {
-                      attrs: {
-                        potentialData: _vm.modes,
-                        defaultData: _vm.selectedDiscountMode,
-                        placeholder: "Select discount mode",
-                        required: false,
-                        label: "Discount mode",
-                        name: "discount_mode",
-                        editable: _vm.canEdit,
-                        focus: false,
-                        hideLabel: false,
-                        isHorizontal: true,
-                        error: _vm.form.errors.get("discount_mode")
-                      },
-                      model: {
-                        value: _vm.selectedDiscountMode,
-                        callback: function($$v) {
-                          _vm.selectedDiscountMode = $$v
-                        },
-                        expression: "selectedDiscountMode"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "d-flex align-items-center mb-3" },
-                      [
-                        _c("b", { staticClass: "invoice-label text-right" }, [
-                          _vm._v("Tax:")
-                        ]),
-                        _vm._v(
-                          " " +
-                            _vm._s(_vm._f("price")(_vm.tax)) +
-                            "\n\t\t\t\t\t\t"
-                        )
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("text-input", {
-                      ref: "paid",
-                      attrs: {
-                        defaultValue: _vm.form.paid,
-                        required: true,
-                        type: "number",
-                        label: "Paid",
-                        name: "paid",
-                        editable: _vm.canEdit,
-                        focus: false,
-                        hideLabel: false,
-                        isHorizontal: true,
-                        error: _vm.form.errors.get("paid")
-                      },
-                      model: {
-                        value: _vm.form.paid,
-                        callback: function($$v) {
-                          _vm.$set(_vm.form, "paid", $$v)
-                        },
-                        expression: "form.paid"
-                      }
-                    })
-                  ],
-                  1
-                ),
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.payment_types,
+                    defaultData: _vm.selectedPaymentType,
+                    placeholder: "Select payment type",
+                    required: true,
+                    label: "Payment type",
+                    name: "payment_type",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("payment_type")
+                  },
+                  model: {
+                    value: _vm.selectedPaymentType,
+                    callback: function($$v) {
+                      _vm.selectedPaymentType = $$v
+                    },
+                    expression: "selectedPaymentType"
+                  }
+                }),
                 _vm._v(" "),
-                _c("div", { staticClass: "col-4 invoice-summary" }, [
-                  _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
-                    _c("b", { staticClass: "invoice-label text-right" }, [
-                      _vm._v("Items:")
-                    ]),
-                    _vm._v(" " + _vm._s(_vm.itemCount) + "\n\t\t\t\t\t\t")
+                _c("text-input", {
+                  attrs: {
+                    defaultValue: _vm.form.remarks,
+                    required: false,
+                    type: "text",
+                    label: "Remarks",
+                    name: "remarks",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("remarks")
+                  },
+                  model: {
+                    value: _vm.form.remarks,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "remarks", $$v)
+                    },
+                    expression: "form.remarks"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "col-4" },
+              [
+                _c("text-input", {
+                  attrs: {
+                    defaultValue: _vm.form.discount,
+                    required: false,
+                    type: "number",
+                    label: "Discount",
+                    name: "discount",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("discount")
+                  },
+                  model: {
+                    value: _vm.form.discount,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "discount", $$v)
+                    },
+                    expression: "form.discount"
+                  }
+                }),
+                _vm._v(" "),
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.modes,
+                    defaultData: _vm.selectedDiscountMode,
+                    placeholder: "Select discount mode",
+                    required: false,
+                    label: "Discount mode",
+                    name: "discount_mode",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("discount_mode")
+                  },
+                  model: {
+                    value: _vm.selectedDiscountMode,
+                    callback: function($$v) {
+                      _vm.selectedDiscountMode = $$v
+                    },
+                    expression: "selectedDiscountMode"
+                  }
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                  _c("b", { staticClass: "invoice-label text-right" }, [
+                    _vm._v("Tax:")
                   ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
-                    _c("b", { staticClass: "invoice-label text-right" }, [
-                      _vm._v("Rounding:")
-                    ]),
+                  _vm._v(
+                    " " + _vm._s(_vm._f("price")(_vm.tax)) + "\n\t\t\t\t\t"
+                  )
+                ]),
+                _vm._v(" "),
+                _c("text-input", {
+                  ref: "paid",
+                  attrs: {
+                    defaultValue: _vm.form.paid,
+                    required: true,
+                    type: "number",
+                    label: "Paid",
+                    name: "paid",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("paid")
+                  },
+                  model: {
+                    value: _vm.form.paid,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "paid", $$v)
+                    },
+                    expression: "form.paid"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-4 invoice-summary" }, [
+              _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v("Items:")
+                ]),
+                _vm._v(" " + _vm._s(_vm.itemCount) + "\n\t\t\t\t\t")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v("Rounding:")
+                ]),
+                _vm._v(
+                  " RM" + _vm._s(_vm._f("price")(_vm.rounding)) + "\n\t\t\t\t\t"
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v("Total:")
+                ]),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.payFull }
+                  },
+                  [
                     _vm._v(
-                      " RM" +
-                        _vm._s(_vm._f("price")(_vm.rounding)) +
-                        "\n\t\t\t\t\t\t"
+                      "RM" +
+                        _vm._s(_vm._f("price")(_vm.rounded_total)) +
+                        " (F6)"
                     )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
-                    _c("b", { staticClass: "invoice-label text-right" }, [
-                      _vm._v("Total:")
-                    ]),
-                    _c(
-                      "button",
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v("Change:")
+                ]),
+                _vm._v(
+                  " RM" + _vm._s(_vm._f("price")(_vm.change)) + "\n\t\t\t\t\t"
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-start" }, [
+                _vm.selectedCustomer && _vm.invoice
+                  ? _c(
+                      "a",
                       {
-                        staticClass: "btn btn-primary",
-                        attrs: { type: "button" },
-                        on: { click: _vm.payFull }
+                        staticClass: "btn btn-success mr-2",
+                        attrs: {
+                          target: "_blank",
+                          href: "/invoices/do/" + _vm.invoice,
+                          type: "button"
+                        }
                       },
-                      [
-                        _vm._v(
-                          "RM" + _vm._s(_vm._f("price")(_vm.rounded_total))
-                        )
-                      ]
+                      [_vm._v("Print delivery note")]
                     )
+                  : _vm.invoice
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-success mr-2",
+                          attrs: {
+                            target: "_blank",
+                            href: "/invoices/receipt/" + _vm.invoice,
+                            type: "button"
+                          }
+                        },
+                        [_vm._v("Print receipt")]
+                      )
+                    : _vm._e(),
+                _vm._v(" "),
+                _vm.invoice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-success mr-2",
+                        attrs: {
+                          target: "_blank",
+                          href: "/invoices/preview/" + _vm.invoice,
+                          type: "button"
+                        }
+                      },
+                      [_vm._v("Print invoice")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: {
+                      type: "button",
+                      disabled: !_vm.canSubmit || !_vm.canEdit,
+                      title: _vm.editTooltip
+                    },
+                    on: { click: _vm.submit }
+                  },
+                  [_vm._v("Confirm (F7)")]
+                )
+              ])
+            ])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card extra-header", class: _vm.headerClass }, [
+        _c("div", { staticClass: "card-body" }, [
+          _c("div", { staticClass: "row" }, [
+            _c(
+              "div",
+              { staticClass: "col-4" },
+              [
+                _vm.invoiceNumber
+                  ? _c("p", { staticClass: "mb-0" }, [
+                      _c("b", [_vm._v("Invoice number")]),
+                      _vm._v(": " + _vm._s(_vm.invoiceNumber))
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("p", [
+                  !_vm.invoiceNumber
+                    ? _c("b", [_vm._v("Current time")])
+                    : _c("b", [_vm._v("Created time")]),
+                  _vm._v(": " + _vm._s(_vm.currentTime))
+                ]),
+                _vm._v(" "),
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.types,
+                    defaultData: _vm.selectedType,
+                    placeholder: "Select type",
+                    required: true,
+                    label: "Type",
+                    name: "type",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("type")
+                  },
+                  model: {
+                    value: _vm.selectedType,
+                    callback: function($$v) {
+                      _vm.selectedType = $$v
+                    },
+                    expression: "selectedType"
+                  }
+                }),
+                _vm._v(" "),
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.payment_types,
+                    defaultData: _vm.selectedPaymentType,
+                    placeholder: "Select payment type",
+                    required: true,
+                    label: "Payment type",
+                    name: "payment_type",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("payment_type")
+                  },
+                  model: {
+                    value: _vm.selectedPaymentType,
+                    callback: function($$v) {
+                      _vm.selectedPaymentType = $$v
+                    },
+                    expression: "selectedPaymentType"
+                  }
+                }),
+                _vm._v(" "),
+                _vm.form.type == "Customer"
+                  ? _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.customers,
+                        defaultData: _vm.selectedCustomer,
+                        placeholder: "Select customer",
+                        required: true,
+                        label: "Customer",
+                        name: "customer_id",
+                        editable: _vm.canEdit,
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("customer_id"),
+                        addon: "createCustomer"
+                      },
+                      on: { createCustomer: _vm.createCustomer },
+                      model: {
+                        value: _vm.selectedCustomer,
+                        callback: function($$v) {
+                          _vm.selectedCustomer = $$v
+                        },
+                        expression: "selectedCustomer"
+                      }
+                    })
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("text-input", {
+                  attrs: {
+                    defaultValue: _vm.form.remarks,
+                    required: false,
+                    type: "text",
+                    label: "Remarks",
+                    name: "remarks",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("remarks")
+                  },
+                  model: {
+                    value: _vm.form.remarks,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "remarks", $$v)
+                    },
+                    expression: "form.remarks"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "col-4" },
+              [
+                _c("text-input", {
+                  attrs: {
+                    defaultValue: _vm.form.discount,
+                    required: false,
+                    type: "number",
+                    label: "Discount",
+                    name: "discount",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("discount")
+                  },
+                  model: {
+                    value: _vm.form.discount,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "discount", $$v)
+                    },
+                    expression: "form.discount"
+                  }
+                }),
+                _vm._v(" "),
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.modes,
+                    defaultData: _vm.selectedDiscountMode,
+                    placeholder: "Select discount mode",
+                    required: false,
+                    label: "Discount mode",
+                    name: "discount_mode",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("discount_mode")
+                  },
+                  model: {
+                    value: _vm.selectedDiscountMode,
+                    callback: function($$v) {
+                      _vm.selectedDiscountMode = $$v
+                    },
+                    expression: "selectedDiscountMode"
+                  }
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                  _c("b", { staticClass: "invoice-label text-right" }, [
+                    _vm._v("Tax:")
                   ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                  _vm._v(
+                    " " + _vm._s(_vm._f("price")(_vm.tax)) + "\n\t\t\t\t\t"
+                  )
+                ]),
+                _vm._v(" "),
+                _c("text-input", {
+                  attrs: {
+                    defaultValue: _vm.form.paid,
+                    required: true,
+                    type: "number",
+                    label: "Paid",
+                    name: "paid",
+                    editable: _vm.canEdit,
+                    focus: false,
+                    hideLabel: false,
+                    isHorizontal: true,
+                    error: _vm.form.errors.get("paid")
+                  },
+                  model: {
+                    value: _vm.form.paid,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "paid", $$v)
+                    },
+                    expression: "form.paid"
+                  }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-4 invoice-summary" }, [
+              _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v("Items:")
+                ]),
+                _vm._v(" " + _vm._s(_vm.itemCount) + "\n\t\t\t\t\t")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v("Rounding:")
+                ]),
+                _vm._v(
+                  " RM" + _vm._s(_vm._f("price")(_vm.rounding)) + "\n\t\t\t\t\t"
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
+                _c("b", { staticClass: "invoice-label text-right" }, [
+                  _vm._v("Total:")
+                ]),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.payFull }
+                  },
+                  [
+                    _vm._v(
+                      "RM" +
+                        _vm._s(_vm._f("price")(_vm.rounded_total)) +
+                        " (F6)"
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _vm.form.type !== "Customer"
+                ? _c("div", { staticClass: "d-flex align-items-center mb-3" }, [
                     _c("b", { staticClass: "invoice-label text-right" }, [
                       _vm._v("Change:")
                     ]),
                     _vm._v(
                       " RM" +
                         _vm._s(_vm._f("price")(_vm.change)) +
-                        "\n\t\t\t\t\t\t"
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex justify-content-end" }, [
-                    _vm.selectedCustomer && _vm.invoice
-                      ? _c(
-                          "a",
-                          {
-                            staticClass: "btn btn-sm btn-success mr-2",
-                            attrs: {
-                              target: "_blank",
-                              href: "/invoices/do/" + _vm.invoice,
-                              type: "button"
-                            }
-                          },
-                          [_vm._v("Print delivery note")]
-                        )
-                      : _vm.invoice
-                        ? _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-sm btn-success mr-2",
-                              attrs: {
-                                target: "_blank",
-                                href: "/invoices/receipt/" + _vm.invoice,
-                                type: "button"
-                              }
-                            },
-                            [_vm._v("Print receipt")]
-                          )
-                        : _vm._e(),
-                    _vm._v(" "),
-                    _vm.invoice
-                      ? _c(
-                          "a",
-                          {
-                            staticClass: "btn btn-sm btn-success mr-2",
-                            attrs: {
-                              target: "_blank",
-                              href: "/invoices/preview/" + _vm.invoice,
-                              type: "button"
-                            }
-                          },
-                          [_vm._v("Print invoice")]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-sm btn-primary",
-                        attrs: {
-                          type: "button",
-                          disabled: !_vm.canSubmit || !_vm.canEdit,
-                          title: _vm.editTooltip
-                        },
-                        on: { click: _vm.submit }
-                      },
-                      [_vm._v("Confirm (F7)")]
+                        "\n\t\t\t\t\t"
                     )
                   ])
-                ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-start" }, [
+                _vm.selectedCustomer && _vm.invoice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-success mr-2",
+                        attrs: {
+                          target: "_blank",
+                          href: "/invoices/do/" + _vm.invoice,
+                          type: "button"
+                        }
+                      },
+                      [_vm._v("Print delivery note")]
+                    )
+                  : _vm.invoice
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-success mr-2",
+                          attrs: {
+                            target: "_blank",
+                            href: "/invoices/receipt/" + _vm.invoice,
+                            type: "button"
+                          }
+                        },
+                        [_vm._v("Print receipt")]
+                      )
+                    : _vm._e(),
+                _vm._v(" "),
+                _vm.invoice
+                  ? _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-success mr-2",
+                        attrs: {
+                          target: "_blank",
+                          href: "/invoices/preview/" + _vm.invoice,
+                          type: "button"
+                        }
+                      },
+                      [_vm._v("Print invoice")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: {
+                      disabled: !_vm.canSubmit || !_vm.canEdit,
+                      title: _vm.editTooltip
+                    },
+                    on: { click: _vm.submit }
+                  },
+                  [_vm._v("Confirm (F7)")]
+                )
               ])
             ])
-          ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "card extra-header", class: _vm.headerClass },
-            [
-              _c("div", { staticClass: "card-body" }, [
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "div",
-                    { staticClass: "col-4" },
-                    [
-                      _vm.invoiceNumber
-                        ? _c("p", { staticClass: "mb-0" }, [
-                            _c("b", [_vm._v("Invoice number")]),
-                            _vm._v(": " + _vm._s(_vm.invoiceNumber))
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c("p", [
-                        !_vm.invoiceNumber
-                          ? _c("b", [_vm._v("Current time")])
-                          : _c("b", [_vm._v("Created time")]),
-                        _vm._v(": " + _vm._s(_vm.currentTime))
-                      ]),
-                      _vm._v(" "),
-                      _c("selector-input", {
-                        attrs: {
-                          potentialData: _vm.types,
-                          defaultData: _vm.selectedType,
-                          placeholder: "Select type",
-                          required: true,
-                          label: "Type",
-                          name: "type",
-                          editable: _vm.canEdit,
-                          focus: false,
-                          hideLabel: false,
-                          isHorizontal: true,
-                          error: _vm.form.errors.get("type")
-                        },
-                        model: {
-                          value: _vm.selectedType,
-                          callback: function($$v) {
-                            _vm.selectedType = $$v
-                          },
-                          expression: "selectedType"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("selector-input", {
-                        attrs: {
-                          potentialData: _vm.payment_types,
-                          defaultData: _vm.selectedPaymentType,
-                          placeholder: "Select payment type",
-                          required: true,
-                          label: "Payment type",
-                          name: "payment_type",
-                          editable: _vm.canEdit,
-                          focus: false,
-                          hideLabel: false,
-                          isHorizontal: true,
-                          error: _vm.form.errors.get("payment_type")
-                        },
-                        model: {
-                          value: _vm.selectedPaymentType,
-                          callback: function($$v) {
-                            _vm.selectedPaymentType = $$v
-                          },
-                          expression: "selectedPaymentType"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _vm.form.type == "Customer"
-                        ? _c("selector-input", {
-                            attrs: {
-                              potentialData: _vm.customers,
-                              defaultData: _vm.selectedCustomer,
-                              placeholder: "Select customer",
-                              required: true,
-                              label: "Customer",
-                              name: "customer_id",
-                              editable: _vm.canEdit,
-                              focus: false,
-                              hideLabel: false,
-                              error: _vm.form.errors.get("customer_id"),
-                              addon: "createCustomer"
-                            },
-                            on: { createCustomer: _vm.createCustomer },
-                            model: {
-                              value: _vm.selectedCustomer,
-                              callback: function($$v) {
-                                _vm.selectedCustomer = $$v
-                              },
-                              expression: "selectedCustomer"
-                            }
-                          })
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c("text-input", {
-                        attrs: {
-                          defaultValue: _vm.form.remarks,
-                          required: false,
-                          type: "text",
-                          label: "Remarks",
-                          name: "remarks",
-                          editable: _vm.canEdit,
-                          focus: false,
-                          hideLabel: false,
-                          isHorizontal: true,
-                          error: _vm.form.errors.get("remarks")
-                        },
-                        model: {
-                          value: _vm.form.remarks,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "remarks", $$v)
-                          },
-                          expression: "form.remarks"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "col-4" },
-                    [
-                      _c("text-input", {
-                        attrs: {
-                          defaultValue: _vm.form.discount,
-                          required: false,
-                          type: "number",
-                          label: "Discount",
-                          name: "discount",
-                          editable: _vm.canEdit,
-                          focus: false,
-                          hideLabel: false,
-                          isHorizontal: true,
-                          error: _vm.form.errors.get("discount")
-                        },
-                        model: {
-                          value: _vm.form.discount,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "discount", $$v)
-                          },
-                          expression: "form.discount"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("selector-input", {
-                        attrs: {
-                          potentialData: _vm.modes,
-                          defaultData: _vm.selectedDiscountMode,
-                          placeholder: "Select discount mode",
-                          required: false,
-                          label: "Discount mode",
-                          name: "discount_mode",
-                          editable: _vm.canEdit,
-                          focus: false,
-                          hideLabel: false,
-                          isHorizontal: true,
-                          error: _vm.form.errors.get("discount_mode")
-                        },
-                        model: {
-                          value: _vm.selectedDiscountMode,
-                          callback: function($$v) {
-                            _vm.selectedDiscountMode = $$v
-                          },
-                          expression: "selectedDiscountMode"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "d-flex align-items-center mb-3" },
-                        [
-                          _c("b", { staticClass: "invoice-label text-right" }, [
-                            _vm._v("Tax:")
-                          ]),
-                          _vm._v(
-                            " " +
-                              _vm._s(_vm._f("price")(_vm.tax)) +
-                              "\n\t\t\t\t\t\t"
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c("text-input", {
-                        attrs: {
-                          defaultValue: _vm.form.paid,
-                          required: true,
-                          type: "number",
-                          label: "Paid",
-                          name: "paid",
-                          editable: _vm.canEdit,
-                          focus: false,
-                          hideLabel: false,
-                          isHorizontal: true,
-                          error: _vm.form.errors.get("paid")
-                        },
-                        model: {
-                          value: _vm.form.paid,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "paid", $$v)
-                          },
-                          expression: "form.paid"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-4 invoice-summary" }, [
-                    _c(
-                      "div",
-                      { staticClass: "d-flex align-items-center mb-3" },
-                      [
-                        _c("b", { staticClass: "invoice-label text-right" }, [
-                          _vm._v("Items:")
-                        ]),
-                        _vm._v(" " + _vm._s(_vm.itemCount) + "\n\t\t\t\t\t\t")
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "d-flex align-items-center mb-3" },
-                      [
-                        _c("b", { staticClass: "invoice-label text-right" }, [
-                          _vm._v("Rounding:")
-                        ]),
-                        _vm._v(
-                          " RM" +
-                            _vm._s(_vm._f("price")(_vm.rounding)) +
-                            "\n\t\t\t\t\t\t"
-                        )
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "d-flex align-items-center mb-3" },
-                      [
-                        _c("b", { staticClass: "invoice-label text-right" }, [
-                          _vm._v("Total:")
-                        ]),
-                        _vm._v(
-                          " RM" +
-                            _vm._s(_vm._f("price")(_vm.rounded_total)) +
-                            "\n\t\t\t\t\t\t"
-                        )
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _vm.form.type !== "Customer"
-                      ? _c(
-                          "div",
-                          { staticClass: "d-flex align-items-center mb-3" },
-                          [
-                            _c(
-                              "b",
-                              { staticClass: "invoice-label text-right" },
-                              [_vm._v("Change:")]
-                            ),
-                            _vm._v(
-                              " RM" +
-                                _vm._s(_vm._f("price")(_vm.change)) +
-                                "\n\t\t\t\t\t\t"
-                            )
-                          ]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "d-flex justify-content-end" }, [
-                      _vm.selectedCustomer && _vm.invoice
-                        ? _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-sm btn-success mr-2",
-                              attrs: {
-                                target: "_blank",
-                                href: "/invoices/do/" + _vm.invoice,
-                                type: "button"
-                              }
-                            },
-                            [_vm._v("Print delivery note")]
-                          )
-                        : _vm.invoice
-                          ? _c(
-                              "a",
-                              {
-                                staticClass: "btn btn-sm btn-success mr-2",
-                                attrs: {
-                                  target: "_blank",
-                                  href: "/invoices/receipt/" + _vm.invoice,
-                                  type: "button"
-                                }
-                              },
-                              [_vm._v("Print receipt")]
-                            )
-                          : _vm._e(),
-                      _vm._v(" "),
-                      _vm.invoice
-                        ? _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-sm btn-success mr-2",
-                              attrs: {
-                                target: "_blank",
-                                href: "/invoices/preview/" + _vm.invoice,
-                                type: "button"
-                              }
-                            },
-                            [_vm._v("Print invoice")]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-sm btn-primary",
-                          attrs: {
-                            disabled: !_vm.canSubmit || !_vm.canEdit,
-                            title: _vm.editTooltip
-                          },
-                          on: { click: _vm.submit }
-                        },
-                        [_vm._v("Confirm (F7)")]
-                      )
-                    ])
-                  ])
-                ])
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "card mt-3" }, [
-            _c(
-              "div",
-              { staticClass: "card-body" },
-              [
-                _c("div", { staticClass: "invoice-items" }, [
-                  _c("div", { staticClass: "header" }, [_vm._v("Nr:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [
-                    _vm._v("Product type:")
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Zone type:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Zone:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Weight(kg):")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Dim wt(kg):")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Courier:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("SKU:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [
-                    _vm._v("Description:")
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Unit:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Track code:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [_vm._v("Price:")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [
-                    _vm._v("Total price:")
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "header" }, [
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-sm btn-primary mb-3",
-                        attrs: { type: "button", disabled: !_vm.canAddItem },
-                        on: { click: _vm.addItem }
-                      },
-                      [_vm._v("Add Item (F8)")]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _vm._l(_vm.form.items, function(item, index) {
-                  return [
-                    _c("item-row", {
-                      attrs: {
-                        isEdit: _vm.is_edit,
-                        items: _vm.form.items,
-                        index: index,
-                        canEdit: _vm.canEditItem,
-                        item: item,
-                        product_types: _vm.product_types,
-                        zone_types: _vm.zone_types,
-                        couriers: _vm.couriers,
-                        defaultProductType: _vm.default_product_type,
-                        selectedType: _vm.selectedType,
-                        selectedCustomer: _vm.selectedCustomer
-                      },
-                      on: {
-                        delete: function($event) {
-                          _vm.deleteItem(index)
-                        },
-                        update: function($event) {
-                          _vm.updateItem($event, index)
-                        },
-                        addItem: _vm.addItem,
-                        mass: function($event) {
-                          _vm.massInput(index)
-                        }
-                      }
-                    })
-                  ]
-                })
-              ],
-              2
-            )
           ])
-        ]
-      ),
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card mt-3" }, [
+        _c(
+          "div",
+          { staticClass: "card-body" },
+          [
+            _c("div", { staticClass: "invoice-items" }, [
+              _c("div", { staticClass: "header" }, [_vm._v("Nr:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Product type:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Zone type:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Zone:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Weight(kg):")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Dim wt(kg):")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Courier:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("SKU:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Description:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Unit:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Track code:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Price:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [_vm._v("Total price:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-primary mb-3",
+                    attrs: { type: "button", disabled: !_vm.canAddItem },
+                    on: { click: _vm.addItem }
+                  },
+                  [_vm._v("Add Item (F8)")]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _vm._l(_vm.form.items, function(item, index) {
+              return [
+                _c("item-row", {
+                  attrs: {
+                    isEdit: _vm.is_edit,
+                    items: _vm.form.items,
+                    index: index,
+                    canEdit: _vm.canEditItem,
+                    item: item,
+                    product_types: _vm.product_types,
+                    zone_types: _vm.zone_types,
+                    couriers: _vm.couriers,
+                    defaultProductType: _vm.default_product_type,
+                    selectedType: _vm.selectedType,
+                    selectedCustomer: _vm.selectedCustomer
+                  },
+                  on: {
+                    delete: function($event) {
+                      _vm.deleteItem(index)
+                    },
+                    update: function($event) {
+                      _vm.updateItem($event, index)
+                    },
+                    addItem: _vm.addItem,
+                    mass: function($event) {
+                      _vm.massInput(index)
+                    }
+                  }
+                })
+              ]
+            })
+          ],
+          2
+        )
+      ]),
       _vm._v(" "),
       _c("confirmation", {
         attrs: {
