@@ -23,7 +23,7 @@
 							<th>Terminal</th>
 							<th>Invoice From</th>
 							<th>Invoice To</th>
-							<th>Total</th>
+							<th>Total(RM)</th>
 						</tr>
 					</thead>
 				</table>
@@ -71,7 +71,13 @@
 				ajax: '{!! route("cashups.index") !!}',
 				columns: [
 					{data: 'session_start'},
-					{data: 'created_at'},
+					{data: 'created_at', render: function(data, type, row){
+						if(type === 'display' || type === 'filter') {
+							return moment(data).format("YYYY-MM-DD");
+						}
+
+						return data;
+					}, "searchable": false},
 					{data: 'terminal_name', name:'terminal.name'},
 					{data: 'invoice_from'},
 					{data: 'invoice_to'},

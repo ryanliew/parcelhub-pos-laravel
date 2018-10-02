@@ -22,7 +22,7 @@
 							<th>Customer</th>
 							<th>Branch</th>
 							<th>Terminal</th>
-							<th>Total</th>
+							<th>Total(RM)</th>
 							<th>Payment method</th>
 						</tr>
 					</thead>
@@ -66,7 +66,13 @@
 		        } ],
 				ajax: url,
 				columns: [
-					{data: 'updated_at'},
+					{data: 'updated_at', render: function(data, type, row){
+						if(type === 'display' || type === 'filter') {
+							return moment(data).format("YYYY-MM-DD");
+						}
+
+						return data;
+					}, "searchable": false},
 					{data: 'customer', name:'customer.name'},
 					{data: 'branch', name:'branch.name'},
 					{data: 'terminal.name'	 },
