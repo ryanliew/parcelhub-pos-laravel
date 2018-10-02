@@ -76194,7 +76194,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			zone_types: [],
 			couriers: [],
 			products: [],
-			types: [{ label: 'Customer', value: 'Customer' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }],
+			types: [{ label: 'Customer', value: 'Customer' }, { label: 'Cash', value: 'Cash' }],
 			payment_types: [{ label: 'Account', value: 'Account' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }],
 			modes: [{ label: "%", value: "%" }, { label: "RM", value: "RM" }],
 			customers: [],

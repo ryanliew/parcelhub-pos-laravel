@@ -362,8 +362,7 @@
 				products: [],
 				types: [
 						{label: 'Customer', value: 'Customer'},
-						{label: 'Cash', value: 'Cash'},
-						{label: 'Credit Card', value: 'Credit Card'}
+						{label: 'Cash', value: 'Cash'}
 						],
 				payment_types: [
 						{label: 'Account', value: 'Account'},
