@@ -20,6 +20,8 @@
 						<tr>
 							<th>Date</th>
 							<th>Invoice No.</th>
+							<th>Customer type</th>
+							<th>Payment type</th>
 							<th>Customer</th>
 							<th>Subtotal(RM)</th>
 							<th>Discount(RM)</th>
@@ -78,6 +80,8 @@
 						return data;
 					}, "searchable": false},
 					{data: 'invoice_no'},
+					{data: 'type'},
+					{data: 'payment_type'},
 					{data: 'customer', name:'customer.name'},
 					{data: 'subtotal', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {

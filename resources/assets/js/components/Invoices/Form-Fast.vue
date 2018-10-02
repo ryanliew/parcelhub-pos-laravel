@@ -12,7 +12,7 @@
 							:defaultData="selectedType"
 							placeholder="Select type"
 							:required="true"
-							label="Type"
+							label="Customer type"
 							name="type"
 							:editable="canEdit"
 							:focus="false"
@@ -123,6 +123,7 @@
 						</div>
 
 						<div class="d-flex justify-content-start">
+							<div class="invoice-label"></div>
 							<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
 							<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 							<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
@@ -145,7 +146,7 @@
 							:defaultData="selectedType"
 							placeholder="Select type"
 							:required="true"
-							label="Type"
+							label="Customer type"
 							name="type"
 							:editable="canEdit"
 							:focus="false"
@@ -252,6 +253,7 @@
 							<b class="invoice-label text-right">Change:</b> RM{{ change | price }}
 						</div>
 						<div class="d-flex justify-content-start">
+							<div class="invoice-label"></div>
 							<a v-if="selectedCustomer && invoice" target="_blank" :href="'/invoices/do/' + invoice" type="button" class="btn btn-success mr-2">Print delivery note</a>
 							<a v-else-if="invoice" target="_blank" :href="'/invoices/receipt/' + invoice" type="button" class="btn btn-success mr-2">Print receipt</a>
 							<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
@@ -830,6 +832,7 @@
 				
 				if(newVal.value !== 'Customer') {
 					this.selectedCustomer = '';
+					this.selectedPaymentType = {value: 'Cash', label: 'Cash'};
 				} else {
 					this.selectedPaymentType = {value: 'Account', label: 'Account'};
 				}
