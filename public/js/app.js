@@ -68787,10 +68787,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'rows', 'cols'],
+	props: ['defaultValue', 'label', 'required', 'error', 'name', 'type', 'editable', 'focus', 'hideLabel', 'rows', 'cols', 'isHorizontal'],
 	data: function data() {
 		return {
 			localValue: ''
@@ -68857,41 +68872,85 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "form-group" }, [
-    !_vm.hideLabel
-      ? _c("div", [
-          _c("label", {
-            attrs: { for: _vm.name },
-            domProps: { textContent: _vm._s(_vm.label) }
-          }),
+  return _c("div", [
+    !_vm.isHorizontal
+      ? _c("div", { staticClass: "form-group" }, [
+          !_vm.hideLabel
+            ? _c("div", [
+                _c("label", {
+                  attrs: { for: _vm.name },
+                  domProps: { textContent: _vm._s(_vm.label) }
+                }),
+                _vm._v(" "),
+                _vm.required && _vm.editable
+                  ? _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
+                  : _vm._e()
+              ])
+            : _vm._e(),
           _vm._v(" "),
-          _vm.required && _vm.editable
-            ? _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
+          _vm.editable
+            ? _c("textarea", {
+                staticClass: "form-control",
+                attrs: {
+                  name: _vm.name,
+                  id: _vm.name,
+                  rows: _vm.rows,
+                  cols: _vm.cols,
+                  required: _vm.required
+                },
+                on: {
+                  input: function($event) {
+                    _vm.updateValue($event.target.value)
+                  }
+                }
+              })
+            : _c("p", [_vm._v(_vm._s(_vm.defaultValue))]),
+          _vm._v(" "),
+          _vm.error
+            ? _c("span", { staticClass: "text-danger" }, [
+                _c("strong", [_vm._v(_vm._s(_vm._f("trans")(_vm.error)))])
+              ])
             : _vm._e()
         ])
-      : _vm._e(),
-    _vm._v(" "),
-    _c("textarea", {
-      staticClass: "form-control",
-      attrs: {
-        name: _vm.name,
-        id: _vm.name,
-        rows: _vm.rows,
-        cols: _vm.cols,
-        required: _vm.required
-      },
-      on: {
-        input: function($event) {
-          _vm.updateValue($event.target.value)
-        }
-      }
-    }),
-    _vm._v(" "),
-    _vm.error
-      ? _c("span", { staticClass: "text-danger" }, [
-          _c("strong", [_vm._v(_vm._s(_vm._f("trans")(_vm.error)))])
+      : _c("div", { staticClass: "form-group d-flex" }, [
+          !_vm.hideLabel && _vm.editable
+            ? _c("div", { staticClass: "text-right" }, [
+                _c("label", { attrs: { for: _vm.name } }, [
+                  _vm._v(_vm._s(_vm.label))
+                ]),
+                _vm._v(" "),
+                _vm.required && _vm.editable
+                  ? _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
+                  : _vm._e()
+              ])
+            : _c("b", { staticClass: "invoice-label text-right" }, [
+                _vm._v(_vm._s(_vm.label) + ":")
+              ]),
+          _vm._v(" "),
+          _vm.editable
+            ? _c("textarea", {
+                staticClass: "form-control",
+                attrs: {
+                  name: _vm.name,
+                  id: _vm.name,
+                  rows: _vm.rows,
+                  cols: _vm.cols,
+                  required: _vm.required
+                },
+                on: {
+                  input: function($event) {
+                    _vm.updateValue($event.target.value)
+                  }
+                }
+              })
+            : _c("p", [_vm._v(_vm._s(_vm.defaultValue))]),
+          _vm._v(" "),
+          _vm.error
+            ? _c("span", { staticClass: "text-danger" }, [
+                _c("strong", [_vm._v(_vm._s(_vm._f("trans")(_vm.error)))])
+              ])
+            : _vm._e()
         ])
-      : _vm._e()
   ])
 }
 var staticRenderFns = []
@@ -76161,6 +76220,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -76286,6 +76356,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedCustomer = invoice.customer ? { label: invoice.customer.name, value: invoice.customer.id } : '';
 			this.selectedDiscountMode = { label: invoice.discount_mode, value: invoice.discount_mode };
 			this.selectedPaymentType = { label: invoice.payment_type, value: invoice.payment_type };
+			console.log(this.selectedPaymentType.label);
 			this.form.discount_value = invoice.discount_value;
 			this.form.paid = invoice.paid;
 			this.form.tax = invoice.tax;
@@ -76600,7 +76671,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		canSubmit: function canSubmit() {
 			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
 				return item.has_error;
-			}) && this.canEdit;
+			}) && this.form.remarks.length <= 190 && this.canEdit;
 		},
 		canEdit: function canEdit() {
 			return !this.invoice || this.can_edit_invoice;
@@ -76612,9 +76683,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (!this.canSubmit) {
 				if (this.invoice && !this.can_edit_invoice) return "Invoice has been locked";
 
-				if (this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
+				if (this.selectedType.value !== 'Customer' && this.form.paid < this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
 
 				if (this.selectedType.value == 'Customer' && !this.selectedCustomer) return "Customer not selected";
+
+				if (this.form.remarks.length > 190) return "Remarks exceed 190 characters";
 
 				if (_.find(this.form.items, function (item) {
 					return item.has_error;
@@ -76634,7 +76707,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		selectedType: function selectedType(newVal, oldVal) {
 			this.form.type = newVal.value;
 
-			if (newVal.value !== 'Customer') {
+			if (newVal.value !== 'Customer' && !this.is_edit) {
 				this.selectedCustomer = '';
 				this.selectedPaymentType = { value: 'Cash', label: 'Cash' };
 			} else {
@@ -78022,7 +78095,7 @@ var render = function() {
                   }
                 }),
                 _vm._v(" "),
-                _c("text-input", {
+                _c("textarea-input", {
                   attrs: {
                     defaultValue: _vm.form.remarks,
                     required: false,
@@ -78042,7 +78115,34 @@ var render = function() {
                     },
                     expression: "form.remarks"
                   }
-                })
+                }),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass: "text-muted d-flex",
+                    staticStyle: { "margin-top": "-1rem" }
+                  },
+                  [
+                    _c("div", { staticClass: "invoice-label" }),
+                    _vm._v(" "),
+                    _c("div", { staticStyle: { "margin-left": "-15px" } }, [
+                      _vm._v(_vm._s(_vm.form.remarks.length) + " / 190")
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "text-muted d-flex" }, [
+                  _c("div", { staticClass: "invoice-label" }),
+                  _vm._v(" "),
+                  _c("div", { staticStyle: { "margin-left": "-15px" } }, [
+                    _vm.form.remarks.length > 190
+                      ? _c("p", { staticClass: "text-danger" }, [
+                          _vm._v("Remarks should not exceed 190 characters")
+                        ])
+                      : _vm._e()
+                  ])
+                ])
               ],
               1
             ),
@@ -78119,6 +78219,7 @@ var render = function() {
                     isHorizontal: true,
                     error: _vm.form.errors.get("paid")
                   },
+                  on: { enter: _vm.submit },
                   model: {
                     value: _vm.form.paid,
                     callback: function($$v) {
