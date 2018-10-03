@@ -50,7 +50,7 @@
 							:isHorizontal="true"
 							:error="form.errors.get('payment_type')">
 						</selector-input>
-						<text-input v-model="form.remarks" 
+						<textarea-input v-model="form.remarks" 
 							:defaultValue="form.remarks"
 							:required="false"
 							type="text"
@@ -61,7 +61,17 @@
 							:hideLabel="false"
 							:isHorizontal="true"
 							:error="form.errors.get('remarks')">
-						</text-input>
+						</textarea-input>
+
+						<div class="text-muted d-flex" style="margin-top: -1rem;">
+							<div class="invoice-label"></div>
+							<div style="margin-left: -15px">{{ form.remarks.length }} / 190</div>
+						</div>
+						<div class="text-muted d-flex">
+							<div class="invoice-label"></div>
+							<div style="margin-left: -15px"><p class="text-danger" v-if="form.remarks.length > 190">Remarks should not exceed 190 characters</p></div>
+						</div>
+						
 					</div>
 
 					<div class="col-4">
@@ -105,7 +115,8 @@
 							:focus="false"
 							:hideLabel="false"
 							:isHorizontal="true"
-							:error="form.errors.get('paid')">
+							:error="form.errors.get('paid')"
+							@enter="submit">
 						</text-input>
 					</div>
 					<div class="col-4 invoice-summary">
@@ -465,6 +476,7 @@
 				this.selectedCustomer = invoice.customer? {label: invoice.customer.name, value : invoice.customer.id } : '';
 				this.selectedDiscountMode = {label: invoice.discount_mode, value: invoice.discount_mode};
 				this.selectedPaymentType = {label: invoice.payment_type, value: invoice.payment_type};
+				console.log(this.selectedPaymentType.label);
 				this.form.discount_value = invoice.discount_value;
 				this.form.paid = invoice.paid;
 				this.form.tax = invoice.tax;
@@ -789,6 +801,7 @@
 				return this.itemCount > 0 
 						&& ( this.selectedCustomer || this.form.paid >= this.rounded_total ) 
 						&& !_.find(this.form.items, function(item){ return item.has_error; })
+						&& this.form.remarks.length <= 190
 						&& this.canEdit;
 			},
 
@@ -806,11 +819,14 @@
 					if(this.invoice && !this.can_edit_invoice)
 						return "Invoice has been locked"
 
-					if(this.selectedType.value !== 'Customer' && this.form.paid <= this.rounded_total && this.rounded_total > 0)
+					if(this.selectedType.value !== 'Customer' && this.form.paid < this.rounded_total && this.rounded_total > 0)
 						return "Full amount must be paid";
 
 					if(this.selectedType.value == 'Customer' && !this.selectedCustomer)
 						return "Customer not selected";
+
+					if(this.form.remarks.length > 190)
+						return "Remarks exceed 190 characters";
 
 					if(_.find(this.form.items, function(item){ return item.has_error })) 
 						return "Items detail incomplete";
@@ -830,7 +846,7 @@
 			selectedType(newVal, oldVal) {
 				this.form.type = newVal.value;
 				
-				if(newVal.value !== 'Customer') {
+				if(newVal.value !== 'Customer' && !this.is_edit) {
 					this.selectedCustomer = '';
 					this.selectedPaymentType = {value: 'Cash', label: 'Cash'};
 				} else {
