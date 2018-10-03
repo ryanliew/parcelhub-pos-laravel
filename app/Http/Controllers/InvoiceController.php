@@ -59,6 +59,12 @@ class InvoiceController extends Controller
                             $query->whereIn('id', $items->pluck('invoice_id'));
                         });
                     }
+
+                    if(request()['search']['value'])
+                        $query->orWhere(function($query) use ($items) {
+                            $query->where('type', 'like', '%' . request()['search']['value'] . '%')
+                                  ->where('terminal_no', auth()->user()->current_terminal);
+                        });
                 }, true)
     			->addColumn('payment', function(Invoice $invoice) {
                     return $invoice->payment->sum('total') + $invoice->paid;
@@ -67,7 +73,7 @@ class InvoiceController extends Controller
                     return max($invoice->total - $invoice->payment->sum('total') - $invoice->paid, 0);
                 })
                 ->addColumn('customer', function(Invoice $invoice){ 
-                    return $invoice->customer ? $invoice->customer->name : "---";
+                    return $invoice->customer ? $invoice->customer->name : "Cash";
                 })
                 ->addColumn('tracking_codes', function(Invoice $invoice){
                     return $invoice->items->implode('tracking_code', ', ');
