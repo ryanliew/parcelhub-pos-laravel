@@ -20,12 +20,9 @@
 						<tr>
 							<th>Date</th>
 							<th>Invoice No.</th>
-							<th>Customer type</th>
-							<th>Payment type</th>
 							<th>Customer</th>
 							<th>Subtotal(RM)</th>
 							<th>Discount(RM)</th>
-							<th>GST(RM)</th>
 							<th>Total(RM)</th>
 							<th>Payment(RM)</th>
 							<th>Outstanding(RM)</th>  
@@ -80,8 +77,6 @@
 						return data;
 					}, "searchable": false},
 					{data: 'invoice_no'},
-					{data: 'type'},
-					{data: 'payment_type'},
 					{data: 'customer', name:'customer.name'},
 					{data: 'subtotal', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
@@ -92,14 +87,6 @@
 						}, "searchable": false
 					},
 					{data: 'discount_value', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}, "searchable": false
-					},
-					{data: 'tax', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);
 							}
