@@ -202,7 +202,7 @@
 				      	<th>Payment #</th>
 				  	</tr>
 				  	@foreach($invoices as $invoice)
-				  		@if($invoice->pivot->total > 0)
+				  		@if($invoice->pivot->total !== 0)
 						  	<tr class="item-row text-center">
 						  		<td class="text-center">{{ $invoice->invoice_no }}</td>
 						  		<td class="text-center">{{ $invoice->pivot->payment_method }}</td>
