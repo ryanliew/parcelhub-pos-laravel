@@ -65,11 +65,11 @@
 
 						<div class="text-muted d-flex" style="margin-top: -1rem;">
 							<div class="invoice-label"></div>
-							<div style="margin-left: -15px">{{ form.remarks.length }} / 190</div>
+							<div style="margin-left: -15px" v-if="form.remarks">{{ form.remarks.length }} / 190</div>
 						</div>
 						<div class="text-muted d-flex">
 							<div class="invoice-label"></div>
-							<div style="margin-left: -15px"><p class="text-danger" v-if="form.remarks.length > 190">Remarks should not exceed 190 characters</p></div>
+							<div style="margin-left: -15px"><p class="text-danger" v-if="form.remarks && form.remarks.length > 190">Remarks should not exceed 190 characters</p></div>
 						</div>
 						
 					</div>
@@ -476,7 +476,6 @@
 				this.selectedCustomer = invoice.customer? {label: invoice.customer.name, value : invoice.customer.id } : '';
 				this.selectedDiscountMode = {label: invoice.discount_mode, value: invoice.discount_mode};
 				this.selectedPaymentType = {label: invoice.payment_type, value: invoice.payment_type};
-				console.log(this.selectedPaymentType.label);
 				this.form.discount_value = invoice.discount_value;
 				this.form.paid = invoice.paid;
 				this.form.tax = invoice.tax;
@@ -801,7 +800,7 @@
 				return this.itemCount > 0 
 						&& ( this.selectedCustomer || this.form.paid >= this.rounded_total ) 
 						&& !_.find(this.form.items, function(item){ return item.has_error; })
-						&& this.form.remarks.length <= 190
+						&& (this.form.remarks && this.form.remarks.length <= 190)
 						&& this.canEdit;
 			},
 
@@ -825,7 +824,7 @@
 					if(this.selectedType.value == 'Customer' && !this.selectedCustomer)
 						return "Customer not selected";
 
-					if(this.form.remarks.length > 190)
+					if(this.form.remarks && this.form.remarks.length > 190)
 						return "Remarks exceed 190 characters";
 
 					if(_.find(this.form.items, function(item){ return item.has_error })) 

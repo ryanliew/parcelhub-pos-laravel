@@ -76356,7 +76356,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedCustomer = invoice.customer ? { label: invoice.customer.name, value: invoice.customer.id } : '';
 			this.selectedDiscountMode = { label: invoice.discount_mode, value: invoice.discount_mode };
 			this.selectedPaymentType = { label: invoice.payment_type, value: invoice.payment_type };
-			console.log(this.selectedPaymentType.label);
 			this.form.discount_value = invoice.discount_value;
 			this.form.paid = invoice.paid;
 			this.form.tax = invoice.tax;
@@ -76671,7 +76670,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		canSubmit: function canSubmit() {
 			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
 				return item.has_error;
-			}) && this.form.remarks.length <= 190 && this.canEdit;
+			}) && this.form.remarks && this.form.remarks.length <= 190 && this.canEdit;
 		},
 		canEdit: function canEdit() {
 			return !this.invoice || this.can_edit_invoice;
@@ -76687,7 +76686,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 				if (this.selectedType.value == 'Customer' && !this.selectedCustomer) return "Customer not selected";
 
-				if (this.form.remarks.length > 190) return "Remarks exceed 190 characters";
+				if (this.form.remarks && this.form.remarks.length > 190) return "Remarks exceed 190 characters";
 
 				if (_.find(this.form.items, function (item) {
 					return item.has_error;
@@ -78126,9 +78125,11 @@ var render = function() {
                   [
                     _c("div", { staticClass: "invoice-label" }),
                     _vm._v(" "),
-                    _c("div", { staticStyle: { "margin-left": "-15px" } }, [
-                      _vm._v(_vm._s(_vm.form.remarks.length) + " / 190")
-                    ])
+                    _vm.form.remarks
+                      ? _c("div", { staticStyle: { "margin-left": "-15px" } }, [
+                          _vm._v(_vm._s(_vm.form.remarks.length) + " / 190")
+                        ])
+                      : _vm._e()
                   ]
                 ),
                 _vm._v(" "),
@@ -78136,7 +78137,7 @@ var render = function() {
                   _c("div", { staticClass: "invoice-label" }),
                   _vm._v(" "),
                   _c("div", { staticStyle: { "margin-left": "-15px" } }, [
-                    _vm.form.remarks.length > 190
+                    _vm.form.remarks && _vm.form.remarks.length > 190
                       ? _c("p", { staticClass: "text-danger" }, [
                           _vm._v("Remarks should not exceed 190 characters")
                         ])
