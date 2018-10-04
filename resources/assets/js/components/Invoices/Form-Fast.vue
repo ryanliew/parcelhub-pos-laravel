@@ -193,7 +193,7 @@
 							addon="createCustomer"
 							@createCustomer="createCustomer">
 						</selector-input>
-						<text-input v-model="form.remarks" 
+						<textarea-input v-model="form.remarks" 
 							:defaultValue="form.remarks"
 							:required="false"
 							type="text"
@@ -204,7 +204,16 @@
 							:hideLabel="false"
 							:isHorizontal="true"
 							:error="form.errors.get('remarks')">
-						</text-input>
+						</textarea-input>
+
+						<div class="text-muted d-flex" style="margin-top: -1rem;">
+							<div class="invoice-label"></div>
+							<div style="margin-left: -15px" v-if="form.remarks">{{ form.remarks.length }} / 190</div>
+						</div>
+						<div class="text-muted d-flex">
+							<div class="invoice-label"></div>
+							<div style="margin-left: -15px"><p class="text-danger" v-if="form.remarks && form.remarks.length > 190">Remarks should not exceed 190 characters</p></div>
+						</div>
 					</div>
 
 					<div class="col-4">

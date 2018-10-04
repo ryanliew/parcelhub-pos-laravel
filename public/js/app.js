@@ -76231,6 +76231,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -78438,7 +78447,7 @@ var render = function() {
                     })
                   : _vm._e(),
                 _vm._v(" "),
-                _c("text-input", {
+                _c("textarea-input", {
                   attrs: {
                     defaultValue: _vm.form.remarks,
                     required: false,
@@ -78458,7 +78467,36 @@ var render = function() {
                     },
                     expression: "form.remarks"
                   }
-                })
+                }),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass: "text-muted d-flex",
+                    staticStyle: { "margin-top": "-1rem" }
+                  },
+                  [
+                    _c("div", { staticClass: "invoice-label" }),
+                    _vm._v(" "),
+                    _vm.form.remarks
+                      ? _c("div", { staticStyle: { "margin-left": "-15px" } }, [
+                          _vm._v(_vm._s(_vm.form.remarks.length) + " / 190")
+                        ])
+                      : _vm._e()
+                  ]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "text-muted d-flex" }, [
+                  _c("div", { staticClass: "invoice-label" }),
+                  _vm._v(" "),
+                  _c("div", { staticStyle: { "margin-left": "-15px" } }, [
+                    _vm.form.remarks && _vm.form.remarks.length > 190
+                      ? _c("p", { staticClass: "text-danger" }, [
+                          _vm._v("Remarks should not exceed 190 characters")
+                        ])
+                      : _vm._e()
+                  ])
+                ])
               ],
               1
             ),
