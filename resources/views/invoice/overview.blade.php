@@ -28,7 +28,7 @@
 							<th>Outstanding(RM)</th>  
 							<th>Last update</th>
 							<th>Remarks</th>
-							<th>Tracking codes</th>
+							{{-- <th>Tracking codes</th> --}}
 							<!-- <th>Payment</th>   -->
 						</tr>
 					</thead>
@@ -132,8 +132,7 @@
 
 							return data;
 						}
-					},
-					{data: 'tracking_codes', name: 'items.tracking_code', "searchable": false}
+					}
 				]
 
 				

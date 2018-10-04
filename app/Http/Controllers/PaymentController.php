@@ -31,16 +31,20 @@ class PaymentController extends Controller
 
         $customer = '';
 
-        if(auth()->user()->is_admin)
-        {
-            $customer = Customer::select('id','name')->get();
-        }
-        else
-        {
-            $branch = auth()->user()->current()->first();
+        // We do not show all customers, only for the selected branch
+        // if(auth()->user()->is_admin)
+        // {
+        //     $customer = Customer::select('id','name')->get();
+        // }
+        // else
+        // {
+        //     $branch = auth()->user()->current()->first();
 
-            $customer = $branch->customers()->get();
-        }
+        //     $customer = $branch->customers()->get();
+        // }
+
+        $branch = auth()->user()->current()->first();
+        $customer = $branch->customers()->get();
 
         if($customer)
         {
