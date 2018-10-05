@@ -76364,6 +76364,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedType = { label: invoice.type, value: invoice.type };
 			this.selectedCustomer = invoice.customer ? { label: invoice.customer.name, value: invoice.customer.id } : '';
 			this.selectedDiscountMode = { label: invoice.discount_mode, value: invoice.discount_mode };
+			console.log(invoice.payment_type);
 			this.selectedPaymentType = { label: invoice.payment_type, value: invoice.payment_type };
 			this.form.discount_value = invoice.discount_value;
 			this.form.paid = invoice.paid;
@@ -76679,7 +76680,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		canSubmit: function canSubmit() {
 			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
 				return item.has_error;
-			}) && (this.form.remarks == '' || this.form.remarks.length <= 190) && this.canEdit;
+			}) && (!this.form.remarks || this.form.remarks.length <= 190) && this.canEdit;
 		},
 		canEdit: function canEdit() {
 			return !this.invoice || this.can_edit_invoice;
@@ -76715,11 +76716,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		selectedType: function selectedType(newVal, oldVal) {
 			this.form.type = newVal.value;
 
-			if (newVal.value !== 'Customer' && !this.is_edit) {
-				this.selectedCustomer = '';
-				this.selectedPaymentType = { value: 'Cash', label: 'Cash' };
-			} else {
-				this.selectedPaymentType = { value: 'Account', label: 'Account' };
+			if (!this.is_edit) {
+				if (newVal.value !== 'Customer') {
+					this.selectedCustomer = '';
+					this.selectedPaymentType = { value: 'Cash', label: 'Cash' };
+				} else {
+					this.selectedPaymentType = { value: 'Account', label: 'Account' };
+				}
 			}
 
 			if (this.canEdit) this.getPriceForItems();
