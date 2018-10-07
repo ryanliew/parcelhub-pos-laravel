@@ -11090,17 +11090,18 @@ body {
 }
 
 .dataTables_length {
-  width: 70%;
+  width: 30%;
   float: left;
 }
 
 .dataTables_filter {
-  width: 30%;
+  width: 70%;
   float: right;
 }
 
 .navbar-brand img {
-  max-width: 250px;
+  max-height: 30px;
+  width: auto;
 }
 
 .label-small {
@@ -11306,7 +11307,7 @@ span.text-primary.disabled {
 
 .invoice-items {
   display: grid;
-  grid-template-columns: 30px 9% 9% 5% 5% 5% 7% 9% 11% 4% 10% 7% 5% auto;
+  grid-template-columns: 20px 9% 9% 5% 5% 5% 7% 9% 11% 4% 10% 7% 4% auto;
   grid-template-rows: repeat(auto-fill, auto);
   grid-row-gap: .5em;
   grid-column-gap: .5em;
@@ -11315,6 +11316,7 @@ span.text-primary.disabled {
 .form-control:focus {
   -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.65);
           box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.65);
+  background-color: #5ff95f !important;
 }
 
 .d-flex label {
@@ -11350,5 +11352,20 @@ span.text-primary.disabled {
 
 .invoice-summary .invoice-label {
   min-width: 120px;
+}
+
+.loading {
+  background: rgba(0, 0, 0, 0.1);
+  height: calc(100% - 150px);
+  width: 100%;
+  position: absolute;
+  top: 150px;
+  left: 0;
+  z-index: 99;
+}
+
+th,
+td {
+  white-space: nowrap;
 }
 

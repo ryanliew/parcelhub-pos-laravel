@@ -31,8 +31,7 @@ class ProductController extends Controller
             "vendor_id" => "integer",
             "product_type_id" => "required|integer",
             "tax_id" => "required|integer",
-            "zone_type_id" => "integer",
-            "is_tax_inclusive" => "boolean"
+            "zone_type_id" => "integer"
         ]);
 	}
 
@@ -180,6 +179,9 @@ class ProductController extends Controller
 
         if(request()->has('vendor'))
             $query->where('vendor_id', request()->vendor);
+
+        if(request()->has('zonetype'))
+            $query->where('zone_type_id', request()->zonetype);
         
         $weight = 0;
         if(request()->has('weight'))

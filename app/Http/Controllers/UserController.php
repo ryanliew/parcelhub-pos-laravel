@@ -87,7 +87,7 @@ class UserController extends Controller
                 ? User::with(['current', 'terminal'])
                 : User::with(['current', 'terminal'])
                     ->select('users.*')
-                    ->whereRaw('(SELECT COUNT(*) FROM permissions WHERE user_id = users.id AND branch_id = ' . auth()->user()->current->id. ') > 0');
+                    ->whereRaw('(SELECT COUNT(*) FROM permissions WHERE users.is_admin = 0 AND user_id = users.id AND branch_id = ' . auth()->user()->current->id. ') > 0');
 
     	return datatables()->of($query)->toJson();	
     }

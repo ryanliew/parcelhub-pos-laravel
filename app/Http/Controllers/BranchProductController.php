@@ -19,8 +19,7 @@ class BranchProductController extends Controller
             "product_id" => "required",
             "corporate_override" => "required",
             "walk_in_special_override" => "required",
-            "walk_in_override" => "required",
-            "is_tax_inclusive" => "boolean"
+            "walk_in_override" => "required"
         ]);
 	}
 

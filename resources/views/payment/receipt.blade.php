@@ -99,7 +99,7 @@
 	<div id="page-wrap">
 
 		<div class="header-left">
-			<strong class="font-header">{{ $payment->branch->name }}</strong><br>
+			<strong class="font-header">{{ $payment->branch->owner }}</strong><br>
 			Co Reg No: {{ $payment->branch->registration_no }}
 			<br>
 			<br>
@@ -107,7 +107,6 @@
 			Phone: {{ $payment->branch->contact }}
 			<br>
 		</div>
-		<div><img id="image" src="img/logo.png" alt="logo"></div>
 	
 		<div class="header-left header-center ">Invoice Payment</div>
 

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
 use App\Customer;
 use App\Invoice;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
@@ -112,13 +113,13 @@ class CustomerController extends Controller
         $this->validate_input_statement();
 
         $date_from = Request()->date_from;
-        $date_to = Request()->date_to;
+        $date_to = Carbon::parse(Request()->date_to);
 
         $invoices = Invoice::with('customer')
                     ->where([
                              ['customer_id', $customer->id],
                              ['created_at', '>=', $date_from],
-                             ['created_at', '<=', $date_to],
+                             ['created_at', '<=', $date_to->addDays(1)->toDateString()],
                             ])
                     ->get();
 
@@ -134,11 +135,9 @@ class CustomerController extends Controller
         foreach ($invoices as $key => $invoice ) 
         {
 
-            if( $invoice['total'] > 0 )
-            {
-                $debit_count ++;
-                $debit += $invoice['total'];
-            }
+
+            $debit_count ++;
+            $debit += $invoice['total'];
 
             if( $invoice['paid'] > 0 )
             {
@@ -151,40 +150,36 @@ class CustomerController extends Controller
 
             $remaining = $invoice['total'] - $invoice['paid'];
 
-            if( $remaining > 0 )
-            {
-                $invoice_month = date_format($invoice['created_at'],"m");
-                $pass_1_month = date("m", strtotime("-1 months"));
-                $pass_2_month = date("m", strtotime("-2 months"));
-                $pass_3_month = date("m", strtotime("-3 months"));
-                $pass_4_month = date("m", strtotime("-4 months"));
-                $pass_5_month = date("m", strtotime("-5 months"));
+            $invoice_month = date_format($invoice['created_at'],"m");
+            $pass_1_month = date("m", strtotime("-1 months"));
+            $pass_2_month = date("m", strtotime("-2 months"));
+            $pass_3_month = date("m", strtotime("-3 months"));
+            $pass_4_month = date("m", strtotime("-4 months"));
+            $pass_5_month = date("m", strtotime("-5 months"));
 
-                if( $invoice_month == date('m') )
-                {
-                    $outstanding['current'] += $remaining;
-                }
-                else if( $invoice_month == $pass_1_month )
-                {
-                    $outstanding['1'] += $remaining;
-                }
-                else if( $invoice_month == $pass_2_month )
-                {
-                    $outstanding['2'] += $remaining;
-                }
-                else if( $invoice_month == $pass_3_month )
-                {
-                    $outstanding['3'] += $remaining;
-                }
-                else if( $invoice_month == $pass_4_month )
-                {
-                    $outstanding['4'] += $remaining;
-                }
-                else if( $invoice_month == $pass_5_month )
-                {
-                    $outstanding['5'] += $remaining;
-                }
-                    
+            if( $invoice_month == date('m') )
+            {
+                $outstanding['current'] += $remaining;
+            }
+            else if( $invoice_month == $pass_1_month )
+            {
+                $outstanding['1'] += $remaining;
+            }
+            else if( $invoice_month == $pass_2_month )
+            {
+                $outstanding['2'] += $remaining;
+            }
+            else if( $invoice_month == $pass_3_month )
+            {
+                $outstanding['3'] += $remaining;
+            }
+            else if( $invoice_month == $pass_4_month )
+            {
+                $outstanding['4'] += $remaining;
+            }
+            else if( $invoice_month == $pass_5_month )
+            {
+                $outstanding['5'] += $remaining;
             }
 
 

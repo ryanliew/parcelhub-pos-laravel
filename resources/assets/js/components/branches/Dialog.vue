@@ -148,7 +148,7 @@
 									:defaultValue="form.owner"
 									:required="true"
 									type="text"
-									label="Owner name"
+									label="Business display name"
 									name="owner"
 									:editable="true"
 									:focus="false"
@@ -157,16 +157,16 @@
 								</text-input>
 							</div>
 							<div class="col">
-								<text-input v-model="form.contact" 
-									:defaultValue="form.contact"
+								<text-input v-model="form.registered_company_name" 
+									:defaultValue="form.registered_company_name"
 									:required="true"
 									type="text"
-									label="Contact number"
-									name="contact"
+									label="Registered company name"
+									name="registered_company_name"
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
-									:error="form.errors.get('contact')">
+									:error="form.errors.get('registered_company_name')">
 								</text-input>
 							</div>
 						</div>
@@ -182,6 +182,19 @@
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('email')">
+								</text-input>
+							</div>
+							<div class="col">
+								<text-input v-model="form.contact" 
+									:defaultValue="form.contact"
+									:required="true"
+									type="text"
+									label="Contact number"
+									name="contact"
+									:editable="true"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('contact')">
 								</text-input>
 							</div>
 						</div>
@@ -257,7 +270,8 @@
 					website: '',
 					address: '',
 					default_product_type: '',
-					product_type_id: ''
+					product_type_id: '',
+					registered_company_name: ''
 				})
 			};
 		},
@@ -335,6 +349,7 @@
 				this.form.website = this.selectedBranch.website;
 				this.form.address = this.selectedBranch.address;
 				this.form.product_type_id = this.selectedBranch.product_type_id;
+				this.form.registered_company_name = this.selectedBranch.registered_company_name;
 
 				this.selectedType = _.filter(this.types, function(type){ return this.form.product_type_id == type.value; }.bind(this))[0];
 			},
@@ -344,6 +359,7 @@
 			},
 
 			confirmSubmit() {
+				this.isConfirming = false;
 				this.form.post(this.url)
 					.then(response => this.onSuccess(response));
 			},

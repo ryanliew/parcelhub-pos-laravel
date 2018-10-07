@@ -26,7 +26,8 @@ class BranchController extends Controller
             "payment_bank" => "required",
             "payment_acc_no" => "required",
             "address" => "required",
-            "product_type_id" => "required"
+            "product_type_id" => "required",
+            "registered_company_name" => "required"
         ]);
 	}
 
@@ -109,7 +110,7 @@ class BranchController extends Controller
                     ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id');
 
         if(request()->has('customer')) {
-            $result->whereRaw('customer_id = ' . request()->customer .' OR ISNULL(customer_id)');
+            $result->whereRaw('(customer_id = ' . request()->customer .' OR ISNULL(customer_id))');
         }
         else {
             $result->whereRaw('ISNULL(customer_id)');
@@ -118,7 +119,7 @@ class BranchController extends Controller
         $result->where('branch_id', auth()->user()->current_branch)
                 ->where('product_id', '=', request()->product);
 
-
+        // dd($result->first());        
         if($result->orderBy('customer_id', 'DESC')->get()->count() == 0)
             $result = DB::table('products')
                         ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'taxes.percentage as tax', 'is_tax_inclusive', 'taxes.code')

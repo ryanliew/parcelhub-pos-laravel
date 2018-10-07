@@ -23,7 +23,7 @@
 							<th>Terminal</th>
 							<th>Invoice From</th>
 							<th>Invoice To</th>
-							<th>Total</th>
+							<th>Total(RM)</th>
 						</tr>
 					</thead>
 				</table>
@@ -37,6 +37,7 @@
  	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
+	<script type="text/javascript" src="https://momentjs.com/downloads/moment.js"></script>
 	<script>
 		$(function(){
 			var table = $("#cashup-table").DataTable({
@@ -71,7 +72,13 @@
 				ajax: '{!! route("cashups.index") !!}',
 				columns: [
 					{data: 'session_start'},
-					{data: 'created_at'},
+					{data: 'created_at', render: function(data, type, row){
+						if(type === 'display' || type === 'filter') {
+							return moment(data).format("YYYY-MM-DD");
+						}
+
+						return data;
+					}, "searchable": false},
 					{data: 'terminal_name', name:'terminal.name'},
 					{data: 'invoice_from'},
 					{data: 'invoice_to'},

@@ -223,7 +223,7 @@
 
 			onSuccess(response) {
 				$("#product-type-dialog").modal('hide');
-
+				
 				this.closeDialog();
 
 				window.events.$emit("reload-table");

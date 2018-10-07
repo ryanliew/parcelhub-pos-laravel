@@ -39,10 +39,33 @@ class InvoiceController extends Controller
 
     public function index()
     {
+        // Improve tracking number search performance by searching from items table directly then incorporate the invoice id to the invoices search
         $terminal = auth()->user()->terminal()->first();
+        $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*');
+
+        $items = collect();
+
+        if(request()['search']['value'])
+            $items = Item::where('tracking_code', 'like', '%' . request()['search']['value'] . '%')
+                    ->where('branch_id', $terminal->branch->id)
+                    ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                    ->get();
 
     	return datatables()
-			->of($terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*'))
+			->of($query)
+                ->filter(function($query) use ($items){
+                    if($items->count() > 0) {
+                        $query->orWhere(function($query) use ($items) {
+                            $query->whereIn('id', $items->pluck('invoice_id'));
+                        });
+                    }
+
+                    if(request()['search']['value'])
+                        $query->orWhere(function($query) use ($items) {
+                            $query->where('type', 'like', '%' . request()['search']['value'] . '%')
+                                  ->where('terminal_no', auth()->user()->current_terminal);
+                        });
+                }, true)
     			->addColumn('payment', function(Invoice $invoice) {
                     return $invoice->payment->sum('total') + $invoice->paid;
                 })
@@ -50,7 +73,7 @@ class InvoiceController extends Controller
                     return max($invoice->total - $invoice->payment->sum('total') - $invoice->paid, 0);
                 })
                 ->addColumn('customer', function(Invoice $invoice){ 
-                    return $invoice->customer ? $invoice->customer->name : "---";
+                    return $invoice->customer ? $invoice->customer->name : "Cash";
                 })
                 ->addColumn('tracking_codes', function(Invoice $invoice){
                     return $invoice->items->implode('tracking_code', ', ');
@@ -114,12 +137,13 @@ class InvoiceController extends Controller
                 'unit' => $item->unit,
                 'is_custom_pricing' => $item->is_custom_pricing,
                 'tax_rate' => $item->tax_rate,
-                'tax_type' => $item->tax_type
+                'tax_type' => $item->tax_type,
+                'zone_type_id' => $item->zone_type_id,
             ]);
         }
         //$invoice->items()->create($items);
 
-        $url = $invoice->payment_type == "Cash" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
+        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
 
         $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
@@ -173,7 +197,9 @@ class InvoiceController extends Controller
                 'total_price' => $item->total_price,
                 'unit' => $item->unit,
                 'is_custom_pricing' => $item->is_custom_pricing,
-                'tax_rate' => $item->tax_rate
+                'zone_type_id' => $item->zone_type_id,
+                'tax_rate' => $item->tax_rate,
+                'tax_type' => $item->tax_type,
             ]);
         }
         //$invoice->items()->create($items);
@@ -256,7 +282,10 @@ class InvoiceController extends Controller
     {
         $tracking = request()->code;
 
-        return ['result' => Item::where('tracking_code', $tracking)->count() > 0];
+        return ['result' => Item::where('tracking_code', $tracking)
+                        ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                        ->where('invoices.branch_id', auth()->user()->current->id)
+                        ->count() > 0];
     }
 
 }

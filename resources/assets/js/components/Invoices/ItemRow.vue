@@ -60,7 +60,7 @@
 			:focus="false"
 			:hideLabel="true"
 			:error="weight_error"
-			:disabled="!has_detail || !canEdit"
+			:disabled="!canEdit"
 			@input="updateProducts">
 		</text-input>
 			
@@ -138,6 +138,7 @@
 			:disabled="!has_detail || !canEdit"
 			:focus="false"
 			:hideLabel="true"
+			step="1"
 			:error="unit_error"
 			@tab="massInput">
 		</text-input>
@@ -154,7 +155,8 @@
 			:error="tracking_no_error"
 			ref="tracking_input"
 			:disabled="!canEdit"
-			@tab="$emit('addItem')">
+			@tab="$emit('addItem')"
+			@enter="doNothing">
 		</text-input>
 			
 		<text-input v-model="price" 
@@ -168,6 +170,7 @@
 			:hideLabel="true"
 			:error="price_error"
 			:disabled="!canEdit"
+			step="0.01"
 			@input="is_custom_pricing = true"
 			@tab="$emit('addItem')">
 		</text-input>
@@ -236,7 +239,7 @@
 
 <script>
 	export default {
-		props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer'],
+		props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
 
 		data() {
 			return {
@@ -255,6 +258,8 @@
 				width: 0,
 				length: 0,
 				height: 0,
+				// Default details should only be triggered once
+				default_details: true,
 				// Based on entered price
 				// item_tax: 0,
 				tax_rate: 0,
@@ -294,12 +299,12 @@
 
 			// If we are getting item from db
 			Vue.nextTick( () => {
-				console.log(this.item.product_id);
-				if(this.item.product_id) {
+				// console.log(this.item.product_id);
+				if(this.is_edit) {
 					this.updateItem();
 				}
 				else if(this.defaultProductType.has_detail) {
-					this.selectedZoneType = {label: 'Domestic', value: 1};
+					// this.selectedZoneType = {label: 'Domestic', value: 1};
 					Vue.nextTick( function() { this.getDefaultDetails(); }.bind(this));
 				}
 
@@ -310,6 +315,10 @@
 		},
 
 		methods: {
+			doNothing(event) {
+				console.log(event);
+				console.log("Do nothing from child");
+			},
 			updateItem(){
 				// console.log("Updating item!" + this.item.description);
 				this.tracking_no = this.item.tracking_code;
@@ -330,7 +339,7 @@
 				this.item_tax_inclusive = this.item.item_tax_inclusive;
 
 				this.selectedProductType = _.filter(this.product_types, function(type){ return this.item.product_type_id == type.value; }.bind(this))[0];
-				this.selectedZoneType = this.zone_types[0];
+				this.selectedZoneType = _.filter(this.zone_types, function(type){ return this.item.zone_type_id == type.value; }.bind(this))[0];
 				this.selectedCourier = _.filter(this.couriers, function(courier){ return this.item.courier_id == courier.value; }.bind(this))[0];
 				
 				this.has_detail = this.selectedProductType.has_detail;
@@ -375,9 +384,7 @@
 				}
 			},
 
-			getProducts(error = 'No error') {
-				// console.log("Getting product");
-				// console.log(this.selectedProductType);
+			getProducts(error = "No error") {
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
 					this.has_detail = this.selectedProductType.has_detail;
@@ -413,7 +420,9 @@
 				}
 				// If we dont have any products that matches
 				if(this.products.length == 0) {
-					this.selectedProduct_error = "No matching SKU found";
+					this.selectedProduct_error = "No matching SKU";
+					this.price = 0;
+					this.description = '';
 				}
 
 				// If selected product types doesn't have details, clear the courier field and disable zone/weight/dim weight fields
@@ -423,8 +432,11 @@
 			},
 
 			updateProducts(error = "No error") {
-				if(this.selectedProductType.has_detail && this.zone && (this.weight || this.dimension_weight) && this.selectedCourier){
-					let url = "/data/products?type=" + this.selectedProductType.value + "&zone=" + this.zone;
+				if(this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier){
+					let url = "/data/products?type=" + this.selectedProductType.value
+
+					if(this.zone)
+						url += "&zone=" + this.zone;
 
 					if(this.weight)
 						url += "&weight=" + this.weight;
@@ -434,6 +446,9 @@
 
 					if(this.selectedCourier)
 						url += "&vendor=" + this.selectedCourier.value;
+
+					if(this.selectedZoneType)
+						url += "&zonetype=" + this.selectedZoneType.value;
 
 					axios.get(url)
 						.then(response => this.setProducts(response))
@@ -445,12 +460,14 @@
 				if(this.selectedProduct) {
 					this.description = this.selectedProduct.description;
 					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-					this.getProductPrice();
+					Vue.nextTick( () => this.getProductPrice() );
 				}
 			},
 
 			getDefaultDetails(error = 'No error') {
-				if(!this.item.product_id) {
+
+				if(!this.isEdit && this.default_details) {
+					this.default_details = false;
 					axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
 						.then(response => this.setDefaultDetails(response))
 						.catch(error => this.getDefaultDetails(error));
@@ -490,8 +507,9 @@
 			},
 
 			getProductPrice(error = 'No error') {
+				// console.log("Getting product price " + this.canEdit);
 				// console.log(error);
-				if(this.selectedProduct) {
+				if(this.selectedProduct && this.canEdit) {
 					this.item_add_loading = true;
 
 					let url = this.getProductPriceUrl(this.selectedProduct.value);
@@ -503,12 +521,12 @@
 						.catch(error => this.getProductPrice(error));
 				}
 
-				this.setProductPrice('');
+				Vue.nextTick( () => this.setProductPrice(''));
 			},
 
 			setProductPrice(response) {
 				// console.log("Setting product price");
-				if(response) {
+				if(response && this.canEdit) {
 					this.price_group = this.selectedProduct;
 
 					if(response.data)
@@ -552,7 +570,7 @@
 			},
 
 			checkTrackingNo: _.debounce(function (error = "No error") {
-				console.log(error);
+				// console.log(error);
 				axios.get("/data/trackings/check?code=" + this.tracking_no)
 					.then(response => this.setTrackingNoResult(response))
 					.catch(error => this.checkTrackingNo(error));
@@ -588,9 +606,9 @@
 			tracking_no_error() {
 				if(this.selectedProductType.has_detail && this.description && !this.tracking_no)
 					// We already have a product which needs tracking code selected but tracking code not entered
-					return 'Tracking code is required';
-				else if(this.tracking_no_repeating)
-					return 'Invalid tracking code';
+					return 'Required';
+				else if(this.tracking_no_repeating && this.canEdit)
+					return 'Invalid';
 
 				return '';
 			}
@@ -607,17 +625,19 @@
 			},
 
 			selectedProductType(newVal) {
-				this.$emit('update', {attribute: 'product_type_id', value: ''});
 				if(newVal) {
 					this.$emit('update', {attribute: 'product_type_id', value: newVal.value});
 					this.getDefaultDetails();
+				} else {
+					this.$emit('update', {attribute: 'product_type_id', value: ''});
 				}
 			},
 
 			selectedZoneType(newVal) {
-				this.$emit('update', {attribute: 'zone_type_id', value: ''});
 				if(newVal) {
 					this.$emit('update', {attribute: 'zone_type_id', value: newVal.value});
+				} else {
+					this.$emit('update', {attribute: 'zone_type_id', value: ''});
 				}
 
 			},
@@ -647,12 +667,13 @@
 			},
 
 			selectedCourier(newVal) {
-				this.$emit('update', {attribute: 'courier_id', value: 0});
 				if(newVal) {
 					this.$emit('update', {attribute: 'courier_id', value: newVal.value});	
 
 					// console.log("Updated courier id: " + newVal.value);			
 					this.calculateDimWeight(false);
+				} else {
+					this.$emit('update', {attribute: 'courier_id', value: 0});
 				}
 			},
 
@@ -665,11 +686,12 @@
 			},
 
 			selectedProduct(newVal) {
-				this.$emit('update', {attribute: 'product_id', value: ''});
-				this.$emit('update', {attribute: 'sku', value: ''});
 				if(newVal) {
 					this.$emit('update', {attribute: 'product_id', value: newVal.value});
 					this.$emit('update', {attribute: 'sku', value: newVal.label});
+				} else {
+					this.$emit('update', {attribute: 'product_id', value: ''});
+					this.$emit('update', {attribute: 'sku', value: ''});
 				}
 			},
 
