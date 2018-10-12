@@ -185,11 +185,9 @@ class CustomerController extends Controller
             $debit_count ++;
             $debit += $invoice['total'];
 
-            if( $invoice['paid'] > 0 )
-            {
-                $credit_count ++;
-                $credit += $invoice['paid'];
-            }
+            $credit_count += $invoice->payment->count('total');
+            $credit += $invoice->payment->sum('total');
+            
 
             $remaining = $invoice['total'] - $invoice->payment->sum('total');
 

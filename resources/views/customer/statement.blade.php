@@ -155,13 +155,13 @@
 				</tr>
 
 				<tr>
-					<td class="soa-td" style="border-bottom: 3px solid black">Total credit ( {{$credit_count}} )</td>
+					<td class="soa-td" style="border-bottom: 3px solid black">Total Credit ( {{$credit_count}} )</td>
 					<td class="soa-td" style="border-bottom: 3px solid black;padding-right: 10px; text-align: right">{{number_format((float)$credit,2,'.','')}}</td>
 				</tr>
 
 				<tr>
 					<td class="soa-td" style="padding: 10px">Closing Balance</td>
-					<td class="soa-td" style="padding: 10px; text-align: right">{{number_format((float)$balance,2,'.','')}}</td>
+					<td class="soa-td" style="padding: 10px; text-align: right">{{number_format((float)$resultBalance,2,'.','')}}</td>
 				</tr>
 				
 			</table>
@@ -206,18 +206,6 @@
 		      	<th>Balance</th>
 			  </tr>
 
-			<!-- @foreach($invoices as $invoice)
-				<tr class="item-row">
-				  	<td class="text-center">{{$invoice->created_at->format('Y-m-d')}}</td>
-					<td class="text-center">{{$invoice->invoice_no}}</td>
-					<td class="text-center">{{$invoice->remarks}}</td>
-					<td class="text-center">{{number_format((float)$invoice->total,2,'.','')}}</td>
-					<td class="text-center"></td>
-					<td class="text-center" >{{number_format((float)$invoice->balance,2,'.','')}}</td>
-				</tr>
-
-				
-			@endforeach  -->
 			@foreach($result as $key => $collection)
 				<tr class="item-row">
 				  	<td class="text-center">{{ $collection['date']->format('Y-m-d') }}</td>
