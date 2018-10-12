@@ -63,6 +63,7 @@
 					{
 						text: 'View report',
 						action: function( e, dt, node, config ) {
+							
 							window.open("/cashups/report/" + table.rows({selected: true}).data().toArray()[0].id);
 						},
 						enabled: false
@@ -99,6 +100,7 @@
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
 		        table.button( 1 ).enable( selectedRows === 1 );
+		        table.button( 0 ).enable( selectedRows === 0 );
 		    });
 
 			function onSuccess(response) {

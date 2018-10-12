@@ -176,6 +176,9 @@ class ProductController extends Controller
 
         if(request()->has('zone'))
             $query->where('zone', request()->zone);
+        else
+            $query->whereNull('zone');
+
 
         if(request()->has('vendor'))
             $query->where('vendor_id', request()->vendor);

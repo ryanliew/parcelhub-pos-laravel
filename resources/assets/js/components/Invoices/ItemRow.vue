@@ -60,7 +60,7 @@
 			:focus="false"
 			:hideLabel="true"
 			:error="weight_error"
-			:disabled="!canEdit"
+			:disabled="!has_detail || !canEdit"
 			@input="updateProducts">
 		</text-input>
 			
@@ -384,7 +384,7 @@
 				}
 			},
 
-			getProducts(error = "No error") {
+			getProducts(error = "No error") { 
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
 					this.has_detail = this.selectedProductType.has_detail;
@@ -431,7 +431,10 @@
 				}
 			},
 
-			updateProducts(error = "No error") {
+			updateProducts: _.debounce(function (error = "") {
+				if(error)
+					console.log(error);
+				
 				if(this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier){
 					let url = "/data/products?type=" + this.selectedProductType.value
 
@@ -454,7 +457,7 @@
 						.then(response => this.setProducts(response))
 						.catch(error => this.updateProducts(error));
 				}
-			},
+			}, 500),
 
 			productChange() {
 				if(this.selectedProduct) {
