@@ -74816,7 +74816,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				zone: '',
 				weight_start: '',
 				weight_end: '',
-				is_tax_inclusive: '',
+				is_tax_inclusive: 1,
 				corporate_price: '',
 				walk_in_price: '',
 				walk_in_price_special: '',
@@ -77238,7 +77238,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.selectedCourier = '';
 			}
 		},
-		updateProducts: function updateProducts() {
+
+
+		updateProducts: _.debounce(function () {
 			var _this3 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
@@ -77262,7 +77264,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					return _this3.updateProducts(error);
 				});
 			}
-		},
+		}, 500),
+
 		productChange: function productChange() {
 			var _this4 = this;
 
@@ -77628,7 +77631,7 @@ var render = function() {
           focus: false,
           hideLabel: true,
           error: _vm.weight_error,
-          disabled: !_vm.canEdit
+          disabled: !_vm.has_detail || !_vm.canEdit
         },
         on: { input: _vm.updateProducts },
         model: {
