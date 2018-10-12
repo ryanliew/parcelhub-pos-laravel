@@ -76,7 +76,7 @@
         </nav>
         @if(auth()->check())
         
-            <branch-selector :branches="{{ json_encode(Auth::user()->branches()->with('terminals')->get()) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}" :userId="{{ auth()->user()->id }}" :users="{{ json_encode(Cookie::get('allowed_users')) }}"></branch-selector>
+            <branch-selector :branches="{{ json_encode(Auth::user()->branches()->with('terminals')->orderBy('branches.name')->get()) }}" :default="{{ auth()->user()->current_branch }}" :terminal="{{ auth()->user()->current_terminal }}" :userId="{{ auth()->user()->id }}" :users="{{ json_encode(Cookie::get('allowed_users')) }}"></branch-selector>
             
         @endif
         <main class="py-4 main-content inset-shadow">
