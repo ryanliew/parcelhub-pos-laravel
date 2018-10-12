@@ -115,13 +115,61 @@ class CustomerController extends Controller
         $date_from = Request()->date_from;
         $date_to = Carbon::parse(Request()->date_to);
 
-        $invoices = Invoice::with('customer')
+        $invoices = Invoice::with(['customer','payment'])
                     ->where([
                              ['customer_id', $customer->id],
                              ['created_at', '>=', $date_from],
                              ['created_at', '<=', $date_to->addDays(1)->toDateString()],
                             ])
+                    ->orderby('created_at')
                     ->get();
+
+
+        $result = collect([]);
+
+        foreach($invoices as $invoice)
+        {
+            $debit = [
+                'date' => $invoice->created_at, 
+                'total' => $invoice->total, 
+                'debit' => true, 
+                'balance' => 0,
+                'desc' => '',
+                'ref' => $invoice->invoice_no
+            ];
+
+            $result->push($debit);
+
+            foreach($invoice->payment as $payment)
+            {
+                $credit = [
+                    'date' => $payment->created_at, 
+                    'total' => - $payment->total, 
+                    'debit' => false, 
+                    'balance' => 0,
+                    'desc' => $payment->payment->payment_method,
+                    'ref'  => $customer->branch->code . "P" . sprintf('%04u', (int)$payment->payment->id)
+                ];
+
+                $result->push($credit);
+            }
+        }
+
+        $sortedResult = $result->sortBy('date');
+
+        $resultBalance = 0.0;
+
+        foreach($sortedResult as $key => $collection)
+        { 
+            $sortedResult->put($key, [
+                'date' => $collection['date'],
+                'balance'=> $resultBalance += $collection['total'],
+                'total' => $collection['total'],
+                'debit' => $collection['debit'],
+                'desc' => $collection['desc'], 
+                'ref'  => $collection['ref']
+            ]);
+        }
 
         $balance = 0.0;
         $credit  = 0.0;
@@ -134,8 +182,6 @@ class CustomerController extends Controller
 
         foreach ($invoices as $key => $invoice ) 
         {
-
-
             $debit_count ++;
             $debit += $invoice['total'];
 
@@ -145,10 +191,7 @@ class CustomerController extends Controller
                 $credit += $invoice['paid'];
             }
 
-            $balance += $invoice['total'] - $invoice['paid'];
-            $invoice['balance'] = $balance;
-
-            $remaining = $invoice['total'] - $invoice['paid'];
+            $remaining = $invoice['total'] - $invoice->payment->sum('total');
 
             $invoice_month = date_format($invoice['created_at'],"m");
             $pass_1_month = date("m", strtotime("-1 months"));
@@ -187,9 +230,9 @@ class CustomerController extends Controller
 
         $f = new NumberFormatter(locale_get_default(), NumberFormatter::SPELLOUT);
 
-        $balance = number_format((float)$balance,2,'.','');
+        $resultBalance = number_format((float)$resultBalance,2,'.','');
 
-        $tempNum = explode( '.' , $balance );
+        $tempNum = explode( '.' , $resultBalance );
 
         $convertedNumber = ( isset( $tempNum[0] ) ? $f->format( $tempNum[0] ) : '' );
 
@@ -212,6 +255,8 @@ class CustomerController extends Controller
                           "balance_en" => $balance_en,
                           "outstanding" =>$outstanding,
                           "attendant" => auth()->user()->name,
+                          "result" =>$sortedResult,
+                          "resultBalance" => $resultBalance
                          ])
                 ->render();
 
