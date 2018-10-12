@@ -50,7 +50,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
-			var table = $("#branches-table").dataTable({
+			var table = $("#branches-table").DataTable({
 				processing: true,
 				serverSide: true,
 				responsive: true,
@@ -69,6 +69,7 @@
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
+							console.log(table);
 							window.events.$emit('editBranch', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
