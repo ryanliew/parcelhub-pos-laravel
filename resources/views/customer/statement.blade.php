@@ -155,13 +155,13 @@
 				</tr>
 
 				<tr>
-					<td class="soa-td" style="border-bottom: 3px solid black">Total credit ( {{$credit_count}} )</td>
+					<td class="soa-td" style="border-bottom: 3px solid black">Total Credit ( {{$credit_count}} )</td>
 					<td class="soa-td" style="border-bottom: 3px solid black;padding-right: 10px; text-align: right">{{number_format((float)$credit,2,'.','')}}</td>
 				</tr>
 
 				<tr>
 					<td class="soa-td" style="padding: 10px">Closing Balance</td>
-					<td class="soa-td" style="padding: 10px; text-align: right">{{number_format((float)$balance,2,'.','')}}</td>
+					<td class="soa-td" style="padding: 10px; text-align: right">{{number_format((float)$resultBalance,2,'.','')}}</td>
 				</tr>
 				
 			</table>
@@ -200,24 +200,35 @@
 			  <tr class="item-row" >
 			    <th>Date</th>
 			    <th>Reference</th>
-			    <th>Transaction Description</th>
+			    <th style="width: 150px;">Transaction Description</th>
 		      	<th> Debit </th>
 		      	<th> Credit </th>
 		      	<th>Balance</th>
 			  </tr>
 
-			@foreach($invoices as $invoice)
+			@foreach($result as $key => $collection)
 				<tr class="item-row">
-				  	<td class="text-center">{{$invoice->created_at->format('Y-m-d')}}</td>
-					<td class="text-center">{{$invoice->invoice_no}}</td>
-					<td class="text-center">{{$invoice->remarks}}</td>
-					<td class="text-center">{{number_format((float)$invoice->total,2,'.','')}}</td>
-					<td class="text-center">{{number_format((float)$invoice->paid,2,'.','')}}</td>
-					<td class="text-center" >{{number_format((float)$invoice->balance,2,'.','')}}</td>
-				</tr>
-			@endforeach 
+				  	<td class="text-center">{{ $collection['date']->format('Y-m-d') }}</td>
+					<td class="text-center">{{ $collection['ref'] }}</td>
+					<td class="text-center">{{ $collection['desc'] }}</td>
 
-			@for($x=0; $x < max( 35 - count($invoices), 0 ); $x++  )
+				@if( $collection['debit'] == 1 )
+					<td class="text-center">{{number_format((float)$collection['total'],2,'.','')}}</td>
+				@else
+					<td class="text-center"></td>
+				@endif
+
+				@if( $collection['debit'] != 1 )
+					<td class="text-center">{{number_format((float)$collection['total'],2,'.','')}}</td>
+				@else
+					<td class="text-center"></td>
+				@endif
+
+					<td class="text-center" >{{number_format((float)$collection['balance'],2,'.','')}}</td>
+				</tr>
+				@endforeach
+
+			@for($x=0; $x < max( 35 - count($result), 0 ); $x++  )
 			  {
 			  	<tr class="item-row"><td style="height: 20px"></td></tr>
 			  }
@@ -231,7 +242,7 @@
 			<strong style="font-size: 14px; ">RINGGIT MALAYSIA : {{$balance_en}}</strong> 
 		</div>
 		<div >
-			<strong style="font-size: 14px">RM  {{number_format((float)$balance,2,'.','')}}</strong>
+			<strong style="font-size: 14px">RM  {{number_format((float)$resultBalance,2,'.','')}}</strong>
 		</div>
 		<br>
 	</div>
