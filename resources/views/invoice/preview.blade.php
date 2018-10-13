@@ -119,7 +119,7 @@
                 </tr>
                 <tr>
                     <td class="meta-head">Invoice date</td>
-                    <td><textarea>{{$invoice->created_at->format('Y-m-d')}}</textarea></td>
+                    <td><textarea>{{$invoice->created_at}}</textarea></td>
                 </tr>
                 </tbody>
             </table>
@@ -249,7 +249,7 @@
 				<tbody>
 				<tr class="item-row"><td class="meta-head text-center" colspan='2'>Invoice Totals (RM)</td></tr>
 				<tr class="item-row"><td class="meta-detail">Subtotal</td><td ><textarea >{{number_format((float)$invoice->subtotal,2,'.','')}}</textarea></td></tr>
-				<tr class="item-row"><td class="meta-detail">Discount</td><td><textarea>{{number_format((float)$invoice->discount,2,'.','')}}</textarea></td></tr>
+				<tr class="item-row"><td class="meta-detail">Discount</td><td><textarea>{{number_format((float)$invoice->discount_value,2,'.','')}}</textarea></td></tr>
 				<tr class="item-row"><td class="meta-detail">Tax</td><td><textarea>{{number_format((float)$invoice->tax,2,'.','')}}</textarea></td></tr>
 				<tr class="item-row"><td class="meta-detail">Rounding</td><td><textarea>{{number_format((float)$invoice->rounding,2,'.','')}}</textarea></td></tr>
 				<tr class="item-row"><td class="meta-detail">Total</td><td><textarea>{{number_format((float)$invoice->total,2,'.','')}}</textarea></td></tr>
