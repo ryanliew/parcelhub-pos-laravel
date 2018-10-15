@@ -217,7 +217,7 @@
 					<tr>
 						<td></td>
 						<td class="text-right"><b>Total</b></td>
-						<td class="text-center"><b>{{ $cashup->total > 0 ? number_format($cashup->total - $cashup->terminal->float, 2, ".", ",") : 0.00 }}</b></td>
+						<td class="text-center"><b>{{ $cashup->total > 0 ? number_format($cashup->total - $cashup->float_value, 2, ".", ",") : 0.00 }}</b></td>
 						<td></td>
 						<td></td>
 					</tr>
