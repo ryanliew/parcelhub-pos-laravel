@@ -63,6 +63,7 @@
 					{
 						text: 'View report',
 						action: function( e, dt, node, config ) {
+							
 							window.open("/cashups/report/" + table.rows({selected: true}).data().toArray()[0].id);
 						},
 						enabled: false
@@ -71,7 +72,13 @@
 				],
 				ajax: '{!! route("cashups.index") !!}',
 				columns: [
-					{data: 'session_start'},
+					{data: 'session_start', render: function(data, type, row){
+						if(type === 'display' || type === 'filter') {
+							return moment(data).format("YYYY-MM-DD");
+						}
+
+						return data;
+					}},
 					{data: 'created_at', render: function(data, type, row){
 						if(type === 'display' || type === 'filter') {
 							return moment(data).format("YYYY-MM-DD");
@@ -99,6 +106,7 @@
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
 		        table.button( 1 ).enable( selectedRows === 1 );
+		        table.button( 0 ).enable( selectedRows === 0 );
 		    });
 
 			function onSuccess(response) {

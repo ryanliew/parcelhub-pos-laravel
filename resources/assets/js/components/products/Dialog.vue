@@ -228,7 +228,7 @@
 					zone: '',
 					weight_start: '',
 					weight_end: '',
-					is_tax_inclusive: '',
+					is_tax_inclusive: 1,
 					corporate_price: '',
 					walk_in_price: '',
 					walk_in_price_special: '',

@@ -60,7 +60,7 @@
 			:focus="false"
 			:hideLabel="true"
 			:error="weight_error"
-			:disabled="!canEdit"
+			:disabled="!has_detail || !canEdit"
 			@input="updateProducts">
 		</text-input>
 			
@@ -135,7 +135,7 @@
 			label="Unit"
 			name="unit"
 			:editable="true"
-			:disabled="!has_detail || !canEdit"
+			:disabled="!canEdit"
 			:focus="false"
 			:hideLabel="true"
 			step="1"
@@ -384,7 +384,7 @@
 				}
 			},
 
-			getProducts(error = "No error") {
+			getProducts(error = "No error") { 
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
 					this.has_detail = this.selectedProductType.has_detail;
@@ -431,7 +431,10 @@
 				}
 			},
 
-			updateProducts(error = "No error") {
+			updateProducts(error = "") {
+				if(error)
+					console.log(error);
+				
 				if(this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier){
 					let url = "/data/products?type=" + this.selectedProductType.value
 
@@ -600,7 +603,7 @@
 				if(this.price)
 					price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax) ;
 
-				return price.toFixed(2);
+				return (price * parseInt(this.unit)).toFixed(2);
 			},
 
 			tracking_no_error() {
@@ -664,6 +667,10 @@
 
 			width(newVal) {
 				this.$emit('update', {attribute: 'width', value: newVal ? newVal : 0});
+			},
+
+			unit(newVal) {
+				this.$emit('update', {attribute: 'unit', value: newVal ? newVal : 0});
 			},
 
 			selectedCourier(newVal) {
