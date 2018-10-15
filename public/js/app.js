@@ -77238,9 +77238,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.selectedCourier = '';
 			}
 		},
-
-
-		updateProducts: _.debounce(function () {
+		updateProducts: function updateProducts() {
 			var _this3 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
@@ -77266,8 +77264,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					return _this3.updateProducts(error);
 				});
 			}
-		}, 500),
-
+		},
 		productChange: function productChange() {
 			var _this4 = this;
 

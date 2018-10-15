@@ -431,7 +431,7 @@
 				}
 			},
 
-			updateProducts: _.debounce(function (error = "") {
+			updateProducts(error = "") {
 				if(error)
 					console.log(error);
 				
@@ -457,7 +457,7 @@
 						.then(response => this.setProducts(response))
 						.catch(error => this.updateProducts(error));
 				}
-			}, 500),
+			},
 
 			productChange() {
 				if(this.selectedProduct) {
