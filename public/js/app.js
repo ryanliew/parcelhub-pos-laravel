@@ -77243,7 +77243,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		updateProducts: _.debounce(function () {
 			var _this3 = this;
 
-			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+
+			if (error) console.log(error);
 
 			if (this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier) {
 				var url = "/data/products?type=" + this.selectedProductType.value;
@@ -77420,7 +77422,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var price = 0;
 			if (this.price) price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax);
 
-			return price.toFixed(2);
+			return (price * parseInt(this.unit)).toFixed(2);
 		},
 		tracking_no_error: function tracking_no_error() {
 			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
@@ -77471,6 +77473,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		width: function width(newVal) {
 			this.$emit('update', { attribute: 'width', value: newVal ? newVal : 0 });
+		},
+		unit: function unit(newVal) {
+			this.$emit('update', { attribute: 'unit', value: newVal ? newVal : 0 });
 		},
 		selectedCourier: function selectedCourier(newVal) {
 			if (newVal) {
@@ -77764,7 +77769,7 @@ var render = function() {
           label: "Unit",
           name: "unit",
           editable: true,
-          disabled: !_vm.has_detail || !_vm.canEdit,
+          disabled: !_vm.canEdit,
           focus: false,
           hideLabel: true,
           step: "1",

@@ -171,8 +171,8 @@
 				  	<tr class="item-row text-center">
 				  		<td class="text-center">00</td>
 				  		<td class="text-center">Float</td>
-				  		<td class="text-center">{{ number_format( $cashup->terminal->float, 2, ".", ",") }}</td>
-				  		<td class="text-center">{{ $cashup->total > 0 ? number_format($cashup->terminal->float / $cashup->total * 100, 2, ".", ",") : 0.00}}</td>
+				  		<td class="text-center">{{ number_format( $cashup->float_value, 2, ".", ",") }}</td>
+				  		<td class="text-center">{{ $cashup->total > 0 ? number_format($cashup->float_value / $cashup->total * 100, 2, ".", ",") : 0.00}}</td>
 				  		<td></td>
 				  		<td></td>
 				  	</tr>
