@@ -327,7 +327,7 @@
 				:editable="true"
 				:focus="false"
 				:hideLabel="false"
-				@enter="addTrackingNumber">
+				@enter="checkTrackingNumber">
 			</text-input>
 
 			<ol>
@@ -699,6 +699,13 @@
 			closeMassInput() {
 				this.isMassInput = false;
 				this.trackings = [];
+			},
+
+			checkTrackingNumber(){
+				if(!this.mass_tracking_no)
+					this.confirmTrackingNumber();
+				else
+					this.addTrackingNumber();
 			},
 
 			addTrackingNumber() {

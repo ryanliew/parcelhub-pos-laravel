@@ -76583,6 +76583,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.isMassInput = false;
 			this.trackings = [];
 		},
+		checkTrackingNumber: function checkTrackingNumber() {
+			if (!this.mass_tracking_no) this.confirmTrackingNumber();else this.addTrackingNumber();
+		},
 		addTrackingNumber: function addTrackingNumber() {
 			this.trackings.push(this.mass_tracking_no);
 			this.mass_tracking_no = '';
@@ -78831,7 +78834,7 @@ var render = function() {
               focus: false,
               hideLabel: false
             },
-            on: { enter: _vm.addTrackingNumber },
+            on: { enter: _vm.checkTrackingNumber },
             model: {
               value: _vm.mass_tracking_no,
               callback: function($$v) {
