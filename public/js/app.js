@@ -77079,6 +77079,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			price_error: '',
 			unit_error: '',
 			item_tax_error: '',
+			should_update: true,
 
 			tracking_no_repeating: '',
 
@@ -77095,6 +77096,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		}.bind(this));
 
 		window.events.$on("updateItemsValue", function () {
+			console.log("updateItemssValue");
+			this.should_update = false;
 			this.updateItem();
 		}.bind(this));
 
@@ -77121,6 +77124,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// console.log("Do nothing from child");
 		},
 		updateItem: function updateItem() {
+			console.log("updateItem: " + this.should_update);
 			// console.log("Updating item!" + this.item.description);
 			this.tracking_no = this.item.tracking_code;
 
@@ -77150,8 +77154,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this))[0];
 
 			this.has_detail = this.selectedProductType.has_detail;
-
 			this.getProducts();
+			// this.should_update = true;
 		},
 		openDimWeightModal: function openDimWeightModal() {
 			// console.log("Opening dim weight");
@@ -77270,17 +77274,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				});
 			}
 		},
-		productChange: function productChange() {
+
+
+		productChange: _.debounce(function () {
 			var _this4 = this;
 
-			if (this.selectedProduct && !this.item.description) {
+			console.log("productChage: " + this.should_update);
+			if (this.selectedProduct && this.should_update) {
 				this.description = this.selectedProduct.description;
 				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 				Vue.nextTick(function () {
 					return _this4.getProductPrice();
 				});
 			}
-		},
+			this.should_update = true;
+		}, 500),
+
 		getDefaultDetails: function getDefaultDetails() {
 			var _this5 = this;
 
@@ -77353,8 +77362,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 		},
 		setProductPrice: function setProductPrice(response) {
-			// console.log("Setting product price");
-			if (response && this.canEdit && !this.item.price) {
+			console.log("Setting product price");
+			if (response && this.canEdit) {
+				console.log("setProductPrice " + this.should_update);
 				this.price_group = this.selectedProduct;
 
 				if (response.data) this.price_group = response.data;
@@ -77367,7 +77377,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.item_tax_inclusive = prices.is_tax_inclusive;
 				this.tax_type = prices.tax_type;
 			}
-
 			this.item_add_loading = false;
 		},
 		calculatePriceBasedOnCustomer: function calculatePriceBasedOnCustomer(price_group) {

@@ -279,6 +279,7 @@
 				price_error: '',
 				unit_error: '',
 				item_tax_error: '',
+				should_update: true,
 
 				tracking_no_repeating: '',
 
@@ -294,6 +295,8 @@
 			}.bind(this));
 
 			window.events.$on("updateItemsValue", function() {
+				console.log("updateItemssValue");
+				this.should_update = false;
 				this.updateItem();
 			}.bind(this));
 
@@ -320,6 +323,7 @@
 				// console.log("Do nothing from child");
 			},
 			updateItem(){
+				console.log("updateItem: " + this.should_update);
 				// console.log("Updating item!" + this.item.description);
 				this.tracking_no = this.item.tracking_code;
 				
@@ -343,8 +347,8 @@
 				this.selectedCourier = _.filter(this.couriers, function(courier){ return this.item.courier_id == courier.value; }.bind(this))[0];
 				
 				this.has_detail = this.selectedProductType.has_detail;
-
 				this.getProducts();
+				// this.should_update = true;
 			},
 
 			openDimWeightModal() {
@@ -462,13 +466,15 @@
 				}
 			},
 
-			productChange() {
-				if(this.selectedProduct && !this.item.description) {
+			productChange: _.debounce(function(){
+				console.log("productChage: " + this.should_update);
+				if(this.selectedProduct && this.should_update) {
 					this.description = this.selectedProduct.description;
 					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 					Vue.nextTick( () => this.getProductPrice() );
 				}
-			},
+				this.should_update = true;
+			}, 500),
 
 			getDefaultDetails(error = 'No error') {
 				if(!this.isEdit && this.default_details) {
@@ -530,8 +536,9 @@
 			},
 
 			setProductPrice(response) {
-				// console.log("Setting product price");
-				if(response && this.canEdit && !this.item.price) {
+				console.log("Setting product price");
+				if(response && this.canEdit) {
+				console.log("setProductPrice " + this.should_update);
 					this.price_group = this.selectedProduct;
 
 					if(response.data)
@@ -545,7 +552,6 @@
 					this.item_tax_inclusive = prices.is_tax_inclusive;
 					this.tax_type = prices.tax_type;
 				}
-
 				this.item_add_loading = false;
 			},
 
