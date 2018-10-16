@@ -77032,7 +77032,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
@@ -77772,7 +77771,6 @@ var render = function() {
           step: "1",
           error: _vm.unit_error
         },
-        on: { tab: _vm.massInput },
         model: {
           value: _vm.unit,
           callback: function($$v) {
@@ -77800,7 +77798,9 @@ var render = function() {
           tab: function($event) {
             _vm.$emit("addItem")
           },
-          enter: _vm.doNothing
+          enter: function($event) {
+            _vm.$emit("addItem")
+          }
         },
         model: {
           value: _vm.tracking_no,

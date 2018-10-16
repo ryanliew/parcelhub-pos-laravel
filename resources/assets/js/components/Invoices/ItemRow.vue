@@ -139,8 +139,7 @@
 			:focus="false"
 			:hideLabel="true"
 			step="1"
-			:error="unit_error"
-			@tab="massInput">
+			:error="unit_error">
 		</text-input>
 
 		<text-input v-model="tracking_no" 
@@ -156,7 +155,7 @@
 			ref="tracking_input"
 			:disabled="!canEdit"
 			@tab="$emit('addItem')"
-			@enter="doNothing">
+			@enter="$emit('addItem')">
 		</text-input>
 			
 		<text-input v-model="price" 
