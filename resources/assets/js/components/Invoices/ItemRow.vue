@@ -295,7 +295,6 @@
 			}.bind(this));
 
 			window.events.$on("updateItemsValue", function() {
-				console.log("updateItemssValue");
 				this.should_update = false;
 				this.updateItem();
 			}.bind(this));
@@ -323,7 +322,6 @@
 				// console.log("Do nothing from child");
 			},
 			updateItem(){
-				console.log("updateItem: " + this.should_update);
 				// console.log("Updating item!" + this.item.description);
 				this.tracking_no = this.item.tracking_code;
 				
@@ -467,7 +465,6 @@
 			},
 
 			productChange: _.debounce(function(){
-				console.log("productChage: " + this.should_update);
 				if(this.selectedProduct && this.should_update) {
 					this.description = this.selectedProduct.description;
 					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
@@ -518,7 +515,6 @@
 			},
 
 			getProductPrice(error = 'No error') {
-				// console.log("Getting product price " + this.canEdit);
 				// console.log(error);
 				if(this.selectedProduct && this.canEdit) {
 					this.item_add_loading = true;
@@ -536,9 +532,8 @@
 			},
 
 			setProductPrice(response) {
-				console.log("Setting product price");
+				// console.log("Setting product price");
 				if(response && this.canEdit) {
-				console.log("setProductPrice " + this.should_update);
 					this.price_group = this.selectedProduct;
 
 					if(response.data)
