@@ -174,7 +174,7 @@ class ProductController extends Controller
         if(request()->has('type')) 
             $query->where('product_type_id', request()->type);
 
-        if(request()->has('zone'))
+        if(request()->zone != 0)
             $query->where('zone', request()->zone);
         else
             $query->whereNull('zone');

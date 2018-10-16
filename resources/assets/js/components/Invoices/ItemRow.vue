@@ -139,7 +139,8 @@
 			:focus="false"
 			:hideLabel="true"
 			step="1"
-			:error="unit_error">
+			:error="unit_error"
+			@tab="massInput">
 		</text-input>
 
 		<text-input v-model="tracking_no" 
@@ -155,7 +156,7 @@
 			ref="tracking_input"
 			:disabled="!canEdit"
 			@tab="$emit('addItem')"
-			@enter="$emit('addItem')">
+			@enter="doNothing">
 		</text-input>
 			
 		<text-input v-model="price" 
@@ -316,7 +317,7 @@
 		methods: {
 			doNothing(event) {
 				console.log(event);
-				console.log("Do nothing from child");
+				// console.log("Do nothing from child");
 			},
 			updateItem(){
 				// console.log("Updating item!" + this.item.description);
@@ -387,14 +388,14 @@
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
 					this.has_detail = this.selectedProductType.has_detail;
-					axios.get('/data/products?type=' + this.selectedProductType.value)
+					let selectedZone = this.item.zone ? this.item.zone : 0;
+					axios.get('/data/products?zone=' + selectedZone + '&type=' + this.selectedProductType.value)
 						.then(response => this.setProducts(response))
 						.catch(error => this.getRelatedProduct(error));
 				}
 			},
 
 			setProducts(response) {
-				this.selectedProduct = '';
 				this.selectedProduct_error = "";
 				this.products = response.data.map(function(product){
 					let obj = {};
@@ -409,7 +410,7 @@
 				}.bind(this));
 
 				// If we already have item
-				if(this.item.product_type_id) {
+				if(this.item.product_id) {
 					this.selectedProduct = _.filter(this.products, function(type){ return this.item.product_id == type.value; }.bind(this))[0];
 				}
 
@@ -419,6 +420,7 @@
 				}
 				// If we dont have any products that matches
 				if(this.products.length == 0) {
+					this.selectedProduct = '';
 					this.selectedProduct_error = "No matching SKU";
 					this.price = 0;
 					this.description = '';
@@ -439,6 +441,8 @@
 
 					if(this.zone)
 						url += "&zone=" + this.zone;
+					else
+						url += "&zone=0";
 
 					if(this.weight)
 						url += "&weight=" + this.weight;
@@ -459,7 +463,7 @@
 			},
 
 			productChange() {
-				if(this.selectedProduct) {
+				if(this.selectedProduct && !this.item.description) {
 					this.description = this.selectedProduct.description;
 					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 					Vue.nextTick( () => this.getProductPrice() );
@@ -467,7 +471,6 @@
 			},
 
 			getDefaultDetails(error = 'No error') {
-
 				if(!this.isEdit && this.default_details) {
 					this.default_details = false;
 					axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
@@ -528,7 +531,7 @@
 
 			setProductPrice(response) {
 				// console.log("Setting product price");
-				if(response && this.canEdit) {
+				if(response && this.canEdit && !this.item.price) {
 					this.price_group = this.selectedProduct;
 
 					if(response.data)
@@ -695,7 +698,7 @@
 				if(newVal) {
 					this.$emit('update', {attribute: 'product_id', value: newVal.value});
 					this.$emit('update', {attribute: 'sku', value: newVal.label});
-				} else {
+				} else if(!this.isEdit){
 					this.$emit('update', {attribute: 'product_id', value: ''});
 					this.$emit('update', {attribute: 'sku', value: ''});
 				}

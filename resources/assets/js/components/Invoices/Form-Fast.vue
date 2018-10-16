@@ -458,7 +458,7 @@
 			},
 
 			doNothing() {
-				console.log("Do nothing");
+				// console.log("Do nothing");
 				// This method does nothing
 				// This is on purpose such that the Enter key will not trigger invoice creation
 			},
@@ -484,7 +484,7 @@
 				this.selectedType = {label: invoice.type, value: invoice.type};
 				this.selectedCustomer = invoice.customer? {label: invoice.customer.name, value : invoice.customer.id } : '';
 				this.selectedDiscountMode = {label: invoice.discount_mode, value: invoice.discount_mode};
-				console.log(invoice.payment_type);
+				// console.log(invoice.payment_type);
 				this.selectedPaymentType = {label: invoice.payment_type, value: invoice.payment_type};
 				this.form.discount_value = invoice.discount_value;
 				this.form.paid = invoice.paid;
@@ -636,7 +636,7 @@
 			},
 
 			submit() {
-				console.log("Submitting");
+				// console.log("Submitting");
 				this.form.items = _.filter(this.form.items, function(item){ return item.product_id ? true : false; });
 
 				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
@@ -715,6 +715,7 @@
 						newItem['tracking_code'] = tracking;
 						newItem['shouldFocus'] = false;
 						newItem['has_error'] = false;
+						newItem['unit'] = 1;
 						// console.log(newItem.tracking_code);
 						this.form.items.push(newItem);
 

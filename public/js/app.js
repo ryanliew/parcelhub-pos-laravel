@@ -76338,7 +76338,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.paid = this.rounded_total;
 		},
 		doNothing: function doNothing() {
-			console.log("Do nothing");
+			// console.log("Do nothing");
 			// This method does nothing
 			// This is on purpose such that the Enter key will not trigger invoice creation
 		},
@@ -76364,7 +76364,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedType = { label: invoice.type, value: invoice.type };
 			this.selectedCustomer = invoice.customer ? { label: invoice.customer.name, value: invoice.customer.id } : '';
 			this.selectedDiscountMode = { label: invoice.discount_mode, value: invoice.discount_mode };
-			console.log(invoice.payment_type);
+			// console.log(invoice.payment_type);
 			this.selectedPaymentType = { label: invoice.payment_type, value: invoice.payment_type };
 			this.form.discount_value = invoice.discount_value;
 			this.form.paid = invoice.paid;
@@ -76522,7 +76522,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
 		submit: function submit() {
-			console.log("Submitting");
+			// console.log("Submitting");
 			this.form.items = _.filter(this.form.items, function (item) {
 				return item.product_id ? true : false;
 			});
@@ -76597,6 +76597,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				newItem['tracking_code'] = tracking;
 				newItem['shouldFocus'] = false;
 				newItem['has_error'] = false;
+				newItem['unit'] = 1;
 				// console.log(newItem.tracking_code);
 				this.form.items.push(newItem);
 			}.bind(this));
@@ -77032,6 +77033,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
@@ -77113,7 +77115,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		doNothing: function doNothing(event) {
 			console.log(event);
-			console.log("Do nothing from child");
+			// console.log("Do nothing from child");
 		},
 		updateItem: function updateItem() {
 			// console.log("Updating item!" + this.item.description);
@@ -77193,7 +77195,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// Product type selected, get the products of the same type
 			if (this.selectedProductType) {
 				this.has_detail = this.selectedProductType.has_detail;
-				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
+				var selectedZone = this.item.zone ? this.item.zone : 0;
+				axios.get('/data/products?zone=' + selectedZone + '&type=' + this.selectedProductType.value).then(function (response) {
 					return _this2.setProducts(response);
 				}).catch(function (error) {
 					return _this2.getRelatedProduct(error);
@@ -77201,7 +77204,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 		},
 		setProducts: function setProducts(response) {
-			this.selectedProduct = '';
 			this.selectedProduct_error = "";
 			this.products = response.data.map(function (product) {
 				var obj = {};
@@ -77215,7 +77217,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this));
 
 			// If we already have item
-			if (this.item.product_type_id) {
+			if (this.item.product_id) {
 				this.selectedProduct = _.filter(this.products, function (type) {
 					return this.item.product_id == type.value;
 				}.bind(this))[0];
@@ -77227,6 +77229,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 			// If we dont have any products that matches
 			if (this.products.length == 0) {
+				this.selectedProduct = '';
 				this.selectedProduct_error = "No matching SKU";
 				this.price = 0;
 				this.description = '';
@@ -77247,7 +77250,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier) {
 				var url = "/data/products?type=" + this.selectedProductType.value;
 
-				if (this.zone) url += "&zone=" + this.zone;
+				if (this.zone) url += "&zone=" + this.zone;else url += "&zone=0";
 
 				if (this.weight) url += "&weight=" + this.weight;
 
@@ -77267,7 +77270,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		productChange: function productChange() {
 			var _this4 = this;
 
-			if (this.selectedProduct) {
+			if (this.selectedProduct && !this.item.description) {
 				this.description = this.selectedProduct.description;
 				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 				Vue.nextTick(function () {
@@ -77279,7 +77282,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var _this5 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
-
 
 			if (!this.isEdit && this.default_details) {
 				this.default_details = false;
@@ -77349,7 +77351,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		setProductPrice: function setProductPrice(response) {
 			// console.log("Setting product price");
-			if (response && this.canEdit) {
+			if (response && this.canEdit && !this.item.price) {
 				this.price_group = this.selectedProduct;
 
 				if (response.data) this.price_group = response.data;
@@ -77493,7 +77495,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (newVal) {
 				this.$emit('update', { attribute: 'product_id', value: newVal.value });
 				this.$emit('update', { attribute: 'sku', value: newVal.label });
-			} else {
+			} else if (!this.isEdit) {
 				this.$emit('update', { attribute: 'product_id', value: '' });
 				this.$emit('update', { attribute: 'sku', value: '' });
 			}
@@ -77771,6 +77773,7 @@ var render = function() {
           step: "1",
           error: _vm.unit_error
         },
+        on: { tab: _vm.massInput },
         model: {
           value: _vm.unit,
           callback: function($$v) {
@@ -77798,9 +77801,7 @@ var render = function() {
           tab: function($event) {
             _vm.$emit("addItem")
           },
-          enter: function($event) {
-            _vm.$emit("addItem")
-          }
+          enter: _vm.doNothing
         },
         model: {
           value: _vm.tracking_no,
