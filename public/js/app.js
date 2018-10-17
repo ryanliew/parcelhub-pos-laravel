@@ -76338,7 +76338,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.form.paid = this.rounded_total;
 		},
 		doNothing: function doNothing() {
-			console.log("Do nothing");
+			// console.log("Do nothing");
 			// This method does nothing
 			// This is on purpose such that the Enter key will not trigger invoice creation
 		},
@@ -76364,7 +76364,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.selectedType = { label: invoice.type, value: invoice.type };
 			this.selectedCustomer = invoice.customer ? { label: invoice.customer.name, value: invoice.customer.id } : '';
 			this.selectedDiscountMode = { label: invoice.discount_mode, value: invoice.discount_mode };
-			console.log(invoice.payment_type);
+			// console.log(invoice.payment_type);
 			this.selectedPaymentType = { label: invoice.payment_type, value: invoice.payment_type };
 			this.form.discount_value = invoice.discount_value;
 			this.form.paid = invoice.paid;
@@ -76522,7 +76522,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
 		submit: function submit() {
-			console.log("Submitting");
+			// console.log("Submitting");
 			this.form.items = _.filter(this.form.items, function (item) {
 				return item.product_id ? true : false;
 			});
@@ -76583,6 +76583,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.isMassInput = false;
 			this.trackings = [];
 		},
+		checkTrackingNumber: function checkTrackingNumber() {
+			if (!this.mass_tracking_no) this.confirmTrackingNumber();else this.addTrackingNumber();
+		},
 		addTrackingNumber: function addTrackingNumber() {
 			this.trackings.push(this.mass_tracking_no);
 			this.mass_tracking_no = '';
@@ -76597,6 +76600,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				newItem['tracking_code'] = tracking;
 				newItem['shouldFocus'] = false;
 				newItem['has_error'] = false;
+				newItem['unit'] = 1;
 				// console.log(newItem.tracking_code);
 				this.form.items.push(newItem);
 			}.bind(this));
@@ -77075,6 +77079,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			price_error: '',
 			unit_error: '',
 			item_tax_error: '',
+			should_update: true,
 
 			tracking_no_repeating: '',
 
@@ -77091,6 +77096,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		}.bind(this));
 
 		window.events.$on("updateItemsValue", function () {
+			console.log("updateItemssValue");
+			this.should_update = false;
 			this.updateItem();
 		}.bind(this));
 
@@ -77114,9 +77121,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {
 		doNothing: function doNothing(event) {
 			console.log(event);
-			console.log("Do nothing from child");
+			// console.log("Do nothing from child");
 		},
 		updateItem: function updateItem() {
+			console.log("updateItem: " + this.should_update);
 			// console.log("Updating item!" + this.item.description);
 			this.tracking_no = this.item.tracking_code;
 
@@ -77146,8 +77154,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this))[0];
 
 			this.has_detail = this.selectedProductType.has_detail;
-
 			this.getProducts();
+			// this.should_update = true;
 		},
 		openDimWeightModal: function openDimWeightModal() {
 			// console.log("Opening dim weight");
@@ -77194,7 +77202,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// Product type selected, get the products of the same type
 			if (this.selectedProductType) {
 				this.has_detail = this.selectedProductType.has_detail;
-				axios.get('/data/products?type=' + this.selectedProductType.value).then(function (response) {
+				var selectedZone = this.item.zone ? this.item.zone : 0;
+				axios.get('/data/products?zone=' + selectedZone + '&type=' + this.selectedProductType.value).then(function (response) {
 					return _this2.setProducts(response);
 				}).catch(function (error) {
 					return _this2.getRelatedProduct(error);
@@ -77202,7 +77211,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 		},
 		setProducts: function setProducts(response) {
-			this.selectedProduct = '';
 			this.selectedProduct_error = "";
 			this.products = response.data.map(function (product) {
 				var obj = {};
@@ -77216,7 +77224,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this));
 
 			// If we already have item
-			if (this.item.product_type_id) {
+			if (this.item.product_id) {
 				this.selectedProduct = _.filter(this.products, function (type) {
 					return this.item.product_id == type.value;
 				}.bind(this))[0];
@@ -77228,6 +77236,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}
 			// If we dont have any products that matches
 			if (this.products.length == 0) {
+				this.selectedProduct = '';
 				this.selectedProduct_error = "No matching SKU";
 				this.price = 0;
 				this.description = '';
@@ -77238,17 +77247,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.selectedCourier = '';
 			}
 		},
-
-
-		updateProducts: _.debounce(function () {
+		updateProducts: function updateProducts() {
 			var _this3 = this;
 
-			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+
+			if (error) console.log(error);
 
 			if (this.selectedProductType.has_detail && (this.weight || this.dimension_weight) && this.selectedCourier) {
 				var url = "/data/products?type=" + this.selectedProductType.value;
 
-				if (this.zone) url += "&zone=" + this.zone;
+				if (this.zone) url += "&zone=" + this.zone;else url += "&zone=0";
 
 				if (this.weight) url += "&weight=" + this.weight;
 
@@ -77264,24 +77273,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					return _this3.updateProducts(error);
 				});
 			}
-		}, 500),
+		},
 
-		productChange: function productChange() {
+
+		productChange: _.debounce(function () {
 			var _this4 = this;
 
-			if (this.selectedProduct) {
+			console.log("productChage: " + this.should_update);
+			if (this.selectedProduct && this.should_update) {
 				this.description = this.selectedProduct.description;
 				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
 				Vue.nextTick(function () {
 					return _this4.getProductPrice();
 				});
 			}
-		},
+			this.should_update = true;
+		}, 500),
+
 		getDefaultDetails: function getDefaultDetails() {
 			var _this5 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
-
 
 			if (!this.isEdit && this.default_details) {
 				this.default_details = false;
@@ -77350,8 +77362,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 		},
 		setProductPrice: function setProductPrice(response) {
-			// console.log("Setting product price");
+			console.log("Setting product price");
 			if (response && this.canEdit) {
+				console.log("setProductPrice " + this.should_update);
 				this.price_group = this.selectedProduct;
 
 				if (response.data) this.price_group = response.data;
@@ -77364,7 +77377,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.item_tax_inclusive = prices.is_tax_inclusive;
 				this.tax_type = prices.tax_type;
 			}
-
 			this.item_add_loading = false;
 		},
 		calculatePriceBasedOnCustomer: function calculatePriceBasedOnCustomer(price_group) {
@@ -77420,7 +77432,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var price = 0;
 			if (this.price) price = this.item_tax_inclusive ? parseFloat(this.price) : parseFloat(this.price) + parseFloat(this.item_tax);
 
-			return price.toFixed(2);
+			return (price * parseInt(this.unit)).toFixed(2);
 		},
 		tracking_no_error: function tracking_no_error() {
 			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
@@ -77472,6 +77484,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		width: function width(newVal) {
 			this.$emit('update', { attribute: 'width', value: newVal ? newVal : 0 });
 		},
+		unit: function unit(newVal) {
+			this.$emit('update', { attribute: 'unit', value: newVal ? newVal : 0 });
+		},
 		selectedCourier: function selectedCourier(newVal) {
 			if (newVal) {
 				this.$emit('update', { attribute: 'courier_id', value: newVal.value });
@@ -77492,7 +77507,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (newVal) {
 				this.$emit('update', { attribute: 'product_id', value: newVal.value });
 				this.$emit('update', { attribute: 'sku', value: newVal.label });
-			} else {
+			} else if (!this.isEdit) {
 				this.$emit('update', { attribute: 'product_id', value: '' });
 				this.$emit('update', { attribute: 'sku', value: '' });
 			}
@@ -77764,7 +77779,7 @@ var render = function() {
           label: "Unit",
           name: "unit",
           editable: true,
-          disabled: !_vm.has_detail || !_vm.canEdit,
+          disabled: !_vm.canEdit,
           focus: false,
           hideLabel: true,
           step: "1",
@@ -78828,7 +78843,7 @@ var render = function() {
               focus: false,
               hideLabel: false
             },
-            on: { enter: _vm.addTrackingNumber },
+            on: { enter: _vm.checkTrackingNumber },
             model: {
               value: _vm.mass_tracking_no,
               callback: function($$v) {

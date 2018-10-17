@@ -72,7 +72,13 @@
 				],
 				ajax: '{!! route("cashups.index") !!}',
 				columns: [
-					{data: 'session_start'},
+					{data: 'session_start', render: function(data, type, row){
+						if(type === 'display' || type === 'filter') {
+							return moment(data).format("YYYY-MM-DD");
+						}
+
+						return data;
+					}},
 					{data: 'created_at', render: function(data, type, row){
 						if(type === 'display' || type === 'filter') {
 							return moment(data).format("YYYY-MM-DD");

@@ -52,7 +52,8 @@ class CashupController extends Controller
 	    		'total' => $invoices->sum(function($invoice){ return $invoice->total; }) + $terminal->float,
 	    		'session_start' => $session_start,
 	    		'created_by' => auth()->id(),
-	    		'branch_id' => $terminal->branch_id
+	    		'branch_id' => $terminal->branch_id,
+                'float_value' => $terminal->float
 	    	]);
 
             if($invoices->count() > 0) {
