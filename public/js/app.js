@@ -77096,7 +77096,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		}.bind(this));
 
 		window.events.$on("updateItemsValue", function () {
-			console.log("updateItemssValue");
 			this.should_update = false;
 			this.updateItem();
 		}.bind(this));
@@ -77124,7 +77123,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// console.log("Do nothing from child");
 		},
 		updateItem: function updateItem() {
-			console.log("updateItem: " + this.should_update);
 			// console.log("Updating item!" + this.item.description);
 			this.tracking_no = this.item.tracking_code;
 
@@ -77279,7 +77277,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		productChange: _.debounce(function () {
 			var _this4 = this;
 
-			console.log("productChage: " + this.should_update);
 			if (this.selectedProduct && this.should_update) {
 				this.description = this.selectedProduct.description;
 				this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
@@ -77341,7 +77338,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			// console.log("Getting product price " + this.canEdit);
 			// console.log(error);
 			if (this.selectedProduct && this.canEdit) {
 				this.item_add_loading = true;
@@ -77362,9 +77358,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 		},
 		setProductPrice: function setProductPrice(response) {
-			console.log("Setting product price");
+			// console.log("Setting product price");
 			if (response && this.canEdit) {
-				console.log("setProductPrice " + this.should_update);
 				this.price_group = this.selectedProduct;
 
 				if (response.data) this.price_group = response.data;
