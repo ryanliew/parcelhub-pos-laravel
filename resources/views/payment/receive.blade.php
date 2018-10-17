@@ -117,6 +117,7 @@
 		$(function(){
 			var totalAMT = 0.0;
 			var table = $("#payments-table").DataTable({
+				pageLength: 50,
 				bFilter: true,
 				dom: 'Bt',
 				buttons:[],
