@@ -76501,7 +76501,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				sku: '',
 				tax_type: 'SR',
 				shouldFocus: true,
-				has_error: false
+				has_error: false,
+				default_details: true // A flag that determines if we should go get the default details for this item row
 
 			});
 
@@ -76601,6 +76602,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				newItem['shouldFocus'] = false;
 				newItem['has_error'] = false;
 				newItem['unit'] = 1;
+				newItem['default_details'] = false; // Should not get default details for this row
 				// console.log(newItem.tracking_code);
 				this.form.items.push(newItem);
 			}.bind(this));
@@ -77059,7 +77061,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			length: 0,
 			height: 0,
 			// Default details should only be triggered once
-			default_details: true,
+			default_details: this.item.default_details,
 			// Based on entered price
 			// item_tax: 0,
 			tax_rate: 0,
@@ -77292,7 +77294,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
+
 			if (!this.isEdit && this.default_details) {
+				// console.log(this.isEdit)
+				// console.log("Get default details");
 				this.default_details = false;
 				axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label).then(function (response) {
 					return _this5.setDefaultDetails(response);
