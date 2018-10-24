@@ -612,7 +612,8 @@
 					sku: '',
 					tax_type: 'SR',
 					shouldFocus: true,
-					has_error: false
+					has_error: false,
+					default_details: true // A flag that determines if we should go get the default details for this item row
 
 				});
 
@@ -723,6 +724,7 @@
 						newItem['shouldFocus'] = false;
 						newItem['has_error'] = false;
 						newItem['unit'] = 1;
+						newItem['default_details'] = false; // Should not get default details for this row
 						// console.log(newItem.tracking_code);
 						this.form.items.push(newItem);
 

@@ -259,7 +259,7 @@
 				length: 0,
 				height: 0,
 				// Default details should only be triggered once
-				default_details: true,
+				default_details: this.item.default_details,
 				// Based on entered price
 				// item_tax: 0,
 				tax_rate: 0,
@@ -474,7 +474,10 @@
 			}, 500),
 
 			getDefaultDetails(error = 'No error') {
+				
 				if(!this.isEdit && this.default_details) {
+					// console.log(this.isEdit)
+					// console.log("Get default details");
 					this.default_details = false;
 					axios.get("/data/branch/knowledge?type=" + this.selectedProductType.label)
 						.then(response => this.setDefaultDetails(response))
