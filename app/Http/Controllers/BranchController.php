@@ -48,6 +48,8 @@ class BranchController extends Controller
 
         $terminal = $branch->create_default_terminal();
 
+        $branch->create_default_sequence();
+
         $branch->create_default_user($terminal->id);
 
     	return json_encode(['message' => "New branch created. User " . $branch->code . " has been assigned to the branch."]);
