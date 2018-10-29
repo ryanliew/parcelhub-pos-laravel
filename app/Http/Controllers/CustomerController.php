@@ -148,7 +148,7 @@ class CustomerController extends Controller
                     'debit' => false, 
                     'balance' => 0,
                     'desc' => $payment->payment->payment_method,
-                    'ref'  => $customer->branch->code . "P" . sprintf('%04u', (int)$payment->payment->id)
+                    'ref'  => $customer->branch->code . "P" . sprintf('%05u', (int)$payment->payment->id)
                 ];
 
                 $result->push($credit);
