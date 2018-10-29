@@ -55,7 +55,7 @@
 			getStatus() {
 				let memory = this.getCookie("branch-selector");
 
-				this.active = memory == "open";
+				this.active = memory !== "close";
 			},
 
 			getUsers() {
@@ -116,10 +116,15 @@
 
 			toggleExpand() {
 				this.active = !this.active;
-				document.cookie = "branch-selector=open; path=/";
+
+				let d = new Date();
+
+				d.setTime(d.getTime() + (0.5*24*60*60*1000));
+
+				document.cookie = "branch-selector=open; path=/; expires=" + d.toUTCString();
 
 				if(!this.active) {
-					document.cookie = "branch-selector=close; path=/";
+					document.cookie = "branch-selector=close; path=/; expires=" + d.toUTCString();
 				}
 			}
 		},

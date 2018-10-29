@@ -223,8 +223,7 @@
 				@else
 					<td class="text-center"></td>
 				@endif
-
-					<td class="text-center" >{{number_format(round((float)$collection['balance'],2),2,'.','')}}</td>
+					<td class="text-center" >{{number_format((float)round($collection['balance'], 2),2,'.','')}}</td>
 				</tr>
 				@endforeach
 
