@@ -80798,7 +80798,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
-			axios.get("/data/products").then(function (response) {
+			axios.get("/data/products?full=1").then(function (response) {
 				return _this3.setProducts(response);
 			}).catch(function (error) {
 				return _this3.getProducts(error);
