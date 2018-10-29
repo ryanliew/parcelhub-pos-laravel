@@ -171,31 +171,34 @@ class ProductController extends Controller
     {
         $query = Product::query();
 
-        if(request()->has('type')) 
-            $query->where('product_type_id', request()->type);
 
-        if(request()->zone != 0)
-            $query->where('zone', request()->zone);
-        else
-            $query->whereNull('zone');
+        if(!request()->has('full')) {
+            if(request()->has('type')) 
+                $query->where('product_type_id', request()->type);
+
+            if(request()->zone != 0)
+                $query->where('zone', request()->zone);
+            else
+                $query->whereNull('zone');
 
 
-        if(request()->has('vendor'))
-            $query->where('vendor_id', request()->vendor);
+            if(request()->has('vendor'))
+                $query->where('vendor_id', request()->vendor);
 
-        if(request()->has('zonetype'))
-            $query->where('zone_type_id', request()->zonetype);
-        
-        $weight = 0;
-        if(request()->has('weight'))
-            $weight = request()->weight;
+            if(request()->has('zonetype'))
+                $query->where('zone_type_id', request()->zonetype);
+            
+            $weight = 0;
+            if(request()->has('weight'))
+                $weight = request()->weight;
 
-        if(request()->has('dimension'))
-            $weight = max($weight, request()->dimension);
+            if(request()->has('dimension'))
+                $weight = max($weight, request()->dimension);
 
-        if(request()->has('weight') || request()->has('dimension'))
-            $query->where('weight_start', "<=", $weight)
-                ->where('weight_end', ">=", $weight);
+            if(request()->has('weight') || request()->has('dimension'))
+                $query->where('weight_start', "<=", $weight)
+                    ->where('weight_end', ">=", $weight);
+        }
 
         return $query->with('tax')->get();
     }

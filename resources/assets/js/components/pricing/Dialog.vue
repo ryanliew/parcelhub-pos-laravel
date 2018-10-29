@@ -166,7 +166,7 @@
 			},
 
 			getProducts(error = 'No error') {
-				axios.get("/data/products")
+				axios.get("/data/products?full=1")
 					.then(response => this.setProducts(response))
 					.catch(error => this.getProducts(error));
 			},
