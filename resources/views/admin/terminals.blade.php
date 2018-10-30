@@ -76,7 +76,14 @@
 				columns: [
 					{data: 'branch_name'},
 					{data: 'name'},
-					{data: 'float'},
+					{data: 'float', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
 					{data: 'is_active', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
 								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";

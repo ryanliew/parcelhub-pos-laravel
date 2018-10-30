@@ -23,6 +23,7 @@
 				<table class="table table-bordered" id="payments-table">
 					<thead>
 						<tr>
+							<th>Invoice date</th>
 							<th>Invoice no.</th>
 							<th>Total</th>
 							<th>Paid amount</th>
@@ -77,6 +78,7 @@
 				],
 				ajax: url,
 				columns: [
+					{data: 'invoice_date'},
 					{data: 'invoice_no'},
 					{data: 'invoice_total', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
