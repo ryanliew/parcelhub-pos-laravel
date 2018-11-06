@@ -97,12 +97,54 @@
 					{data: 'sku'},
 					{data: 'customer_name'},
 					{data: 'courier_name'},
-					{data: 'walk_in_price'},
-					{data: 'pivot.walk_in_price'},
-					{data: 'walk_in_price_special'},
-					{data: 'pivot.walk_in_price_special'},
-					{data: 'corporate_price'},
-					{data: 'pivot.corporate_price'},
+					{data: 'walk_in_price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'pivot.walk_in_price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'walk_in_price_special', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'pivot.walk_in_price_special', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'corporate_price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'pivot.corporate_price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
 					{data: 'last_update'},
 					{data: 'pivot.is_tax_inclusive', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
@@ -113,8 +155,22 @@
 						}
 					},
 					{data: 'zone'},
-					{data: 'weight_start'},
-					{data: 'weight_end'}
+					{data: 'weight_start', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'weight_end', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					}
 
 				]
 

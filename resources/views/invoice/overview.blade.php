@@ -61,7 +61,9 @@
 						text: 'View',
 						// text: 'Edit',
 						action: function( e, dt, node, config ) {
-							location.href = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
+							var loc = "/invoices/edit/" + table.rows({selected: true}).data().toArray()[0].id;
+
+							window.open(loc, '_blank');
 						},
 						enabled: false
 					},

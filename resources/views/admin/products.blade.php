@@ -98,11 +98,48 @@
 					{data: 'vendor_name', name: 'vendor.name'},
 					{data: 'zone'},
 					{data: 'zone_type_name', name: 'zone_type.name'},
-					{data: 'weight_start'},
-					{data: 'weight_end'},
-					{data: 'corporate_price'},
-					{data: 'walk_in_price'},
-					{data: 'walk_in_price_special'},
+					{data: 'weight_start', render: function(data, type, row){
+							if((type === 'display' || type === 'filter') && data)  {
+								console.log("data: " + data);
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'weight_end', render: function(data, type, row){
+							if((type === 'display' || type === 'filter') && data)  {
+								console.log("data: " + data);
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'corporate_price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'walk_in_price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'walk_in_price_special', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
 					{data: 'tax_code', name: 'tax.code'},
 					{data: 'is_tax_inclusive', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {

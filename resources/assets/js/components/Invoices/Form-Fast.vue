@@ -489,8 +489,8 @@
 				this.form.discount_value = invoice.discount_value;
 				this.form.paid = invoice.paid;
 				this.form.tax = invoice.tax;
-				this.form.total = invoice.total;
-				this.form.discount = invoice.discount;
+				this.form.total = invoice.total.toFixed(2);
+				this.form.discount = invoice.discount.toFixed(2);
 				this.form.remarks = invoice.remarks;
 
 				this.can_edit_invoice = invoice.can_edit;

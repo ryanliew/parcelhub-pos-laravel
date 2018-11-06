@@ -223,6 +223,22 @@ tr.item-editing {
 	height: 37px;
 }
 
+.v-select .dropdown-toggle {
+	padding: 0;
+}
+
+.v-select .dropdown-toggle::after {
+	display: none;
+}
+
+.v-select.open .dropdown-toggle input.form-control {
+	min-width: 80px;
+}
+
+.v-select .dropdown-toggle .clear {
+	margin-top: 5px;
+}
+
 .small-select .v-select .form-control {
 	position: absolute;
 	left: 0;

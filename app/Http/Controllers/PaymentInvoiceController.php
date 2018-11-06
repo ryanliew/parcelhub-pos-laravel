@@ -15,17 +15,14 @@ class PaymentInvoiceController extends Controller
      */
     public function index($payment_id ='')
     {
-        $payment = Payment::Find($payment_id);
+        $query = PaymentInvoice::with('invoice')->where('payment_id', $payment_id);
 
-        $result ='';
-
-        if($payment)
-        {
-            $result = datatables()
-                    ->of($payment->payments() )
-                    ->toJson();  
-
-        }
+        $result = datatables()
+                ->of($query)
+                ->addColumn('invoice_date', function(PaymentInvoice $payment) {
+                    return $payment->invoice->created_at;
+                })
+                ->toJson();
 
         return $result;
     }

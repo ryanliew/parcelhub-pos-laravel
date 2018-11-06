@@ -23,6 +23,7 @@
 				<table class="table table-bordered" id="payments-table">
 					<thead>
 						<tr>
+							<th>Invoice date</th>
 							<th>Invoice no.</th>
 							<th>Total</th>
 							<th>Paid amount</th>
@@ -32,11 +33,11 @@
 					</thead>
 					<tfoot>
 			            <tr>
-			                <th colspan="4" style="text-align:right">Total:</th>
+			                <th colspan="5" style="text-align:right">Total:</th>
 			                <th>RM {{ number_format((float)$total, 2, '.', '') }}</th>
 			            </tr>
 						<tr>
-							<th colspan="5">
+							<th colspan="6">
 								<div style="float: right">
 									<button class='btn btn-primary' id='btnBack'>Back to summary</button>
 								</div>
@@ -77,6 +78,7 @@
 				],
 				ajax: url,
 				columns: [
+					{data: 'invoice_date'},
 					{data: 'invoice_no'},
 					{data: 'invoice_total', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {

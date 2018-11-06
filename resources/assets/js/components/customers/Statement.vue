@@ -1,3 +1,17 @@
+<style>
+	.col.cust-input {
+		max-width: 250px;
+	}
+
+	.cust-input .select-label {
+		margin-bottom: 7px;
+	}
+
+	.cust-input .v-select input[type=search], .cust-input .v-select input[type=search]:focus
+	{
+		height: 37px;
+	}
+</style>
 <template>
 	<div class="modal fade" id="customer-statement" tabindex="-1" role="dialog">
 	  	<div class="modal-dialog modal-lg" role="document">
@@ -39,6 +53,20 @@
 									:error="form.errors.get('date_to')">
 								</text-input>
 							</div>
+							<div class="col cust-input small-select">
+								<selector-input :potentialData="types"
+									v-model="selectedType" 
+									:defaultData="selectedType"
+									placeholder="Select type"
+									:required="true"
+									label="Type"
+									name="type"
+									:editable="true"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('type')">
+								</selector-input>
+							</div>
 						</div>
 					</form>
 	      		</div>
@@ -64,9 +92,15 @@
 				form: new Form({
 					date_to: moment().format("YYYY-MM-DD"),
 					date_from: moment().startOf('month').format("YYYY-MM-DD"),
+					type: 'All',
 				}),
 
 				selected_customer:'',
+				selectedType: {label: 'All', value: 'All'},
+				types: [
+						{label: 'All', value: 'All'},
+						{label: 'Outstanding', value: 'Outstanding'},
+						],
 			};
 		},
 
@@ -93,6 +127,7 @@
 
 			closeDialog() {
 				this.isActive = false;
+				this.selectedType = {label: 'All', value: 'All'};
 				this.form.reset();
 			},
 
@@ -132,6 +167,13 @@
 			},
 
 		},
+
+		watch: {
+			selectedType(newVal, oldVal) {
+				this.form.type = newVal.value;
+			},
+
+		}
 
 	}
 </script>

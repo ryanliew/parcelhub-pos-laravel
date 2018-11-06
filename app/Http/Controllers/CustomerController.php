@@ -115,6 +115,8 @@ class CustomerController extends Controller
         $date_from = Request()->date_from;
         $date_to = Carbon::parse(Request()->date_to);
 
+        $getAll = Request()->type == "All" ? true: false;
+
         $invoices = Invoice::with(['customer','payment'])
                     ->where([
                              ['customer_id', $customer->id],
@@ -124,34 +126,38 @@ class CustomerController extends Controller
                     ->orderby('created_at')
                     ->get();
 
-
         $result = collect([]);
 
         foreach($invoices as $invoice)
         {
-            $debit = [
-                'date' => $invoice->created_at, 
-                'total' => $invoice->total, 
-                'debit' => true, 
-                'balance' => 0,
-                'desc' => '',
-                'ref' => $invoice->invoice_no
-            ];
+            $outstanding = $invoice->total - $invoice->payment->sum('total') - $invoice->paid;
 
-            $result->push($debit);
-
-            foreach($invoice->payment as $payment)
+            if( $getAll || $outstanding > 0)
             {
-                $credit = [
-                    'date' => $payment->created_at, 
-                    'total' => - $payment->total, 
-                    'debit' => false, 
+                $debit = [
+                    'date' => $invoice->created_at, 
+                    'total' => $invoice->total, 
+                    'debit' => true, 
                     'balance' => 0,
-                    'desc' => $payment->payment->payment_method,
-                    'ref'  => $customer->branch->code . "P" . sprintf('%05u', (int)$payment->payment->id)
+                    'desc' => '',
+                    'ref' => $invoice->invoice_no
                 ];
 
-                $result->push($credit);
+                $result->push($debit);
+
+                foreach($invoice->payment as $payment)
+                {
+                    $credit = [
+                        'date' => $payment->created_at, 
+                        'total' => - $payment->total, 
+                        'debit' => false, 
+                        'balance' => 0,
+                        'desc' => $payment->payment->payment_method,
+                        'ref'  => $customer->branch->code . "P" . sprintf('%05u', (int)$payment->payment->id)
+                    ];
+
+                    $result->push($credit);
+                }
             }
         }
 
@@ -182,48 +188,52 @@ class CustomerController extends Controller
 
         foreach ($invoices as $key => $invoice ) 
         {
-            $debit_count ++;
-            $debit += $invoice['total'];
+            $unpaid = $invoice['total'] - $invoice['paid'] - $invoice->payment->sum('total');
 
-            $credit_count += $invoice->payment->count('total');
-            $credit += $invoice->payment->sum('total');
-            
+            if( $getAll || $unpaid > 0)
+            {
 
-            $remaining = $invoice['total'] - $invoice->payment->sum('total');
+                $debit_count ++;
+                $debit += $invoice['total'];
 
-            $invoice_month = date_format($invoice['created_at'],"m");
-            $pass_1_month = date("m", strtotime("-1 months"));
-            $pass_2_month = date("m", strtotime("-2 months"));
-            $pass_3_month = date("m", strtotime("-3 months"));
-            $pass_4_month = date("m", strtotime("-4 months"));
-            $pass_5_month = date("m", strtotime("-5 months"));
+                $credit_count += $invoice->payment->count('total');
+                $credit += $invoice->payment->sum('total');
+                
+                $invoice_month = date_format($invoice['created_at'],"m");
+                $pass_1_month = date('m', strtotime('-' . date('d') . ' days'));
+                $pass_2_month = date("m", strtotime("-2 months"));
+                $pass_3_month = date("m", strtotime("-3 months"));
+                $pass_4_month = date("m", strtotime("-4 months"));
+                $pass_5_month = date("m", strtotime("-5 months"));
 
-            if( $invoice_month == date('m') )
-            {
-                $outstanding['current'] += $remaining;
-            }
-            else if( $invoice_month == $pass_1_month )
-            {
-                $outstanding['1'] += $remaining;
-            }
-            else if( $invoice_month == $pass_2_month )
-            {
-                $outstanding['2'] += $remaining;
-            }
-            else if( $invoice_month == $pass_3_month )
-            {
-                $outstanding['3'] += $remaining;
-            }
-            else if( $invoice_month == $pass_4_month )
-            {
-                $outstanding['4'] += $remaining;
-            }
-            else if( $invoice_month == $pass_5_month )
-            {
-                $outstanding['5'] += $remaining;
-            }
+                info("BYE");
 
+                if( $invoice_month == date('m') )
+                {
+                    $outstanding['current'] += $unpaid;
+                }
+                else if( $invoice_month == $pass_1_month )
+                {
+                    $outstanding['1'] += $unpaid;
+                }
+                else if( $invoice_month == $pass_2_month )
+                {
+                    $outstanding['2'] += $unpaid;
+                }
+                else if( $invoice_month == $pass_3_month )
+                {
+                    $outstanding['3'] += $unpaid;
+                }
+                else if( $invoice_month == $pass_4_month )
+                {
+                    $outstanding['4'] += $unpaid;
+                }
+                else if( $invoice_month == $pass_5_month )
+                {
+                    $outstanding['5'] += $unpaid;
+                }
 
+            }
         }
 
         $f = new NumberFormatter(locale_get_default(), NumberFormatter::SPELLOUT);
