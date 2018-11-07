@@ -143,6 +143,9 @@ class CustomerController extends Controller
                     'ref' => $invoice->invoice_no
                 ];
 
+                if($invoice->paid >= $invoice->total && $invoice->total > 0)
+                    $debit['paid'] = $invoice->total;
+
                 $result->push($debit);
 
                 foreach($invoice->payment as $payment)
@@ -153,7 +156,7 @@ class CustomerController extends Controller
                         'debit' => false, 
                         'balance' => 0,
                         'desc' => $payment->payment->payment_method,
-                        'ref'  => $customer->branch->code . "P" . sprintf('%05u', (int)$payment->payment->id)
+                        'ref'  => $payment->payment->ref
                     ];
 
                     $result->push($credit);
@@ -167,14 +170,27 @@ class CustomerController extends Controller
 
         foreach($sortedResult as $key => $collection)
         { 
-            $sortedResult->put($key, [
+            $paid = array_key_exists('paid', $collection) ? $collection['paid']: 0;
+
+            info($collection['ref']);
+            info($paid);
+
+            $array = [
                 'date' => $collection['date'],
-                'balance'=> $resultBalance += $collection['total'],
+                'balance'=> $resultBalance += $collection['total'] - $paid,
                 'total' => $collection['total'],
                 'debit' => $collection['debit'],
                 'desc' => $collection['desc'], 
                 'ref'  => $collection['ref']
-            ]);
+            ];
+
+
+            info($resultBalance);
+
+            if($paid > 0)
+                $array['paid'] = $paid;
+
+            $sortedResult->put($key, $array);
         }
 
         $balance = 0.0;
@@ -205,8 +221,6 @@ class CustomerController extends Controller
                 $pass_3_month = date("m", strtotime("-3 months"));
                 $pass_4_month = date("m", strtotime("-4 months"));
                 $pass_5_month = date("m", strtotime("-5 months"));
-
-                info("BYE");
 
                 if( $invoice_month == date('m') )
                 {

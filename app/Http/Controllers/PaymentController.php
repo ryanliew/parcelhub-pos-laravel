@@ -69,16 +69,16 @@ class PaymentController extends Controller
 
         $result ='';
 
-        if(auth()->user()->is_admin)
-        {
-            $result = datatables()->of(Payment::with(['customer','branch','terminal']) );
-        }
-        else
-        {
+        // if(auth()->user()->is_admin)
+        // {
+        //     $result = datatables()->of(Payment::with(['customer','branch','terminal']) );
+        // }
+        // else
+        // {
             $branch = auth()->user()->current()->first();
 
             $result = datatables()->of($branch->payments()->with(['customer','branch','terminal']) );
-        }
+        // }
                 
         $result = $result
                     ->addColumn('customer', function(Payment $payment){ 
@@ -86,6 +86,9 @@ class PaymentController extends Controller
                         })
                     ->addColumn('branch', function(Payment $payment){ 
                         return $payment->branch ? $payment->branch->name : "---";
+                    })
+                    ->addColumn('reference', function(Payment $payment){
+                        return $payment->ref;
                     })
                     ->toJson();  
     
@@ -108,44 +111,42 @@ class PaymentController extends Controller
 
         $payment_id = '';
 
-        if($total > 0 )
-        {
-            $payment = Payment::create([
-                'customer_id'   => $customer,
-                'branch_id'     => $user->current_branch,
-                'terminal_no'   => $user->current_terminal,
-                'total'         =>  $total,
-                'payment_method' => $type,
-                'created_by'    => $user->id,
-            ]);
+        $payment = Payment::create([
+            'customer_id'   => $customer,
+            'branch_id'     => $user->current_branch,
+            'terminal_no'   => $user->current_terminal,
+            'total'         =>  $total,
+            'payment_method' => $type,
+            'created_by'    => $user->id,
+        ]);
 
-            $payment_id = $payment->id;
+        $payment_id = $payment->id;
 
-            foreach ($data[3] as $row) {
+        foreach ($data[3] as $row) {
 
-                $amount = $row[1];
+            $amount = $row[1];
 
-                if( $amount > 0 )
-                {
-                    $invoice = Invoice::where('invoice_no', $row[0])->get()->first();
+            if( $amount != 0 )
+            {
+                $invoice = Invoice::where('invoice_no', $row[0])->get()->first();
 
-                    $paid = $invoice->payment->sum('total') + $invoice->paid + $amount;
+                $paid = $invoice->payment->sum('total') + $invoice->paid + $amount;
 
-                    PaymentInvoice::create([
-                        'payment_id'    => $payment_id,
-                        'invoice_no'    => $row[0],
-                        'total'         => $amount,
-                        'invoice_total' => $row[3],
-                        'outstanding'   => $row[2],
-                        'paid'          => $paid
-                    ]);
+                PaymentInvoice::create([
+                    'payment_id'    => $payment_id,
+                    'invoice_no'    => $row[0],
+                    'total'         => $amount,
+                    'invoice_total' => $row[3],
+                    'outstanding'   => $row[2],
+                    'paid'          => $paid
+                ]);
 
-                    // $invoice->update([
-                    //     'paid' => $paid,
-                    // ]);
-                }
+                // $invoice->update([
+                //     'paid' => $paid,
+                // ]);
             }
         }
+        
 
         return json_encode(['message' => "Payment created",'payment_id' => $payment_id ] );
     }

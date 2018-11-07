@@ -32,4 +32,9 @@ class Payment extends Model
     {
         return $query->where('cashed', false);
     }
+
+    public function getRefAttribute()
+    {
+        return $this->branch->code . "P" . sprintf('%05u', (int)$this->id);
+    }
 }

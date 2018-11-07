@@ -13,6 +13,7 @@
 		<div class="card">
 			<div class="card-header">
 				<b>Payments per invoice</b> <br><br>
+				<b>Payment reference :</b> {{ $payment_ref }} <br>
 				<b>Customer name :</b> {{ $customer }} <br>
 				<b>Payment date :</b> {{ $payment_date }} <br>
 				<b>Payment type :</b> {{ $payment_type }} <br>
