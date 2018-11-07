@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('page')
-	Payments
+	Payment Overview
 @endsection
 
 @section('styles')
@@ -19,6 +19,7 @@
 					<thead>
 						<tr>
 							<th>Datetime</th>
+							<th>Payment Ref.</th>
 							<th>Customer</th>
 							<th>Branch</th>
 							<th>Terminal</th>
@@ -74,6 +75,7 @@
 
 						return data;
 					}, "searchable": false},
+					{data: 'reference', name: 'id'},
 					{data: 'customer', name:'customer.name'},
 					{data: 'branch', name:'branch.name'},
 					{data: 'terminal.name'	 },

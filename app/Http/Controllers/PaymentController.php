@@ -69,16 +69,16 @@ class PaymentController extends Controller
 
         $result ='';
 
-        if(auth()->user()->is_admin)
-        {
-            $result = datatables()->of(Payment::with(['customer','branch','terminal']) );
-        }
-        else
-        {
+        // if(auth()->user()->is_admin)
+        // {
+        //     $result = datatables()->of(Payment::with(['customer','branch','terminal']) );
+        // }
+        // else
+        // {
             $branch = auth()->user()->current()->first();
 
             $result = datatables()->of($branch->payments()->with(['customer','branch','terminal']) );
-        }
+        // }
                 
         $result = $result
                     ->addColumn('customer', function(Payment $payment){ 
@@ -86,6 +86,9 @@ class PaymentController extends Controller
                         })
                     ->addColumn('branch', function(Payment $payment){ 
                         return $payment->branch ? $payment->branch->name : "---";
+                    })
+                    ->addColumn('reference', function(Payment $payment){
+                        return $payment->ref;
                     })
                     ->toJson();  
     
