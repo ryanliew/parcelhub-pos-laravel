@@ -44,6 +44,7 @@ class PaymentInvoiceController extends Controller
                      'terminal'     => $payment->terminal ? $payment->terminal->name : '',
                      'customer'     => $customer_name,
                      'total'        => $total,
+                     'payment_ref'  => $payment->ref
                     ]);
     }
 

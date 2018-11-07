@@ -236,7 +236,7 @@
 
 			        if( option == 'Unpaid' )
 			        {
-			        	value = value && outstanding > 0 
+			        	value = value && outstanding != 0 
 			        }
 
 			        return value;
@@ -290,10 +290,10 @@
 
 		    		flash("No invoices selected",'danger');
 	  			}
-	  			else if( amount_paid == 0)
+	  			/*else if( amount_paid == 0)
 	  			{
 		    		flash("Total amount cannot be zero",'danger');
-	  			}
+	  			}*/
 	  			else
 	  			{
 	  				swalalert("Confirmation","Confirm payment amount of RM " + parseFloat(amount_paid).toFixed(2), 'warning', function() { 

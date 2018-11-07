@@ -220,6 +220,8 @@
 
 				@if( $collection['debit'] != 1 )
 					<td class="text-center">{{number_format((float)$collection['total'],2,'.','')}}</td>
+				@elseif( array_key_exists('paid', $collection) )
+					<td class="text-center">{{number_format((float)$collection['paid'],2,'.','')}}</td>
 				@else
 					<td class="text-center"></td>
 				@endif

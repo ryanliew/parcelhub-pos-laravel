@@ -119,7 +119,7 @@
                 </tr>
                 <tr>
                     <td class="meta-head">Payment Ref</td>
-                    <td><textarea>{{ $payment->branch->code }}P{{sprintf('%04u', (int)$payment->id)}}</textarea></td>
+                    <td><textarea>{{ $payment->ref }}</textarea></td>
                 </tr>
                 <tr>
                     <td class="meta-head">Date</td>
