@@ -12,7 +12,7 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Payments</b>
+				<b>Payment Overview</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="payments-table">
