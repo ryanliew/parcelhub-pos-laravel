@@ -79,7 +79,7 @@
 						return data;
 					}, "searchable": false},
 					{data: 'invoice_no'},
-					{data: 'customer'},
+					{data: 'customer', name: 'customer.name'},
 					{data: 'subtotal', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);
