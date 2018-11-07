@@ -70,9 +70,11 @@ class InvoiceController extends Controller
                     return $invoice->payment->sum('total') + $invoice->paid;
                 })
     			->addColumn('outstanding', function(Invoice $invoice) {
+                    $outstanding = $invoice->total  - $invoice->payment->sum('total') - $invoice->paid;
+                    
                     return $invoice->total < 0 ? 
-                            $invoice->total : 
-                            max($invoice->total - $invoice->payment->sum('total') - $invoice->paid, 0);
+                            $outstanding : 
+                            max($outstanding, 0);
                 })
                 ->addColumn('customer', function(Invoice $invoice){ 
                     return $invoice->customer ? $invoice->customer->name : "Cash";
