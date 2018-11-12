@@ -116,7 +116,8 @@
 							:hideLabel="false"
 							:isHorizontal="true"
 							:error="form.errors.get('paid')"
-							@enter="submit">
+							@enter="submit"
+							:disabled="!canPay">
 						</text-input>
 					</div>
 					<div class="col-4 invoice-summary">
@@ -256,7 +257,8 @@
 							:focus="false"
 							:hideLabel="false"
 							:isHorizontal="true"
-							:error="form.errors.get('paid')">
+							:error="form.errors.get('paid')"
+							:disabled="!canPay">
 						</text-input>
 					</div>
 					<div class="col-4 invoice-summary">
@@ -387,7 +389,6 @@
 						{label: 'Cash', value: 'Cash'}
 						],
 				payment_types: [
-						{label: 'Account', value: 'Account'},
 						{label: 'Cash', value: 'Cash'},
 						{label: 'Credit Card', value: 'Credit Card'},
 						{label: 'Cheque', value: 'Cheque'},
@@ -818,7 +819,7 @@
 
 			canSubmit() {
 				return this.itemCount > 0 
-						&& ( this.selectedCustomer || this.form.paid >= this.rounded_total ) 
+						&& ( this.selectedPaymentType.value.toLowerCase() == 'account' || this.form.paid >= this.rounded_total ) 
 						&& !_.find(this.form.items, function(item){ return item.has_error; })
 						&& (!this.form.remarks || this.form.remarks.length <= 190)
 						&& this.canEdit;
@@ -838,7 +839,7 @@
 					if(this.invoice && !this.can_edit_invoice)
 						return "Invoice has been locked"
 
-					if(this.selectedType.value !== 'Customer' && this.form.paid < this.rounded_total && this.rounded_total > 0)
+					if(this.selectedType.value !== 'Customer' && this.canPay && this.form.paid < this.rounded_total && this.rounded_total > 0)
 						return "Full amount must be paid";
 
 					if(this.selectedType.value == 'Customer' && !this.selectedCustomer)
@@ -858,6 +859,10 @@
 
 			canAddItem() {
 				return this.canEdit;
+			},
+
+			canPay() {
+				return this.selectedPaymentType.value.toLowerCase() !== 'account';
 			}
 		},
 
@@ -867,9 +872,23 @@
 				
 				if(!this.is_edit) {
 					if(newVal.value !== 'Customer') {
+						this.payment_types = [
+							{label: 'Cash', value: 'Cash'},
+							{label: 'Credit Card', value: 'Credit Card'},
+							{label: 'Cheque', value: 'Cheque'},
+							{label: 'IBG', value: 'IBG'}
+						];
 						this.selectedCustomer = '';
 						this.selectedPaymentType = {value: 'Cash', label: 'Cash'};
 					} else {
+						this.payment_types = [
+							{label: 'Account', value: 'Account'},
+							{label: 'Cash', value: 'Cash'},
+							{label: 'Credit Card', value: 'Credit Card'},
+							{label: 'Cheque', value: 'Cheque'},
+							{label: 'IBG', value: 'IBG'}
+						];
+
 						this.selectedPaymentType = {value: 'Account', label: 'Account'};
 					}
 				}
