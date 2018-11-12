@@ -455,7 +455,8 @@
 
 		methods: {
 			payFull() {
-				this.form.paid = this.rounded_total;
+				if(this.canPay)
+					this.form.paid = this.rounded_total;
 			},
 
 			doNothing() {

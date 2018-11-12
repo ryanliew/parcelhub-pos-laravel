@@ -76342,7 +76342,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 	methods: {
 		payFull: function payFull() {
-			this.form.paid = this.rounded_total;
+			if (this.canPay) this.form.paid = this.rounded_total;
 		},
 		doNothing: function doNothing() {
 			// console.log("Do nothing");
