@@ -76245,6 +76245,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -76281,7 +76283,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			couriers: [],
 			products: [],
 			types: [{ label: 'Customer', value: 'Customer' }, { label: 'Cash', value: 'Cash' }],
-			payment_types: [{ label: 'Account', value: 'Account' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }],
+			payment_types: [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }],
 			modes: [{ label: "%", value: "%" }, { label: "RM", value: "RM" }],
 			customers: [],
 
@@ -76689,7 +76691,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			}).length;
 		},
 		canSubmit: function canSubmit() {
-			return this.itemCount > 0 && (this.selectedCustomer || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
+			return this.itemCount > 0 && (this.selectedPaymentType.value.toLowerCase() == 'account' || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
 				return item.has_error;
 			}) && (!this.form.remarks || this.form.remarks.length <= 190) && this.canEdit;
 		},
@@ -76703,7 +76705,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (!this.canSubmit) {
 				if (this.invoice && !this.can_edit_invoice) return "Invoice has been locked";
 
-				if (this.selectedType.value !== 'Customer' && this.form.paid < this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
+				if (this.selectedType.value !== 'Customer' && this.canPay && this.form.paid < this.rounded_total && this.rounded_total > 0) return "Full amount must be paid";
 
 				if (this.selectedType.value == 'Customer' && !this.selectedCustomer) return "Customer not selected";
 
@@ -76720,6 +76722,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		canAddItem: function canAddItem() {
 			return this.canEdit;
+		},
+		canPay: function canPay() {
+			return this.selectedPaymentType.value.toLowerCase() !== 'account';
 		}
 	},
 
@@ -76729,9 +76734,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			if (!this.is_edit) {
 				if (newVal.value !== 'Customer') {
+					this.payment_types = [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }];
 					this.selectedCustomer = '';
 					this.selectedPaymentType = { value: 'Cash', label: 'Cash' };
 				} else {
+					this.payment_types = [{ label: 'Account', value: 'Account' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }];
+
 					this.selectedPaymentType = { value: 'Account', label: 'Account' };
 				}
 			}
@@ -78253,7 +78261,8 @@ var render = function() {
                     focus: false,
                     hideLabel: false,
                     isHorizontal: true,
-                    error: _vm.form.errors.get("paid")
+                    error: _vm.form.errors.get("paid"),
+                    disabled: !_vm.canPay
                   },
                   on: { enter: _vm.submit },
                   model: {
@@ -78596,7 +78605,8 @@ var render = function() {
                     focus: false,
                     hideLabel: false,
                     isHorizontal: true,
-                    error: _vm.form.errors.get("paid")
+                    error: _vm.form.errors.get("paid"),
+                    disabled: !_vm.canPay
                   },
                   model: {
                     value: _vm.form.paid,
