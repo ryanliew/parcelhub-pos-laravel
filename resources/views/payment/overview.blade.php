@@ -68,7 +68,7 @@
 		        } ],
 				ajax: url,
 				columns: [
-					{data: 'updated_at', render: function(data, type, row){
+					{data: 'created_at', render: function(data, type, row){
 						if(type === 'display' || type === 'filter') {
 							return moment(data).format("YYYY-MM-DD");
 						}
