@@ -92,6 +92,10 @@ class CashupController extends Controller
 
     public function update(Cashup $cashup)
     {
+        request()->validate([
+            'actual_amount' => 'required'
+        ]);
+        
         $cashup->update([
             'actual_amount' => request()->actual_amount,
             'status' => 'confirmed'
