@@ -133,6 +133,14 @@
                     <td class="meta-head">Created by</td>
                     <td><textarea>{{ $cashup->creator->name }}</textarea></td>
                 </tr>
+                <tr>
+                    <td class="meta-head">Expected RM</td>
+                    <td><textarea>RM{{ number_format($cashup->total, 2, ".", ",") }}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="meta-head">Actual RM</td>
+                    <td><textarea>RM{{ number_format($cashup->actual_amount, 2, ".", ",") }}</textarea></td>
+                </tr>
                 </tbody>
             </table>
 		</div>
@@ -202,7 +210,7 @@
 				      	<th>Payment #</th>
 				  	</tr>
 				  	@foreach($invoices as $invoice)
-				  		@if($invoice->pivot->total !== 0)
+				  		@if($invoice->pivot->total > 0)
 						  	<tr class="item-row text-center">
 						  		<td class="text-center">{{ $invoice->invoice_no }}</td>
 						  		<td class="text-center">{{ $invoice->pivot->payment_method }}</td>

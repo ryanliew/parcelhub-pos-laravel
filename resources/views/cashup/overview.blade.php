@@ -52,7 +52,7 @@
 				dom: 'Blftip',
 				buttons: [
 					{
-						text: 'Generate report',
+						text: 'Draft report',
 						action: function( e, dt, node, config ) {
 							swalalert("Are you sure?", "", 'warning', function() {
 								axios.post("{!! route('cashups.page') !!}")
@@ -64,7 +64,7 @@
 						text: 'View report',
 						action: function( e, dt, node, config ) {
 							
-							window.open("/cashups/report/" + table.rows({selected: true}).data().toArray()[0].id);
+							window.open("/cashups/view/" + table.rows({selected: true}).data().toArray()[0].id);
 						},
 						enabled: false
 					},
@@ -112,7 +112,7 @@
 			function onSuccess(response) {
 				flash(response.data.message);
 				if(response.data.id)
-					window.open("/cashups/report/" + response.data.id);
+					window.open("/cashups/view/" + response.data.id);
 				table.ajax.reload();
 			}
 

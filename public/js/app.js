@@ -30459,7 +30459,7 @@ function toComment(sourceMap) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(140);
-module.exports = __webpack_require__(255);
+module.exports = __webpack_require__(258);
 
 
 /***/ }),
@@ -30556,6 +30556,8 @@ Vue.component('terminals-dialog', __webpack_require__(246));
 Vue.component('pricing-dialog', __webpack_require__(249));
 
 Vue.component('permissions-dialog', __webpack_require__(252));
+
+Vue.component('cashup-status', __webpack_require__(255));
 
 var app = new Vue({
   el: '#app',
@@ -82122,6 +82124,245 @@ if (false) {
 
 /***/ }),
 /* 255 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(256)
+/* template */
+var __vue_template__ = __webpack_require__(257)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\cashups\\Status.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-54091540", Component.options)
+  } else {
+    hotAPI.reload("data-v-54091540", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 256 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['cashup'],
+	data: function data() {
+		return {
+			form: new Form({
+				actual_amount: this.cashup.total
+			}),
+
+			localStatus: this.cashup.status
+		};
+	},
+
+
+	methods: {
+		submit: function submit() {
+			var _this = this;
+
+			this.form.post('/cashups/confirm/' + this.cashup.id).then(function (response) {
+				return _this.onSuccess(response);
+			}).catch(function (error) {
+				return _this.onError(error);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			window.open('/cashups/report/' + this.cashup.id);
+			this.localStatus = 'confirmed';
+		},
+		onError: function onError(error) {},
+		deleteCashup: function deleteCashup() {
+			var _this2 = this;
+
+			axios.post("/cashups/delete/" + this.cashup.id).then(function (response) {
+				return _this2.onSuccessDelete(response);
+			}).catch(function (error) {
+				return _this2.onError(error);
+			});
+		},
+		onSuccessDelete: function onSuccessDelete(response) {
+			flash(response.data.message);
+			setInterval(function () {
+				window.location.href = "/cashups";
+			}, 3000);
+		},
+		printCashup: function printCashup() {
+			window.open('/cashups/report/' + this.cashup.id);
+		}
+	}
+});
+
+/***/ }),
+/* 257 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "form",
+      {
+        on: {
+          submit: function($event) {
+            $event.preventDefault()
+            return _vm.submit($event)
+          },
+          keydown: function($event) {
+            _vm.form.errors.clear($event.target.name)
+          },
+          input: function($event) {
+            _vm.form.errors.clear($event.target.name)
+          }
+        }
+      },
+      [
+        _c("div", { staticClass: "row align-items-center status-input" }, [
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.actual_amount,
+                  required: true,
+                  type: "number",
+                  label: "Actual amount",
+                  name: "actual_amount",
+                  editable: _vm.localStatus == "draft",
+                  focus: false,
+                  hideLabel: false,
+                  step: "0.01",
+                  error: _vm.form.errors.get("actual_amount"),
+                  isHorizontal: true
+                },
+                model: {
+                  value: _vm.form.actual_amount,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "actual_amount", $$v)
+                  },
+                  expression: "form.actual_amount"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-narrow" }, [
+            _vm.localStatus == "draft"
+              ? _c(
+                  "button",
+                  { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+                  [_vm._v("Confirm")]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.localStatus == "draft"
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-danger",
+                    attrs: { type: "button" },
+                    on: { click: _vm.deleteCashup }
+                  },
+                  [_vm._v("Delete")]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.localStatus == "confirmed"
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.printCashup }
+                  },
+                  [_vm._v("Print")]
+                )
+              : _vm._e()
+          ])
+        ])
+      ]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-54091540", module.exports)
+  }
+}
+
+/***/ }),
+/* 258 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

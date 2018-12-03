@@ -277,7 +277,7 @@ span.text-primary.disabled {
 
 .d-flex label {
 	margin-bottom: 0;
-	min-width: 100px;
+	min-width: 110px;
 	padding-right: 5px;
 }
 
@@ -321,3 +321,7 @@ span.text-primary.disabled {
 
 
 th, td { white-space: nowrap; }
+
+.status-input .form-group {
+	margin-bottom: 0;
+}

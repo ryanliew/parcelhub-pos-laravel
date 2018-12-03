@@ -30,6 +30,11 @@ class CashupController extends Controller
     		->toJson();   
     }
 
+    public function view(Cashup $cashup)
+    {
+        return view('cashup.view', ['cashup' => $cashup->load('invoices')]);
+    }
+
     public function store()
     {
     	$terminal = auth()->user()->terminal;
@@ -41,8 +46,8 @@ class CashupController extends Controller
     	if($invoices->count() > 0 || $payments->count() > 0)
     	{
 
-            $last_id = $invoices->count() > 0 ? $invoices->last()->invoice_no : $payments->last()->payments->first()->invoice_no;
-            $first_id = $invoices->count() > 0 ? $invoices->first()->invoice_no : $payments->first()->payments->last()->invoice_no;
+            $last_id = $invoices->last()->invoice_no;
+            $first_id = $invoices->first()->invoice_no;
             $session_start = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
 
 	    	$cashup = $terminal->cashups()->create([
@@ -83,6 +88,34 @@ class CashupController extends Controller
 	    }
 
 	    return json_encode(['message' => "No invoices pending for cash up"]);
+    }
+
+    public function update(Cashup $cashup)
+    {
+        $cashup->update([
+            'actual_amount' => request()->actual_amount,
+            'status' => 'confirmed'
+        ]);
+
+        return json_encode(['message' => "Cashup complete"]);
+    }
+
+    public function delete(Cashup $cashup)
+    {
+        $cashup->payments()->update([
+            'cashed' => false,
+            'cashup_id' => null
+        ]);
+
+        foreach($cashup->invoices as $invoice) {
+            $invoice->update(['cashed' => false]);
+        }
+
+        $cashup->invoices()->detach();
+
+        $cashup->delete();
+
+        return json_encode(['message' => "Draft cashup deleted. Redirecting."]);
     }
 
     public function formatInvoices($invoices)

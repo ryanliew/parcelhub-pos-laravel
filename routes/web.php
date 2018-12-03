@@ -15,6 +15,15 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+Route::get("/testscript", function() {
+	foreach(App\Cashup::all() as $cashup) {
+		$cashup->update([
+			'actual_amount' => $cashup->total,
+			'status' => 'confirmed'
+		]);
+	}
+});
+
 Auth::routes();
 
 Route::get('/home', function() {
@@ -188,6 +197,9 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'cashups'], function(){
 		Route::get("/", "CashupController@page")->name('cashups.page');
 		Route::post("/", "CashupController@store");
+		Route::get("/view/{cashup}", "CashupController@view");
+		Route::post("/confirm/{cashup}", "CashupController@update");
+		Route::post("/delete/{cashup}", "CashupController@delete");
 		Route::get("/index", "CashupController@index")->name('cashups.index');
 		Route::get("/report/{cashup}", "CashupController@report")->name('cashups.report');
 	});
