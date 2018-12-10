@@ -38,24 +38,25 @@ Route::get("/testscript", function() {
 					break;
 			}
 
+			// Create payment type details
 			$cashup->details()->create([
 				'expected_amount' => $amount,
 				'actual_amount' => $amount,
 				'legend' => $legend,
 				'type' => $type,
-				'percentage' => $amount / $cashup->total * 100,
+				'percentage' => $cashup->total > 0 ? $amount / $cashup->total * 100 : 0.00,
 				'count' => $records->count()
 			]);
 		}
 
-		if($cashup->total > 0)
-			$cashup->details()->create([
-				'expected_amount' => $cashup->float_value,
-				'actual_amount' => $cashup->float_value,
-				'legend' => "00",
-				'type' => "Float",
-				'percentage' => $cashup->float_value / $cashup->total * 100,
-			]);
+		// Create Float detail
+		$cashup->details()->create([
+			'expected_amount' => $cashup->float_value,
+			'actual_amount' => $cashup->float_value,
+			'legend' => "00",
+			'type' => "Float",
+			'percentage' => $cashup->total > 0 ? $cashup->float_value / $cashup->total * 100 : 0.00,
+		]);
 
 		$cashup->update([
 			'actual_amount' => $cashup->total,
