@@ -85,6 +85,7 @@ Vue.component('pricing-dialog', require('./components/pricing/Dialog.vue'));
 Vue.component('permissions-dialog', require('./components/permissions/Dialog.vue'));
 
 Vue.component('cashup-status', require('./components/cashups/Status.vue'));
+Vue.component('cashup-details', require("./components/cashups/Details.vue"));
  
 const app = new Vue({
     el: '#app',

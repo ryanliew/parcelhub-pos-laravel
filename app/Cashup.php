@@ -34,4 +34,9 @@ class Cashup extends Model
     {
         return $this->hasMany("App\Payment");
     }
+
+    public function details()
+    {
+        return $this->hasMany("App\CashupDetail");
+    }
 }

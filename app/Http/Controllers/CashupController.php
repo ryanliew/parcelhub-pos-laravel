@@ -32,7 +32,7 @@ class CashupController extends Controller
 
     public function view(Cashup $cashup)
     {
-        return view('cashup.view', ['cashup' => $cashup->load('invoices')]);
+        return view('cashup.view', ['cashup' => $cashup->load('invoices', 'terminal', 'creator', 'details')]);
     }
 
     public function store()
@@ -84,6 +84,45 @@ class CashupController extends Controller
                 'total' => $invoices->sum(function($invoice){ return $invoice->pivot->total; }) + $terminal->float
             ]);
 
+            // Create cashup details before hand
+            foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records) {
+                $amount = $records->sum(function($invoice){ return $invoice->pivot->total; });
+                $legend = "00";
+
+                switch($type) {
+                    case 'IBG':
+                        $legend = "17";
+                        break;
+                    case 'Cash':
+                        $legend = "01";
+                        break;
+                    case 'Credit card':
+                        $legend = "02";
+                        break;
+                    case "Cheque":
+                        $legend = "05";
+                        break;
+                }
+
+                $cashup->details()->create([
+                    'expected_amount' => $amount,
+                    'actual_amount' => $amount,
+                    'legend' => $legend,
+                    'type' => $type,
+                    'percentage' => $amount / $cashup->total * 100,
+                    'count' => $records->count()
+                ]);
+            }
+
+            if($cashup->total > 0)
+                $cashup->details()->create([
+                    'expected_amount' => $cashup->float_value,
+                    'actual_amount' => $cashup->float_value,
+                    'legend' => "00",
+                    'type' => "Float",
+                    'percentage' => $cashup->float_value / $cashup->total * 100,
+                ]);
+
 	    	return json_encode(['message' => "Cash up report generated", "id" => $cashup->id]);
 	    }
 
@@ -92,9 +131,15 @@ class CashupController extends Controller
 
     public function update(Cashup $cashup)
     {
-        request()->validate([
-            'actual_amount' => 'required'
-        ]);
+        $actuals = collect(json_decode(request()->actuals));
+
+        foreach($cashup->details as $detail){
+            $actual = $actuals->firstWhere('type', $detail->type) ? $actuals->firstWhere('type', $detail->type)->actual_amount : 0.00;
+
+            $detail->update([
+                'actual_amount' => $actual
+            ]);
+        }
         
         $cashup->update([
             'actual_amount' => request()->actual_amount,

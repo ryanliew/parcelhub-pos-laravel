@@ -30459,7 +30459,7 @@ function toComment(sourceMap) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(140);
-module.exports = __webpack_require__(258);
+module.exports = __webpack_require__(261);
 
 
 /***/ }),
@@ -30558,6 +30558,7 @@ Vue.component('pricing-dialog', __webpack_require__(249));
 Vue.component('permissions-dialog', __webpack_require__(252));
 
 Vue.component('cashup-status', __webpack_require__(255));
+Vue.component('cashup-details', __webpack_require__(258));
 
 var app = new Vue({
   el: '#app',
@@ -82363,6 +82364,577 @@ if (false) {
 
 /***/ }),
 /* 258 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(259)
+/* template */
+var __vue_template__ = __webpack_require__(260)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\cashups\\Details.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-289b6238", Component.options)
+  } else {
+    hotAPI.reload("data-v-289b6238", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 259 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['cashup'],
+	data: function data() {
+		return {
+			form: new Form({
+				actuals: [],
+				actual_amount: this.cashup.actual_amount
+			}),
+
+			localStatus: this.cashup.status
+		};
+	},
+	mounted: function mounted() {
+		this.setForm();
+	},
+
+
+	methods: {
+		formatToDayDateTime: function formatToDayDateTime(date) {
+			return __WEBPACK_IMPORTED_MODULE_0_moment___default()(date).format("ddd, MMM DD, YYYY, HH:MM");
+		},
+		setForm: function setForm() {
+			this.cashup.details.forEach(function (detail, index) {
+				Vue.set(this.form.actuals, index, { type: detail.type, actual_amount: detail.actual_amount });
+			}.bind(this));
+		},
+		submitCashup: function submitCashup() {
+			var _this = this;
+
+			this.form.actual_amount = this.actual;
+			this.form.post('/cashups/confirm/' + this.cashup.id).then(function (response) {
+				return _this.onSuccess(response);
+			}).catch(function (error) {
+				return _this.onError(error);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			this.printCashup();
+			this.localStatus = 'confirmed';
+			window.location.reload();
+		},
+		onError: function onError(error) {},
+		deleteCashup: function deleteCashup() {
+			var _this2 = this;
+
+			axios.post("/cashups/delete/" + this.cashup.id).then(function (response) {
+				return _this2.onSuccessDelete(response);
+			}).catch(function (error) {
+				return _this2.onError(error);
+			});
+		},
+		onSuccessDelete: function onSuccessDelete(response) {
+			flash(response.data.message);
+			setInterval(function () {
+				window.location.href = "/cashups";
+			}, 3000);
+		},
+		printCashup: function printCashup() {
+			window.open('/cashups/report/' + this.cashup.id);
+		}
+	},
+
+	computed: {
+		actual: function actual() {
+			return _.sumBy(this.form.actuals, function (value) {
+				return parseFloat(value.actual_amount);
+			});
+		},
+		canSubmit: function canSubmit() {
+			return this.submitTooltip == "";
+		},
+		submitTooltip: function submitTooltip() {
+			return Number.isNaN(this.actual) ? "Please fill in all actual amount" : "";
+		}
+	}
+
+});
+
+/***/ }),
+/* 260 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _c("div", { staticClass: "card-header" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "row align-items-end" }, [
+        _c("div", { staticClass: "col" }, [
+          _c("b", [_vm._v("Drawer :")]),
+          _vm._v(" " + _vm._s(_vm.cashup.terminal.name) + " "),
+          _c("br"),
+          _vm._v(" "),
+          _c("b", [_vm._v("Transactions :")]),
+          _vm._v(
+            " " +
+              _vm._s(_vm.cashup.invoice_from) +
+              " - " +
+              _vm._s(_vm.cashup.invoice_to)
+          ),
+          _c("br"),
+          _vm._v(" "),
+          _c("b", [_vm._v("Session opened :")]),
+          _vm._v(
+            " " +
+              _vm._s(_vm.formatToDayDateTime(_vm.cashup.session_start)) +
+              " "
+          ),
+          _c("br"),
+          _vm._v(" "),
+          _c("b", [_vm._v("Report run :")]),
+          _vm._v(
+            " " + _vm._s(_vm.formatToDayDateTime(_vm.cashup.created_at)) + " "
+          ),
+          _c("br"),
+          _vm._v(" "),
+          _c("b", [_vm._v("Created by :")]),
+          _vm._v(" " + _vm._s(_vm.cashup.creator.name) + " "),
+          _c("br"),
+          _vm._v(" "),
+          _c("b", [_vm._v("Status: ")]),
+          _c("span", { staticClass: "text-capitalize" }, [
+            _vm._v(_vm._s(_vm.localStatus))
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-narrow" }, [
+          _vm.localStatus == "draft"
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: {
+                    type: "submit",
+                    title: _vm.submitTooltip,
+                    disabled: !_vm.canSubmit
+                  },
+                  on: { click: _vm.submitCashup }
+                },
+                [_vm._v("Confirm")]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.localStatus == "draft"
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger",
+                  attrs: { type: "button" },
+                  on: { click: _vm.deleteCashup }
+                },
+                [_vm._v("Delete")]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.localStatus == "confirmed"
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: { type: "button" },
+                  on: { click: _vm.printCashup }
+                },
+                [_vm._v("Print")]
+              )
+            : _vm._e()
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "card-body" }, [
+      _vm._m(1),
+      _vm._v(" "),
+      _c("table", { staticClass: "table", attrs: { id: "items" } }, [
+        _c(
+          "tbody",
+          [
+            _vm._m(2),
+            _vm._v(" "),
+            _vm._l(_vm.cashup.details, function(detail, index) {
+              return _c("tr", { staticClass: "item-row" }, [
+                _c("td", [_vm._v(_vm._s(detail.legend))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(detail.type))]),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(_vm._s(_vm._f("price")(detail.expected_amount)))
+                ]),
+                _vm._v(" "),
+                _vm.localStatus == "draft" && _vm.form.actuals[index]
+                  ? _c(
+                      "td",
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.actuals[index].actual_amount,
+                            required: true,
+                            type: "number",
+                            label: "Actual amount",
+                            name: "actual_amount",
+                            editable: true,
+                            focus: false,
+                            hideLabel: true,
+                            error: _vm.form.errors.get("actual_amount")
+                          },
+                          model: {
+                            value: _vm.form.actuals[index].actual_amount,
+                            callback: function($$v) {
+                              _vm.$set(
+                                _vm.form.actuals[index],
+                                "actual_amount",
+                                $$v
+                              )
+                            },
+                            expression: "form.actuals[index].actual_amount"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  : _c("td", [
+                      _vm._v(
+                        "\n\t\t\t  \t\t\t" +
+                          _vm._s(_vm._f("price")(detail.actual_amount)) +
+                          "\n\t\t\t  \t\t"
+                      )
+                    ]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(detail.percentage))]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(detail.count))])
+              ])
+            })
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _c("tfoot", [
+          _c("tr", [
+            _c("td"),
+            _vm._v(" "),
+            _vm._m(3),
+            _vm._v(" "),
+            _c("td", [
+              _c("b", [_vm._v(_vm._s(_vm._f("price")(_vm.cashup.total)))])
+            ]),
+            _vm._v(" "),
+            _c("td", [_c("b", [_vm._v(_vm._s(_vm._f("price")(_vm.actual)))])]),
+            _vm._v(" "),
+            _c("td"),
+            _vm._v(" "),
+            _c("td")
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _vm._m(4),
+      _vm._v(" "),
+      _c("table", { staticClass: "table", attrs: { id: "invoices" } }, [
+        _c(
+          "tbody",
+          [
+            _vm._m(5),
+            _vm._v(" "),
+            _vm._l(_vm.cashup.invoices, function(invoice) {
+              return invoice.pivot.total > 0
+                ? _c("tr", { staticClass: "item-row" }, [
+                    _c("td", [_vm._v(_vm._s(invoice.invoice_no))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(invoice.pivot.payment_method))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(_vm._s(_vm._f("price")(invoice.pivot.total)))
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(
+                        _vm._s(
+                          _vm._f("price")(
+                            _vm.cashup.total > 0
+                              ? (invoice.pivot.total / _vm.cashup.total) * 100
+                              : 0.0
+                          )
+                        )
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(
+                        _vm._s(
+                          invoice.pivot.payment_id
+                            ? invoice.pivot.payment_id
+                            : "N/A"
+                        )
+                      )
+                    ])
+                  ])
+                : _vm._e()
+            })
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _c("tfoot", [
+          _c("tr", [
+            _c("td"),
+            _vm._v(" "),
+            _vm._m(6),
+            _vm._v(" "),
+            _c("td", [
+              _c("b", [
+                _vm._v(
+                  _vm._s(
+                    _vm._f("price")(
+                      _vm.cashup.total > 0
+                        ? _vm.cashup.total - _vm.cashup.float_value
+                        : 0.0
+                    )
+                  )
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("td"),
+            _vm._v(" "),
+            _c("td")
+          ])
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h3", [_c("b", [_vm._v("Cashup preview")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h3", [_c("b", [_vm._v("Summary")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("th", [_vm._v("Legend")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Payment Type")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Expected RM")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Actual RM")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("%")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Count")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", [_c("b", [_vm._v("Total")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h3", [_c("b", [_vm._v("Including invoices")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("th", [_vm._v("Invoice no")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Payment Type")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Expected RM")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("%")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Payment #")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", [_c("b", [_vm._v("Total")])])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-289b6238", module.exports)
+  }
+}
+
+/***/ }),
+/* 261 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

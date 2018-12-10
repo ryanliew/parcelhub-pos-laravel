@@ -16,12 +16,51 @@ Route::get('/', function () {
 });
 
 Route::get("/testscript", function() {
-	foreach(App\Cashup::all() as $cashup) {
+		$cashup = App\Cashup::latest()->first();
+
+		$invoices = $cashup->invoices()->orderBy('invoice_no')->get();
+		foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records) {
+			$amount = $records->sum(function($invoice){ return $invoice->pivot->total; });
+			$legend = "00";
+
+			switch($type) {
+				case 'IBG':
+					$legend = "17";
+					break;
+				case 'Cash':
+					$legend = "01";
+					break;
+				case 'Credit card':
+					$legend = "02";
+					break;
+				case "Cheque":
+					$legend = "05";
+					break;
+			}
+
+			$cashup->details()->create([
+				'expected_amount' => $amount,
+				'actual_amount' => $amount,
+				'legend' => $legend,
+				'type' => $type,
+				'percentage' => $amount / $cashup->total * 100,
+				'count' => $records->count()
+			]);
+		}
+
+		if($cashup->float_value > 0)
+			$cashup->details()->create([
+				'expected_amount' => $cashup->float_value,
+				'actual_amount' => $cashup->float_value,
+				'legend' => "00",
+				'type' => "Float",
+				'percentage' => $cashup->float_value / $cashup->total * 100,
+			]);
+
 		$cashup->update([
 			'actual_amount' => $cashup->total,
 			'status' => 'confirmed'
 		]);
-	}
 });
 
 Auth::routes();
