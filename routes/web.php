@@ -48,7 +48,7 @@ Route::get("/testscript", function() {
 			]);
 		}
 
-		if($cashup->float_value > 0)
+		if($cashup->total > 0)
 			$cashup->details()->create([
 				'expected_amount' => $cashup->float_value,
 				'actual_amount' => $cashup->float_value,
