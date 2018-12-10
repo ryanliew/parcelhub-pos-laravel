@@ -16,7 +16,7 @@ Route::get('/', function () {
 });
 
 Route::get("/testscript", function() {
-		$cashup = App\Cashup::latest()->first();
+	foreach(App\Cashup::all() as $cashup) {
 
 		$invoices = $cashup->invoices()->orderBy('invoice_no')->get();
 		foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records) {
@@ -61,6 +61,7 @@ Route::get("/testscript", function() {
 			'actual_amount' => $cashup->total,
 			'status' => 'confirmed'
 		]);
+	}
 });
 
 Auth::routes();
