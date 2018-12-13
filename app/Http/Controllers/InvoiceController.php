@@ -7,6 +7,7 @@ use App\Item;
 use App\Tax;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
@@ -95,6 +96,9 @@ class InvoiceController extends Controller
         $items = json_decode(request()->items);
 
         // dd($items);
+        Log::info("Creating invoice by:" . auth()->user()->name);
+        Log::info(request()->all());
+        Log::info($items);
 
         $user = User::find(request()->created_by);
 

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Payment;
 use App\Customer;
-use App\PaymentInvoice;
 use App\Invoice;
+use App\Payment;
+use App\PaymentInvoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
@@ -103,6 +104,9 @@ class PaymentController extends Controller
 
         $data = json_decode($data, true);
 
+        Log::info("Creating payment by : " . auth()->user()->name);
+        Log::info($data);
+        
         $user = auth()->user();
 
         $customer = $data[0];
