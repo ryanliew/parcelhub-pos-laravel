@@ -7,6 +7,7 @@ use App\Item;
 use App\Tax;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
@@ -56,7 +57,7 @@ class InvoiceController extends Controller
                 ->filter(function($query) use ($items){
                     if($items->count() > 0) {
                         $query->orWhere(function($query) use ($items) {
-                            $query->whereIn('id', $items->pluck('invoice_id'));
+                            $query->whereIn('invoices.id', $items->pluck('invoice_id'));
                         });
                     }
 
@@ -95,6 +96,9 @@ class InvoiceController extends Controller
         $items = json_decode(request()->items);
 
         // dd($items);
+        Log::info("Creating invoice by:" . auth()->user()->name);
+        Log::info(request()->all());
+        Log::info($items);
 
         $user = User::find(request()->created_by);
 
@@ -120,6 +124,8 @@ class InvoiceController extends Controller
             'invoice_no' => $invoice_no,
         ]);
 
+        $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
+
         foreach($items as $item)
         {
             $invoice->items()->create([
@@ -142,14 +148,12 @@ class InvoiceController extends Controller
                 'is_custom_pricing' => $item->is_custom_pricing,
                 'tax_rate' => $item->tax_rate,
                 'tax_type' => $item->tax_type,
-                'zone_type_id' => $item->zone_type_id,
+                'zone_type_id' => isset($item->zone_type_id) ? $item->zone_type_id : null,
             ]);
         }
         //$invoice->items()->create($items);
 
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
-
-        $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
     }

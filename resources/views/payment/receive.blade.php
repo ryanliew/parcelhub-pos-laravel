@@ -93,6 +93,7 @@
 				  								<option value="Cheque">Cheque</option>
 				  								<option value="Credit card">Credit card</option>
 				  								<option value="IBG">IBG</option>
+				  								<option value="Others">Others</option>
 										</select>
 										<span style="min-width: 20px;"></span>
 				            		<button class='btn btn-primary' id='btnPayment'>Make payments</button>

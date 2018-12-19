@@ -17,3 +17,7 @@ composer.lock
 package-lock.json
 public/mix-manifest.json
 public/js/app.js
+.env.example
+composer.lock
+package-lock.json
+public/js/app.js

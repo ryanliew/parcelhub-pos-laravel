@@ -392,7 +392,8 @@
 						{label: 'Cash', value: 'Cash'},
 						{label: 'Credit Card', value: 'Credit Card'},
 						{label: 'Cheque', value: 'Cheque'},
-						{label: 'IBG', value: 'IBG'}
+						{label: 'IBG', value: 'IBG'},
+						{label: 'Others', value: 'Others'}
 						],
 				modes: [
 					{label: "%", value: "%"},
