@@ -76737,11 +76737,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			if (!this.is_edit) {
 				if (newVal.value !== 'Customer') {
-					this.payment_types = [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }];
+					this.payment_types = [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }, { label: 'Others', value: 'Others' }];
 					this.selectedCustomer = '';
 					this.selectedPaymentType = { value: 'Cash', label: 'Cash' };
 				} else {
-					this.payment_types = [{ label: 'Account', value: 'Account' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }];
+					this.payment_types = [{ label: 'Account', value: 'Account' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'IBG', value: 'IBG' }, { label: 'Others', value: 'Others' }];
 
 					this.selectedPaymentType = { value: 'Account', label: 'Account' };
 				}
