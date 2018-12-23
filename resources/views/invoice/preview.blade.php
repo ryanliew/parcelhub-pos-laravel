@@ -161,26 +161,36 @@
 			      	<th>Qty</th>
 			      	<th>Total RM</th>
 				  </tr>
-				<?php $items = $invoice->items->groupBy('description')->toArray() ?>
+				<?php 
+					$items = $invoice->items
+								->groupBy([
+									'description',
+									function($item){
+										return (int)($item->price * 100);
+									},
+								])
+								->toArray(); 
+				?>
 
-				@foreach($items as $key => $item)
-					<tr class="item-row">
-					  <td class="text-center">{{ $item[0]['sku'] }}</td>
-					  <td class="text-left"  >{{ $key }} </td>
-					  <td class="text-center">{{ number_format((float)$item[0]['tax'],2,'.','') }}</td>
-					  <td class="text-center">{{ number_format((float)$item[0]['price'],2,'.','') }}</td>
-					  <td class="text-center">{{ max(collect($item)->count('id'), $item[0]['unit']) }}</td>
-					  <td class="text-center">{{ number_format((float)collect($item)->sum('total_price'),2,'.','') }}</td>
-					</tr>
+				@foreach($items as $dkey => $description)
+					@foreach($description as $key => $item)
+						<tr class="item-row">
+						  <td class="text-center">{{ $item[0]['sku'] }}</td>
+						  <td class="text-left"  >{{ $dkey }} </td>
+						  <td class="text-center">{{ number_format((float)$item[0]['tax'],2,'.','') }}</td>
+						  <td class="text-center">{{ number_format((float)$item[0]['price'],2,'.','') }}</td>
+						  <td class="text-center">{{ max(collect($item)->count('id'), $item[0]['unit']) }}</td>
+						  <td class="text-center">{{ number_format((float)collect($item)->sum('total_price'),2,'.','') }}</td>
+						</tr>
 
-					@foreach($item as $product)
-						@if($product['tracking_code'])
-							<tr class="item-row">
-								<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
-							</tr>
-						@endif
+						@foreach($item as $product)
+							@if($product['tracking_code'])
+								<tr class="item-row">
+									<td class="text-center" colspan="2">S/No. {{ $product['tracking_code'] }} </td>
+								</tr>
+							@endif
+						@endforeach
 					@endforeach
-					
 				@endforeach
 				
 				@for($x=0; $x < max( 20 - count($invoice->items), 0 ); $x++  )
