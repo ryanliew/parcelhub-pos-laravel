@@ -141,24 +141,34 @@
 				</tr>
 			</thead>
 			<tbody>
-				<?php $items = $invoice->items->groupBy('description') ?>
-				@foreach($items->toArray() as $key => $item)
-					<tr>
-						<td class="ptb-5" colspan="4">{{ $key }}</td>
-					</tr>
-					<tr>
-						<td class="text-right ptb-5" colspan="2">{{ number_format($item[0]['price'], 2, '.', ',') }}</td>
-						<td class="ptb-5 text-right pr-1">{{ collect($item)->sum('unit') }}</td>
-						<td class="text-right ptb-5">{{ number_format(collect($item)->sum('total_price'), 2, '.', ',') }}</td>
+				<?php 
+					$items = $invoice->items
+								->groupBy([
+									'description',
+									function($item){
+										return (int)($item->price * 100);
+									},
+								]); 
+				?>
+				@foreach($items->toArray() as $dkey => $description)
+					@foreach($description as $key => $item)
+						<tr>
+							<td class="ptb-5" colspan="4">{{ $dkey }}</td>
+						</tr>
+						<tr>
+							<td class="text-right ptb-5" colspan="2">{{ number_format($item[0]['price'], 2, '.', ',') }}</td>
+							<td class="ptb-5 text-right pr-1">{{ collect($item)->sum('unit') }}</td>
+							<td class="text-right ptb-5">{{ number_format(collect($item)->sum('total_price'), 2, '.', ',') }}</td>
 
-					</tr>
+						</tr>
 
-					@foreach($item as $subitem)
-						@if(!empty($subitem['tracking_code']))
-							<tr>
-								<td class="pl-1 pb-5" colspan="4">S/No. {{ $subitem['tracking_code'] }}</td>
-							</tr>
-						@endif
+						@foreach($item as $subitem)
+							@if(!empty($subitem['tracking_code']))
+								<tr>
+									<td class="pl-1 pb-5" colspan="4">S/No. {{ $subitem['tracking_code'] }}</td>
+								</tr>
+							@endif
+						@endforeach
 					@endforeach
 
 				@endforeach
