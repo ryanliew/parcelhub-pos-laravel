@@ -107,25 +107,25 @@ class InvoiceController extends Controller
 
         $invoice_no = $branch->code . sprintf("%05d", ++$branch->sequence->last_id);
 
-        // $invoice = Invoice::create([
-        //     'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
-        //     'total' =>  request()->has('total') ? request()->total : 0.00,
-        //     'tax' => request()->has('tax') ? request()->tax : 0.00,
-        //     'paid' => request()->has('paid') ? request()->paid : 0.00,
-        //     'type' => request()->type,
-        //     'payment_type' => request()->payment_type,
-        //     'branch_id' => $user->current_branch,
-        //     'terminal_no' => $user->current_terminal,
-        //     'created_by' => $user->id,
-        //     'discount_value' => request()->has('discount_value') ? request()->discount_value : 0.00,
-        //     'discount_mode' => request()->discount_mode,
-        //     'discount' => request()->has('discount') ? request()->discount : 0.00,
-        //     'remarks' => request()->remarks,
-        //     'customer_id' => request()->customer_id,
-        //     'invoice_no' => $invoice_no,
-        // ]);
+        $invoice = Invoice::create([
+            'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
+            'total' =>  request()->has('total') ? request()->total : 0.00,
+            'tax' => request()->has('tax') ? request()->tax : 0.00,
+            'paid' => request()->has('paid') ? request()->paid : 0.00,
+            'type' => request()->type,
+            'payment_type' => request()->payment_type,
+            'branch_id' => $user->current_branch,
+            'terminal_no' => $user->current_terminal,
+            'created_by' => $user->id,
+            'discount_value' => request()->has('discount_value') ? request()->discount_value : 0.00,
+            'discount_mode' => request()->discount_mode,
+            'discount' => request()->has('discount') ? request()->discount : 0.00,
+            'remarks' => request()->remarks,
+            'customer_id' => request()->customer_id,
+            'invoice_no' => $invoice_no,
+        ]);
 
-        // $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
+        $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
         foreach($items as $item)
         {
