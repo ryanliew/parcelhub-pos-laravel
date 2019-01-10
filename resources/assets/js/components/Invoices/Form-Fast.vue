@@ -640,15 +640,17 @@
 			},
 
 			submit() {
-				// console.log("Submitting");
-				this.form.items = _.filter(this.form.items, function(item){ return item.product_id ? true : false; });
+				if(this.canSubmit) {
+					// console.log("Submitting");
+					this.form.items = _.filter(this.form.items, function(item){ return item.product_id ? true : false; });
 
-				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
-											+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
-											+ "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>"
-											+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
-											+ "</div>"
-				this.isConfirming = true;
+					this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
+												+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
+												+ "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>"
+												+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
+												+ "</div>"
+					this.isConfirming = true;
+				}
 
 			},
 
