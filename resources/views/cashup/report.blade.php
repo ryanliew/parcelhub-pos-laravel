@@ -133,6 +133,14 @@
                     <td class="meta-head">Created by</td>
                     <td><textarea>{{ $cashup->creator->name }}</textarea></td>
                 </tr>
+                <tr>
+                    <td class="meta-head">Expected RM</td>
+                    <td><textarea>RM{{ number_format($cashup->total, 2, ".", ",") }}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="meta-head">Actual RM</td>
+                    <td><textarea>RM{{ number_format($cashup->actual_amount, 2, ".", ",") }}</textarea></td>
+                </tr>
                 </tbody>
             </table>
 		</div>
@@ -146,36 +154,22 @@
 				   		<th>Legend</th>
 					    <th>Payment Type</th>
 				      	<th>Expected RM</th>
+				      	<th>Actual RM</th>
 				      	<th>%</th>
 				      	<th>Count</th>
 				  	</tr>
-				  	@foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records)
-					  	<?php $sum = $records->sum(function($invoice){ return $invoice->pivot->total; }); ?>
-				  		@if($sum > 0)
-						  	<tr class="item-row text-center">
-						  		<td class="text-center">
-						  			@if($type == 'IBG')17
-						  			@elseif($type == 'Cash')01
-						  			@elseif($type == 'Credit card')02
-						  			@elseif($type == 'Cheque')05
-						  			@endif
-						  		</td>
-						  		<td class="text-center">{{ $type }}</td>
-						  		<td class="text-center">{{ number_format( $sum, 2, ".", ",") }}</td>
-						  		<td class="text-center">{{ $cashup->total > 0 ? number_format( $sum / $cashup->total * 100, 2, ".", ",") : 0.00 }}</td>
-						  		<td class="text-center">{{ $records->count() }}</td>
-						  	</tr>
-					  	@endif
+				  	@foreach($cashup->details as $detail)
+					  	<tr class="item-row text-center">
+					  		<td class="text-center">
+					  			{{ $detail->legend }}
+					  		</td>
+					  		<td class="text-center">{{ $detail->type }}</td>
+					  		<td class="text-center">{{ number_format( $detail->expected_amount, 2, ".", ",") }}</td>
+					  		<td class="text-center">{{ number_format( $detail->actual_amount, 2, ".", ",") }}</td>
+					  		<td class="text-center">{{ number_format( $detail->percentage, 2, ".", ",") }}</td>
+					  		<td class="text-center">{{ $detail->count }}</td>
+					  	</tr>
 					@endforeach
-
-				  	<tr class="item-row text-center">
-				  		<td class="text-center">00</td>
-				  		<td class="text-center">Float</td>
-				  		<td class="text-center">{{ number_format( $cashup->float_value, 2, ".", ",") }}</td>
-				  		<td class="text-center">{{ $cashup->total > 0 ? number_format($cashup->float_value / $cashup->total * 100, 2, ".", ",") : 0.00}}</td>
-				  		<td></td>
-				  		<td></td>
-				  	</tr>
 
 				</tbody>
 				<tfoot>
@@ -183,6 +177,7 @@
 						<td></td>
 						<td class="text-right"><b>Total</b></td>
 						<td class="text-center"><b>{{ number_format($cashup->total, 2, ".", ",") }}</b></td>
+						<td class="text-center"><b>{{ number_format($cashup->actual_amount, 2, ".", ",") }}</b></td>
 						<td></td>
 						<td></td>
 					</tr>
@@ -202,7 +197,7 @@
 				      	<th>Payment #</th>
 				  	</tr>
 				  	@foreach($invoices as $invoice)
-				  		@if($invoice->pivot->total !== 0)
+				  		@if($invoice->pivot->total > 0)
 						  	<tr class="item-row text-center">
 						  		<td class="text-center">{{ $invoice->invoice_no }}</td>
 						  		<td class="text-center">{{ $invoice->pivot->payment_method }}</td>
