@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Invoice;
 use App\Item;
+use App\Product;
 use App\Tax;
 use App\User;
 use Illuminate\Http\Request;
@@ -128,6 +129,8 @@ class InvoiceController extends Controller
 
         foreach($items as $item)
         {
+            $product = Product::find($item->product_id);
+
             $invoice->items()->create([
                 'tracking_code' => $item->tracking_code,
                 'description' => $item->description,
@@ -148,7 +151,7 @@ class InvoiceController extends Controller
                 'is_custom_pricing' => $item->is_custom_pricing,
                 'tax_rate' => $item->tax_rate,
                 'tax_type' => $item->tax_type,
-                'zone_type_id' => isset($item->zone_type_id) ? $item->zone_type_id : null,
+                'zone_type_id' => isset($item->zone_type_id) ? $item->zone_type_id : $product->zone_type_id,
             ]);
         }
         //$invoice->items()->create($items);
