@@ -124,7 +124,7 @@ class ProductController extends Controller
                     return $this->returnValidationErrorResponse(array('file' => ['ProductType ' . $excelRow[10] . ' is invalid. Please create it from the product type page first']));
                 }
 
-                $detail['sku'] = $excelRow[0];
+                $detail['sku'] = trim($excelRow[0]);
                 $detail['description'] = $excelRow[12];
                 $detail['zone'] = $excelRow[3];
                 $detail['weight_start'] = $excelRow[5];
