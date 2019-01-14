@@ -82,6 +82,8 @@ Vue.component('terminals-dialog', require('./components/terminals/Dialog.vue'));
 
 Vue.component('pricing-dialog', require('./components/pricing/Dialog.vue'));
 
+Vue.component('groups-dialog', require('./components/groups/Dialog.vue'));
+
 Vue.component('permissions-dialog', require('./components/permissions/Dialog.vue'));
 
 Vue.component('cashup-status', require('./components/cashups/Status.vue'));

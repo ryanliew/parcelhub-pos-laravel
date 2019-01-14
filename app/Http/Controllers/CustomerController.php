@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Branch;
 use App\Customer;
 use App\Invoice;
 use Carbon\Carbon;
@@ -18,9 +19,16 @@ class CustomerController extends Controller
 {
     public function list()
     {
-        $branch = auth()->user()->current()->first();
+        $branch_id = request()->has('branch') ? request()->branch : auth()->user()->current_branch;
 
-    	return $branch->customers()->with('branch')->get();
+        $branch = Branch::findOrFail($branch_id);
+
+        $query = $branch->customers();
+        
+        if(request()->has('groups'))
+            $query->whereNull('customer_group_id');
+    	
+        return $query->orderBy('name')->get();
     }
 
     public function page()
@@ -172,8 +180,8 @@ class CustomerController extends Controller
         { 
             $paid = array_key_exists('paid', $collection) ? $collection['paid']: 0;
 
-            info($collection['ref']);
-            info($paid);
+            // info($collection['ref']);
+            // info($paid);
 
             $array = [
                 'date' => $collection['date'],

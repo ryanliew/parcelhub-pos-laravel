@@ -149,7 +149,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::get("/index", "PermissionController@index")->name('permissions.index');
 		Route::post("/{permission}", "PermissionController@update");
 	});
-
 });
 
 // Users route
@@ -173,6 +172,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/pricing", "BranchController@getPricing");
 		Route::get("/users", "UserController@list");
 		Route::get("/trackings/check", "InvoiceController@validateTracking");
+		Route::get("/groups", "CustomerGroupController@list");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){
@@ -243,6 +243,13 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/delete/{cashup}", "CashupController@delete");
 		Route::get("/index", "CashupController@index")->name('cashups.index');
 		Route::get("/report/{cashup}", "CashupController@report")->name('cashups.report');
+	});
+
+	Route::group(['prefix' => 'groups'], function() {
+		Route::get("/", "CustomerGroupController@page")->name('groups.page');
+		Route::post("/", "CustomerGroupController@store");
+		Route::get("/index", "CustomerGroupController@index")->name('groups.index');
+		Route::post("/{group}", "CustomerGroupController@update");
 	});
 
 });
