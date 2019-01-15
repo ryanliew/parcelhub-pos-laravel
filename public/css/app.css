@@ -11389,3 +11389,29 @@ td {
   margin-bottom: 0;
 }
 
+.customers-multi-select {
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+}
+
+.customers-multi-select .customers-wrapper {
+  max-height: 196px;
+  min-height: 196px;
+  overflow-y: scroll;
+  padding: 15px 0;
+}
+
+.customer {
+  padding: 0 15px;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.customer.selected {
+  background: #007bff;
+  color: white;
+}
+

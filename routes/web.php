@@ -248,8 +248,16 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'groups'], function() {
 		Route::get("/", "CustomerGroupController@page")->name('groups.page');
 		Route::post("/", "CustomerGroupController@store");
+		Route::get("/{group}/products", "CustomerGroupController@view");
 		Route::get("/index", "CustomerGroupController@index")->name('groups.index');
+		Route::get("/list", "CustomerGroupController@list");
 		Route::post("/{group}", "CustomerGroupController@update");
+		Route::delete("/{group}", "CustomerGroupController@destroy");
+		Route::get("/{group}/products", "CustomerGroupController@view");
+		Route::get("/{group}/products/list", "CustomerGroupController@getProducts")->name('groups.products');
+		Route::post("/{group}/products", "CustomerGroupController@add_product");
+		Route::post("/{group}/products/{product}", "CustomerGroupController@update_product");
+		Route::delete("/{group}/products/{product}", "CustomerGroupController@delete_product");
 	});
 
 });

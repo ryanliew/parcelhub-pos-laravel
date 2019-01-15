@@ -38,22 +38,24 @@ class CustomerController extends Controller
 
     public function index()
     {
-
-        $obj ='';
-
+        
         if(auth()->user()->is_admin)
         {
-            $obj  = datatables()->of(Customer::with('branch'))->toJson(); 
+            $query = Customer::with('branch');
         }
         else
         {
             $branch = auth()->user()->current;
 
-            $obj = datatables()->of($branch->customers()->with('branch'))->toJson();
+            $query = $branch->customers()->with('branch');
         }
 
     
-        return $obj;
+        return datatables()->of($query)
+                            ->addColumn('group_name', function($customer){
+                                return $customer->group ? $customer->group->name : "---";
+                            })
+                            ->toJson();
     }
 
     public function create()

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('page')
-	Customer groups
+	SKU for {{ $group->name }} group
 @endsection
 
 @section('styles')
@@ -12,21 +12,23 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Customer groups</b>
+				<b>SKU for {{ $group->name }} group</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="groups-table">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Customer count</th>
+							<th>SKU</th>
+							<th>Walk In Price</th>
+							<th>Walk In Price Special</th>
+							<th>Corporate Price</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<groups-dialog :user="{{ auth()->user() }}"></groups-dialog>
+		<groups-product-dialog :user="{{ auth()->user() }}" :group="{{ $group }}"></groups-product-dialog>
 	</div>
 
 @endsection
@@ -52,13 +54,13 @@
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('createCustomerGroup');
+							window.events.$emit('createCustomerGroupProduct');
 						}
 					},
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editCustomerGroup', table.rows({selected: true}).data().toArray());
+							window.events.$emit('editCustomerGroupProduct', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},
@@ -69,27 +71,21 @@
 							swalalert("Are you sure?", "", 'warning', function(){
 								var item = table.rows({selected: true}).data().toArray()[0];
 						        
-								axios.delete("/groups/" + item.id)
-									.then(response => window.events.$emit('deletedCustomerGroup', response));
+								axios.delete("/groups/" + {{ $group->id }} + "/products/" + item.id )
+									.then(response => window.events.$emit('deletedCustomerGroupProduct', response));
 							});
 						},
 						enabled: false
 					},
 
-					{
-						text: 'Edit product price',
-						action: function( e, dt, node, config ) {
-							window.location.href = "/groups/" + table.rows({selected: true}).data().toArray()[0].id + "/products";
-						},
-						enabled: false
-					},
-
-					@endif 'colvis',
+					@endif 'excel', 'colvis',
 				],
-				ajax: '{!! route("groups.index") !!}',
+				ajax: '{!! route("groups.products", ['group' => $group->id]) !!}',
 				columns: [
-					{data: 'name'},
-					{data: 'customer_count'}
+					{data: 'sku'},
+					{data: 'walk_in_price'},
+					{data: 'walk_in_price_special'},
+					{data: 'corporate_price'}
 
 				]
 

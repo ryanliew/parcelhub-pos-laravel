@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\CustomerGroup;
 use App\Customer;
+use App\CustomerGroup;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CustomerGroupController extends Controller
 {
@@ -21,6 +22,42 @@ class CustomerGroupController extends Controller
         ]);
 	}
 
+    public function validate_create_product_input()
+    {
+        $message = ['product_id.unique' => "This product already exists for this group, please edit it instead."];
+
+        request()->validate([
+            "product_id" => [
+                                "required", 
+                                "integer", 
+                                Rule::unique('customer_group_product')->where(function ($query){
+                                    return $query->where('customer_group_id', request()->group_id);
+                                })
+                            ],
+            "walk_in_price" => "required",
+            "walk_in_price_special" => "required",
+            "corporate_price" => "required",
+        ], $message);
+    }
+
+    public function validate_update_product_input()
+    {
+        $message = ['product_id.exists' => "This product has already been deleted. Please refresh the page and try again."];
+
+        request()->validate([
+            "product_id" => [
+                                "required", 
+                                "integer", 
+                                Rule::exists('customer_group_product')->where(function ($query){
+                                    return $query->where('customer_group_id', request()->group_id);
+                                })
+                            ],
+            "walk_in_price" => "required",
+            "walk_in_price_special" => "required",
+            "corporate_price" => "required",
+        ], $message);
+    }
+
     public function index()
     {
     	$query = auth()->user()->current->groups()->with('customers')->select('customer_groups.*');
@@ -30,6 +67,30 @@ class CustomerGroupController extends Controller
                             return $group->customers->count();
                         })
                         ->toJson();	
+    }
+
+    public function view(CustomerGroup $group)
+    {
+        return view('group.products', ['group' => $group]);
+    }
+
+    public function getProducts(CustomerGroup $group)
+    {
+        $products = collect();
+
+        foreach($group->products as $product) {
+            $products->push([
+                'id' => $product->id,
+                'sku' => $product->sku,
+                'walk_in_price' => $product->pivot->walk_in_price,
+                'walk_in_price_special' => $product->pivot->walk_in_price_special,
+                'corporate_price' => $product->pivot->corporate_price,
+                'customer_group_id' => $product->pivot->customer_group_id
+            ]);
+        }
+
+        return datatables()->of($products)
+                            ->make(true);
     }
 
     public function store()
@@ -45,6 +106,8 @@ class CustomerGroupController extends Controller
     			->update([
 		    		'customer_group_id' => $group->id,
 		    	]);
+
+        $group->sync_products();
 
     	return json_encode(['message' => "New group created."]);
     }
@@ -71,7 +134,12 @@ class CustomerGroupController extends Controller
 
     public function list()
     {
-        return auth()->user()->current->groups;;
+        $groups = auth()->user()->current->groups;
+
+        if(request()->has('branch'))
+            $groups = CustomerGroup::where('branch_id', request()->branch)->get();
+
+        return $groups;
     }
 
     public function get($group)
@@ -79,4 +147,54 @@ class CustomerGroupController extends Controller
         $result = CustomerGroup::where('id', $group)->with('customers')->get();
 
         return $result;
-    }}
+    }
+
+    public function destroy(CustomerGroup $group)
+    {
+        $group->customers()->update([
+            'customer_group_id' => null
+        ]);
+
+        $group->products()->detach();
+
+        $group->delete();
+
+        return json_encode(['message' => "Customer group deleted"]);
+    }
+
+    public function add_product(CustomerGroup $group)
+    {
+        $this->validate_create_product_input();
+
+        $group->products()->attach(request()->product_id, 
+                                    [
+                                    'walk_in_price' => request()->walk_in_price, 
+                                    'walk_in_price_special' => request()->walk_in_price_special, 
+                                    'corporate_price' => request()->corporate_price
+                                    ]);
+
+        return json_encode(['message' => "Product added successfully"]);
+    }
+
+    public function update_product(CustomerGroup $group, $product)
+    {
+        $this->validate_update_product_input();
+
+        $group->products()->updateExistingPivot($product, 
+                                    [
+                                    'walk_in_price' => request()->walk_in_price, 
+                                    'walk_in_price_special' => request()->walk_in_price_special, 
+                                    'corporate_price' => request()->corporate_price
+                                    ]);
+
+        return json_encode(['message' => "Product updated successfully"]);
+    }
+
+    public function delete_product(CustomerGroup $group, $product)
+    {
+        $group->products()->detach($product);
+
+        return json_encode(['message' => "Product deleted successfully"]);
+    }
+}
+

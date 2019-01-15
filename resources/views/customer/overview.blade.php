@@ -19,9 +19,11 @@
 					<thead>
 						<tr>
 							<th>Type</th>
+							<th>Customer group</th>
 							<th>Name</th>
 							<th>Contact</th>
 							<th>Email</th>
+							<th>Payment terms</th>
 							<th>Fax</th>
 							<th>Registration/IC No</th>
 							<th>Address Line 1</th>
@@ -86,6 +88,7 @@
 				ajax: '{!! route("customers.index") !!}',
 				columns: [
 					{data: 'type'},
+					{data: 'group_name', name: 'customer_group_id'},
 					{data: 'name'},
 					{data: 'contact'},
 					{data: 'email', render: function(data, type, row){
@@ -96,6 +99,7 @@
 							return data;
 						}
 					},
+					{data: 'terms'},
 					{data: 'fax', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return data ? data : "---";

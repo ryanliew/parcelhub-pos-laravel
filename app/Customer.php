@@ -20,6 +20,6 @@ class customer extends Model
 
     public function group()
     {
-    	return $this->belongsTo('App\CustomerGroup');
+    	return $this->belongsTo('App\CustomerGroup', 'customer_group_id');
     }
 }

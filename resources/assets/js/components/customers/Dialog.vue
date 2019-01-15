@@ -28,29 +28,64 @@
 									@input="getBranches"
 									ref="branches">
 								</selector-input>
-								<selector-input :potentialData="types"
-									v-model="selectedType" 
-									:defaultData="selectedType"
-									placeholder="Select type"
-									:required="true"
-									label="Type"
-									name="type"
-									:editable="true"
-									:focus="false"
-									:hideLabel="false"
-									:error="form.errors.get('type')">
-								</selector-input>
-								<text-input v-model="form.name" 
-									:defaultValue="form.name"
-									:required="true"
-									type="text"
-									label="Name"
-									name="name"
-									:editable="true"
-									:focus="false"
-									:hideLabel="false"
-									:error="form.errors.get('name')">
-								</text-input>
+								<div class="row">
+									<div class="col">
+										<selector-input :potentialData="types"
+											v-model="selectedType" 
+											:defaultData="selectedType"
+											placeholder="Select type"
+											:required="true"
+											label="Type"
+											name="type"
+											:editable="true"
+											:focus="false"
+											:hideLabel="false"
+											:error="form.errors.get('type')">
+										</selector-input>
+									</div>
+									<div class="col">
+										<selector-input :potentialData="groups"
+											v-model="selectedGroup" 
+											:defaultData="selectedGroup"
+											placeholder="Select group"
+											:required="false"
+											label="Customer group"
+											name="customer_group_id"
+											:editable="true"
+											:focus="false"
+											:hideLabel="false"
+											:error="form.errors.get('customer_group_id')">
+										</selector-input>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col">
+										<text-input v-model="form.name" 
+											:defaultValue="form.name"
+											:required="true"
+											type="text"
+											label="Name"
+											name="name"
+											:editable="true"
+											:focus="false"
+											:hideLabel="false"
+											:error="form.errors.get('name')">
+										</text-input>
+									</div>
+									<div class="col">
+										<text-input v-model="form.terms" 
+											:defaultValue="form.terms"
+											:required="false"
+											type="number"
+											label="Payment terms (days)"
+											name="terms"
+											:editable="true"
+											:focus="false"
+											:hideLabel="false"
+											:error="form.errors.get('terms')">
+										</text-input>
+									</div>
+								</div>
 								<div class="row">
 									<div class="col">
 										<text-input v-model="form.contact" 
@@ -194,6 +229,7 @@
 			return {
 				isActive: false,
 				selectedCustomer: '',
+				selectedGroup: '',
 				isEdit: false,
 				form: new Form({
 					type: 'Corporate',
@@ -207,14 +243,15 @@
 					address3:'',
 					address4:'',
 					branch_id:'',
-
+					customer_group_id: '',
+					terms: ''
 				}),
 				types: [
 						{label: 'Corporate', value: 'Corporate'},
 						{label: 'Walk-in', value: 'walk_in'},
 						{label: 'Walk-in special', value: 'walk_in_special'},
 						],
-
+				groups: [],
 				selectedType: {label: 'Corporate', value: 'Corporate'},
 				selectedBranch: '',
 				selectedBranch_error: '',
@@ -269,8 +306,11 @@
 				this.form.address2 = this.selectedCustomer.address2;
 				this.form.address3 = this.selectedCustomer.address3;
 				this.form.address4 = this.selectedCustomer.address4;
+				this.form.terms = this.selectedCustomer.terms;
 				this.selectedBranch = {label: this.selectedCustomer.branch.name, value: this.selectedCustomer.branch.id};
 				this.selectedType   = {label: this.selectedCustomer.type, value: this.selectedCustomer.type };
+
+				this.selectedGroup = _.filter(this.groups, function(group){ return group.value == this.selectedCustomer.customer_group_id; }.bind(this))[0];
 			},
 
 			submit() {
@@ -318,7 +358,27 @@
 					}
 				}
 
+				this.getGroups();
 			},
+
+			getGroups(error = "No error", retry = 0) {
+				if(retry < 3) {
+					axios.get("/data/groups?branch=" + this.selectedBranch.value)
+						.then(response => this.setGroups(response))
+						.catch(error => this.getGroups(error, ++retry));
+				}
+			},
+
+			setGroups(response) {
+				this.groups = response.data.map((group) => {
+					let obj = {};
+
+					obj['value'] = group.id;
+					obj['label'] = group.name;
+
+					return obj;
+				});
+			}
 		},
 
 		computed: {

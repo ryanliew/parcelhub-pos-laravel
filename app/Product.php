@@ -40,6 +40,13 @@ class Product extends Model
                     ->withPivot('id', 'customer_id', 'walk_in_price', 'walk_in_price_special', 'corporate_price');
     }
 
+    public function customer_groups()
+    {
+      return $this->belongsToMany("App\CustomerGroup")
+                  ->withPivot("walk_in_price", "walk_in_price_special", "corporate_price")
+                  ->withTimestamps();
+    }
+
     public function getTaxTypeAttribute()
     {
       return $this->tax->code;

@@ -185,7 +185,7 @@
 				<td class="text-left-bold">{{ $customer->branch->code}}{{ $customer->branch->id}}_{{120 + number_format((float)$customer->id,0,'.','')}}</td>
 				<td class="text-left-bold">{{$attendant}}</td>
 				<td class="text-left-bold">RM</td>
-				<td class="text-left-bold">30 days</td>
+				<td class="text-left-bold">{{ $customer->terms }} days</td>
 				<td class="text-left-bold"><?php echo date('Y-m-d');?></td>
 			</tr>
 

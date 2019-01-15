@@ -578,6 +578,7 @@
 					obj['value'] = customer.id;
 					obj['label'] = customer.name;
 					obj['type'] = customer.type;
+					obj['customer_group_id'] = customer.customer_group_id;
 
 					return obj;
 				});

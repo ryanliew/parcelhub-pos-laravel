@@ -136,6 +136,7 @@
 
 			window.events.$on('createCustomerGroup', evt => this.createCustomerGroup(evt));
 			window.events.$on('editCustomerGroup', evt => this.editCustomerGroup(evt));
+			window.events.$on('deletedCustomerGroup', evt => this.deleteCustomerGroup(evt));
 
 			$("#customer-group-dialog").on("hide.bs.modal", function(e){
 				this.closeDialog();
@@ -204,6 +205,11 @@
 				this.selectedGroup = evt[0];
 				this.setForm();
 				this.openDialog();
+			},
+
+			deleteCustomerGroup(evt) {
+				console.log(evt);
+				window.events.$emit("reload-table");
 			},
 
 			openDialog() {
