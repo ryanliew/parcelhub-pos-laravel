@@ -21,19 +21,7 @@ class CreateCustomerGroupProductTable extends Migration
             $table->float("walk_in_price");
             $table->float("walk_in_price_special");
             $table->timestamps();
-
-            $table->foreign('product_id')
-                ->references('id')
-                ->on('products')
-                ->onDelete('cascade');
-
-            $table->foreign('customer_group_id')
-                    ->references('id')
-                    ->on('customer_groups')
-                    ->onDelete('cascade');
         });
-
-
     }
 
     /**
