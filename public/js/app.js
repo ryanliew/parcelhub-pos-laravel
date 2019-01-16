@@ -30459,7 +30459,7 @@ function toComment(sourceMap) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(140);
-module.exports = __webpack_require__(264);
+module.exports = __webpack_require__(267);
 
 
 /***/ }),
@@ -30556,12 +30556,12 @@ Vue.component('terminals-dialog', __webpack_require__(246));
 Vue.component('pricing-dialog', __webpack_require__(249));
 
 Vue.component('groups-dialog', __webpack_require__(252));
-Vue.component('groups-product-dialog', __webpack_require__(267));
+Vue.component('groups-product-dialog', __webpack_require__(255));
 
-Vue.component('permissions-dialog', __webpack_require__(255));
+Vue.component('permissions-dialog', __webpack_require__(258));
 
-Vue.component('cashup-status', __webpack_require__(258));
-Vue.component('cashup-details', __webpack_require__(261));
+Vue.component('cashup-status', __webpack_require__(261));
+Vue.component('cashup-details', __webpack_require__(264));
 
 var app = new Vue({
   el: '#app',
@@ -76558,15 +76558,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 			this.form.post(url).then(function (response) {
 				return _this7.onSuccess(response);
+			}).catch(function (error) {
+				return _this7.onError(error);
 			});
 		},
 		onSuccess: function onSuccess(response) {
+			console.log("Success");
 			window.open(response.redirect_url, '_blank');
 
 			setInterval(function () {
 				window.location.href = "/invoices/create";
 			}, 3000);
 		},
+		onError: function onError(error) {},
 		createCustomer: function createCustomer() {
 			window.events.$emit('createCustomer');
 		},
@@ -82551,6 +82555,556 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
+Component.options.__file = "resources\\assets\\js\\components\\groups\\ProductDialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1b11df46", Component.options)
+  } else {
+    hotAPI.reload("data-v-1b11df46", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 256 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['user', 'group'],
+
+	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
+
+	data: function data() {
+		return {
+			isActive: false,
+			selectedProduct: '',
+			originalProduct: '',
+			products: [],
+			isEdit: false,
+			form: new Form({
+				customer_group_id: '',
+				product_id: '',
+				walk_in_price_special: '',
+				walk_in_price: '',
+				corporate_price: '',
+				group_id: this.group.id
+			})
+
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('createCustomerGroupProduct', function (evt) {
+			return _this.createCustomerGroupProduct(evt);
+		});
+		window.events.$on('editCustomerGroupProduct', function (evt) {
+			return _this.editCustomerGroupProduct(evt);
+		});
+		window.events.$on('deletedCustomerGroupProduct', function (evt) {
+			return _this.deleteCustomerGroupProduct(evt);
+		});
+
+		this.getProducts();
+
+		$("#customer-group-product-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+	},
+
+
+	methods: {
+		getProducts: function getProducts() {
+			var _this2 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+			var retry = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
+
+			if (retry <= 3) {
+				// console.log(error.label);
+				axios.get('/data/products?full=1').then(function (response) {
+					return _this2.setProducts(response);
+				}).catch(function (error) {
+					return _this2.getProducts(error, ++retry);
+				});
+			}
+		},
+		setProducts: function setProducts(response) {
+			if (response.data) {
+				this.products = response.data.map(function (product) {
+					var obj = {};
+
+					obj['value'] = product.id;
+					obj['label'] = product.sku + " | " + product.description;
+					obj['walk_in_price'] = product.walk_in_price;
+					obj['walk_in_price_special'] = product.walk_in_price_special;
+					obj['corporate_price'] = product.corporate_price;
+
+					return obj;
+				});
+
+				if (this.isEdit) this.setSelectedProduct();
+			}
+		},
+		createCustomerGroupProduct: function createCustomerGroupProduct(evt) {
+			this.openDialog();
+		},
+		editCustomerGroupProduct: function editCustomerGroupProduct(evt) {
+			this.isEdit = true;
+			this.originalProduct = evt[0];
+			this.setForm();
+			this.openDialog();
+		},
+		deleteCustomerGroupProduct: function deleteCustomerGroupProduct(evt) {
+			flash(evt.data.message);
+			window.events.$emit("reload-table");
+		},
+		openDialog: function openDialog() {
+			$("#customer-group-product-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			// console.log("Closing dialog");
+			this.isActive = false;
+			this.originalProduct = '';
+			this.form.walk_in_price_special = '';
+			this.form.walk_in_price = '';
+			this.form.corporate_price = '';
+			this.form.product_id = '';
+
+			this.isEdit = false;
+			this.form.reset();
+		},
+		setForm: function setForm() {
+			this.form.product_id = this.originalProduct.product_id;
+
+			this.setSelectedProduct();
+
+			this.form.walk_in_price_special = this.originalProduct.walk_in_price_special > 0 ? this.originalProduct.walk_in_price_special : "0.00";
+			this.form.walk_in_price = this.originalProduct.walk_in_price > 0 ? this.originalProduct.walk_in_price : "0.00";
+			this.form.corporate_price = this.originalProduct.corporate_price > 0 ? this.originalProduct.corporate_price : "0.00";
+		},
+		setSelectedProduct: function setSelectedProduct() {
+			this.selectedProduct = _.filter(this.products, function (product) {
+				return product.value == this.originalProduct.id;
+			}.bind(this))[0];
+		},
+		submit: function submit() {
+			this.isConfirming = true;
+		},
+		confirmSubmit: function confirmSubmit() {
+			var _this3 = this;
+
+			this.isConfirming = false;
+			this.form.post(this.url).then(function (response) {
+				return _this3.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			$("#customer-group-product-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.isEdit ? "Edit customer group product: " + this.group.name + " | " + this.originalProduct.sku : "Create customer group product";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.isEdit ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.isEdit ? "/groups/" + this.group.id + "/products/" + this.originalProduct.id : "/groups/" + this.group.id + "/products";
+		}
+	},
+
+	watch: {
+		selectedProduct: function selectedProduct(val) {
+			// console.log("Clearing customers");
+			if (val) {
+				this.form.product_id = val.value;
+				if (!this.isEdit) {
+					this.form.walk_in_price = val.walk_in_price;
+					this.form.walk_in_price_special = val.walk_in_price_special;
+					this.form.corporate_price = val.corporate_price;
+				}
+			} else {
+				this.form.product_id = '';
+			}
+		}
+	}
+});
+
+/***/ }),
+/* 257 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: "customer-group-product-dialog",
+        tabindex: "-1",
+        role: "dialog"
+      }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    },
+                    keydown: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    },
+                    input: function($event) {
+                      _vm.form.errors.clear($event.target.name)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("selector-input", {
+                          ref: "products",
+                          attrs: {
+                            potentialData: _vm.products,
+                            defaultData: _vm.selectedProduct,
+                            placeholder: "Select product",
+                            required: true,
+                            label: "Product",
+                            name: "product_id",
+                            editable: !_vm.isEdit,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("product_id")
+                          },
+                          model: {
+                            value: _vm.selectedProduct,
+                            callback: function($$v) {
+                              _vm.selectedProduct = $$v
+                            },
+                            expression: "selectedProduct"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.walk_in_price,
+                            required: true,
+                            type: "text",
+                            label: "Walk in price",
+                            name: "walk_in_price",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("walk_in_price")
+                          },
+                          model: {
+                            value: _vm.form.walk_in_price,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "walk_in_price", $$v)
+                            },
+                            expression: "form.walk_in_price"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.walk_in_price_special,
+                            required: true,
+                            type: "text",
+                            label: "Walk in price special",
+                            name: "walk_in_price_special",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("walk_in_price_special")
+                          },
+                          model: {
+                            value: _vm.form.walk_in_price_special,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "walk_in_price_special", $$v)
+                            },
+                            expression: "form.walk_in_price_special"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.corporate_price,
+                            required: true,
+                            type: "text",
+                            label: "Corporate price",
+                            name: "corporate_price",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("corporate_price")
+                          },
+                          model: {
+                            value: _vm.form.corporate_price,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "corporate_price", $$v)
+                            },
+                            expression: "form.corporate_price"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("confirmation", {
+        attrs: {
+          message: _vm.confirm_message,
+          secondary: _vm.secondary_message,
+          confirming: _vm.isConfirming
+        },
+        on: {
+          cancel: function($event) {
+            _vm.isConfirming = false
+          },
+          confirm: _vm.confirmSubmit
+        }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1b11df46", module.exports)
+  }
+}
+
+/***/ }),
+/* 258 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(259)
+/* template */
+var __vue_template__ = __webpack_require__(260)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
 Component.options.__file = "resources\\assets\\js\\components\\permissions\\Dialog.vue"
 
 /* hot reload */
@@ -82573,7 +83127,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 256 */
+/* 259 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -82854,7 +83408,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 257 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -83052,15 +83606,15 @@ if (false) {
 }
 
 /***/ }),
-/* 258 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(259)
+var __vue_script__ = __webpack_require__(262)
 /* template */
-var __vue_template__ = __webpack_require__(260)
+var __vue_template__ = __webpack_require__(263)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -83099,7 +83653,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 259 */
+/* 262 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -83186,7 +83740,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 260 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -83291,15 +83845,15 @@ if (false) {
 }
 
 /***/ }),
-/* 261 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(262)
+var __vue_script__ = __webpack_require__(265)
 /* template */
-var __vue_template__ = __webpack_require__(263)
+var __vue_template__ = __webpack_require__(266)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -83338,7 +83892,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 262 */
+/* 265 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -83530,7 +84084,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 263 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -83862,562 +84416,10 @@ if (false) {
 }
 
 /***/ }),
-/* 264 */
+/* 267 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 265 */,
-/* 266 */,
-/* 267 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(268)
-/* template */
-var __vue_template__ = __webpack_require__(269)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources\\assets\\js\\components\\groups\\ProductDialog.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1b11df46", Component.options)
-  } else {
-    hotAPI.reload("data-v-1b11df46", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 268 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['user', 'group'],
-
-	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
-
-	data: function data() {
-		return {
-			isActive: false,
-			selectedProduct: '',
-			originalProduct: '',
-			products: [],
-			isEdit: false,
-			form: new Form({
-				customer_group_id: '',
-				product_id: '',
-				walk_in_price_special: '',
-				walk_in_price: '',
-				corporate_price: '',
-				group_id: this.group.id
-			})
-
-		};
-	},
-	mounted: function mounted() {
-		var _this = this;
-
-		window.events.$on('createCustomerGroupProduct', function (evt) {
-			return _this.createCustomerGroupProduct(evt);
-		});
-		window.events.$on('editCustomerGroupProduct', function (evt) {
-			return _this.editCustomerGroupProduct(evt);
-		});
-		window.events.$on('deletedCustomerGroupProduct', function (evt) {
-			return _this.deleteCustomerGroupProduct(evt);
-		});
-
-		this.getProducts();
-
-		$("#customer-group-product-dialog").on("hide.bs.modal", function (e) {
-			this.closeDialog();
-		}.bind(this));
-	},
-
-
-	methods: {
-		getProducts: function getProducts() {
-			var _this2 = this;
-
-			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
-			var retry = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
-
-			if (retry <= 3) {
-				// console.log(error.label);
-				axios.get('/data/products?full=1').then(function (response) {
-					return _this2.setProducts(response);
-				}).catch(function (error) {
-					return _this2.getProducts(error, ++retry);
-				});
-			}
-		},
-		setProducts: function setProducts(response) {
-			if (response.data) {
-				this.products = response.data.map(function (product) {
-					var obj = {};
-
-					obj['value'] = product.id;
-					obj['label'] = product.sku + " | " + product.description;
-					obj['walk_in_price'] = product.walk_in_price;
-					obj['walk_in_price_special'] = product.walk_in_price_special;
-					obj['corporate_price'] = product.corporate_price;
-
-					return obj;
-				});
-
-				if (this.isEdit) this.setSelectedProduct();
-			}
-		},
-		createCustomerGroupProduct: function createCustomerGroupProduct(evt) {
-			this.openDialog();
-		},
-		editCustomerGroupProduct: function editCustomerGroupProduct(evt) {
-			this.isEdit = true;
-			this.originalProduct = evt[0];
-			this.setForm();
-			this.openDialog();
-		},
-		deleteCustomerGroupProduct: function deleteCustomerGroupProduct(evt) {
-			flash(evt.data.message);
-			window.events.$emit("reload-table");
-		},
-		openDialog: function openDialog() {
-			$("#customer-group-product-dialog").modal();
-			this.isActive = true;
-		},
-		closeDialog: function closeDialog() {
-			// console.log("Closing dialog");
-			this.isActive = false;
-			this.originalProduct = '';
-			this.form.walk_in_price_special = '';
-			this.form.walk_in_price = '';
-			this.form.corporate_price = '';
-			this.form.product_id = '';
-
-			this.isEdit = false;
-			this.form.reset();
-		},
-		setForm: function setForm() {
-			this.form.product_id = this.originalProduct.product_id;
-
-			this.setSelectedProduct();
-
-			this.form.walk_in_price_special = this.originalProduct.walk_in_price_special > 0 ? this.originalProduct.walk_in_price_special : "0.00";
-			this.form.walk_in_price = this.originalProduct.walk_in_price > 0 ? this.originalProduct.walk_in_price : "0.00";
-			this.form.corporate_price = this.originalProduct.corporate_price > 0 ? this.originalProduct.corporate_price : "0.00";
-		},
-		setSelectedProduct: function setSelectedProduct() {
-			this.selectedProduct = _.filter(this.products, function (product) {
-				return product.value == this.originalProduct.id;
-			}.bind(this))[0];
-		},
-		submit: function submit() {
-			this.isConfirming = true;
-		},
-		confirmSubmit: function confirmSubmit() {
-			var _this3 = this;
-
-			this.isConfirming = false;
-			this.form.post(this.url).then(function (response) {
-				return _this3.onSuccess(response);
-			});
-		},
-		onSuccess: function onSuccess(response) {
-			$("#customer-group-product-dialog").modal('hide');
-
-			this.closeDialog();
-
-			window.events.$emit("reload-table");
-		}
-	},
-
-	computed: {
-		title: function title() {
-			return this.isEdit ? "Edit customer group product: " + this.group.name + " | " + this.originalProduct.sku : "Create customer group product";
-		},
-		action: function action() {
-			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
-		},
-		actionText: function actionText() {
-			return this.isEdit ? "Update" : "Create";
-		},
-		url: function url() {
-			return this.isEdit ? "/groups/" + this.group.id + "/products/" + this.originalProduct.id : "/groups/" + this.group.id + "/products";
-		}
-	},
-
-	watch: {
-		selectedProduct: function selectedProduct(val) {
-			// console.log("Clearing customers");
-			if (val) {
-				this.form.product_id = val.value;
-				if (!this.isEdit) {
-					this.form.walk_in_price = val.walk_in_price;
-					this.form.walk_in_price_special = val.walk_in_price_special;
-					this.form.corporate_price = val.corporate_price;
-				}
-			} else {
-				this.form.product_id = '';
-			}
-		}
-	}
-});
-
-/***/ }),
-/* 269 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "modal fade",
-      attrs: {
-        id: "customer-group-product-dialog",
-        tabindex: "-1",
-        role: "dialog"
-      }
-    },
-    [
-      _c(
-        "div",
-        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
-        [
-          _c("div", { staticClass: "modal-content" }, [
-            _c("div", { staticClass: "modal-header" }, [
-              _c("h5", { staticClass: "modal-title" }, [
-                _vm._v(_vm._s(_vm.title))
-              ]),
-              _vm._v(" "),
-              _vm._m(0)
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "modal-body" }, [
-              _c(
-                "form",
-                {
-                  on: {
-                    submit: function($event) {
-                      $event.preventDefault()
-                      return _vm.submit($event)
-                    },
-                    keydown: function($event) {
-                      _vm.form.errors.clear($event.target.name)
-                    },
-                    input: function($event) {
-                      _vm.form.errors.clear($event.target.name)
-                    }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("selector-input", {
-                          ref: "products",
-                          attrs: {
-                            potentialData: _vm.products,
-                            defaultData: _vm.selectedProduct,
-                            placeholder: "Select product",
-                            required: true,
-                            label: "Product",
-                            name: "product_id",
-                            editable: !_vm.isEdit,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("product_id")
-                          },
-                          model: {
-                            value: _vm.selectedProduct,
-                            callback: function($$v) {
-                              _vm.selectedProduct = $$v
-                            },
-                            expression: "selectedProduct"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.walk_in_price,
-                            required: true,
-                            type: "text",
-                            label: "Walk in price",
-                            name: "walk_in_price",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("walk_in_price")
-                          },
-                          model: {
-                            value: _vm.form.walk_in_price,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "walk_in_price", $$v)
-                            },
-                            expression: "form.walk_in_price"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.walk_in_price_special,
-                            required: true,
-                            type: "text",
-                            label: "Walk in price special",
-                            name: "walk_in_price_special",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("walk_in_price_special")
-                          },
-                          model: {
-                            value: _vm.form.walk_in_price_special,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "walk_in_price_special", $$v)
-                            },
-                            expression: "form.walk_in_price_special"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.corporate_price,
-                            required: true,
-                            type: "text",
-                            label: "Corporate price",
-                            name: "corporate_price",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("corporate_price")
-                          },
-                          model: {
-                            value: _vm.form.corporate_price,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "corporate_price", $$v)
-                            },
-                            expression: "form.corporate_price"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "modal-footer" }, [
-              _c("button", {
-                staticClass: "btn btn-primary",
-                attrs: { type: "button" },
-                domProps: { innerHTML: _vm._s(_vm.action) },
-                on: { click: _vm.submit }
-              }),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-secondary",
-                  attrs: { type: "button", "data-dismiss": "modal" }
-                },
-                [_vm._v("Close")]
-              )
-            ])
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _c("confirmation", {
-        attrs: {
-          message: _vm.confirm_message,
-          secondary: _vm.secondary_message,
-          confirming: _vm.isConfirming
-        },
-        on: {
-          cancel: function($event) {
-            _vm.isConfirming = false
-          },
-          confirm: _vm.confirmSubmit
-        }
-      })
-    ],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "modal",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1b11df46", module.exports)
-  }
-}
 
 /***/ })
 /******/ ]);
