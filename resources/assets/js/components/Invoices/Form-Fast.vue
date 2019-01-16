@@ -663,15 +663,21 @@
 
 				let url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 				this.form.post(url)
-					.then(response => this.onSuccess(response));
+					.then(response => this.onSuccess(response))
+					.catch(error => this.onError(error));
 			},
 
 			onSuccess(response) {
+				console.log("Success");
 				window.open(response.redirect_url, '_blank');
 
 				setInterval(function(){
 					window.location.href = "/invoices/create";
 				}, 3000);
+			},
+
+			onError(error) {
+				
 			},
 
 			createCustomer() {

@@ -11,9 +11,9 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function returnValidationErrorResponse($array)
+    public function returnValidationErrorResponse($array, $message = "The given data was invalid")
     {
-    	return response(json_encode(['message' => 'The given data was invalid', 
+    	return response(json_encode(['message' => $message, 
                 'errors' => $array]), 422);
     }
 }
