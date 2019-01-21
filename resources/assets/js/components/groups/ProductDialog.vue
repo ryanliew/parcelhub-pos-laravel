@@ -31,6 +31,60 @@
 						</div>
 						<div class="row">
 							<div class="col">
+								<text-input v-model="selectedProduct.zone" 
+									:defaultValue="selectedProduct.zone"
+									:required="true"
+									type="text"
+									label="Zone"
+									name="zone"
+									:editable="false"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('zone')">
+								</text-input>
+							</div>
+							<div class="col">
+								<text-input v-model="selectedProduct.courier" 
+									:defaultValue="selectedProduct.courier"
+									:required="true"
+									type="text"
+									label="Vendor"
+									name="courier"
+									:editable="false"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('courier')">
+								</text-input>
+							</div>
+							<div class="col">
+								<text-input v-model="selectedProduct.type" 
+									:defaultValue="selectedProduct.type"
+									:required="true"
+									type="text"
+									label="Type"
+									name="type"
+									:editable="false"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('type')">
+								</text-input>
+							</div>
+							<div class="col">
+								<text-input v-model="selectedProduct.weights" 
+									:defaultValue="selectedProduct.weights"
+									:required="true"
+									type="text"
+									label="Weight range"
+									name="weights"
+									:editable="false"
+									:focus="false"
+									:hideLabel="false"
+									:error="form.errors.get('weights')">
+								</text-input>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
 								<text-input v-model="form.walk_in_price" 
 									:defaultValue="form.walk_in_price"
 									:required="true"
@@ -142,6 +196,10 @@
 						obj['walk_in_price'] = product.walk_in_price;
 						obj['walk_in_price_special'] = product.walk_in_price_special;
 						obj['corporate_price'] = product.corporate_price;
+						obj['zone'] = product.zone ? product.zone : "-";
+						obj['courier'] = product.vendor ? product.vendor.name : "-";
+						obj['type'] = product.product_type.name;
+						obj['weights'] = product.weight_start ? product.weight_start + " - " + product.weight_end : "-";
 
 						return obj;
 					});
@@ -179,6 +237,7 @@
 				this.form.walk_in_price = '';
 				this.form.corporate_price = '';
 				this.form.product_id = '';
+				this.selectedProduct = '';
 
 				this.isEdit = false;
 				this.form.reset();

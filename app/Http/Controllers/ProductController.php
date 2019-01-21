@@ -57,7 +57,7 @@ class ProductController extends Controller
     {
     	$this->validate_input();
 
-        $branch = Product::create($this->mutateValues());
+        $product = Product::create($this->mutateValues());
 
     	return json_encode(['message' => "New SKU created."]);
     }
@@ -169,7 +169,7 @@ class ProductController extends Controller
 
     public function list()
     {
-        $query = Product::query();
+        $query = Product::with('vendor', 'product_type');
 
 
         if(!request()->has('full')) {

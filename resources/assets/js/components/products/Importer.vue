@@ -37,7 +37,7 @@
 	import ConfirmationMixin from "../../mixins/ConfirmationMixin.js";
 
 	export default {
-		props: [''],
+		props: ['url'],
 
 		mixins: [ConfirmationMixin],
 
@@ -73,7 +73,7 @@
 
 			closeDialog() {
 				this.isActive = false;
-				this.selectedProduct = '';
+				this.selectedFile = '';
 				this.form.reset();
 			},
 
@@ -89,8 +89,9 @@
 
 			confirmSubmit() {
 				this.isConfirming = false;
-				this.form.post(this.url)
-					.then(response => this.onSuccess(response));
+				this.form.post(this.importUrl)
+					.then(response => this.onSuccess(response))
+					.catch(error => this.onError(error));
 			},
 
 			onSuccess(response) {
@@ -99,6 +100,10 @@
 				this.closeDialog();
 
 				window.events.$emit("reload-table");
+			},
+
+			onError(error) {
+				this.selectedFile = "";
 			}
 		},
 
@@ -111,8 +116,8 @@
 				return "Import";
 			},
 
-			url() {
-				return "/admin/products/import";
+			importUrl() {
+				return this.url ? this.url : "/admin/products/import";
 			}
 		}
 	}

@@ -29,6 +29,8 @@
 		</div>
 
 		<groups-product-dialog :user="{{ auth()->user() }}" :group="{{ $group }}"></groups-product-dialog>
+
+		<products-importer url='/groups/{{ $group->id }}/products/import'></products-importer>
 	</div>
 
 @endsection
@@ -44,6 +46,7 @@
 				serverSide: true,
 				responsive: true,
 				colReorder: true,
+				"lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
 				select: {
 					style: 'single'
 				},
@@ -78,6 +81,13 @@
 						enabled: false
 					},
 
+					{
+						text: "Import",
+						action: function( e, dt, node, config ){
+							window.events.$emit("importProducts");
+						}
+					},
+
 					@endif 'excel', 'colvis',
 				],
 				ajax: '{!! route("groups.products", ['group' => $group->id]) !!}',
@@ -97,7 +107,6 @@
 		        var selectedRows = table.rows( { selected: true } ).count();
 		        table.button( 1 ).enable( selectedRows === 1 );
 		        table.button( 2 ).enable( selectedRows === 1 );
-		        table.button( 3 ).enable( selectedRows === 1 );
 		    });
 		    @endif
 

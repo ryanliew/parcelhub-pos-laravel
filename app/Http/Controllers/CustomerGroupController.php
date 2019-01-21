@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\CustomerGroup;
+use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerGroupController extends Controller
 {
@@ -195,6 +197,40 @@ class CustomerGroupController extends Controller
         $group->products()->detach($product);
 
         return json_encode(['message' => "Product deleted successfully"]);
+    }
+
+    public function import(CustomerGroup $group)
+    {
+        request()->validate([
+            "file" => "required"
+        ]);
+
+        $excelRows= Excel::load(request()->file('file'))->noHeading()->skipRows(2)->toArray();
+
+        $products = collect([]);
+
+        $detail = [];
+
+        foreach($excelRows as $excelRow) {
+            
+            if(!is_null($excelRow[0])) {
+                $product = Product::where('sku', $excelRow[0])->first();
+
+                if(is_null($product) && !is_null($excelRow[0]) && $excelRow[0] !== "---")
+                {
+                    return $this->returnValidationErrorResponse(['file' => ['SKU ' . $excelRow[0] . ' not found. Please create it from the SKU page first']]);
+                }
+
+                $detail[$product->id] = ['corporate_price' => $excelRow[3], 
+                                        'walk_in_price' => $excelRow[1], 
+                                        'walk_in_price_special' => $excelRow[2],
+                                        ];
+            }
+        }
+
+        $group->products()->sync($detail);
+
+        return ["message" => "Processed " . sizeof($detail) . " records"];
     }
 }
 

@@ -256,6 +256,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/{group}/products", "CustomerGroupController@view");
 		Route::get("/{group}/products/list", "CustomerGroupController@getProducts")->name('groups.products');
 		Route::post("/{group}/products", "CustomerGroupController@add_product");
+		Route::post("/{group}/products/import", "CustomerGroupController@import");
 		Route::post("/{group}/products/{product}", "CustomerGroupController@update_product");
 		Route::delete("/{group}/products/{product}", "CustomerGroupController@delete_product");
 	});

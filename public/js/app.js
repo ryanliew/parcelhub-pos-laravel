@@ -75633,7 +75633,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: [''],
+	props: ['url'],
 
 	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
 
@@ -75670,7 +75670,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		closeDialog: function closeDialog() {
 			this.isActive = false;
-			this.selectedProduct = '';
+			this.selectedFile = '';
 			this.form.reset();
 		},
 		selectedFileChanged: function selectedFileChanged(e) {
@@ -75685,8 +75685,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var _this2 = this;
 
 			this.isConfirming = false;
-			this.form.post(this.url).then(function (response) {
+			this.form.post(this.importUrl).then(function (response) {
 				return _this2.onSuccess(response);
+			}).catch(function (error) {
+				return _this2.onError(error);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -75695,6 +75697,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.closeDialog();
 
 			window.events.$emit("reload-table");
+		},
+		onError: function onError(error) {
+			this.selectedFile = "";
 		}
 	},
 
@@ -75705,8 +75710,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		actionText: function actionText() {
 			return "Import";
 		},
-		url: function url() {
-			return "/admin/products/import";
+		importUrl: function importUrl() {
+			return this.url ? this.url : "/admin/products/import";
 		}
 	}
 });
@@ -82667,6 +82672,60 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -82740,6 +82799,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 					obj['walk_in_price'] = product.walk_in_price;
 					obj['walk_in_price_special'] = product.walk_in_price_special;
 					obj['corporate_price'] = product.corporate_price;
+					obj['zone'] = product.zone ? product.zone : "-";
+					obj['courier'] = product.vendor ? product.vendor.name : "-";
+					obj['type'] = product.product_type.name;
+					obj['weights'] = product.weight_start ? product.weight_start + " - " + product.weight_end : "-";
 
 					return obj;
 				});
@@ -82772,6 +82835,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.walk_in_price = '';
 			this.form.corporate_price = '';
 			this.form.product_id = '';
+			this.selectedProduct = '';
 
 			this.isEdit = false;
 			this.form.reset();
@@ -82917,6 +82981,120 @@ var render = function() {
                               _vm.selectedProduct = $$v
                             },
                             expression: "selectedProduct"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.selectedProduct.zone,
+                            required: true,
+                            type: "text",
+                            label: "Zone",
+                            name: "zone",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("zone")
+                          },
+                          model: {
+                            value: _vm.selectedProduct.zone,
+                            callback: function($$v) {
+                              _vm.$set(_vm.selectedProduct, "zone", $$v)
+                            },
+                            expression: "selectedProduct.zone"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.selectedProduct.courier,
+                            required: true,
+                            type: "text",
+                            label: "Vendor",
+                            name: "courier",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("courier")
+                          },
+                          model: {
+                            value: _vm.selectedProduct.courier,
+                            callback: function($$v) {
+                              _vm.$set(_vm.selectedProduct, "courier", $$v)
+                            },
+                            expression: "selectedProduct.courier"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.selectedProduct.type,
+                            required: true,
+                            type: "text",
+                            label: "Type",
+                            name: "type",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("type")
+                          },
+                          model: {
+                            value: _vm.selectedProduct.type,
+                            callback: function($$v) {
+                              _vm.$set(_vm.selectedProduct, "type", $$v)
+                            },
+                            expression: "selectedProduct.type"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.selectedProduct.weights,
+                            required: true,
+                            type: "text",
+                            label: "Weight range",
+                            name: "weights",
+                            editable: false,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("weights")
+                          },
+                          model: {
+                            value: _vm.selectedProduct.weights,
+                            callback: function($$v) {
+                              _vm.$set(_vm.selectedProduct, "weights", $$v)
+                            },
+                            expression: "selectedProduct.weights"
                           }
                         })
                       ],
