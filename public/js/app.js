@@ -77070,6 +77070,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['items', 'item', 'canEdit', 'index', 'product_types', 'zone_types', 'couriers', 'defaultProductType', 'selectedType', 'selectedCustomer', 'isEdit'],
@@ -77264,6 +77266,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// If we only have 1 product, set it as default
 			if (this.products.length == 1 && !this.selectedProduct) {
 				this.selectedProduct = this.products[0];
+				// We need to manually trigger this as we have disabled the input
+				this.productChange();
 			}
 			// If we dont have any products that matches
 			if (this.products.length == 0) {
@@ -77471,6 +77475,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return 'Required';else if (this.tracking_no_repeating && this.canEdit) return 'Invalid';
 
 			return '';
+		},
+		shouldDisable: function shouldDisable() {
+			return this.products.length == 1 && this.selectedProduct != null;
 		}
 	},
 
@@ -77753,29 +77760,31 @@ var render = function() {
         "div",
         { staticClass: "small-select" },
         [
-          _c("selector-input", {
-            attrs: {
-              potentialData: _vm.products,
-              defaultData: _vm.selectedProduct,
-              placeholder: "Select SKU",
-              required: true,
-              label: "SKU",
-              name: "product",
-              editable: _vm.canEdit,
-              focus: false,
-              hideLabel: true,
-              error: _vm.selectedProduct_error,
-              unclearable: true
-            },
-            on: { input: _vm.productChange },
-            model: {
-              value: _vm.selectedProduct,
-              callback: function($$v) {
-                _vm.selectedProduct = $$v
-              },
-              expression: "selectedProduct"
-            }
-          })
+          _vm.shouldDisable
+            ? _c("span", [_vm._v(_vm._s(_vm.selectedProduct.label))])
+            : _c("selector-input", {
+                attrs: {
+                  potentialData: _vm.products,
+                  defaultData: _vm.selectedProduct,
+                  placeholder: "Select SKU",
+                  required: true,
+                  label: "SKU",
+                  name: "product",
+                  editable: _vm.canEdit,
+                  focus: false,
+                  hideLabel: true,
+                  error: _vm.selectedProduct_error,
+                  unclearable: true
+                },
+                on: { input: _vm.productChange },
+                model: {
+                  value: _vm.selectedProduct,
+                  callback: function($$v) {
+                    _vm.selectedProduct = $$v
+                  },
+                  expression: "selectedProduct"
+                }
+              })
         ],
         1
       ),
