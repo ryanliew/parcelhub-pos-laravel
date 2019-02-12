@@ -74,7 +74,7 @@
 				],
 				ajax: '{!! route("terminals.index") !!}',
 				columns: [
-					{data: 'branch_name'},
+					{data: 'branch_name', name: 'branch.name'},
 					{data: 'name'},
 					{data: 'float', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
