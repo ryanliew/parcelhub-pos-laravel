@@ -91,7 +91,14 @@
 				ajax: '{!! route("groups.products", ['group' => $group->id]) !!}',
 				columns: [
 					{data: 'sku'},
-					{data: 'corporate_price'}
+					{data: 'corporate_price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}
+					}
 
 				]
 
