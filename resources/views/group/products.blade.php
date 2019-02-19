@@ -19,9 +19,7 @@
 					<thead>
 						<tr>
 							<th>SKU</th>
-							<th>Walk In Price</th>
-							<th>Walk In Price Special</th>
-							<th>Corporate Price</th>
+							<th>Price</th>
 						</tr>
 					</thead>
 				</table>
@@ -93,8 +91,6 @@
 				ajax: '{!! route("groups.products", ['group' => $group->id]) !!}',
 				columns: [
 					{data: 'sku'},
-					{data: 'walk_in_price'},
-					{data: 'walk_in_price_special'},
 					{data: 'corporate_price'}
 
 				]

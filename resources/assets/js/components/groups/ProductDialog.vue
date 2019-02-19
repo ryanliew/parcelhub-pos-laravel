@@ -13,7 +13,7 @@
 						@keydown="form.errors.clear($event.target.name)" 
 						@input="form.errors.clear($event.target.name)">
 						<div class="row">
-							<div class="col">
+							<div class="col-md">
 								<selector-input :potentialData="products"
 									v-model="selectedProduct" 
 									:defaultData="selectedProduct"
@@ -27,6 +27,19 @@
 									:error="form.errors.get('product_id')"
 									ref="products">
 								</selector-input>
+							</div>
+							<div class="col-md">
+								<text-input v-model="form.corporate_price" 
+									:defaultValue="form.corporate_price"
+									:required="true"
+									type="text"
+									label="Price"
+									name="corporate_price"
+									:editable="true"
+									:focus="true"
+									:hideLabel="false"
+									:error="form.errors.get('corporate_price')">
+								</text-input>
 							</div>
 						</div>
 						<div class="row">
@@ -83,7 +96,7 @@
 								</text-input>
 							</div>
 						</div>
-						<div class="row">
+						<!-- <div class="row">
 							<div class="col">
 								<text-input v-model="form.walk_in_price" 
 									:defaultValue="form.walk_in_price"
@@ -123,7 +136,7 @@
 									:error="form.errors.get('corporate_price')">
 								</text-input>
 							</div>
-						</div>
+						</div>-->
 					</form>
 	      		</div>
 	      		<div class="modal-footer">

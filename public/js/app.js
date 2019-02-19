@@ -82735,6 +82735,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -82968,7 +82981,7 @@ var render = function() {
                   _c("div", { staticClass: "row" }, [
                     _c(
                       "div",
-                      { staticClass: "col" },
+                      { staticClass: "col-md" },
                       [
                         _c("selector-input", {
                           ref: "products",
@@ -82990,6 +83003,34 @@ var render = function() {
                               _vm.selectedProduct = $$v
                             },
                             expression: "selectedProduct"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-md" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.corporate_price,
+                            required: true,
+                            type: "text",
+                            label: "Price",
+                            name: "corporate_price",
+                            editable: true,
+                            focus: true,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("corporate_price")
+                          },
+                          model: {
+                            value: _vm.form.corporate_price,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "corporate_price", $$v)
+                            },
+                            expression: "form.corporate_price"
                           }
                         })
                       ],
@@ -83104,92 +83145,6 @@ var render = function() {
                               _vm.$set(_vm.selectedProduct, "weights", $$v)
                             },
                             expression: "selectedProduct.weights"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.walk_in_price,
-                            required: true,
-                            type: "text",
-                            label: "Walk in price",
-                            name: "walk_in_price",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("walk_in_price")
-                          },
-                          model: {
-                            value: _vm.form.walk_in_price,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "walk_in_price", $$v)
-                            },
-                            expression: "form.walk_in_price"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.walk_in_price_special,
-                            required: true,
-                            type: "text",
-                            label: "Walk in price special",
-                            name: "walk_in_price_special",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("walk_in_price_special")
-                          },
-                          model: {
-                            value: _vm.form.walk_in_price_special,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "walk_in_price_special", $$v)
-                            },
-                            expression: "form.walk_in_price_special"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.corporate_price,
-                            required: true,
-                            type: "text",
-                            label: "Corporate price",
-                            name: "corporate_price",
-                            editable: true,
-                            focus: true,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("corporate_price")
-                          },
-                          model: {
-                            value: _vm.form.corporate_price,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "corporate_price", $$v)
-                            },
-                            expression: "form.corporate_price"
                           }
                         })
                       ],

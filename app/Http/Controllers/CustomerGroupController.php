@@ -36,8 +36,8 @@ class CustomerGroupController extends Controller
                                     return $query->where('customer_group_id', request()->group_id);
                                 })
                             ],
-            "walk_in_price" => "required",
-            "walk_in_price_special" => "required",
+            // "walk_in_price" => "required",
+            // "walk_in_price_special" => "required",
             "corporate_price" => "required",
         ], $message);
     }
@@ -54,8 +54,8 @@ class CustomerGroupController extends Controller
                                     return $query->where('customer_group_id', request()->group_id);
                                 })
                             ],
-            "walk_in_price" => "required",
-            "walk_in_price_special" => "required",
+            // "walk_in_price" => "required",
+            // "walk_in_price_special" => "required",
             "corporate_price" => "required",
         ], $message);
     }
@@ -84,8 +84,8 @@ class CustomerGroupController extends Controller
             $products->push([
                 'id' => $product->id,
                 'sku' => $product->sku,
-                'walk_in_price' => $product->pivot->walk_in_price,
-                'walk_in_price_special' => $product->pivot->walk_in_price_special,
+                // 'walk_in_price' => $product->pivot->walk_in_price,
+                // 'walk_in_price_special' => $product->pivot->walk_in_price_special,
                 'corporate_price' => $product->pivot->corporate_price,
                 'customer_group_id' => $product->pivot->customer_group_id
             ]);
@@ -170,8 +170,10 @@ class CustomerGroupController extends Controller
 
         $group->products()->attach(request()->product_id, 
                                     [
-                                    'walk_in_price' => request()->walk_in_price, 
-                                    'walk_in_price_special' => request()->walk_in_price_special, 
+                                    // 'walk_in_price' => request()->walk_in_price, 
+                                    // 'walk_in_price_special' => request()->walk_in_price_special, 
+                                    'walk_in_price' => 0, 
+                                    'walk_in_price_special' => 0, 
                                     'corporate_price' => request()->corporate_price
                                     ]);
 
@@ -184,8 +186,10 @@ class CustomerGroupController extends Controller
 
         $group->products()->updateExistingPivot($product, 
                                     [
-                                    'walk_in_price' => request()->walk_in_price, 
-                                    'walk_in_price_special' => request()->walk_in_price_special, 
+                                    // 'walk_in_price' => request()->walk_in_price, 
+                                    // 'walk_in_price_special' => request()->walk_in_price_special, 
+                                    'walk_in_price' => 0, 
+                                    'walk_in_price_special' => 0, 
                                     'corporate_price' => request()->corporate_price
                                     ]);
 
@@ -221,9 +225,9 @@ class CustomerGroupController extends Controller
                     return $this->returnValidationErrorResponse(['file' => ['SKU ' . $excelRow[0] . ' not found. Please create it from the SKU page first']]);
                 }
 
-                $detail[$product->id] = ['corporate_price' => $excelRow[3], 
-                                        'walk_in_price' => $excelRow[1], 
-                                        'walk_in_price_special' => $excelRow[2],
+                $detail[$product->id] = ['corporate_price' => $excelRow[1], 
+                                        'walk_in_price' => 0, 
+                                        'walk_in_price_special' => 0,
                                         ];
             }
         }
