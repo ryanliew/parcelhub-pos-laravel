@@ -132,7 +132,7 @@ class CustomerController extends Controller
         {
             $outstanding = $invoice->total - $invoice->payment->sum('total') - $invoice->paid;
 
-            if( $getAll || $outstanding > 0)
+            if( $getAll || $outstanding != 0)
             {
                 $debit = [
                     'date' => $invoice->created_at, 
