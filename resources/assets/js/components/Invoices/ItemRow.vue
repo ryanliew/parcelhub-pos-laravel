@@ -99,6 +99,7 @@
 			</selector-input>
 		</div>
 		<div class="small-select">
+			<span v-if="shouldDisable">{{ selectedProduct.label }}</span>
 			<selector-input :potentialData="products"
 				v-model="selectedProduct" 
 				:defaultData="selectedProduct"
@@ -111,7 +112,8 @@
 				:hideLabel="true"
 				:error="selectedProduct_error"
 				:unclearable="true"
-				@input="productChange">
+				@input="productChange"
+				v-else>
 			</selector-input>
 		</div>
 
@@ -419,6 +421,8 @@
 				// If we only have 1 product, set it as default
 				if(this.products.length == 1 && !this.selectedProduct) {
 					this.selectedProduct = this.products[0];
+					// We need to manually trigger this as we have disabled the input
+					this.productChange();
 				}
 				// If we dont have any products that matches
 				if(this.products.length == 0) {
@@ -511,7 +515,7 @@
 
 				let url = "/data/pricing?product=" + product;
 				if(this.selectedType.label == "Customer" && this.selectedCustomer) {
-					url += "&customer=" + this.selectedCustomer.value;
+					url += "&customer=" + this.selectedCustomer.customer_group_id;
 				}
 
 				return url;
@@ -620,6 +624,10 @@
 					return 'Invalid';
 
 				return '';
+			},
+
+			shouldDisable() {
+				return this.products.length == 1 && this.selectedProduct != null;
 			}
 		},
 

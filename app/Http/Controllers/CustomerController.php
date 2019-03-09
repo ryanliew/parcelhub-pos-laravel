@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Branch;
 use App\Customer;
 use App\Invoice;
 use Carbon\Carbon;
@@ -18,9 +19,16 @@ class CustomerController extends Controller
 {
     public function list()
     {
-        $branch = auth()->user()->current()->first();
+        $branch_id = request()->has('branch') ? request()->branch : auth()->user()->current_branch;
 
-    	return $branch->customers()->with('branch')->get();
+        $branch = Branch::findOrFail($branch_id);
+
+        $query = $branch->customers();
+        
+        if(request()->has('groups'))
+            $query->whereNull('customer_group_id');
+    	
+        return $query->orderBy('name')->get();
     }
 
     public function page()
@@ -30,22 +38,24 @@ class CustomerController extends Controller
 
     public function index()
     {
-
-        $obj ='';
-
+        
         if(auth()->user()->is_admin)
         {
-            $obj  = datatables()->of(Customer::with('branch'))->toJson(); 
+            $query = Customer::with('branch');
         }
         else
         {
             $branch = auth()->user()->current;
 
-            $obj = datatables()->of($branch->customers()->with('branch'))->toJson();
+            $query = $branch->customers()->with('branch');
         }
 
     
-        return $obj;
+        return datatables()->of($query)
+                            ->addColumn('group_name', function($customer){
+                                return $customer->group ? $customer->group->name : "---";
+                            })
+                            ->toJson();
     }
 
     public function create()
@@ -172,8 +182,8 @@ class CustomerController extends Controller
         { 
             $paid = array_key_exists('paid', $collection) ? $collection['paid']: 0;
 
-            info($collection['ref']);
-            info($paid);
+            // info($collection['ref']);
+            // info($paid);
 
             $array = [
                 'date' => $collection['date'],

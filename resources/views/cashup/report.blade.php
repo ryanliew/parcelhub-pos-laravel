@@ -199,10 +199,10 @@
 				  	@foreach($invoices as $invoice)
 				  		@if($invoice->pivot->total > 0)
 						  	<tr class="item-row text-center">
-						  		<td class="text-center">{{ $invoice->invoice_no }}</td>
+						  		<td class="text-left">{{ $invoice->invoice_no }}</td>
 						  		<td class="text-center">{{ $invoice->pivot->payment_method }}</td>
-						  		<td class="text-center">{{ number_format( $invoice->pivot->total, 2, ".", ",") }}</td>
-						  		<td class="text-center">{{ $cashup->total > 0 ? number_format( $invoice->pivot->total / $cashup->total * 100, 2, ".", ",") : 0.00 }}</td>
+						  		<td class="text-right">{{ number_format( $invoice->pivot->total, 2, ".", ",") }}</td>
+						  		<td class="text-right">{{ $cashup->total > 0 ? number_format( $invoice->pivot->total / $cashup->total * 100, 2, ".", ",") : 0.00 }}</td>
 						  		<td class="text-center">{{ $invoice->pivot->payment_id ?: 'N/A' }}</td>
 						  	</tr>
 					 	@endif

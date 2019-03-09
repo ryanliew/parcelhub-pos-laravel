@@ -57,6 +57,11 @@ class Branch extends Model
         return $this->hasMany("App\Cashup");
     }
 
+    public function groups()
+    {
+        return $this->hasMany("App\CustomerGroup");
+    }
+
     public function default_product_type()
     {
         return $this->belongsTo("App\ProductType", 'product_type_id');

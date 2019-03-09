@@ -1,7 +1,7 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('page')
-	Terminals
+	Customer groups
 @endsection
 
 @section('styles')
@@ -12,23 +12,21 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Terminals</b>
+				<b>Customer groups</b>
 			</div>
 			<div class="card-body">
-				<table class="table table-bordered" id="terminals-table">
+				<table class="table table-bordered" id="groups-table">
 					<thead>
 						<tr>
-							<th>Branch</th>
 							<th>Name</th>
-							<th>Float</th>
-							<th>Active</th>
+							<th>Customer count</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 
-		<terminals-dialog></terminals-dialog>
+		<groups-dialog :user="{{ auth()->user() }}"></groups-dialog>
 	</div>
 
 @endsection
@@ -39,7 +37,7 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script>
 		$(function(){
-			var table = $("#terminals-table").DataTable({
+			var table = $("#groups-table").DataTable({
 				processing: true,
 				serverSide: true,
 				responsive: true,
@@ -49,65 +47,68 @@
 				},
 				dom: 'Blftip',
 				buttons: [
+
+		 			@if(auth()->user()->hasPermission(auth()->user()->current_branch, 'write'))
 					{
 						text: 'Create',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('createTerminal');
+							window.events.$emit('createCustomerGroup');
 						}
 					},
 					{
 						text: 'Edit',
 						action: function( e, dt, node, config ) {
-							window.events.$emit('editTerminal', table.rows({selected: true}).data().toArray());
+							window.events.$emit('editCustomerGroup', table.rows({selected: true}).data().toArray());
 						},
 						enabled: false
 					},
 					// Enable the following if delete is allowed
-					// {
-					// 	text: 'Delete',
-					// 	action: function( e, dt, node, config ) {
-					// 		window.events.$emit('deleteTerminal', table.rows({selected: true}).data().toArray());
-					// 	},
-					// 	enabled: false
-					// },
-					'excel', 'colvis'
-				],
-				ajax: '{!! route("terminals.index") !!}',
-				columns: [
-					{data: 'branch_name', name: 'branch.name'},
-					{data: 'name'},
-					{data: 'float', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}, "searchable": false
+					{
+						text: 'Delete',
+						action: function( e, dt, node, config ) {
+							swalalert("Are you sure?", "", 'warning', function(){
+								var item = table.rows({selected: true}).data().toArray()[0];
+						        
+								axios.delete("/groups/" + item.id)
+									.then(response => window.events.$emit('deletedCustomerGroup', response));
+							});
+						},
+						enabled: false
 					},
-					{data: 'is_active', render: function(data,type,row){
-							if(type === 'display' || type === 'filter') {
-								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
-							}
 
-							return data;
-						}
-					}
+					{
+						text: 'Edit product price',
+						action: function( e, dt, node, config ) {
+							window.location.href = "/groups/" + table.rows({selected: true}).data().toArray()[0].id + "/products";
+						},
+						enabled: false
+					},
+
+					@endif 'colvis',
+				],
+				ajax: '{!! route("groups.index") !!}',
+				columns: [
+					{data: 'name'},
+					{data: 'customer_count'}
+
 				]
+
+				
 			});
 
+		 	@if(auth()->user()->hasPermission(auth()->user()->current_branch, 'write'))
 			table.on( 'select deselect', function () {
 		        var selectedRows = table.rows( { selected: true } ).count();
-		 
 		        table.button( 1 ).enable( selectedRows === 1 );
-		        // Enable if delete is allowed
-		        // table.button( 2 ).enable( selectedRows > 0 );
+		        table.button( 2 ).enable( selectedRows === 1 );
+		        table.button( 3 ).enable( selectedRows === 1 );
 		    });
+		    @endif
 
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();
 		    });
 		});
 
-		
 	</script>
 @endsection

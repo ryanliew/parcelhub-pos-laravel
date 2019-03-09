@@ -101,6 +101,25 @@ class InvoiceController extends Controller
         Log::info(request()->all());
         Log::info($items);
 
+        $repeating_trackings = collect();
+
+        foreach($items as $item)
+        {
+            $repeating = Item::where('tracking_code', $item->tracking_code)
+                            ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                            ->where('invoices.branch_id', auth()->user()->current->id)
+                            ->count() > 0;
+            if($repeating) {
+                $repeating_trackings->push($item->tracking_code);
+            }
+        }
+
+        if($repeating_trackings->count() > 0) {
+            $error = "These tracking number already exists: " . $repeating_trackings->implode(', ');
+           
+            return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+        }
+
         $user = User::find(request()->created_by);
 
         $branch = auth()->user()->current;
@@ -128,7 +147,7 @@ class InvoiceController extends Controller
         $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
         foreach($items as $item)
-        {
+        { 
             $product = Product::find($item->product_id);
             
             $invoice->items()->create([

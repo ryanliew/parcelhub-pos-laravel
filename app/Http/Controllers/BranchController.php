@@ -106,29 +106,23 @@ class BranchController extends Controller
 
     public function getPricing()
     {
-        $result = DB::table('branch_product')
-                    ->select('branch_product.corporate_price', 'branch_product.walk_in_price', 'branch_product.walk_in_price_special', 'taxes.percentage as tax', 'branch_product.is_tax_inclusive', 'taxes.code')
-                    ->leftJoin('products', 'products.id', '=', 'branch_product.product_id')
-                    ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id');
-
         if(request()->has('customer')) {
-            $result->whereRaw('(customer_id = ' . request()->customer .' OR ISNULL(customer_id))');
+            // Get from customer group if available
+            $result = DB::table('customer_group_product')
+                    ->select('customer_group_product.corporate_price', 'customer_group_product.walk_in_price', 'customer_group_product.walk_in_price_special', 'products.id', 'products.is_tax_inclusive', 'taxes.code')
+                    ->leftJoin('products', 'products.id' , '=', 'customer_group_product.product_id')
+                    ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id')
+                    ->where('customer_group_product.product_id', request()->product)
+                    ->where('customer_group_id', request()->customer);
         }
         else {
-            $result->whereRaw('ISNULL(customer_id)');
-        }
-
-        $result->where('branch_id', auth()->user()->current_branch)
-                ->where('product_id', '=', request()->product);
-
-        // dd($result->first());        
-        if($result->orderBy('customer_id', 'DESC')->get()->count() == 0)
+            // Else get from products table instead
             $result = DB::table('products')
                         ->select('corporate_price', 'walk_in_price', 'walk_in_price_special', 'taxes.percentage as tax', 'is_tax_inclusive', 'taxes.code')
                         ->leftJoin('taxes', 'taxes.id', '=', 'products.tax_id')
-                        ->where('products.id', request()->product)
-                        ->get();
-        
+                        ->where('products.id', request()->product);
+        }
+
         return json_encode($result->first());
     }
 

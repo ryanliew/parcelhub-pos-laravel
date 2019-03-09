@@ -185,7 +185,7 @@
 				<td class="text-left-bold">{{ $customer->branch->code}}{{ $customer->branch->id}}_{{120 + number_format((float)$customer->id,0,'.','')}}</td>
 				<td class="text-left-bold">{{$attendant}}</td>
 				<td class="text-left-bold">RM</td>
-				<td class="text-left-bold">30 days</td>
+				<td class="text-left-bold">{{ $customer->terms }} days</td>
 				<td class="text-left-bold"><?php echo date('Y-m-d');?></td>
 			</tr>
 
@@ -208,24 +208,24 @@
 
 			@foreach($result as $key => $collection)
 				<tr class="item-row">
-				  	<td class="text-center">{{ $collection['date']->format('Y-m-d') }}</td>
-					<td class="text-center">{{ $collection['ref'] }}</td>
-					<td class="text-center">{{ $collection['desc'] }}</td>
+				  	<td class="text-left">{{ $collection['date']->format('Y-m-d') }}</td>
+					<td class="text-left">{{ $collection['ref'] }}</td>
+					<td class="text-left">{{ $collection['desc'] }}</td>
 
 				@if( $collection['debit'] == 1 )
-					<td class="text-center">{{number_format((float)$collection['total'],2,'.','')}}</td>
+					<td class="text-right">{{number_format((float)$collection['total'],2,'.','')}}</td>
 				@else
 					<td class="text-center"></td>
 				@endif
 
 				@if( $collection['debit'] != 1 )
-					<td class="text-center">{{number_format((float)$collection['total'],2,'.','')}}</td>
+					<td class="text-right">{{number_format((float)$collection['total'],2,'.','')}}</td>
 				@elseif( array_key_exists('paid', $collection) )
-					<td class="text-center">{{number_format((float)$collection['paid'],2,'.','')}}</td>
+					<td class="text-right">{{number_format((float)$collection['paid'],2,'.','')}}</td>
 				@else
-					<td class="text-center"></td>
+					<td class="text-right"></td>
 				@endif
-					<td class="text-center" >{{number_format((float)round($collection['balance'], 2),2,'.','')}}</td>
+					<td class="text-right" >{{number_format((float)round($collection['balance'], 2),2,'.','')}}</td>
 				</tr>
 				@endforeach
 
