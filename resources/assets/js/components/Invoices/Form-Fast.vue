@@ -830,7 +830,6 @@
 
 			canSubmit() {
 				return this.itemCount > 0 
-						&& ( this.selectedType.value == 'Customer' && this.selectedCustomer) 
 						&& ( this.selectedPaymentType.value.toLowerCase() == 'account' || this.form.paid >= this.rounded_total ) 
 						&& !_.find(this.form.items, function(item){ return item.has_error; })
 						&& (!this.form.remarks || this.form.remarks.length <= 190)
