@@ -514,7 +514,7 @@
 			getProductPriceUrl(product) {
 
 				let url = "/data/pricing?product=" + product;
-				if(this.selectedType.label == "Customer" && this.selectedCustomer) {
+				if(this.selectedType.label == "Customer" && this.selectedCustomer && this.selectedCustomer.customer_group_id) {
 					url += "&customer=" + this.selectedCustomer.customer_group_id;
 				}
 
