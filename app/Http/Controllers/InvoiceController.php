@@ -105,11 +105,16 @@ class InvoiceController extends Controller
 
         foreach($items as $item)
         {
-            $repeating = Item::where('tracking_code', $item->tracking_code)
+            // We need to make sure that empty tracking codes don't get checked
+
+            $code = trim($item->tracking_code);
+
+            $repeating = Item::where('tracking_code', $code)
                             ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
                             ->where('invoices.branch_id', auth()->user()->current->id)
                             ->count() > 0;
-            if($repeating) {
+
+            if($repeating && !empty($code)) {
                 $repeating_trackings->push($item->tracking_code);
             }
         }
