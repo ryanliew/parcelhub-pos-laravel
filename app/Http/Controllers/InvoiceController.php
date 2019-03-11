@@ -160,7 +160,7 @@ class InvoiceController extends Controller
                 'length' => isset($item->length) ? $item->length : 0,
                 'width' => isset($item->width) ? $item->width: 0,
                 'sku' => $item->sku,
-                'tax' => $item->tax,
+                'tax' => $item->tax == 'NaN' ? 0.00 : $item->tax, // To counter sometimes taxes will become "NaN" and causes failure
                 'price' => $item->price,
                 'courier_id' => isset($item->courier_id) ? $item->courier_id : 0,
                 'product_id' => $item->product_id,
