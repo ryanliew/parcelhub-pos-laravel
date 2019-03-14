@@ -128,6 +128,7 @@ class CustomerController extends Controller
         $getAll = Request()->type == "All" ? true: false;
 
         $invoices = Invoice::with(['customer','payment'])
+                    ->active()
                     ->where([
                              ['customer_id', $customer->id],
                              ['created_at', '>=', $date_from],
