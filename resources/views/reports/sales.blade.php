@@ -26,7 +26,7 @@
 						@foreach($vendors as $name => $vendor_item)
 							<tr>
 								<td>{{ $name }}</td>
-								<td>RM{{ number_format($vendor_item->sum('total_price'), 2, ",", ".") }}</td>
+								<td>RM{{ number_format($vendor_item->sum('total_price'), 2, ".", "") }}</td>
 							</tr>
 						@endforeach
 					</tbody>
@@ -60,7 +60,7 @@
 								<td>{{ $product->first()->product->vendor->name }}</td>
 								<td>{{ $product->first()->product->weight_start }} - {{ $product->first()->product->weight_end }}</td>
 								<td>{{ $product->first()->product->product_type->name }}</td>
-								<td>RM{{ number_format($product->sum('total_price'), 2, ",", ".") }}</td>
+								<td>RM{{ number_format($product->sum('total_price'), 2, ".", "") }}</td>
 							</tr>
 						@endforeach
 					</tbody>
@@ -94,7 +94,7 @@
 								<td>{{ $item->product->vendor->name }}</td>
 								<td>{{ $item->product->weight_start }} - {{ $item->product->weight_end }}</td>
 								<td>{{ $item->product->product_type->name }}</td>
-								<td>RM{{ number_format($item->total_price, 2, ",", ".") }}</td>
+								<td>RM{{ number_format($item->total_price, 2, ".", "") }}</td>
 							</tr>
 						@endforeach
 					</tbody>
@@ -121,7 +121,7 @@
 				rowGroup: {
 					startRender: function(rows, group) {
 						var totalSales = rows.data().pluck(6).reduce( function (a, b) {
-		                        return a + b.replace(/[^\d]/g, '')*1;
+		                        return a + b.replace("RM", '')*1;
 		                    }, 0);
 
 		                totalSales = $.fn.dataTable.render.number(",", '.', 2, 'RM').display(totalSales);

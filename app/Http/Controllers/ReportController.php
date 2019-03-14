@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Item;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -15,9 +16,9 @@ class ReportController extends Controller
     public function sales_report()
     {
     	$from = request()->from;
-    	$to = request()->to;
+    	$to = Carbon::parse(request()->to)->addDay();
 
-    	$invoices = auth()->user()->current->invoices()->active()->whereBetween('created_at', [$from, $to])->get()->pluck('id');
+    	$invoices = auth()->user()->current->invoices()->active()->whereBetween('created_at', [$from, $to->toDateString()])->get()->pluck('id');
 
     	$items = Item::with('product.vendor', 'product.product_type', 'invoice')->whereIn('invoice_id', $invoices)->get();
 

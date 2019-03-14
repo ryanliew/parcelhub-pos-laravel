@@ -43,13 +43,14 @@
 </template>
 
 <script>
+	import moment from 'moment';
 	export default {
 		props: [],
 
 		data() {
 			return {
-				from: '',
-				to: ''
+				from: moment().startOf('month').format('YYYY-MM-DD'),
+				to: moment().format('YYYY-MM-DD')
 			};
 		},
 
