@@ -85135,7 +85135,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "modal-header" }, [
-      _c("h5", { staticClass: "modal-title" }, [_vm._v("Cancel invoice")]),
+      _c("h5", { staticClass: "modal-title" }, [_vm._v("Sales report")]),
       _vm._v(" "),
       _c(
         "button",
