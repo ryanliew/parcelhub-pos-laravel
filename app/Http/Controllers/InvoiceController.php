@@ -7,7 +7,9 @@ use App\Item;
 use App\Product;
 use App\Tax;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
@@ -20,6 +22,11 @@ class InvoiceController extends Controller
     public function page()
     {
     	return view('invoice.overview');
+    }
+
+    public function page_canceled()
+    {
+        return view('invoice.canceled');
     }
 
     public function create()
@@ -43,7 +50,7 @@ class InvoiceController extends Controller
     {
         // Improve tracking number search performance by searching from items table directly then incorporate the invoice id to the invoices search
         $terminal = auth()->user()->terminal()->first();
-        $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*');
+        $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*')->active();
 
         $items = collect();
 
@@ -85,6 +92,44 @@ class InvoiceController extends Controller
                     return $invoice->items->implode('tracking_code', ', ');
                 })
     			->toJson();   
+    }
+
+    public function index_canceled()
+    {
+        // Improve tracking number search performance by searching from items table directly then incorporate the invoice id to the invoices search
+        $terminal = auth()->user()->terminal()->first();
+        $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*')->canceled();
+
+        $items = collect();
+
+        if(request()['search']['value'])
+            $items = Item::where('tracking_code', 'like', '%' . request()['search']['value'] . '%')
+                    ->where('branch_id', $terminal->branch->id)
+                    ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                    ->get();
+
+        return datatables()
+            ->of($query)
+                ->filter(function($query) use ($items){
+                    if($items->count() > 0) {
+                        $query->orWhere(function($query) use ($items) {
+                            $query->whereIn('invoices.id', $items->pluck('invoice_id'));
+                        });
+                    }
+
+                    if(request()['search']['value'])
+                        $query->orWhere(function($query) use ($items) {
+                            $query->where('type', 'like', '%' . request()['search']['value'] . '%')
+                                  ->where('terminal_no', auth()->user()->current_terminal);
+                        });
+                }, true)
+                ->addColumn('customer', function(Invoice $invoice){ 
+                    return $invoice->customer ? $invoice->customer->name : "Cash";
+                })
+                ->addColumn('tracking_codes', function(Invoice $invoice){
+                    return $invoice->items->implode('tracking_code', ', ');
+                })
+                ->toJson();   
     }
 
     public function validateInput()
@@ -320,7 +365,44 @@ class InvoiceController extends Controller
         return ['result' => Item::where('tracking_code', $tracking)
                         ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
                         ->where('invoices.branch_id', auth()->user()->current->id)
+                        ->whereNull('invoices.canceled_on')
                         ->count() > 0];
+    }
+
+    public function validateCancel($password, $invoice)
+    {
+        $message = '';
+
+        if(!Hash::check($password, auth()->user()->password)) 
+            $message = "Incorrect password";
+
+        if(!auth()->user()->isAdmin()) 
+            $message = "You need to be logged in as branch admin";
+
+        if($invoice->cashup()->count() > 0)
+            $message = "Invoice already included in cash up";
+
+        if($invoice->payment()->count() > 0)
+            $message = "Invoice already received payment";
+
+        return $message;
+    }
+
+    public function cancel(Invoice $invoice)
+    {
+        $message = $this->validateCancel(request()->password, $invoice);
+        
+        if(empty($message)) {
+            $invoice->update([
+                'canceled_by' => auth()->id(),
+                'canceled_on' => Carbon::now()->toDateTimeString(),
+                'remarks' => "Canceled - " . request()->remarks,
+            ]);
+
+            return json_encode(['message' => "Invoice canceled, reloading"]);
+        }
+
+        return json_encode(['error' => $message, 'message' => "Unable to cancel invoice"]);
     }
 
 }

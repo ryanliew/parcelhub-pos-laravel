@@ -15,18 +15,14 @@
 				<b>Invoices</b>
 			</div>
 			<div class="card-body">
-				<table class="table table-bordered" id="branch-product-table">
+				<table class="table table-bordered" id="invoices-table">
 					<thead>
 						<tr>
 							<th>Date</th>
 							<th>Invoice No.</th>
 							<th>Customer</th>
-							<th>Subtotal(RM)</th>
-							<th>Discount(RM)</th>
 							<th>Total(RM)</th>
-							<th>Payment(RM)</th>
-							<th>Outstanding(RM)</th>  
-							<th>Last update</th>
+							<th>Canceled on</th>
 							<th>Remarks</th>
 							<th>Tracking codes</th>
 							<!-- <th>Payment</th>   -->
@@ -47,7 +43,7 @@
 	<script type="text/javascript" src="https://momentjs.com/downloads/moment.js"></script>
 	<script>
 		$(function(){
-			var table = $("#branch-product-table").DataTable({
+			var table = $("#invoices-table").DataTable({
 				processing: true,
 				serverSide: true,
 				responsive: true,
@@ -68,19 +64,9 @@
 						},
 						enabled: false
 					},
-					{
-						text: 'Cancel',
-						// text: 'Edit',
-						action: function( e, dt, node, config ) {
-
-							window.events.$emit('cancelInvoice', table.rows({selected: true}).data().toArray());
-
-						},
-						enabled: false
-					},
 					'excel', 'colvis',
 				],
-				ajax: '{!! route("invoices.index") !!}',
+				ajax: '{!! route("invoices.index_canceled") !!}',
 				columns: [
 					{data: 'created_at', render: function(data, type, row){
 						if(type === 'display' || type === 'filter') {
@@ -89,24 +75,11 @@
 
 						return data;
 					}, "searchable": false},
+
 					{data: 'invoice_no'},
+
 					{data: 'customer', name: 'customer.name'},
-					{data: 'subtotal', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
 
-							return data;
-						}, "searchable": false
-					},
-					{data: 'discount_value', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}, "searchable": false
-					},
 					{data: 'total', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);
@@ -115,29 +88,15 @@
 							return data;
 						}, "searchable": false
 					},
-					{data: 'payment', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
 
-							return data;
-						}, "searchable": false
-					},
-					{data: 'outstanding', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return parseFloat(data).toFixed(2);
-							}
-
-							return data;
-						}, "searchable": false
-					},
-					{data: 'updated_at', render: function(data, type, row){
+					{data: 'canceled_on', render: function(data, type, row){
 						if(type === 'display' || type === 'filter') {
 							return moment(data).format("YYYY-MM-DD");
 						}
 
 						return data;
 					}, "searchable": false},
+
 					{data: 'remarks', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return data ? data : "---";
@@ -146,6 +105,7 @@
 							return data;
 						}
 					},
+
 					{data: 'tracking_codes', name: 'items.tracking_code', "searchable": false}
 				]
 
@@ -156,7 +116,6 @@
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
 		        table.button( 0 ).enable( selectedRows === 1 );
-		        table.button( 1 ).enable( selectedRows === 1 );
 		    });
 
 		    window.events.$on("reload-table", function(){

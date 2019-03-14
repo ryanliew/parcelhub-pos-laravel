@@ -9,6 +9,8 @@ class Invoice extends Model
 	protected $guarded = [];
 
     protected $appends = ['can_edit'];
+
+    protected $dates = ['canceled_on'];
 	
     public function branch()
     {
@@ -48,6 +50,16 @@ class Invoice extends Model
     public function scopeCashupRequired($query)
     {
         return $query->where('cashed', false);
+    }
+
+    public function scopeCanceled($query)
+    {
+        return $query->whereNotNull('canceled_by');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereNull('canceled_by');
     }
 
     public function getCanEditAttribute()

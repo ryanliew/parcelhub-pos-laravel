@@ -39,7 +39,7 @@ class CashupController extends Controller
     {
     	$terminal = auth()->user()->terminal;
 
-    	$invoices = $terminal->invoices()->cashupRequired()->latest()->get();
+    	$invoices = $terminal->invoices()->cashupRequired()->active()->latest()->get();
 
         $payments = $terminal->payments()->cashupRequired()->with('payments.invoice')->latest()->get();
 

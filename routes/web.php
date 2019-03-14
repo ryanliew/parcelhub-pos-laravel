@@ -195,6 +195,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/", "InvoiceController@page")->name('invoices.page');
 		Route::post("/", "InvoiceController@store");
 		Route::get("/index", "InvoiceController@index")->name('invoices.index');
+		Route::get("/index/canceled", "InvoiceController@index_canceled")->name('invoices.index_canceled');
+		Route::get("/canceled", "InvoiceController@page_canceled")->name('invoices.canceled');
+		Route::post("/cancel/{invoice}", "InvoiceController@cancel");
 		Route::get("/create", "InvoiceController@create")->name('invoices.create');
 		Route::get("/edit/{invoice}", "InvoiceController@edit")->name('invoices.edit');
 		Route::post("/update/{invoice}", "InvoiceController@update")->name('invoices.edit');

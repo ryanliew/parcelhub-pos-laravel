@@ -9,6 +9,9 @@
                 <a class="dropdown-item" href="{{ route('invoices.page') }}">
                     View invoices
                 </a>
+                <a class="dropdown-item" href="{{ route('invoices.canceled') }}">
+                    View canceled invoices
+                </a>
                 <a class="dropdown-item" href="{{ route('invoices.create') }}">
                     Create invoice (F9)
                 </a>
