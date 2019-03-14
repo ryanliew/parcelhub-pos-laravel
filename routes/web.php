@@ -149,6 +149,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::get("/index", "PermissionController@index")->name('permissions.index');
 		Route::post("/{permission}", "PermissionController@update");
 	});
+
+	Route::group(['prefix' => "reports"], function(){
+		Route::get("/", "ReportController@page")->name('reports.page');
+		Route::get("/sales", "ReportController@sales_report");
+	});
 });
 
 // Users route

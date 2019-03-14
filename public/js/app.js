@@ -30459,7 +30459,7 @@ function toComment(sourceMap) {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(140);
-module.exports = __webpack_require__(270);
+module.exports = __webpack_require__(273);
 
 
 /***/ }),
@@ -30563,6 +30563,8 @@ Vue.component('permissions-dialog', __webpack_require__(261));
 
 Vue.component('cashup-status', __webpack_require__(264));
 Vue.component('cashup-details', __webpack_require__(267));
+
+Vue.component('sales-reports-dialog', __webpack_require__(270));
 
 var app = new Vue({
   el: '#app',
@@ -84880,6 +84882,284 @@ if (false) {
 
 /***/ }),
 /* 270 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(271)
+/* template */
+var __vue_template__ = __webpack_require__(272)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\reports\\SalesReportDialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4610c104", Component.options)
+  } else {
+    hotAPI.reload("data-v-4610c104", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 271 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: [],
+
+	data: function data() {
+		return {
+			from: '',
+			to: ''
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on("generateSalesReport", function (evt) {
+			return _this.openDialog(evt);
+		});
+	},
+
+
+	methods: {
+		openDialog: function openDialog(evt) {
+			$("#cancel-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+		},
+		submit: function submit() {
+			var url = "/admin/reports/sales?from=" + this.from + "&to=" + this.to;
+			window.location.href = url;
+		}
+	},
+
+	computed: {
+		action: function action() {
+			return "Generate report";
+		},
+		canSubmit: function canSubmit() {
+			return this.from && this.to;
+		}
+	}
+});
+
+/***/ }),
+/* 272 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "cancel-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-body" }, [
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit($event)
+                    }
+                  }
+                },
+                [
+                  _c("text-input", {
+                    attrs: {
+                      defaultValue: _vm.from,
+                      required: true,
+                      type: "date",
+                      label: "From date",
+                      name: "password",
+                      editable: true,
+                      focus: true,
+                      hideLabel: false
+                    },
+                    model: {
+                      value: _vm.from,
+                      callback: function($$v) {
+                        _vm.from = $$v
+                      },
+                      expression: "from"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("text-input", {
+                    attrs: {
+                      defaultValue: _vm.to,
+                      required: true,
+                      type: "date",
+                      label: "To date",
+                      name: "password",
+                      editable: true,
+                      focus: true,
+                      hideLabel: false
+                    },
+                    model: {
+                      value: _vm.to,
+                      callback: function($$v) {
+                        _vm.to = $$v
+                      },
+                      expression: "to"
+                    }
+                  })
+                ],
+                1
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: {
+                  disabled: function($event) {
+                    !_vm.canSubmit
+                  },
+                  click: _vm.submit
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      )
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h5", { staticClass: "modal-title" }, [_vm._v("Cancel invoice")]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4610c104", module.exports)
+  }
+}
+
+/***/ }),
+/* 273 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

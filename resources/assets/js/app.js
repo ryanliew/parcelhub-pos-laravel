@@ -90,6 +90,8 @@ Vue.component('permissions-dialog', require('./components/permissions/Dialog.vue
 
 Vue.component('cashup-status', require('./components/cashups/Status.vue'));
 Vue.component('cashup-details', require("./components/cashups/Details.vue"));
+
+Vue.component('sales-reports-dialog', require('./components/reports/SalesReportDialog.vue'));
  
 const app = new Vue({
     el: '#app',
