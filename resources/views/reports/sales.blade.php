@@ -57,7 +57,7 @@
 								<td>{{ $sku }}</td>
 								<td>{{ $product->first()->product->description }}</td>
 								<td>{{ $product->first()->product->zone }}</td>
-								<td>{{ $product->first()->product->vendor->name }}</td>
+								<td>@if($product->first()->product->vendor_id) {{ $product->first()->product->vendor->name }} @else - @endif</td>
 								<td>{{ $product->first()->product->weight_start }} - {{ $product->first()->product->weight_end }}</td>
 								<td>{{ $product->first()->product->product_type->name }}</td>
 								<td>RM{{ number_format($product->sum('total_price'), 2, ".", "") }}</td>
@@ -91,7 +91,7 @@
 								<td>{{ $item->product->sku }}</td>
 								<td>{{ $item->product->description }}</td>
 								<td>{{ $item->product->zone }}</td>
-								<td>{{ $item->product->vendor->name }}</td>
+								<td>@if($item->product->vendor_id){{ $item->product->vendor->name }} @else - @endif</td>
 								<td>{{ $item->product->weight_start }} - {{ $item->product->weight_end }}</td>
 								<td>{{ $item->product->product_type->name }}</td>
 								<td>RM{{ number_format($item->total_price, 2, ".", "") }}</td>
