@@ -84979,15 +84979,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: [],
+	props: ['user'],
 
 	data: function data() {
 		return {
 			from: __WEBPACK_IMPORTED_MODULE_0_moment___default()().startOf('month').format('YYYY-MM-DD'),
-			to: __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('YYYY-MM-DD')
+			to: __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('YYYY-MM-DD'),
+			branch: this.user.current_branch,
+			branches: [],
+			selectedBranch: ''
 		};
 	},
 	mounted: function mounted() {
@@ -84996,10 +85012,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		window.events.$on("generateSalesReport", function (evt) {
 			return _this.openDialog(evt);
 		});
+		this.getBranches();
 	},
 
 
 	methods: {
+		getBranches: function getBranches() {
+			var _this2 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+			var tries = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+			if (tries < 3) axios.get("/data/branches").then(function (response) {
+				return _this2.setBranches(response);
+			}).catch(function (error) {
+				return _this2.getBranches(error, ++tries);
+			});
+		},
+		setBranches: function setBranches(response) {
+			this.branches = response.data.map(function (branch) {
+				var obj = {};
+
+				obj['value'] = branch.id;
+				obj['label'] = branch.name;
+
+				return obj;
+			});
+
+			this.selectedBranch = _.filter(this.branches, function (branch) {
+				return branch.value == this.user.current_branch;
+			}.bind(this))[0];
+		},
 		openDialog: function openDialog(evt) {
 			$("#cancel-dialog").modal();
 			this.isActive = true;
@@ -85009,6 +85052,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		submit: function submit() {
 			var url = "/admin/reports/sales?from=" + this.from + "&to=" + this.to;
+
+			if (this.user.is_admin && this.branch) url += "&branch=" + this.branch;
+
 			window.location.href = url;
 		}
 	},
@@ -85019,6 +85065,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		canSubmit: function canSubmit() {
 			return this.from && this.to;
+		}
+	},
+
+	watch: {
+		selectedBranch: function selectedBranch(newVal) {
+			this.branch = newVal.value;
 		}
 	}
 });
@@ -85095,7 +85147,30 @@ var render = function() {
                       },
                       expression: "to"
                     }
-                  })
+                  }),
+                  _vm._v(" "),
+                  _vm.user.is_admin
+                    ? _c("selector-input", {
+                        attrs: {
+                          potentialData: _vm.branches,
+                          defaultData: _vm.selectedBranch,
+                          placeholder: "Select branch",
+                          required: true,
+                          label: "Branch",
+                          name: "branch",
+                          editable: true,
+                          focus: false,
+                          hideLabel: false
+                        },
+                        model: {
+                          value: _vm.selectedBranch,
+                          callback: function($$v) {
+                            _vm.selectedBranch = $$v
+                          },
+                          expression: "selectedBranch"
+                        }
+                      })
+                    : _vm._e()
                 ],
                 1
               )

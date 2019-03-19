@@ -30,7 +30,7 @@
 			</div>
 		</div>
 
-		<sales-reports-dialog></sales-reports-dialog>
+		<sales-reports-dialog :user='{{ auth()->user() }}'></sales-reports-dialog>
 	</div>
 
 @endsection

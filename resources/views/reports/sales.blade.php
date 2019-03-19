@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('page')
 	Customers
@@ -12,7 +12,7 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Vendors sale</b>
+				<b>Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }}</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="vendors-table">
@@ -36,7 +36,7 @@
 
 		<div class="card mt-5">
 			<div class="card-header">
-				<b>Sales by Product</b>
+				<b>Sales by Product ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }}</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="products-table">
@@ -70,7 +70,7 @@
 
 		<div class="card mt-5">
 			<div class="card-header">
-				<b>Detailed sales</b>
+				<b>Detailed sales ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }}</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="items-table">

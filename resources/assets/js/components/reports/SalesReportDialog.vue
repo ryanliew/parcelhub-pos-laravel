@@ -31,6 +31,19 @@
 							:focus="true"
 							:hideLabel="false">
 						</text-input>
+
+						<selector-input :potentialData="branches"
+							v-model="selectedBranch" 
+							:defaultData="selectedBranch"
+							placeholder="Select branch"
+							:required="true"
+							label="Branch"
+							name="branch"
+							:editable="true"
+							:focus="false"
+							:hideLabel="false"
+							v-if="user.is_admin">
+						</selector-input>
 					</form>
 	      		</div>
 	      		<div class="modal-footer">
@@ -45,20 +58,45 @@
 <script>
 	import moment from 'moment';
 	export default {
-		props: [],
+		props: ['user'],
 
 		data() {
 			return {
 				from: moment().startOf('month').format('YYYY-MM-DD'),
-				to: moment().format('YYYY-MM-DD')
+				to: moment().format('YYYY-MM-DD'),
+				branch: this.user.current_branch,
+				branches: [],
+				selectedBranch: ''
 			};
 		},
 
 		mounted() {
 			window.events.$on("generateSalesReport", evt => this.openDialog(evt));
+			this.getBranches();
 		},
 
 		methods: {
+
+			getBranches(error = "No error", tries = 0) {
+				if(tries < 3)
+					axios.get("/data/branches")
+						.then(response => this.setBranches(response))
+						.catch(error => this.getBranches(error, ++tries));
+			},
+
+			setBranches(response) {
+				this.branches = response.data.map(function(branch){
+					let obj = {};
+
+					obj['value'] = branch.id;
+					obj['label'] = branch.name;
+
+					return obj;
+				});
+
+				this.selectedBranch = _.filter(this.branches, function(branch){ return branch.value == this.user.current_branch; }.bind(this))[0];
+			},
+
 			openDialog(evt) {
 				$("#cancel-dialog").modal();
 				this.isActive = true;
@@ -70,6 +108,10 @@
 
 			submit() {
 				let url ="/admin/reports/sales?from=" + this.from + "&to=" + this.to;
+
+				if(this.user.is_admin && this.branch)
+					url += "&branch=" + this.branch;
+
 				window.location.href = url;
 			},
 		},
@@ -81,6 +123,12 @@
 
 			canSubmit() {
 				return this.from && this.to;
+			}
+		},
+
+		watch: {
+			selectedBranch(newVal) {
+				this.branch = newVal.value;
 			}
 		}	
 	}
