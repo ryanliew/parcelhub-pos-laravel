@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('page')
-	Invoices
+	Canceled invoices
 @endsection
 
 @section('styles')
@@ -12,7 +12,7 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header">
-				<b>Invoices</b>
+				<b>Canceled invoices</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="invoices-table">
