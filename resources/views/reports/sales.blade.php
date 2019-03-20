@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page')
-	Customers
+	Sales report
 @endsection
 
 @section('styles')
@@ -10,6 +10,38 @@
 
 @section('content')
 	<div class="container">
+		<div class="card">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-12 text-center">
+						<h1>Sales report</h1>
+						<p>
+							<strong class="font-header">{{ $branch->owner }}</strong><br>
+							<b>Co Reg No:</b> {{ $branch->registration_no }}
+							<br>
+							{{ $branch->address }}<br>
+							<b>Phone:</b> {{ $branch->contact }}
+							<br>
+						</p>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-12 col-md-4 text-center">
+						Period <br>
+						<h4>{{ request()->from }} - {{ request()->to }}</h4>
+					</div>
+					<div class="col-12 col-md-4 text-center">
+						Total sales <br>
+						<h4>RM{{ number_format($items->sum('total_price'), 2, ".", "") }}</h4>
+					</div>
+					<div class="col-12 col-md-4 text-center">
+						Total items <br>
+						<h4>{{ $items->count() }}</h4>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="card">
 			<div class="card-header">
 				<b>Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }}</b>
