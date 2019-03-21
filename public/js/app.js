@@ -76524,6 +76524,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				tax_type: 'SR',
 				shouldFocus: true,
 				has_error: false,
+				is_deleted: false, // A flag to determine if this item is deleted
 				default_details: true // A flag that determines if we should go get the default details for this item row
 
 			});
@@ -76536,10 +76537,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		deleteItem: function deleteItem(index) {
 			// console.log(index);
-			this.form.items.splice(index, 1);
-			Vue.nextTick(function () {
-				return window.events.$emit("updateItemsValue");
-			});
+			this.form.items[index].is_deleted = true;
+			// Vue.nextTick( () => window.events.$emit("updateItemsValue") );
 		},
 		updateCurrentTime: function updateCurrentTime() {
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
@@ -76548,7 +76547,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (this.canSubmit) {
 				// console.log("Submitting");
 				this.form.items = _.filter(this.form.items, function (item) {
-					return item.product_id ? true : false;
+					return item.product_id && !item.is_deleted ? true : false;
 				});
 
 				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>" + "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>" + "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>" + "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>" + "</div>";
@@ -76666,7 +76665,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		subtotal: function subtotal() {
 			if (this.form.items.length > 0) return _.sumBy(this.form.items, function (item) {
-				return parseFloat(item.total_price);
+				return item.is_deleted ? 0 : parseFloat(item.total_price);
 			});
 
 			return 0;
@@ -76680,7 +76679,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		tax: function tax() {
 			if (this.form.items.length > 0) return _.sumBy(this.form.items, function (item) {
-				return parseFloat(item.tax);
+				return item.is_deleted ? 0 : parseFloat(item.tax);
 			});
 
 			return 0;
@@ -76708,12 +76707,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		itemCount: function itemCount() {
 			return _.filter(this.form.items, function (item) {
-				return item.product_id ? true : false;
+				return item.product_id && !item.is_deleted ? true : false;
 			}).length;
 		},
 		canSubmit: function canSubmit() {
 			return this.itemCount > 0 && (this.selectedType.value !== 'Customer' || this.selectedType.value == 'Customer' && this.selectedCustomer) && (this.selectedPaymentType.value.toLowerCase() == 'account' || this.form.paid >= this.rounded_total) && !_.find(this.form.items, function (item) {
-				return item.has_error;
+				return item.is_deleted ? false : item.has_error;
 			}) && (!this.form.remarks || this.form.remarks.length <= 190) && this.canEdit;
 		},
 		canEdit: function canEdit() {
@@ -76733,7 +76732,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				if (this.form.remarks && this.form.remarks.length > 190) return "Remarks exceed 190 characters";
 
 				if (_.find(this.form.items, function (item) {
-					return item.has_error;
+					return item.is_deleted ? false : item.has_error;
 				})) return "Items detail incomplete";
 
 				return "No items";
@@ -77382,7 +77381,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
 			// console.log(error);
-			if (this.selectedProduct && this.canEdit) {
+			if (this.selectedProduct && this.canEdit && !this.item.is_deleted) {
 				this.item_add_loading = true;
 
 				var url = this.getProductPriceUrl(this.selectedProduct.value);
@@ -78811,35 +78810,37 @@ var render = function() {
             ]),
             _vm._v(" "),
             _vm._l(_vm.form.items, function(item, index) {
-              return [
-                _c("item-row", {
-                  attrs: {
-                    isEdit: _vm.is_edit,
-                    items: _vm.form.items,
-                    index: index,
-                    canEdit: _vm.canEditItem,
-                    item: item,
-                    product_types: _vm.product_types,
-                    zone_types: _vm.zone_types,
-                    couriers: _vm.couriers,
-                    defaultProductType: _vm.default_product_type,
-                    selectedType: _vm.selectedType,
-                    selectedCustomer: _vm.selectedCustomer
-                  },
-                  on: {
-                    delete: function($event) {
-                      _vm.deleteItem(index)
-                    },
-                    update: function($event) {
-                      _vm.updateItem($event, index)
-                    },
-                    addItem: _vm.addItem,
-                    mass: function($event) {
-                      _vm.massInput(index)
-                    }
-                  }
-                })
-              ]
+              return !item.is_deleted
+                ? [
+                    _c("item-row", {
+                      attrs: {
+                        isEdit: _vm.is_edit,
+                        items: _vm.form.items,
+                        index: index,
+                        canEdit: _vm.canEditItem,
+                        item: item,
+                        product_types: _vm.product_types,
+                        zone_types: _vm.zone_types,
+                        couriers: _vm.couriers,
+                        defaultProductType: _vm.default_product_type,
+                        selectedType: _vm.selectedType,
+                        selectedCustomer: _vm.selectedCustomer
+                      },
+                      on: {
+                        delete: function($event) {
+                          _vm.deleteItem(index)
+                        },
+                        update: function($event) {
+                          _vm.updateItem($event, index)
+                        },
+                        addItem: _vm.addItem,
+                        mass: function($event) {
+                          _vm.massInput(index)
+                        }
+                      }
+                    })
+                  ]
+                : _vm._e()
             })
           ],
           2

@@ -523,7 +523,7 @@
 
 			getProductPrice(error = 'No error') {
 				// console.log(error);
-				if(this.selectedProduct && this.canEdit) {
+				if(this.selectedProduct && this.canEdit && !this.item.is_deleted ) {
 					this.item_add_loading = true;
 
 					let url = this.getProductPriceUrl(this.selectedProduct.value);

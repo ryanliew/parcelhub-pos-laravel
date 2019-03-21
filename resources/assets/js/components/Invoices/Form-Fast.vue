@@ -305,7 +305,7 @@
 					<div class="header">Total price:</div>
 					<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
 				</div>
-				<template v-for="(item, index) in form.items">
+				<template v-for="(item, index) in form.items" v-if="!item.is_deleted">
 					<item-row :isEdit="is_edit" :items="form.items" :index="index" :canEdit="canEditItem" :item="item" :product_types="product_types" :zone_types="zone_types" :couriers="couriers" :defaultProductType="default_product_type" :selectedType="selectedType" :selectedCustomer="selectedCustomer" @delete="deleteItem(index)" @update="updateItem($event, index)" @addItem="addItem" @mass="massInput(index)"></item-row>
 				</template>
 			</div>
@@ -617,7 +617,8 @@
 					tax_type: 'SR',
 					shouldFocus: true,
 					has_error: false,
-					default_details: true // A flag that determines if we should go get the default details for this item row
+					is_deleted: false, // A flag to determine if this item is deleted
+					default_details: true, // A flag that determines if we should go get the default details for this item row
 
 				});
 
@@ -632,8 +633,8 @@
 
 			deleteItem(index) {
 				// console.log(index);
-				this.form.items.splice(index,1);
-				Vue.nextTick( () => window.events.$emit("updateItemsValue") );
+				this.form.items[index].is_deleted = true;
+				// Vue.nextTick( () => window.events.$emit("updateItemsValue") );
 			},
 
 			updateCurrentTime() {
@@ -643,7 +644,7 @@
 			submit() {
 				if(this.canSubmit) {
 					// console.log("Submitting");
-					this.form.items = _.filter(this.form.items, function(item){ return item.product_id ? true : false; });
+					this.form.items = _.filter(this.form.items, function(item){ return item.product_id && !item.is_deleted ? true : false; });
 
 					this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
 												+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
@@ -778,7 +779,7 @@
 
 			subtotal() {
 				if(this.form.items.length > 0)
-					return _.sumBy(this.form.items, function(item){ return parseFloat(item.total_price); });
+					return _.sumBy(this.form.items, function(item){ return item.is_deleted ? 0 : parseFloat(item.total_price); });
 
 				return 0;
 			},
@@ -794,7 +795,7 @@
 
 			tax() {
 				if( this.form.items.length > 0 )
-					return _.sumBy(this.form.items, function(item){ return parseFloat(item.tax); });
+					return _.sumBy(this.form.items, function(item){ return item.is_deleted ? 0 : parseFloat(item.tax); });
 
 				return 0;
 			},
@@ -825,14 +826,14 @@
 			},
 
 			itemCount() {
-				return _.filter(this.form.items, function(item){ return item.product_id ? true : false; }).length;
+				return _.filter(this.form.items, function(item){ return item.product_id && !item.is_deleted ? true : false; }).length;
 			},
 
 			canSubmit() {
 				return this.itemCount > 0 
 						&& ( this.selectedType.value !== 'Customer' || ( this.selectedType.value == 'Customer' && this.selectedCustomer )) 
 						&& ( this.selectedPaymentType.value.toLowerCase() == 'account' || this.form.paid >= this.rounded_total ) 
-						&& !_.find(this.form.items, function(item){ return item.has_error; })
+						&& !_.find(this.form.items, function(item){ return item.is_deleted ? false : item.has_error; })
 						&& (!this.form.remarks || this.form.remarks.length <= 190)
 						&& this.canEdit;
 			},
@@ -860,7 +861,7 @@
 					if(this.form.remarks && this.form.remarks.length > 190)
 						return "Remarks exceed 190 characters";
 
-					if(_.find(this.form.items, function(item){ return item.has_error })) 
+					if(_.find(this.form.items, function(item){ return item.is_deleted ? false : item.has_error })) 
 						return "Items detail incomplete";
 
 					return "No items";
