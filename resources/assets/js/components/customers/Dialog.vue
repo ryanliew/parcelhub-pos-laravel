@@ -25,7 +25,6 @@
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('branch_id')"
-									@input="getBranches"
 									ref="branches">
 								</selector-input>
 								<div class="row">
@@ -335,13 +334,10 @@
 			},
 
 			getBranches(error = "No error", retry = 0){
-				console.log("Get branches error");
-				console.log(error);
-				console.log("Retry count: " + retry);
-				if(this.branch_url && retry < 3)
+				if(this.branch_url && retry < 3 && !this.selectedBranch)
 					axios.get(this.branch_url)
 						.then(response => this.setBranch(response))
-						// .catch(error => this.getBranches(error, ++retry));
+						.catch(error => this.getBranches(error, ++retry));
 			},
 
 			setBranch(response) {
@@ -365,8 +361,6 @@
 			},
 
 			getGroups(error = "No error", retry = 0) {
-				console.log("Get groups error");
-				console.log(error);
 				if(retry < 3) {
 					axios.get("/data/groups?branch=" + this.selectedBranch.value)
 						.then(response => this.setGroups(response))
