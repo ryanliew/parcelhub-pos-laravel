@@ -337,6 +337,7 @@
 			getBranches(error = "No error", retry = 0){
 				console.log("Get branches error");
 				console.log(error);
+				console.log("Retry count: " + retry);
 				if(this.branch_url && retry < 3)
 					axios.get(this.branch_url)
 						.then(response => this.setBranch(response))
