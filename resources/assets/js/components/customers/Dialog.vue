@@ -340,7 +340,7 @@
 				if(this.branch_url && retry < 3)
 					axios.get(this.branch_url)
 						.then(response => this.setBranch(response))
-						.catch(error => this.getBranches(error, ++retry));
+						// .catch(error => this.getBranches(error, ++retry));
 			},
 
 			setBranch(response) {
