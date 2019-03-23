@@ -334,11 +334,12 @@
 				window.events.$emit("reload-table");
 			},
 
-			getBranches(error = "No error"){
-				if(this.branch_url)
+			getBranches(error = "No error", retry = 0){
+				console.log(error);
+				if(this.branch_url && retry < 3)
 					axios.get(this.branch_url)
 						.then(response => this.setBranch(response))
-						.catch(error => this.getBranches(error));
+						.catch(error => this.getBranches(error, ++retry));
 			},
 
 			setBranch(response) {
