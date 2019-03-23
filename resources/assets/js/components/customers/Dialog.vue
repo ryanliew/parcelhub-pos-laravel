@@ -363,6 +363,7 @@
 			},
 
 			getGroups(error = "No error", retry = 0) {
+				console.log(error);
 				if(retry < 3) {
 					axios.get("/data/groups?branch=" + this.selectedBranch.value)
 						.then(response => this.setGroups(response))
