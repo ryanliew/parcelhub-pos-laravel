@@ -335,6 +335,7 @@
 			},
 
 			getBranches(error = "No error", retry = 0){
+				console.log("Get branches error");
 				console.log(error);
 				if(this.branch_url && retry < 3)
 					axios.get(this.branch_url)
@@ -363,6 +364,7 @@
 			},
 
 			getGroups(error = "No error", retry = 0) {
+				console.log("Get groups error");
 				console.log(error);
 				if(retry < 3) {
 					axios.get("/data/groups?branch=" + this.selectedBranch.value)
