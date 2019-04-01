@@ -25,7 +25,6 @@
 									:focus="false"
 									:hideLabel="false"
 									:error="form.errors.get('branch_id')"
-									@input="getBranches"
 									ref="branches">
 								</selector-input>
 								<div class="row">
@@ -334,11 +333,11 @@
 				window.events.$emit("reload-table");
 			},
 
-			getBranches(error = "No error"){
-				if(this.branch_url)
+			getBranches(error = "No error", retry = 0){
+				if(this.branch_url && retry < 3 && !this.selectedBranch)
 					axios.get(this.branch_url)
 						.then(response => this.setBranch(response))
-						.catch(error => this.getBranches(error));
+						.catch(error => this.getBranches(error, ++retry));
 			},
 
 			setBranch(response) {

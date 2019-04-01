@@ -76524,8 +76524,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				tax_type: 'SR',
 				shouldFocus: true,
 				has_error: false,
-				is_deleted: false, // A flag to determine if this item is deleted
+				is_deleted: false, // A flag to determine if we have deleted this item
 				default_details: true // A flag that determines if we should go get the default details for this item row
+
 
 			});
 
@@ -76537,8 +76538,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		deleteItem: function deleteItem(index) {
 			// console.log(index);
+			// this.form.items.splice(index,1);
 			this.form.items[index].is_deleted = true;
 			// Vue.nextTick( () => window.events.$emit("updateItemsValue") );
+		},
+		deleteMassItem: function deleteMassItem(index) {
+			this.form.items[index].is_deleted = true;
+			Vue.nextTick(function () {
+				return window.events.$emit("updateItemsValue");
+			});
 		},
 		updateCurrentTime: function updateCurrentTime() {
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
@@ -76624,11 +76632,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.trackings.forEach(function (tracking, key) {
 
 				var newItem = JSON.parse(JSON.stringify(this.form.items[this.mass_input_target]));
-
+				// console.log(newItem);
 				newItem['tracking_code'] = tracking;
 				newItem['shouldFocus'] = false;
 				newItem['has_error'] = false;
 				newItem['unit'] = 1;
+				newItem['is_deleted'] = false;
 				newItem['default_details'] = false; // Should not get default details for this row
 				// console.log(newItem.tracking_code);
 				this.form.items.push(newItem);
@@ -76637,7 +76646,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.isMassInput = false;
 			this.trackings = [];
 
-			this.deleteItem(this.mass_input_target);
+			this.deleteMassItem(this.mass_input_target);
 			Vue.nextTick(function () {
 				return _this8.addItem();
 			});
@@ -77381,7 +77390,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
 
 			// console.log(error);
+
 			if (this.selectedProduct && this.canEdit && !this.item.is_deleted) {
+
 				this.item_add_loading = true;
 
 				var url = this.getProductPriceUrl(this.selectedProduct.value);
@@ -79534,7 +79545,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
@@ -79658,11 +79668,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var _this3 = this;
 
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
+			var retry = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-			if (this.branch_url) axios.get(this.branch_url).then(function (response) {
+			if (this.branch_url && retry < 3 && !this.selectedBranch) axios.get(this.branch_url).then(function (response) {
 				return _this3.setBranch(response);
 			}).catch(function (error) {
-				return _this3.getBranches(error);
+				return _this3.getBranches(error, ++retry);
 			});
 		},
 		setBranch: function setBranch(response) {
@@ -79807,7 +79818,6 @@ var render = function() {
                                 hideLabel: false,
                                 error: _vm.form.errors.get("branch_id")
                               },
-                              on: { input: _vm.getBranches },
                               model: {
                                 value: _vm.selectedBranch,
                                 callback: function($$v) {

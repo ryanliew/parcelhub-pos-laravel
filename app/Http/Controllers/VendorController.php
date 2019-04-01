@@ -30,7 +30,7 @@ class VendorController extends Controller
     {
     	$this->validate_input();
 
-        $branch = Vendor::create(request()->all());
+        $vendor = Vendor::create(request()->all());
 
     	return json_encode(['message' => "New vendor created."]);
     }
@@ -39,7 +39,7 @@ class VendorController extends Controller
     {
     	$this->validate_input();
 
-        $branch->update(request()->all());
+        $vendor->update(request()->all());
     	
     	return json_encode(['message' => "Vendor updated"]);
     }

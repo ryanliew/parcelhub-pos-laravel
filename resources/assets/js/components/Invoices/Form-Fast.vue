@@ -617,8 +617,9 @@
 					tax_type: 'SR',
 					shouldFocus: true,
 					has_error: false,
-					is_deleted: false, // A flag to determine if this item is deleted
-					default_details: true, // A flag that determines if we should go get the default details for this item row
+					is_deleted: false, // A flag to determine if we have deleted this item
+					default_details: true // A flag that determines if we should go get the default details for this item row
+
 
 				});
 
@@ -633,8 +634,14 @@
 
 			deleteItem(index) {
 				// console.log(index);
+				// this.form.items.splice(index,1);
 				this.form.items[index].is_deleted = true;
 				// Vue.nextTick( () => window.events.$emit("updateItemsValue") );
+			},
+
+			deleteMassItem(index) {
+				this.form.items[index].is_deleted = true;
+				Vue.nextTick( () => window.events.$emit("updateItemsValue") );
 			},
 
 			updateCurrentTime() {
@@ -732,11 +739,12 @@
 				this.trackings.forEach(function(tracking, key){
 
 						let newItem = JSON.parse(JSON.stringify(this.form.items[this.mass_input_target]));
-
+						// console.log(newItem);
 						newItem['tracking_code'] = tracking;
 						newItem['shouldFocus'] = false;
 						newItem['has_error'] = false;
 						newItem['unit'] = 1;
+						newItem['is_deleted'] = false;
 						newItem['default_details'] = false; // Should not get default details for this row
 						// console.log(newItem.tracking_code);
 						this.form.items.push(newItem);
@@ -747,7 +755,7 @@
 				this.trackings = [];
 
 
-				this.deleteItem(this.mass_input_target);
+				this.deleteMassItem(this.mass_input_target);
 				Vue.nextTick( () => this.addItem() );
 			}
 
