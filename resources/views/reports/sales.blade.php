@@ -114,6 +114,8 @@
 							<th>Vendor</th>
 							<th>Weight</th>
 							<th>Type</th>
+							<th>Invoice</th>
+							<th>Tracking no.</th>
 							<th>Amount</th>
 						</tr>
 					</thead>
@@ -126,6 +128,8 @@
 								<td>@if($item->product->vendor_id){{ $item->product->vendor->name }} @else - @endif</td>
 								<td>{{ $item->product->weight_start }} - {{ $item->product->weight_end }}</td>
 								<td>{{ $item->product->product_type->name }}</td>
+								<td><a href="/invoices/edit/{{ $item->invoice->id }}" target="_blank">{{ $item->invoice->invoice_no }}</a></td>
+								<td>{{ $item->tracking_code }}</td>
 								<td>RM{{ number_format($item->total_price, 2, ".", "") }}</td>
 							</tr>
 						@endforeach
@@ -149,7 +153,7 @@
 			var productsTable = $("#products-table").DataTable({
 				paging: false,
 				searching: false,
-				order: [[5, 'asc']],
+				order: [[5, 'asc'], [0, 'asc']],
 				rowGroup: {
 					startRender: function(rows, group) {
 						var totalSales = rows.data().pluck(6).reduce( function (a, b) {
