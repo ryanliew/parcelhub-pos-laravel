@@ -140,7 +140,7 @@ class CustomerController extends Controller
 
         foreach($invoices as $invoice)
         {
-            $outstanding = $invoice->total - $invoice->payment->sum('total') - $invoice->paid;
+            $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
 
             if( $getAll || $outstanding != 0)
             {
