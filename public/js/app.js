@@ -85092,6 +85092,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       url += "&export=true";
 
       window.location.href = url;
+
+      $("#cancel-dialog").modal("hide");
     }
   },
 

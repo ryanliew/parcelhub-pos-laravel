@@ -145,6 +145,8 @@ export default {
       url += "&export=true";
 
       window.location.href = url;
+
+      $("#cancel-dialog").modal("hide");
     }
   },
 
