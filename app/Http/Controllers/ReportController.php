@@ -6,6 +6,8 @@ use App\Branch;
 use App\Item;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Exports\SalesExport;
+use \Excel;
 
 class ReportController extends Controller
 {
@@ -31,8 +33,27 @@ class ReportController extends Controller
     	$vendors = $items->filter(function($item, $key){ return !is_null($item->product->vendor); })
     					->groupBy(function($item, $key){ return $item->product->vendor->name; });
 
-    	$products = $items->groupBy(function($item, $key){ return $item->product->sku; });
+        $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
+
+        if(request()->export)
+        {
+            return $this->export_sales_report($vendors, $products, $items, $branch, $from, $to);
+        }
 
     	return view('reports.sales', ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $branch]);
+    }
+
+    public function export_sales_report($vendors, $products, $items, $branch, $from, $to) 
+    {
+
+        $report = new SalesExport($vendors, $products, $items, $branch);
+
+        $filename = "Sales Report (" . $from . " - " .  $to->toDateString() . ')';
+
+        if($branch) $filename = $filename . " " . $branch->name;
+
+        $filename = $filename . '.xlsx';
+
+        return Excel::download($report, $filename);
     }
 }
