@@ -114,7 +114,7 @@ class ProductController extends Controller
                 $tax = Tax::where('code', $excelRow[10])->first();
                 if(is_null($tax))
                 {
-                    return $this->returnValidationErrorResponse(array('file' => ['Tax code ' . $excelRow[10] . ' is invalid. Please create it from the zone type page first']));
+                    return $this->returnValidationErrorResponse(array('file' => ['Tax code ' . $excelRow[10] . ' is invalid. Please create it from the tax type page first']));
                 }
 
 
