@@ -9,7 +9,7 @@
             <th>Type</th>
             <th>Invoice</th>
             <th>Tracking no.</th>
-            <th>Amount</th>
+            <th>Amount (RM)</th>
         </tr>
     </thead>
     <tbody>
@@ -23,7 +23,7 @@
             <td>{{ $item->product->product_type->name }}</td>
             <td>{{ $item->invoice->invoice_no }}</td>
             <td>{{ $item->tracking_code }}</td>
-            <td>RM{{ number_format($item->total_price, 2, ".", "") }}</td>
+            <td>{{ number_format($item->total_price, 2, ".", "") }}</td>
         </tr>
         @endforeach
     </tbody>

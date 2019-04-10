@@ -46,14 +46,26 @@ class ReportController extends Controller
     public function export_sales_report($vendors, $products, $items, $branch, $from, $to) 
     {
 
-        $report = new SalesExport($vendors, $products, $items, $branch);
-
         $filename = "Sales Report (" . $from . " - " .  $to->toDateString() . ')';
 
         if($branch) $filename = $filename . " " . $branch->name;
 
-        $filename = $filename . '.xlsx';
+        return Excel::create($filename, function($excel) use ($vendors, $products, $items){ 
+            $excel->sheet('Sales by product', function($sheet) use ($products) {
+                $sheet->loadView('reports.sheets.sales', ['products' => $products]);
+            });
 
-        return Excel::download($report, $filename);
+            $excel->sheet('Vendor sale', function($sheet) use ($vendors){
+                $sheet->loadView('reports.sheets.vendor', ['vendors' => $vendors]);
+            });
+
+            $excel->sheet('Detailed sales', function($sheet) use ($items){
+                $sheet->setColumnFormat([
+                    'H' => '@'
+                ]);
+                $sheet->loadView('reports.sheets.detailed_sales', ['items' => $items]);
+                
+            });
+        })->download('xlsx');
     }
 }
