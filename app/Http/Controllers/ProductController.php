@@ -132,7 +132,7 @@ class ProductController extends Controller
                 $detail['corporate_price'] = $excelRow[7];
                 $detail['walk_in_price'] = $excelRow[8];
                 $detail['walk_in_price_special'] = $excelRow[9];
-                $detail['is_tax_inclusive'] = 1;
+                $detail['is_tax_inclusive'] = $excelRow[11];
                 $detail['vendor_id'] = is_null($vendor) ? null : $vendor->id;
                 $detail['product_type_id'] = $product_type->id;
                 $detail['tax_id'] = $tax->id;
@@ -153,7 +153,7 @@ class ProductController extends Controller
                     "corporate_price" => $product['corporate_price'],
                     "walk_in_price" => $product['walk_in_price'],
                     "walk_in_price_special" => $product['walk_in_price_special'],
-                    "is_tax_inclusive" => 1,
+                    "is_tax_inclusive" => $product['is_tax_inclusive'],
                     "vendor_id" => $product['vendor_id'],
                     "product_type_id" => $product['product_type_id'],
                     "tax_id" => $product['tax_id'],
