@@ -254,7 +254,7 @@ class InvoiceController extends Controller
 
         $html = View::make('invoice.receipt', ["invoice" => $invoice, "taxes" => Tax::all()])->render();
         
-        $mPDF = new mPDF(array('utf-8', array(55, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
+        $mPDF = new mPDF(array('utf-8', array(50, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
                         "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
                         "fontdata" => $fontData + [
                             'monaco' => [
@@ -264,7 +264,7 @@ class InvoiceController extends Controller
                         'defaul_font' => 'monaco' ));
 
         $p = 'P';
-        $mPDF->_setPageSize(array(55, 1000), $p);
+        $mPDF->_setPageSize(array(50, 1000), $p);
         $mPDF->WriteHTML($html);
         $pageHeight = $mPDF->y + 5;
         // dd($pageHeight);
@@ -272,7 +272,7 @@ class InvoiceController extends Controller
         $mPDF->state  = 0;
         unset($mPDF->pages[0]);
 
-        $newPDF = new mPDF(array('utf-8', array(55, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
+        $newPDF = new mPDF(array('utf-8', array(50, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
                         "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
                         "fontdata" => $fontData + [
                             'monaco' => [
@@ -280,7 +280,7 @@ class InvoiceController extends Controller
                             ]
                         ],
                         'defaul_font' => 'monaco' ));
-        $newPDF->_setPageSize(array(55, $pageHeight), $p);
+        $newPDF->_setPageSize(array(50, $pageHeight), $p);
         $newPDF->WriteHTML($html);
 
         $path = storage_path('receipts\receipt_' . $invoice->id . '.pdf');
