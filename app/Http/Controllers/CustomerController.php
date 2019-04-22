@@ -95,6 +95,9 @@ class CustomerController extends Controller
         $this->validate_input();
 
         $customer->update(request()->all());
+
+        if(!request()->has('customer_group_id'))
+            $customer->update(['customer_group_id' => null]);
         
         return json_encode(['message' => "Customer updated"]);
     }

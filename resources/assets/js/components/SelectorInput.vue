@@ -63,7 +63,9 @@
 		methods: {
 			updateValue(value) {
 				this.$emit('input', value);
-				this.data = value.value;
+				if(value && value.value)
+					this.data = value.value;
+				
 				this.$emit('next');
 			}, 
 
