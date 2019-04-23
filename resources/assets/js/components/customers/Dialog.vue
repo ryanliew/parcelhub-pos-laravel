@@ -286,6 +286,7 @@
 				$("#customer-dialog").modal();
 				this.form.branch_id = this.selectedBranch.value;
 				this.isActive = true;
+				
 			},
 
 			closeDialog() {
@@ -309,7 +310,7 @@
 				this.selectedBranch = {label: this.selectedCustomer.branch.name, value: this.selectedCustomer.branch.id};
 				this.selectedType   = {label: this.selectedCustomer.type, value: this.selectedCustomer.type };
 
-				this.selectedGroup = _.filter(this.groups, function(group){ return group.value == this.selectedCustomer.customer_group_id; }.bind(this))[0];
+				this.getGroups();
 			},
 
 			submit() {
@@ -334,6 +335,7 @@
 			},
 
 			getBranches(error = "No error", retry = 0){
+				console.log(error);
 				if(this.branch_url && retry < 3 && !this.selectedBranch)
 					axios.get(this.branch_url)
 						.then(response => this.setBranch(response))
@@ -361,6 +363,7 @@
 			},
 
 			getGroups(error = "No error", retry = 0) {
+				console.log(error);
 				if(retry < 3) {
 					axios.get("/data/groups?branch=" + this.selectedBranch.value)
 						.then(response => this.setGroups(response))
@@ -377,6 +380,9 @@
 
 					return obj;
 				});
+
+				if(this.selectedCustomer)
+					this.selectedGroup = _.filter(this.groups, function(group){ return group.value == this.selectedCustomer.customer_group_id; }.bind(this))[0];
 			}
 		},
 
@@ -414,6 +420,10 @@
 			selectedBranch(newVal, oldVal) {
 				this.form.branch_id = newVal.value;
 			},
+
+			selectedGroup(newVal, oldVal) {
+				this.form.customer_group_id = newVal && newVal.value ? newVal.value : "";
+			}
 
 		}	
 
