@@ -13,6 +13,7 @@
 		<div class="card">
 			<div class="card-header">
 				<b>SKU</b>
+				{{ auth()->user()->name }}
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="products-table">

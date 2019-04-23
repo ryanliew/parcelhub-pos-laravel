@@ -7,7 +7,7 @@
             <th>Vendor</th>
             <th>Weight</th>
             <th>Type</th>
-            <th>Amount</th>
+            <th>Amount (RM)</th>
         </tr>
     </thead>
     <tbody>
@@ -20,7 +20,7 @@
             </td>
             <td>{{ $product->first()->product->weight_start }} - {{ $product->first()->product->weight_end }}</td>
             <td>{{ $product->first()->product->product_type->name }}</td>
-            <td>RM{{ number_format($product->sum('total_price'), 2, ".", "") }}</td>
+            <td>{{ number_format($product->sum('total_price'), 2, ".", "") }}</td>
         </tr>
         @endforeach
     </tbody>
