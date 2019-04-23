@@ -31,7 +31,12 @@ class ReportController extends Controller
     	$items = Item::with('product.vendor', 'product.product_type', 'invoice')->whereIn('invoice_id', $invoices)->get();
 
     	$vendors = $items->filter(function($item, $key){ return !is_null($item->product->vendor); })
-    					->groupBy(function($item, $key){ return $item->product->vendor->name; });
+                        ->groupBy(function($item, $key){ return $item->product->vendor->name; });
+                        
+        $vendors_sum = $vendors->sum(function($vendor)
+        {
+            return $vendor->sum('total_price');
+        });
 
         $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
 
@@ -40,7 +45,7 @@ class ReportController extends Controller
             return $this->export_sales_report($vendors, $products, $items, $branch, $from, $to);
         }
 
-    	return view('reports.sales', ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $branch]);
+    	return view('reports.sales', ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $branch, 'vendors_sum' => $vendors_sum]);
     }
 
     public function export_sales_report($vendors, $products, $items, $branch, $from, $to) 
