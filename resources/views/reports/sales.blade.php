@@ -44,7 +44,7 @@
 		</div>
 		<div class="card">
 			<div class="card-header">
-				<b>Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }}</b>
+				<b>Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }} - ( Total: RM{{number_format($vendors_sum, 2, ".", "") }} )</b>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="vendors-table">
