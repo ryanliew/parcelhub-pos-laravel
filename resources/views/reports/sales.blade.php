@@ -10,6 +10,7 @@
 
 @section('content')
 	<div class="container">
+		<a class="download-button" href="{{ url()->full() }}&export=true">Download</a>
 		<div class="card">
 			<div class="card-body">
 				<div class="row">
