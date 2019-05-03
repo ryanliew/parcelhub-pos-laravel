@@ -10,7 +10,6 @@
 
 @section('content')
 	<div class="container">
-		<a class="download-button" href="{{ url()->full() }}&export=true">Download</a>
 		<div class="card">
 			<div class="card-body">
 				<div class="row">
@@ -45,7 +44,11 @@
 		</div>
 		<div class="card">
 			<div class="card-header">
-				<b>Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }} - ( Total: RM{{number_format($vendors_sum, 2, ".", "") }} )</b>
+				<div class="d-flex align-items-center">
+					<b class="flex-grow-1">Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }} - ( Total: RM{{number_format($vendors_sum, 2, ".", "") }} )</b>
+					<a class="download-button" href="{{ url()->full() }}&export=true">Download</a>
+				</div>
+
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="vendors-table">
