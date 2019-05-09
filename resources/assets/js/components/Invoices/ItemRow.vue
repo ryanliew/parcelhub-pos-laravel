@@ -651,7 +651,7 @@
 			},
 
 			networkErrorClass() {
-				return this.hasNetworkError ? "text-danger" : "";
+				return this.hasNetworkError ? "text-danger" : "text-white";
 			}
 		},
 

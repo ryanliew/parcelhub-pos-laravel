@@ -77514,7 +77514,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return this.hasNetworkError ? "Network error detected, your prices might not be accurate" : "No network error";
 		},
 		networkErrorClass: function networkErrorClass() {
-			return this.hasNetworkError ? "text-danger" : "";
+			return this.hasNetworkError ? "text-danger" : "text-white";
 		}
 	},
 
