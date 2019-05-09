@@ -472,7 +472,7 @@
 
 					axios.get(url)
 						.then(response => this.setProducts(response))
-						.catch(error => this.updateProducts(error));
+						.catch(error => this.onNetworkError(error));
 				}
 			},
 

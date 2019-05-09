@@ -77326,7 +77326,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				axios.get(url).then(function (response) {
 					return _this3.setProducts(response);
 				}).catch(function (error) {
-					return _this3.updateProducts(error);
+					return _this3.onNetworkError(error);
 				});
 			}
 		},
