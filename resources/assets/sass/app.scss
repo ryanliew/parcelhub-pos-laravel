@@ -260,10 +260,14 @@ span.text-primary.disabled {
 
 .invoice-items {
 	display: grid;
-	grid-template-columns: 20px 9% 9% 5% 5% 5% 7% 9% 11% 4% 10% 7% 4% auto;
+	grid-template-columns: 20px 9% 9% 5% 5% 5% 7% 9% 11% 4% 10% 7% 1.5% 4% auto;
 	grid-template-rows: repeat(auto-fill, auto);
 	grid-row-gap: .5em;
 	grid-column-gap: .5em;
+}
+
+.invoice-items .has-error {
+	background-color: #f8f8f8;
 }
 
 .invoice-item {
@@ -347,4 +351,13 @@ th, td { white-space: nowrap; }
 .customer.selected {
 	background: #007bff;
 	color: white;
+}
+
+.download-button {
+	color: white;
+	background: #f47920;
+	padding: 5px 35px;
+	font-weight: bold;
+	text-decoration: none !important;
+	z-index: 2;
 }

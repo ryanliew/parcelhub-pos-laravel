@@ -44,7 +44,11 @@
 		</div>
 		<div class="card">
 			<div class="card-header">
-				<b>Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }} - ( Total: RM{{number_format($vendors_sum, 2, ".", "") }} )</b>
+				<div class="d-flex align-items-center">
+					<b class="flex-grow-1">Vendors sale ({{ request()->from }} - {{ request()->to }}) - {{ $branch->name }} - ( Total: RM{{number_format($vendors_sum, 2, ".", "") }} )</b>
+					<a class="download-button" href="{{ url()->full() }}&export=true">Download</a>
+				</div>
+
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered" id="vendors-table">
@@ -117,6 +121,7 @@
 							<th>Invoice</th>
 							<th>Tracking no.</th>
 							<th>Amount</th>
+							<th>Date</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -131,6 +136,7 @@
 								<td><a href="/invoices/edit/{{ $item->invoice->id }}" target="_blank">{{ $item->invoice->invoice_no }}</a></td>
 								<td>{{ $item->tracking_code }}</td>
 								<td>RM{{ number_format($item->total_price, 2, ".", "") }}</td>
+								<td>{{ $item->created_at->toDateString() }}</td>
 							</tr>
 						@endforeach
 					</tbody>

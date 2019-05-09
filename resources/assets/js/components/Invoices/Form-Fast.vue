@@ -302,6 +302,7 @@
 					<div class="header">Unit:</div>
 					<div class="header">Track code:</div>
 					<div class="header">Price:</div>
+					<div class="header"><i class="fa fa-exclamation-circle text-white pl-1"></i></div>
 					<div class="header">Total price:</div>
 					<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
 				</div>
