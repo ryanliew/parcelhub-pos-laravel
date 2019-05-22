@@ -11,11 +11,12 @@
         "doctrine/dbal": "^2.7",
         "fideloper/proxy": "^4.0",
         "lab404/laravel-impersonate": "^1.2",
-        "laravel/framework": "5.6.*",
+        "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "maatwebsite/excel": "~2.1.0",
         "mpdf/mpdf": "^7.1",
-        "yajra/laravel-datatables-oracle": "~8.0"
+        "yajra/laravel-datatables-oracle": "~9.0",
+        "laravel/nova": "~2.0"
     },
     "require-dev": {
         "filp/whoops": "^2.0",
@@ -24,6 +25,13 @@
         "nunomaduro/collision": "^2.0",
         "phpunit/phpunit": "^7.0"
     },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://nova.laravel.com"
+        }
+    ],
+
     "autoload": {
         "classmap": [
             "database/seeds",

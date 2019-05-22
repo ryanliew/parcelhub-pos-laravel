@@ -11,7 +11,7 @@ class Invoice extends Model
     protected $appends = ['can_edit'];
 
     protected $dates = ['canceled_on'];
-	
+
     public function branch()
     {
     	return $this->belongsTo('App\Branch');
@@ -45,6 +45,11 @@ class Invoice extends Model
     public function cashup()
     {
         return $this->belongsToMany("App\Cashup")->withTimestamps()->withPivot('total', 'payment_method', 'payment_id');
+    }
+
+    public function canceled_by()
+    {
+        return $this->belontsTo("App\User", "canceled_by");
     }
 
     public function scopeCashupRequired($query)
