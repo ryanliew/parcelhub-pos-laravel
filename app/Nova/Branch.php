@@ -55,19 +55,25 @@ class Branch extends Resource
                 ->rules('required'),
 
             Text::make('Address')
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
 
             Text::make('Registration no')
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
 
-            Text::make('Fax'),
+            Text::make('Fax')
+                ->hideFromIndex(),
 
-            Text::make('Toll free no', 'tollfree'),
+            Text::make('Toll free no', 'tollfree')
+                ->hideFromIndex(),
 
-            Text::make("Website"),
+            Text::make("Website")
+                ->hideFromIndex(),
 
             Number::make('Terminal count')
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
 
             Heading::make("Owner information")->onlyOnForms(),
 
@@ -78,6 +84,8 @@ class Branch extends Resource
             new Panel("Payment information", $this->paymentFields()),
 
             HasMany::make("Terminals"),
+
+            HasMany::make("Tables"),
         ];
     }
 
@@ -85,10 +93,12 @@ class Branch extends Resource
     {
         return [
             Text::make("Business display name", 'owner')
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
 
             Text::make("Registered company name")
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
 
             Text::make('Phone', 'contact')
                 ->rules('required'),
@@ -102,12 +112,15 @@ class Branch extends Resource
     {
         return [
             Text::make("Payment bank name", 'payment_bank')
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
 
             Text::make("Payment account number", 'payment_acc_no')
-                ->rules('required'),
+                ->rules('required')
+                ->hideFromIndex(),
 
-            Boolean::make("Has SST", "has_gst"),
+            Boolean::make("Has SST", "has_gst")
+                ->hideFromIndex(),
         ];
     }
 

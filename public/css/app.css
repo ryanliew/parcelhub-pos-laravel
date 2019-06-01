@@ -11428,3 +11428,73 @@ td {
   z-index: 2;
 }
 
+.hexatable {
+  position: relative;
+  width: 150px;
+  height: 86.60px;
+  background-color: #ecd5a7;
+  margin: 43.30px 0;
+  cursor: pointer;
+}
+
+.hexatable:before,
+.hexatable:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  border-left: 75px solid transparent;
+  border-right: 75px solid transparent;
+}
+
+.hexatable:before {
+  bottom: 100%;
+  border-bottom: 43.30px solid #ecd5a7;
+}
+
+.hexatable:after {
+  top: 100%;
+  width: 0;
+  border-top: 43.30px solid #ecd5a7;
+}
+
+.hexatable-name {
+  position: absolute;
+  font-size: 3.4rem;
+  color: #99782a;
+  width: 100%;
+  text-align: center;
+}
+
+.hexatable.hexatable-active {
+  background-color: #30ff4f;
+}
+
+.hexatable-active.hexatable:after {
+  border-top: 43.30px solid #30ff4f;
+}
+
+.hexatable-active.hexatable:before {
+  bottom: 100%;
+  border-bottom: 43.30px solid #30ff4f;
+}
+
+.order-form {
+  background: white;
+}
+
+.items {
+  overflow-y: auto;
+}
+
+.items-selector {
+  height: calc(100vh - 120px);
+}
+
+.modal-full {
+  max-width: 95vw;
+}
+
+.text-big {
+  font-size: 3rem;
+}
+

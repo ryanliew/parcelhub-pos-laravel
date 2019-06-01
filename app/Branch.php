@@ -10,9 +10,27 @@ class Branch extends Model
 {
 	protected $guarded = [];
 	
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($branch){
+            $branch->create_default_terminal();
+
+            $branch->create_default_sequence();
+
+            $branch->create_default_user($terminal->id);
+        });
+    }
+
     public function invoices()
     {
     	return $this->hasMany('App\Invoice');
+    }
+
+    public function tables()
+    {
+        return $this->hasMany("App\Table");
     }
 
     public function users()

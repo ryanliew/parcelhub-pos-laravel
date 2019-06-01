@@ -21,8 +21,10 @@
     },
     "dependencies": {
         "moment": "^2.22.2",
+        "vue-carousel": "^0.18.0",
         "vue-select": "^2.4.0",
         "vue-sweetalert2": "^1.5.2",
+        "vueisotope": "^3.1.2",
         "vuejs-noty": "^0.1.3"
     }
 }

@@ -30,12 +30,19 @@
 		},
 
 		mounted() {
+			$("#" + this.id).on("show.bs.modal", function(e){
+				this.open();
+			}.bind(this));
 			$("#" + this.id).on("hide.bs.modal", function(e){
 				this.close();
 			}.bind(this));
 		},	
 
 		methods: {
+			open() {
+				this.$emit('open');
+			},
+
 			close() {
 				this.$emit('close');
 			}
@@ -45,7 +52,7 @@
 			active(newVal, oldval) {
 				if(newVal)
 					$("#" + this.id).modal();
-				else
+				else 
 					$("#" + this.id).modal("hide");
 			}
 		}	

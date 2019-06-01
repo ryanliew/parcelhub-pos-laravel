@@ -73,7 +73,8 @@ Vue.component('products-dialog', require('./components/products/Dialog.vue'));
 Vue.component('products-importer', require('./components/products/Importer.vue'));
 
 // Vue.component('invoices-create', require('./components/invoices/Form.vue'));
-Vue.component('invoices-create', require('./components/invoices/Form-Fast.vue'));
+// Vue.component('invoices-create', require('./components/invoices/Form-Fast.vue'));
+Vue.component('hexaform', require('./components/invoices/Hexaform.vue'));
 Vue.component('cancel-dialog', require("./components/invoices/Cancel-Dialog.vue"));
 
 Vue.component('customers-dialog', require('./components/customers/Dialog.vue'));

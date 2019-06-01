@@ -12,6 +12,11 @@ class Invoice extends Model
 
     protected $dates = ['canceled_on'];
 
+    public function session()
+    {
+        return $this->belongsTo("App\Session");
+    }
+
     public function branch()
     {
     	return $this->belongsTo('App\Branch');

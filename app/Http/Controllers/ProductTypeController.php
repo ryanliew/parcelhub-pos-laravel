@@ -60,6 +60,6 @@ class ProductTypeController extends Controller
 
     public function list()
     {
-        return ProductType::orderBy('name', 'asc')->get();
+        return ProductType::orderBy('name', 'asc')->with('products.tax')->get();
     }
 }

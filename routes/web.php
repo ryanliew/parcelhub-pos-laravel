@@ -178,6 +178,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/users", "UserController@list");
 		Route::get("/trackings/check", "InvoiceController@validateTracking");
 		Route::get("/groups", "CustomerGroupController@list");
+		Route::get("/tables", "TableController@list");
+		Route::get('/heads', "HeadController@list");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){
@@ -267,6 +269,16 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/{group}/products/import", "CustomerGroupController@import");
 		Route::post("/{group}/products/{product}", "CustomerGroupController@update_product");
 		Route::delete("/{group}/products/{product}", "CustomerGroupController@delete_product");
+	});
+
+	Route::group(['prefix' => 'tables'], function() {
+		Route::post("/activate", "TableController@activate");
+		Route::get("/{table}/items", "TableController@current_items");
+	});
+
+	Route::group(['prefix' => 'heads'], function() {
+		Route::post("/activate", "HeadController@activate");
+		Route::post("/deactivate", "HeadController@deactivate");
 	});
 
 });
