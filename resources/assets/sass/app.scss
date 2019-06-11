@@ -430,3 +430,17 @@ th, td { white-space: nowrap; }
 .text-big {
 	font-size: 3rem;
 }
+
+.order-items {
+	height: 50vh;
+	overflow: auto;
+}
+
+.order-information {
+	height: 20vh;
+	overflow-y: auto;
+}
+
+.order-items, .order-information {
+	border-bottom: 1px solid #ccc;
+}

@@ -10,7 +10,7 @@
 			</div>
 		</div>
 		<div class="container-fluid" v-else>
-			<hexaorder :table="selectedTable"></hexaorder>
+			<hexaorder :paymethods="paymethods" :table="selectedTable"></hexaorder>
 		</div>
 	</div>
 </template>
@@ -19,7 +19,7 @@
 	import hexatable from "./Table.vue";
 	import hexaorder from "./Order.vue";
 	export default {
-		props: [],
+		props: ['paymethods'],
 
 		components: {
 			hexatable,

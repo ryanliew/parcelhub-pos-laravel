@@ -12,13 +12,87 @@
 					<hexa-item :item="item" v-for="item in invoice.items" :key="item.id"></hexa-item>
 				</table>
 				<table class="table">
-					<hexa-item :item="item" v-for="(item,index) in items" :key="index"></hexa-item>
+					<hexa-item :item="item" v-for="(item,index) in items" :key="index" @delete="deleteItem(index)"></hexa-item>
 				</table>
 			</div>
-			<div class="order-information">
+			<div class="order-information row my-3">
+				<div class="col">
+					<div class="d-flex flex-column">
+						<selector-input :potentialData="discountTypes"
+							v-model="selectedDiscountType" 
+							:defaultData="selectedDiscountType"
+							placeholder="Select discount type"
+							:required="false"
+							label="Discount type"
+							name="discount_type"
+							:editable="true"
+							:focus="false"
+							:hideLabel="false"
+							:error="form.errors.get('discount_type')">
+						</selector-input>
 
+						<text-input v-model="form.discount_amount" 
+							:defaultValue="form.discount_amount"
+							:required="false"
+							type="number"
+							label="Discount"
+							name="discount"
+							:editable="true"
+							:focus="true"
+							:hideLabel="false"
+							:error="form.errors.get('discount')">
+						</text-input>
+					</div>
+				</div>
+				<div class="col">
+					<div class="d-flex flex-column">
+						<text-input v-model="form.paid" 
+							:defaultValue="form.paid"
+							:required="false"
+							type="number"
+							label="Paid"
+							name="paid"
+							:editable="true"
+							:focus="true"
+							:hideLabel="false"
+							:error="form.errors.get('paid')">
+						</text-input>
+
+						<selector-input :potentialData="payment_methods"
+							v-model="selectedPaymentType" 
+							:defaultData="selectedPaymentType"
+							placeholder="Select payment method"
+							:required="false"
+							label="Payment method"
+							name="payment_method"
+							:editable="true"
+							:focus="false"
+							:hideLabel="false"
+							:error="form.errors.get('payment_method')">
+						</selector-input>
+					</div>
+				</div>
+				<div class="col">
+					<div class="text-right d-flex flex-column">
+						<div>
+							<b>Subtotal:</b> RM{{ subtotal.toFixed(2) }}
+						</div>
+						<div>
+							<b>Tax:</b> RM{{ tax.toFixed(2) }}
+						</div>
+						<div>
+							<b>Discount:</b> RM{{ discountValue.toFixed(2) }}
+						</div>
+						<div>
+							<b>Rounding:</b> RM{{ rounding.toFixed(2) }}
+						</div>
+						<div>
+							<b>Total:</b> RM{{ rounded_total.toFixed(2) }}
+						</div>
+					</div>
+				</div>
 			</div>
-			<div class="controls d-flex">
+			<div class="controls d-flex mb-3">
 				<button class="btn btn-small btn-secondary mr-2">
 					Back
 				</button>
@@ -55,7 +129,7 @@
 	import HeadcountSelector from "./HeadcountSelector.vue";
 
 	export default {
-		props: ['table'],
+		props: ['table', 'paymethods'],
 
 		components: {
 			HexaItem,
@@ -68,23 +142,59 @@
 				currentTime: '',
 				invoices: [],
 				items: [],
+				payment_methods: [],
+
 				headcount_type: '',
 				is_select_headcount: false,
 				is_adding_headcount: false,
 				is_checking_out_headcount: false,
+
 				headForm: new Form({
 					heads: []
 				}),
+
+				form: new Form({
+					total: 0,
+					subtotal: 0,
+					tax: 0,
+					discount_type: "",
+					discount_amount: 0,
+					discount_value: "",
+					paid: "",
+					payment_method: ""
+				}),
+
+				discountTypes: [
+					{label: "%", value: "%"},
+					{label: "RM", value: "RM"},
+				],
+				selectedDiscountType: "",
+				selectedPaymentType: ""
+
 			};
 		},
 
 		mounted() {
 			this.currentTime = moment().format('LL LTS');
 			setInterval(() => this.updateCurrentTime(), 1000);
+			this.setPaymentMethods();
 			this.getItems();
 		},
 
 		methods: {
+			setPaymentMethods() {
+				this.payment_methods = this.paymethods.map(function(m){
+					let obj = {};
+
+					obj['label'] = m.name;
+					obj['value'] = m.name;
+
+					return obj;
+				});
+
+				this.selectedPaymentType = this.payment_methods[0];
+			},
+
 			updateCurrentTime() {
 				this.currentTime = moment().format('LL LTS');
 			},
@@ -98,6 +208,10 @@
 
 			setItems(response) {
 				this.invoices = response.data;
+			},
+
+			deleteItem(index) {
+				this.items.splice(index, 1);
 			},
 
 			calculateItemTax(item) {
@@ -190,6 +304,66 @@
 			onDeactivateSuccess(response) {
 
 			},
+		},
+
+		computed: {
+			subtotal() {
+				return _.sumBy(this.items, function(item){ return item.total; })
+			},
+
+			tax() {
+				return _.sumBy(this.items, function(item){ return item.tax_value; });
+			},
+
+			total() {
+				return this.subtotal - this.discountValue;
+			},
+
+			discountValue() {
+				let discount = this.form.discount_amount;
+
+				if(this.selectedDiscountType.value == "%")
+					discount = this.subtotal * this.form.discount_amount / 100;
+
+				return discount;
+			},
+
+			rounded_total() {
+				return Math.round((this.total + this.rounding) * 100) / 100;
+			},
+
+			rounding() {
+				let rounded_total = Math.round(this.total * 100 / 5 ) / 100 * 5;
+				let value = this.total - rounded_total;
+
+				if(value !== 0)
+					return value * -1;
+
+				return 0.00;
+			},
+
+			change() {
+				return this.form.paid > 0 ? 0 : this.form.paid - this.rounded_total;
+			}
+
+		},
+
+		watch:{
+			selectedDiscountType(newValue) {
+				if(newValue) {
+					this.form.discount_type = newValue.value;
+				} else {
+					this.form.discount_type = "";
+				}
+			},
+
+			selectedPaymentType(newValue) {
+				if(newValue) {
+					this.form.payment_method = newValue.value;
+				} else {
+					this.form.payment_method = "";
+				}
+			}
 		}	
 	}
 </script>

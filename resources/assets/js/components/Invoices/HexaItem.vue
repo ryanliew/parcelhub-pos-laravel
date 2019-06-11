@@ -1,12 +1,13 @@
 <template>
 	<tr>
-		<td>{{ item.sku }}<br><small><i>{{ item.description }}</i></small></td>
+		<td>{{ item.sku }}</td>
+		<td><small><i>{{ item.description }}</i></small></td>
 		<td>{{ item.price }}</td>
 		<td>{{ item.unit }}</td>
 		<td>{{ item.tax_value.toFixed(2) }}</td>
 		<td>{{ item.total.toFixed(2) }}</td>
 
-		<td><a><i class="fas fa-trash-alt text-danger" @click="deleteItem"></i></a></td>
+		<td><a href="#"><i class="fas fa-trash-alt text-danger" @click.prevent="deleteItem"></i></a></td>
 	</tr>
 </template>
 

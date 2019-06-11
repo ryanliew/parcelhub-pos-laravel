@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Invoice;
 use App\Item;
+use App\PaymentType;
 use App\Product;
 use App\Tax;
 use App\User;
@@ -31,7 +32,8 @@ class InvoiceController extends Controller
 
     public function create()
     {
-        return view('invoice.create');
+        $methods = PaymentType::all();
+        return view('invoice.create', ['methods' => $methods]);
     }
 
     public function edit(Invoice $invoice)

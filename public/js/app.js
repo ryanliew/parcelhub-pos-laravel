@@ -75938,7 +75938,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: [],
+	props: ['paymethods'],
 
 	components: {
 		hexatable: __WEBPACK_IMPORTED_MODULE_0__Table_vue___default.a,
@@ -76238,6 +76238,80 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -76245,7 +76319,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['table'],
+	props: ['table', 'paymethods'],
 
 	components: {
 		HexaItem: __WEBPACK_IMPORTED_MODULE_1__HexaItem_vue___default.a,
@@ -76258,13 +76332,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			currentTime: '',
 			invoices: [],
 			items: [],
+			payment_methods: [],
+
 			headcount_type: '',
 			is_select_headcount: false,
 			is_adding_headcount: false,
 			is_checking_out_headcount: false,
+
 			headForm: new Form({
 				heads: []
-			})
+			}),
+
+			form: new Form({
+				total: 0,
+				subtotal: 0,
+				tax: 0,
+				discount_type: "",
+				discount_amount: 0,
+				discount_value: "",
+				paid: "",
+				payment_method: ""
+			}),
+
+			discountTypes: [{ label: "%", value: "%" }, { label: "RM", value: "RM" }],
+			selectedDiscountType: "",
+			selectedPaymentType: ""
+
 		};
 	},
 	mounted: function mounted() {
@@ -76274,11 +76367,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		setInterval(function () {
 			return _this.updateCurrentTime();
 		}, 1000);
+		this.setPaymentMethods();
 		this.getItems();
 	},
 
 
 	methods: {
+		setPaymentMethods: function setPaymentMethods() {
+			this.payment_methods = this.paymethods.map(function (m) {
+				var obj = {};
+
+				obj['label'] = m.name;
+				obj['value'] = m.name;
+
+				return obj;
+			});
+
+			this.selectedPaymentType = this.payment_methods[0];
+		},
 		updateCurrentTime: function updateCurrentTime() {
 			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
 		},
@@ -76296,6 +76402,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		setItems: function setItems(response) {
 			this.invoices = response.data;
+		},
+		deleteItem: function deleteItem(index) {
+			this.items.splice(index, 1);
 		},
 		calculateItemTax: function calculateItemTax(item) {
 			var tax = 0;
@@ -76376,6 +76485,60 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		onSuccess: function onSuccess(response) {},
 		onError: function onError(error) {},
 		onDeactivateSuccess: function onDeactivateSuccess(response) {}
+	},
+
+	computed: {
+		subtotal: function subtotal() {
+			return _.sumBy(this.items, function (item) {
+				return item.total;
+			});
+		},
+		tax: function tax() {
+			return _.sumBy(this.items, function (item) {
+				return item.tax_value;
+			});
+		},
+		total: function total() {
+			return this.subtotal - this.discountValue;
+		},
+		discountValue: function discountValue() {
+			var discount = this.form.discount_amount;
+
+			if (this.selectedDiscountType.value == "%") discount = this.subtotal * this.form.discount_amount / 100;
+
+			return discount;
+		},
+		rounded_total: function rounded_total() {
+			return Math.round((this.total + this.rounding) * 100) / 100;
+		},
+		rounding: function rounding() {
+			var rounded_total = Math.round(this.total * 100 / 5) / 100 * 5;
+			var value = this.total - rounded_total;
+
+			if (value !== 0) return value * -1;
+
+			return 0.00;
+		},
+		change: function change() {
+			return this.form.paid > 0 ? 0 : this.form.paid - this.rounded_total;
+		}
+	},
+
+	watch: {
+		selectedDiscountType: function selectedDiscountType(newValue) {
+			if (newValue) {
+				this.form.discount_type = newValue.value;
+			} else {
+				this.form.discount_type = "";
+			}
+		},
+		selectedPaymentType: function selectedPaymentType(newValue) {
+			if (newValue) {
+				this.form.payment_method = newValue.value;
+			} else {
+				this.form.payment_method = "";
+			}
+		}
 	}
 });
 
@@ -76444,6 +76607,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['item'],
@@ -76468,11 +76632,9 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("tr", [
-    _c("td", [
-      _vm._v(_vm._s(_vm.item.sku)),
-      _c("br"),
-      _c("small", [_c("i", [_vm._v(_vm._s(_vm.item.description))])])
-    ]),
+    _c("td", [_vm._v(_vm._s(_vm.item.sku))]),
+    _vm._v(" "),
+    _c("td", [_c("small", [_c("i", [_vm._v(_vm._s(_vm.item.description))])])]),
     _vm._v(" "),
     _c("td", [_vm._v(_vm._s(_vm.item.price))]),
     _vm._v(" "),
@@ -76483,10 +76645,15 @@ var render = function() {
     _c("td", [_vm._v(_vm._s(_vm.item.total.toFixed(2)))]),
     _vm._v(" "),
     _c("td", [
-      _c("a", [
+      _c("a", { attrs: { href: "#" } }, [
         _c("i", {
           staticClass: "fas fa-trash-alt text-danger",
-          on: { click: _vm.deleteItem }
+          on: {
+            click: function($event) {
+              $event.preventDefault()
+              return _vm.deleteItem($event)
+            }
+          }
         })
       ])
     ])
@@ -77058,16 +77225,161 @@ var render = function() {
               "table",
               { staticClass: "table" },
               _vm._l(_vm.items, function(item, index) {
-                return _c("hexa-item", { key: index, attrs: { item: item } })
+                return _c("hexa-item", {
+                  key: index,
+                  attrs: { item: item },
+                  on: {
+                    delete: function($event) {
+                      _vm.deleteItem(index)
+                    }
+                  }
+                })
               })
             )
           ],
           2
         ),
         _vm._v(" "),
-        _c("div", { staticClass: "order-information" }),
+        _c("div", { staticClass: "order-information row my-3" }, [
+          _c("div", { staticClass: "col" }, [
+            _c(
+              "div",
+              { staticClass: "d-flex flex-column" },
+              [
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.discountTypes,
+                    defaultData: _vm.selectedDiscountType,
+                    placeholder: "Select discount type",
+                    required: false,
+                    label: "Discount type",
+                    name: "discount_type",
+                    editable: true,
+                    focus: false,
+                    hideLabel: false,
+                    error: _vm.form.errors.get("discount_type")
+                  },
+                  model: {
+                    value: _vm.selectedDiscountType,
+                    callback: function($$v) {
+                      _vm.selectedDiscountType = $$v
+                    },
+                    expression: "selectedDiscountType"
+                  }
+                }),
+                _vm._v(" "),
+                _c("text-input", {
+                  attrs: {
+                    defaultValue: _vm.form.discount_amount,
+                    required: false,
+                    type: "number",
+                    label: "Discount",
+                    name: "discount",
+                    editable: true,
+                    focus: true,
+                    hideLabel: false,
+                    error: _vm.form.errors.get("discount")
+                  },
+                  model: {
+                    value: _vm.form.discount_amount,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "discount_amount", $$v)
+                    },
+                    expression: "form.discount_amount"
+                  }
+                })
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col" }, [
+            _c(
+              "div",
+              { staticClass: "d-flex flex-column" },
+              [
+                _c("text-input", {
+                  attrs: {
+                    defaultValue: _vm.form.paid,
+                    required: false,
+                    type: "number",
+                    label: "Paid",
+                    name: "paid",
+                    editable: true,
+                    focus: true,
+                    hideLabel: false,
+                    error: _vm.form.errors.get("paid")
+                  },
+                  model: {
+                    value: _vm.form.paid,
+                    callback: function($$v) {
+                      _vm.$set(_vm.form, "paid", $$v)
+                    },
+                    expression: "form.paid"
+                  }
+                }),
+                _vm._v(" "),
+                _c("selector-input", {
+                  attrs: {
+                    potentialData: _vm.payment_methods,
+                    defaultData: _vm.selectedPaymentType,
+                    placeholder: "Select payment method",
+                    required: false,
+                    label: "Payment method",
+                    name: "payment_method",
+                    editable: true,
+                    focus: false,
+                    hideLabel: false,
+                    error: _vm.form.errors.get("payment_method")
+                  },
+                  model: {
+                    value: _vm.selectedPaymentType,
+                    callback: function($$v) {
+                      _vm.selectedPaymentType = $$v
+                    },
+                    expression: "selectedPaymentType"
+                  }
+                })
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col" }, [
+            _c("div", { staticClass: "text-right d-flex flex-column" }, [
+              _c("div", [
+                _c("b", [_vm._v("Subtotal:")]),
+                _vm._v(" RM" + _vm._s(_vm.subtotal.toFixed(2)) + "\n\t\t\t\t\t")
+              ]),
+              _vm._v(" "),
+              _c("div", [
+                _c("b", [_vm._v("Tax:")]),
+                _vm._v(" RM" + _vm._s(_vm.tax.toFixed(2)) + "\n\t\t\t\t\t")
+              ]),
+              _vm._v(" "),
+              _c("div", [
+                _c("b", [_vm._v("Discount:")]),
+                _vm._v(
+                  " RM" + _vm._s(_vm.discountValue.toFixed(2)) + "\n\t\t\t\t\t"
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", [
+                _c("b", [_vm._v("Rounding:")]),
+                _vm._v(" RM" + _vm._s(_vm.rounding.toFixed(2)) + "\n\t\t\t\t\t")
+              ]),
+              _vm._v(" "),
+              _c("div", [
+                _c("b", [_vm._v("Total:")]),
+                _vm._v(
+                  " RM" + _vm._s(_vm.rounded_total.toFixed(2)) + "\n\t\t\t\t\t"
+                )
+              ])
+            ])
+          ])
+        ]),
         _vm._v(" "),
-        _c("div", { staticClass: "controls d-flex" }, [
+        _c("div", { staticClass: "controls d-flex mb-3" }, [
           _c("button", { staticClass: "btn btn-small btn-secondary mr-2" }, [
             _vm._v("\n\t\t\t\tBack\n\t\t\t")
           ]),
@@ -77156,7 +77468,11 @@ var render = function() {
       : _c(
           "div",
           { staticClass: "container-fluid" },
-          [_c("hexaorder", { attrs: { table: _vm.selectedTable } })],
+          [
+            _c("hexaorder", {
+              attrs: { paymethods: _vm.paymethods, table: _vm.selectedTable }
+            })
+          ],
           1
         )
   ])
