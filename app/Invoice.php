@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
@@ -97,5 +98,13 @@ class Invoice extends Model
     public function getReceiptTypeAttribute()
     {
         return $this->customer_id ? "Tax Invoice" : "Receipt";
+    }
+
+    public function cancel()
+    {
+        $this->update([
+            'canceled_on' => Carbon::now(),
+            'canceled_by' => auth()->id()
+        ]);
     }
 }

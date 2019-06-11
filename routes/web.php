@@ -274,11 +274,16 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'tables'], function() {
 		Route::post("/activate", "TableController@activate");
 		Route::get("/{table}/items", "TableController@current_items");
+		Route::post("/{table}/order", "TableController@place_order");
 	});
 
 	Route::group(['prefix' => 'heads'], function() {
 		Route::post("/activate", "HeadController@activate");
 		Route::post("/deactivate", "HeadController@deactivate");
+	});
+
+	Route::group(['prefix' => 'items'], function() {
+		Route::post("/destroy/{item}", "ItemController@destroy");
 	});
 
 });

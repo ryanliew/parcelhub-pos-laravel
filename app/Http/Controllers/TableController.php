@@ -42,4 +42,53 @@ class TableController extends Controller
     {
         return $table->sessions()->active()->get()->first()->invoices()->with('items')->get();
     }
+
+    public function place_order(Table $table)
+    {
+        // Get current active session
+        $current_session = $table->sessions()->active()->first();
+
+        // Get current user
+        $branch = auth()->user()->current;
+
+        // Get next invoice number
+        $invoice_no = $branch->code . sprintf("%05d", ++$branch->sequence->last_id);
+
+        // Create the invoice
+        $items = collect(json_decode(request()->items));
+
+        $invoice = $current_session->invoices()->create([
+            'subtotal' => $items->sum(function($item){ return $item->price * $item->unit; }),
+            'tax' => $items->sum('tax_value'),
+            'total' => $items->sum('total'),
+            'branch_id' => $branch->id,
+            'terminal_no' => auth()->user()->current_terminal,
+            'invoice_no' => $invoice_no,
+            'created_by' => auth()->user()->id,
+        ]);
+
+        // Add all items into the invoice
+        foreach($items as $item) {
+            $invoice->items()->create([
+                'description' => $item->description,
+                'sku' => $item->sku,
+                'tax' => $item->tax_value,
+                'price' => $item->price,
+                'product_id' => $item->id,
+                'product_type_id' => $item->product_type_id,
+                'total_price' => $item->total,
+                'unit' => $item->unit,
+                'is_custom_pricing' => false,
+                'tax_rate' => $item->tax->percentage,
+                'is_tax_inclusive' => $item->is_tax_inclusive ? true: false,
+                'tax_type' => $item->tax->code,
+            ]);
+        }
+
+        // Update the sequence
+        $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
+
+        // Return the invoice with items
+        return ['message' => 'Order placed successfully', 'invoice' => $invoice->load('items')];
+    }
 }

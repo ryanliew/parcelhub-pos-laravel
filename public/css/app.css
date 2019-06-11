@@ -11513,3 +11513,11 @@ td {
   border-bottom: 1px solid #ccc;
 }
 
+.order-items .table {
+  margin-bottom: 0;
+}
+
+.order-items .table .past-order {
+  background: #ccc;
+}
+

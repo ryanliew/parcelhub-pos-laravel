@@ -8,11 +8,11 @@
 				<b>Table:</b> {{ table.name }}
 			</div>
 			<div class="order-items">
-				<table class="table past-order" v-for="invoice in invoices" :key="invoice.id">
-					<hexa-item :item="item" v-for="item in invoice.items" :key="item.id"></hexa-item>
-				</table>
 				<table class="table">
-					<hexa-item :item="item" v-for="(item,index) in items" :key="index" @delete="deleteItem(index)"></hexa-item>
+					<template  v-for="invoice in invoices" v-if="!invoice.canceled_on">
+						<hexa-item class="past-order" :item="item" v-for="item in invoice.items" :key="item.id" @delete="deleteInvoiceItem(item.id)"></hexa-item>
+					</template>
+					<hexa-item :item="item" v-for="(item,index) in orderForm.items" :key="item.sku" @delete="deleteItem(index)"></hexa-item>
 				</table>
 			</div>
 			<div class="order-information row my-3">
@@ -89,6 +89,9 @@
 						<div>
 							<b>Total:</b> RM{{ rounded_total.toFixed(2) }}
 						</div>
+						<div>
+							<b>Change:</b> RM{{ change.toFixed(2) }}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -101,6 +104,9 @@
 				</button>
 				<button class="btn btn-small btn-primary mr-2" @click="checkoutHeadcount">
 					Checkout headcount
+				</button>
+				<button class="btn btn-small btn-primary mr-2" @click="placeOrder">
+					Place order
 				</button>
 			</div>
 			<headcount-selector 
@@ -151,6 +157,10 @@
 
 				headForm: new Form({
 					heads: []
+				}),
+
+				orderForm: new Form({
+					items: []
 				}),
 
 				form: new Form({
@@ -211,7 +221,21 @@
 			},
 
 			deleteItem(index) {
-				this.items.splice(index, 1);
+				this.orderForm.items.splice(index, 1);
+			},
+
+			deleteInvoiceItem(id) {
+				axios.post("/items/destroy/" + id)
+					.then(response => this.deleteInvoiceItemSuccess(response))
+					.catch(error => this.handleError(error));
+			},
+
+			handleError(error) {
+				console.log(error);
+			},
+
+			deleteInvoiceItemSuccess(response) {
+				this.setItems(response);
 			},
 
 			calculateItemTax(item) {
@@ -237,19 +261,19 @@
 			},
 
 			selectItem(e) {
-				let existing = _.findIndex(this.items, function(item){ return item.id == e.item.id; }.bind(e));
+				let existing = _.findIndex(this.orderForm.items, function(item){ return item.id == e.item.id; }.bind(e));
 
 				let item = e.item;
 
 				if(existing > -1) {
-					this.items[existing].unit++;
-					this.items[existing].tax_value = this.calculateItemTax(this.items[existing]);
-					this.items[existing].total = this.calculateItemTotalPrice(this.items[existing]);
+					this.orderForm.items[existing].unit++;
+					this.orderForm.items[existing].tax_value = this.calculateItemTax(this.orderForm.items[existing]);
+					this.orderForm.items[existing].total = this.calculateItemTotalPrice(this.orderForm.items[existing]);
 				} else {
 					Vue.set(item, 'unit', 1);
 					Vue.set(item, 'tax_value', this.calculateItemTax(item));
 					Vue.set(item, 'total', this.calculateItemTotalPrice(item));
-					this.items.push(item);
+					this.orderForm.items.push(item);
 				}
 
 			},
@@ -293,6 +317,22 @@
 				this.is_checking_out_headcount = false;
 			},
 
+			placeOrder(error = "", tries = 0) {
+				if(tries == 0)
+					this.orderForm.post("/tables/" + this.table.id + "/order")
+						.then(response => this.setNewInvoice(response))
+						.catch(error => this.placeOrder(error, ++tries));
+			},
+
+			setNewInvoice(response) {
+				this.invoices.push(response.invoice);
+				this.orderForm.items = [];
+			},
+
+			confirmOrder() {
+
+			},
+
 			onSuccess(response) {
 
 			},
@@ -307,12 +347,24 @@
 		},
 
 		computed: {
+			invoicesSubtotal() {
+				return _.sumBy(this.invoices, function(invoice){
+					return _.sumBy(invoice.items, function(item){ return item.total_price; })
+				});
+			},
+
+			invoicesTax() {
+				return _.sumBy(this.invoices, function(invoice){
+					return _.sumBy(invoice.items, function(item){ return item.tax; });
+				});
+			},
+
 			subtotal() {
-				return _.sumBy(this.items, function(item){ return item.total; })
+				return _.sumBy(this.orderForm.items, function(item){ return item.total; }) + this.invoicesSubtotal;
 			},
 
 			tax() {
-				return _.sumBy(this.items, function(item){ return item.tax_value; });
+				return _.sumBy(this.orderForm.items, function(item){ return item.tax_value; }) + this.invoicesTax;
 			},
 
 			total() {
@@ -343,8 +395,36 @@
 			},
 
 			change() {
-				return this.form.paid > 0 ? 0 : this.form.paid - this.rounded_total;
+				return this.form.paid > 0 ? this.form.paid - this.rounded_total : 0 ;
+			},
+
+			canPlaceOrder() {
+				return this.orderForm.items.length > 0;
+			},
+
+			placeOrderMessage() {
+				let message = "";
+
+				if(this.orderForm.items.length == 0) {
+					message = "No items to place order.";
+				}
+
+				return message;
+			},
+
+			canCloseOrder() {
+				return this.form.paid >= this.total;
+			},
+
+			closeOrderMessage() {
+				let message = "";
+
+				if(this.form.paid < this.total)
+					message = "Must pay full amount";
+
+				return message;
 			}
+
 
 		},
 
