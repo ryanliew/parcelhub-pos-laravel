@@ -376,8 +376,7 @@ class InvoiceController extends Controller
         if(!Hash::check($password, auth()->user()->password)) 
             $message = "Incorrect password";
 
-        // if(!auth()->user()->isAdmin()) 
-        if(true)
+        if(!auth()->user()->isAdmin()) 
             $message = "This feature is not opened yet";
 
         if($invoice->cashup()->count() > 0)

@@ -176,6 +176,10 @@
 			@input="is_custom_pricing = true"
 			@tab="$emit('addItem')">
 		</text-input>
+
+		<div>
+			<i class="fa fa-exclamation-circle pl-1" :class="networkErrorClass" :title="networkErrorTitle"></i>
+		</div>
 		
 		<text-input v-model="total_price" 
 			:defaultValue="total_price"
@@ -188,7 +192,9 @@
 			:hideLabel="true">
 		</text-input>
 
-		<div><button type="button" class="btn btn-sm btn-danger" @click="$emit('delete')" :disabled="!canEdit">Delete</button></div>
+		<div>
+			<button type="button" class="btn btn-sm btn-danger" @click="$emit('delete')" :disabled="!canEdit">Delete</button>
+		</div>
 
 		<modal :active="isCalculatingDimWeight"
 			:id="'dim-weight-calculator-' + this.index"
@@ -285,7 +291,9 @@
 
 				tracking_no_repeating: '',
 
-				products: []
+				products: [],
+
+				hasNetworkError: false
 			};
 		},
 
@@ -320,7 +328,7 @@
 
 		methods: {
 			doNothing(event) {
-				console.log(event);
+				// console.log(event);
 				// console.log("Do nothing from child");
 			},
 			updateItem(){
@@ -464,11 +472,12 @@
 
 					axios.get(url)
 						.then(response => this.setProducts(response))
-						.catch(error => this.updateProducts(error));
+						.catch(error => this.onNetworkError(error));
 				}
 			},
 
 			productChange: _.debounce(function(){
+				this.hasNetworkError = false;
 				if(this.selectedProduct && this.should_update) {
 					this.description = this.selectedProduct.description;
 					this.item_tax_inclusive = this.selectedProduct.is_tax_inclusive;
@@ -521,7 +530,7 @@
 				return url;
 			},
 
-			getProductPrice(error = 'No error') {
+			getProductPrice: _.debounce(function(error = 'No error') {
 				// console.log(error);
 
 				if(this.selectedProduct && this.canEdit && !this.item.is_deleted) {
@@ -534,10 +543,15 @@
 
 					axios.get(url)
 						.then(response => this.setProductPrice(response))
-						.catch(error => this.getProductPrice(error));
+						.catch(error => this.onNetworkError(error));
 				}
 
 				Vue.nextTick( () => this.setProductPrice(''));
+			}, 100),
+
+			onNetworkError(error) {
+				console.log(error);
+				this.hasNetworkError = true;
 			},
 
 			setProductPrice(response) {
@@ -630,6 +644,14 @@
 
 			shouldDisable() {
 				return this.products.length == 1 && this.selectedProduct != null;
+			},
+
+			networkErrorTitle() {
+				return this.hasNetworkError ? "Network error detected, your prices might not be accurate" : "No network error";
+			},
+
+			networkErrorClass() {
+				return this.hasNetworkError ? "text-danger" : "text-white";
 			}
 		},
 
@@ -640,7 +662,13 @@
 			},
 
 			tracking_no_error(newVal) {
-				this.$emit('update', {attribute: 'has_error', value: newVal != ''});
+				let has_error = newVal != "" || this.hasNetworkError;
+				this.$emit('update', {attribute: 'has_error', value: has_error});
+			},
+
+			hasNetworkError(newVal) {
+				let has_error = newVal || this.tracking_no_error != "";
+				this.$emit("update", {attribute: 'has_error', value: has_error});
 			},
 
 			selectedProductType(newVal) {
