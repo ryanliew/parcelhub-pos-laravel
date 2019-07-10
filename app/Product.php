@@ -57,6 +57,11 @@ class Product extends Model
                   ->withTimestamps();
     }
 
+    public function scopeHeadcounts($query) 
+    {
+      return $query->where('product_type_id', 1);
+    }
+
     public function getTaxTypeAttribute()
     {
       return $this->tax->code;

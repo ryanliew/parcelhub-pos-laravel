@@ -96,7 +96,7 @@
 				</div>
 			</div>
 			<div class="controls d-flex mb-3">
-				<button class="btn btn-small btn-secondary mr-2">
+				<button class="btn btn-small btn-secondary mr-2" @click="back">
 					Back
 				</button>
 				<button class="btn btn-small btn-primary mr-2" @click="addHeadcount">
@@ -192,6 +192,10 @@
 		},
 
 		methods: {
+			back() {
+				this.$emit('back');
+			},
+			
 			setPaymentMethods() {
 				this.payment_methods = this.paymethods.map(function(m){
 					let obj = {};
@@ -261,19 +265,29 @@
 			},
 
 			selectItem(e) {
-				let existing = _.findIndex(this.orderForm.items, function(item){ return item.id == e.item.id; }.bind(e));
+				console.log("Selecting items");
+				console.log(e);
 
-				let item = e.item;
+				let item = e.item ? e.item : e;
+
+				let existing = _.findIndex(this.orderForm.items, function(item){ return item.id == item.id; }.bind(item));
 
 				if(existing > -1) {
+					console.log("I am here");
 					this.orderForm.items[existing].unit++;
 					this.orderForm.items[existing].tax_value = this.calculateItemTax(this.orderForm.items[existing]);
 					this.orderForm.items[existing].total = this.calculateItemTotalPrice(this.orderForm.items[existing]);
 				} else {
+					console.log("I am there");
+					console.log(item);
 					Vue.set(item, 'unit', 1);
+					console.log("Set unit complete");
 					Vue.set(item, 'tax_value', this.calculateItemTax(item));
+					console.log("Calculating tax")
 					Vue.set(item, 'total', this.calculateItemTotalPrice(item));
+					console.log("Pushing item");
 					this.orderForm.items.push(item);
+					console.log("Pushed item");
 				}
 
 			},
@@ -342,7 +356,15 @@
 			},
 
 			onDeactivateSuccess(response) {
+				console.log(response);
+				console.log(response.products);
+				console.log("Deactivated heads");
 
+				let products = response.products;
+
+				_.forEach(products, function(product){
+					this.selectItem(product);
+				}.bind(this));
 			},
 		},
 

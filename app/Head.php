@@ -23,7 +23,7 @@ class Head extends Model
     public function activate()
 	{
 		$this->update([
-			'activated_at' => Carbon::now(),
+			'activated_at' => Carbon::now()->subHour(),
 		]);
 	}
 

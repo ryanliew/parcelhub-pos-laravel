@@ -5,12 +5,13 @@
 				<hexatable :table="hexatable" 
 					v-for="hexatable in tables" 
 					:key="hexatable.id"
-					@order="selectTable(hexatable)">
+					@order="selectTable(hexatable)"
+					@back="back">
 				</hexatable>
 			</div>
 		</div>
 		<div class="container-fluid" v-else>
-			<hexaorder :paymethods="paymethods" :table="selectedTable"></hexaorder>
+			<hexaorder :paymethods="paymethods" :table="selectedTable" @back="back"></hexaorder>
 		</div>
 	</div>
 </template>
@@ -39,6 +40,10 @@
 		},
 
 		methods: {
+			back() {
+				this.is_ordering = false;
+			},
+
 			getTables(error, tries = 0) {
 				if(tries < 3)
 					axios.get("/data/tables")
