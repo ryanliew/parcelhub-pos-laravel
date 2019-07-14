@@ -91,4 +91,26 @@ class TableController extends Controller
         // Return the invoice with items
         return ['message' => 'Order placed successfully', 'invoice' => $invoice->load('items')];
     }
+
+    public function close(Table $table)
+    {
+        request()->validate([
+            'paid' => 'required',
+        ]);
+
+        $active_session = $table->sessions()->active()->first();
+
+        $active_session->update([
+            'discount' => request()->discount_amount,
+            'discount_value' => request()->discount_value,
+            'discount_mode' => request()->discount_type,
+            'paid' => request()->paid,
+            'payment_type' => request()->payment_method,
+            'is_active' => 0,
+            "total" => request()->total,
+            "rounding" => request()->rounding,
+        ]);
+
+        return json_encode(['message' => "Table closed successfully, redirecting to invoice list page", "id" => $active_session->id, "redirect_url" => "/sessions/" . $active_session->id . "/receipt"]);
+    }
 }

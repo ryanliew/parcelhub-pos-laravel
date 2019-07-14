@@ -438,7 +438,7 @@ th, td { white-space: nowrap; }
 
 .order-information {
 	height: 20vh;
-	overflow-y: auto;
+	overflow-y: visible;
 }
 
 .order-items, .order-information {

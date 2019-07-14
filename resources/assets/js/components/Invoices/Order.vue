@@ -77,9 +77,9 @@
 						<div>
 							<b>Subtotal:</b> RM{{ subtotal.toFixed(2) }}
 						</div>
-						<div>
+						<!-- <div>
 							<b>Tax:</b> RM{{ tax.toFixed(2) }}
-						</div>
+						</div> -->
 						<div>
 							<b>Discount:</b> RM{{ discountValue.toFixed(2) }}
 						</div>
@@ -105,8 +105,11 @@
 				<button class="btn btn-small btn-primary mr-2" @click="checkoutHeadcount">
 					Checkout headcount
 				</button>
-				<button class="btn btn-small btn-primary mr-2" @click="placeOrder">
+				<button class="btn btn-small btn-primary mr-2" @click="placeOrder" :disabled="!canPlaceOrder">
 					Place order
+				</button>
+				<button class="btn btn-small btn-primary mr-2" @click="closeTable" :disabled="!canCloseTable">
+					Close table
 				</button>
 			</div>
 			<headcount-selector 
@@ -171,7 +174,8 @@
 					discount_amount: 0,
 					discount_value: "",
 					paid: "",
-					payment_method: ""
+					payment_method: "",
+					rounding: "",
 				}),
 
 				discountTypes: [
@@ -268,9 +272,9 @@
 				console.log("Selecting items");
 				console.log(e);
 
-				let item = e.item ? e.item : e;
+				let selectedItem = e.item ? e.item : e;
 
-				let existing = _.findIndex(this.orderForm.items, function(item){ return item.id == item.id; }.bind(item));
+				let existing = _.findIndex(this.orderForm.items, function(item){ return selectedItem.id == item.id; }.bind(selectedItem));
 
 				if(existing > -1) {
 					console.log("I am here");
@@ -278,16 +282,10 @@
 					this.orderForm.items[existing].tax_value = this.calculateItemTax(this.orderForm.items[existing]);
 					this.orderForm.items[existing].total = this.calculateItemTotalPrice(this.orderForm.items[existing]);
 				} else {
-					console.log("I am there");
-					console.log(item);
-					Vue.set(item, 'unit', 1);
-					console.log("Set unit complete");
-					Vue.set(item, 'tax_value', this.calculateItemTax(item));
-					console.log("Calculating tax")
-					Vue.set(item, 'total', this.calculateItemTotalPrice(item));
-					console.log("Pushing item");
-					this.orderForm.items.push(item);
-					console.log("Pushed item");
+					Vue.set(selectedItem, 'unit', 1);
+					Vue.set(selectedItem, 'tax_value', this.calculateItemTax(selectedItem));
+					Vue.set(selectedItem, 'total', this.calculateItemTotalPrice(selectedItem));
+					this.orderForm.items.push(selectedItem);
 				}
 
 			},
@@ -342,6 +340,25 @@
 				this.invoices.push(response.invoice);
 				this.orderForm.items = [];
 			},
+
+			closeTable(error = "", tries = 0) {
+				if(tries == 0) {
+					// Set the calculated data to form
+					this.form.total = this.total;
+					this.form.subtotal = this.subtotal;
+					this.form.tax = this.tax;
+					this.form.discount_type = this.selectedDiscountType;
+					// this.form.discount_amount = this.form.discount_amount; // Commented as it is user input
+					this.form.discount_value = this.discountValue; 
+					// this.form.paid = this.form.paid; // Commented as it is user input
+					// this.form.payment_method = this.form.payment_method;
+					this.form.rounding = this.rounding;
+					 
+					this.form.post("/tables/" + this.table.id + "/close")
+						.then(response => this.tableClosed(response))
+						.catch(error => this.closeTable(error, ++tries));
+				}
+			},	
 
 			confirmOrder() {
 
@@ -422,6 +439,11 @@
 
 			canPlaceOrder() {
 				return this.orderForm.items.length > 0;
+			},
+
+			canCloseTable() {
+				return !this.canPlaceOrder
+						&& this.form.paid >= this.rounded_total;
 			},
 
 			placeOrderMessage() {

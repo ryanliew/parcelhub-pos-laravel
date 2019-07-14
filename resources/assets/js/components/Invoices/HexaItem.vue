@@ -4,7 +4,7 @@
 		<td><small><i>{{ item.description }}</i></small></td>
 		<td>{{ unitPrice.toFixed(2) }}</td>
 		<td>{{ item.unit }}</td>
-		<td>{{ taxValue.toFixed(2) }}</td>
+		<!-- <td>{{ taxValue.toFixed(2) }}</td> -->
 		<td>{{ totalPrice.toFixed(2) }}</td>
 
 		<td><a href="#"><i class="fas fa-trash-alt text-danger" @click.prevent="deleteItem"></i></a></td>

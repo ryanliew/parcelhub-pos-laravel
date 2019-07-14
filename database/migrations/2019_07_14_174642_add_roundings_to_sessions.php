@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddLocationToMessage extends Migration
+class AddRoundingsToSessions extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddLocationToMessage extends Migration
      */
     public function up()
     {
-        Schema::table('messages', function (Blueprint $table) {
-            //
+        Schema::table('sessions', function (Blueprint $table) {
+            $table->float("rounding", 10, 2)->nullable();
+            $table->float("total", 10, 2)->nullable();
         });
     }
 
@@ -25,8 +26,8 @@ class AddLocationToMessage extends Migration
      */
     public function down()
     {
-        Schema::table('messages', function (Blueprint $table) {
-            //
+        Schema::table('sessions', function (Blueprint $table) {
+            $table->dropColumn(['rounding', 'total']);
         });
     }
 }

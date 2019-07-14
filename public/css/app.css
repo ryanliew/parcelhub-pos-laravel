@@ -11505,7 +11505,7 @@ td {
 
 .order-information {
   height: 20vh;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .order-items,
