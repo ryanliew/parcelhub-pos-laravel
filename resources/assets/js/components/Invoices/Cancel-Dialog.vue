@@ -20,7 +20,7 @@
 							:defaultValue="form.password"
 							:required="true"
 							type="password"
-							label="Please type your password to confirm"
+							label="Branch admin password"
 							name="password"
 							:editable="true"
 							:focus="true"
@@ -70,14 +70,17 @@
 
 		methods: {
 			openDialog(evt) {
+				this.form.reset();
+				this.error = '';
 				this.data= evt[0];
 				$("#cancel-dialog").modal();
 				this.isActive = true;
 			},
 
 			closeDialog() {
-				this.isActive = false;
 				this.form.reset();
+				this.error = '';
+				this.isActive = false;
 			},
 
 			submit() {

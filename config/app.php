@@ -1,7 +1,17 @@
 <?php
 
 return [
-
+    /*
+    |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | This value is the version of your application. This value is used when there
+    | is any updates on the compiled CSS / JS file, which will force the browser
+    | to clear the cached version.
+    |
+    */
+    'version' => '2.7.0.0',
     /*
     |--------------------------------------------------------------------------
     | Application Name
