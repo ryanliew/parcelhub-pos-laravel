@@ -64,6 +64,15 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        'do' => [
+            'driver' => 's3',
+            'key' => env('DO_SPACE_KEY'),
+            'secret' => env('DO_SPACE_SECRET'),
+            'region' => env("DO_SPACE_REGION"),
+            'version' => "latest",
+            'endpoint' => env("DO_SPACE_URL"),
+            'bucket' => env("DO_SPACE_BUCKET"),
+        ]
     ],
 
 ];
