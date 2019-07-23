@@ -110,6 +110,7 @@ class Form {
     reset() {
         for (let field in this.originalData) {
             this[field] = this.originalData[field];
+            console.log("Resetting " + field);
         }
         this.submitting = false;
         this.errors.clear();

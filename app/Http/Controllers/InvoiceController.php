@@ -373,8 +373,10 @@ class InvoiceController extends Controller
     {
         $message = '';
 
-        if(!Hash::check($password, auth()->user()->password)) 
-            $message = "Incorrect password";
+        $admins = $invoice->branch->permissions()->with('user')->write()->get()->pluck('user');
+
+        if(!$admins->contains(function($value, $key) use ($password){ return Hash::check($password, $value->password); })) 
+            $message = "Incorrect password, you need an admin password";
 
         if(!auth()->user()->isAdmin()) 
             $message = "This feature is not opened yet";

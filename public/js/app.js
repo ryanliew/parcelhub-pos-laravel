@@ -79134,13 +79134,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	methods: {
 		openDialog: function openDialog(evt) {
+			this.form.reset();
+			this.error = '';
 			this.data = evt[0];
 			$("#cancel-dialog").modal();
 			this.isActive = true;
 		},
 		closeDialog: function closeDialog() {
-			this.isActive = false;
 			this.form.reset();
+			this.error = '';
+			this.isActive = false;
 		},
 		submit: function submit() {
 			var _this2 = this;
@@ -79231,7 +79234,7 @@ var render = function() {
                       defaultValue: _vm.form.password,
                       required: true,
                       type: "password",
-                      label: "Please type your password to confirm",
+                      label: "Branch admin password",
                       name: "password",
                       editable: true,
                       focus: true,

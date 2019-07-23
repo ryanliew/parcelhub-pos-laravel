@@ -28,4 +28,9 @@ class Permission extends Model
     						->where('type', $type)
     						->count() > 0;
     }
+
+    public function scopeWrite($query)
+    {
+        return $query->where('type', 'write');
+    }
 }
