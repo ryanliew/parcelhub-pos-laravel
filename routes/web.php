@@ -65,6 +65,7 @@ Route::get("/testscript", function() {
 	}
 });
 
+Route::get("/admin/move/invoices", "ScriptController@move_invoices");
 Auth::routes();
 
 Route::get('/home', function() {
