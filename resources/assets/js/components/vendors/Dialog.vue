@@ -26,7 +26,7 @@
 									:error="form.errors.get('name')">
 								</text-input>
 							</div>
-							<div class="col">
+							<!-- <div class="col">
 								<selector-input :potentialData="zonetypes"
 									v-model="selectedZoneType" 
 									:defaultData="selectedZoneType"
@@ -39,10 +39,10 @@
 									:hideLabel="false"
 									:error="form.errors.get('zone_type_id')">
 								</selector-input>
-							</div>
+							</div> -->
 							
 						</div>
-						<div class="row">
+						<!-- <div class="row">
 							<div class="col">
 								<text-input v-model="form.formula" 
 									:defaultValue="form.formula"
@@ -56,7 +56,7 @@
 									:error="form.errors.get('formula')">
 								</text-input>
 							</div>
-						</div>
+						</div> -->
 					</form>
 	      		</div>
 	      		<div class="modal-footer">
@@ -86,8 +86,8 @@
 				zonetypes: [],
 				form: new Form({
 					name: '',
-					formula: '',
-					zone_type_id: '',
+					// formula: '',
+					// zone_type_id: '',
 				})
 			};
 		},
@@ -100,7 +100,7 @@
 				this.closeDialog();
 			}.bind(this));
 
-			this.getZoneType();
+			// this.getZoneType();
 		},
 
 		methods: {

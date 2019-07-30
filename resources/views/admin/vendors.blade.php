@@ -19,8 +19,6 @@
 					<thead>
 						<tr>
 							<th>Name</th>
-							<th>Formula</th>
-							<th>Type</th>
 						</tr>
 					</thead>
 				</table>
@@ -75,9 +73,7 @@
 				],
 				ajax: '{!! route("vendors.index") !!}',
 				columns: [
-					{data: 'name'},
-					{data: 'formula'},
-					{data: 'zone_type.name'}
+					{data: 'name'}
 				]
 			});
 

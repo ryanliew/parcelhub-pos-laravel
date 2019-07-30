@@ -80,9 +80,8 @@
 						<tr>
 							<th>SKU</th>
 							<th>Description</th>
-							<th>Zone</th>
 							<th>Vendor</th>
-							<th>Weight</th>
+							<th>Hour</th>
 							<th>Type</th>
 							<th>Amount</th>
 						</tr>
@@ -92,9 +91,8 @@
 							<tr>
 								<td>{{ $sku }}</td>
 								<td>{{ $product->first()->product->description }}</td>
-								<td>{{ $product->first()->product->zone }}</td>
 								<td>@if($product->first()->product->vendor_id) {{ $product->first()->product->vendor->name }} @else - @endif</td>
-								<td>{{ $product->first()->product->weight_start }} - {{ $product->first()->product->weight_end }}</td>
+								<td>{{ $product->first()->product->hour_start }} - {{ $product->first()->product->hour_end }}</td>
 								<td>{{ $product->first()->product->product_type->name }}</td>
 								<td>RM{{ number_format($product->sum('total_price'), 2, ".", "") }}</td>
 							</tr>
@@ -114,12 +112,10 @@
 						<tr>
 							<th>SKU</th>
 							<th>Description</th>
-							<th>Zone</th>
 							<th>Vendor</th>
-							<th>Weight</th>
+							<th>Hour</th>
 							<th>Type</th>
 							<th>Invoice</th>
-							<th>Tracking no.</th>
 							<th>Amount</th>
 							<th>Date</th>
 						</tr>
@@ -129,12 +125,10 @@
 							<tr>
 								<td>{{ $item->product->sku }}</td>
 								<td>{{ $item->product->description }}</td>
-								<td>{{ $item->product->zone }}</td>
 								<td>@if($item->product->vendor_id){{ $item->product->vendor->name }} @else - @endif</td>
-								<td>{{ $item->product->weight_start }} - {{ $item->product->weight_end }}</td>
+								<td>{{ $item->product->hour_start }} - {{ $item->product->hour_end }}</td>
 								<td>{{ $item->product->product_type->name }}</td>
 								<td><a href="/invoices/edit/{{ $item->invoice->id }}" target="_blank">{{ $item->invoice->invoice_no }}</a></td>
-								<td>{{ $item->tracking_code }}</td>
 								<td>RM{{ number_format($item->total_price, 2, ".", "") }}</td>
 								<td>{{ $item->created_at->toDateString() }}</td>
 							</tr>

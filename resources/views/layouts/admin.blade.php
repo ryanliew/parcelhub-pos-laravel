@@ -83,14 +83,14 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('terminals.page') }}">Terminals</a></li>
                         @endif
                         <li class="nav-item"><a class="nav-link" href="{{ route('vendors.page') }}">Vendors</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('zones.page') }}">Zones</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('taxes.page') }}">Taxes</a></li>
+                        {{-- <li class="nav-item"><a class="nav-link" href="{{ route('zones.page') }}">Zones</a></li> --}}
+                        {{-- <li class="nav-item"><a class="nav-link" href="{{ route('taxes.page') }}">Taxes</a></li> --}}
                         <li class="nav-item"><a class="nav-link" href="{{ route('users.page') }}">Users</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('permissions.page') }}">Permissions</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('reports.page') }}">Reports</a></li>
-                        <li class="nav-item dropdown">
+                        {{-- <li class="nav-item dropdown">
                             <a id="settings-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 Settings <span class="caret"></span>
                             </a>
@@ -105,7 +105,7 @@
                                 </a>
                                 @endif
                             </div>
-                        </li>
+                        </li> --}}
                     </ul>
                 </div>
                 <span class="badge badge-danger">You are in Admin panel</span>

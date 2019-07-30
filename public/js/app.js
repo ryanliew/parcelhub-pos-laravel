@@ -72094,9 +72094,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			isEdit: false,
 			zonetypes: [],
 			form: new Form({
-				name: '',
-				formula: '',
-				zone_type_id: ''
+				name: ''
+				// formula: '',
+				// zone_type_id: '',
 			})
 		};
 	},
@@ -72114,7 +72114,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.closeDialog();
 		}.bind(this));
 
-		this.getZoneType();
+		// this.getZoneType();
 	},
 
 
@@ -72283,65 +72283,6 @@ var render = function() {
                               _vm.$set(_vm.form, "name", $$v)
                             },
                             expression: "form.name"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("selector-input", {
-                          attrs: {
-                            potentialData: _vm.zonetypes,
-                            defaultData: _vm.selectedZoneType,
-                            placeholder: "Select zone type",
-                            required: true,
-                            label: "Zone Type",
-                            name: "zone_type_id",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("zone_type_id")
-                          },
-                          model: {
-                            value: _vm.selectedZoneType,
-                            callback: function($$v) {
-                              _vm.selectedZoneType = $$v
-                            },
-                            expression: "selectedZoneType"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.formula,
-                            required: true,
-                            type: "text",
-                            label: "Formula",
-                            name: "formula",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("formula")
-                          },
-                          model: {
-                            value: _vm.form.formula,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "formula", $$v)
-                            },
-                            expression: "form.formula"
                           }
                         })
                       ],

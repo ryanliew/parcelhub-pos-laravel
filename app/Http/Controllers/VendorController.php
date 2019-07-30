@@ -16,8 +16,8 @@ class VendorController extends Controller
 	{
 		request()->validate([
             "name" => "required",
-            "formula" => "required",
-            "zone_type_id" => "required"
+            // "formula" => "required",
+            // "zone_type_id" => "required"
         ]);
 	}
 
