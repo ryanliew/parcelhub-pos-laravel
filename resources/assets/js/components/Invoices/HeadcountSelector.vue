@@ -28,6 +28,7 @@
 				<button class="btn btn-success btn-block btn-lg text-big">
 					{{ head.number }}
 				</button>
+
 				<text-input v-model="selectedHead.member_phone" 
 					:defaultValue="selectedHead.member_phone"
 					:required="false"
@@ -37,7 +38,7 @@
 					:editable="true"
 					:focus="true"
 					:hideLabel="true"
-					:error="form.errors.get('member')">
+					:hideLabel="true">
 				</text-input>
 			</div>
 		</div>
