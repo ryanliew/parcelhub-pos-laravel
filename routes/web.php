@@ -276,6 +276,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/{table}/items", "TableController@current_items");
 		Route::post("/{table}/order", "TableController@place_order");
 		Route::post("/{table}/close", "TableController@close");
+		Route::get("/{table}/check", "TableController@check");
 	});
 
 	Route::group(['prefix' => 'heads'], function() {
