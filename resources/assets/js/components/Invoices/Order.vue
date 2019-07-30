@@ -108,7 +108,7 @@
 				<button class="btn btn-small btn-primary mr-2" @click="placeOrder" :disabled="!canPlaceOrder">
 					Place order
 				</button>
-				<button class="btn btn-small btn-primary mr-2" @click="guestCheck" :disabled="!canCloseTable">
+				<button class="btn btn-small btn-primary mr-2" @click="guestCheck">
 					Guest check
 				</button>
 				<button class="btn btn-small btn-primary mr-2" @click="closeTable" :disabled="!canCloseTable">
@@ -276,15 +276,11 @@
 			},
 
 			selectItem(e) {
-				console.log("Selecting items");
-				console.log(e);
-
 				let selectedItem = e.item ? e.item : e;
 
 				let existing = _.findIndex(this.orderForm.items, function(item){ return selectedItem.id == item.id; }.bind(selectedItem));
 
 				if(existing > -1) {
-					console.log("I am here");
 					this.orderForm.items[existing].unit++;
 					this.orderForm.items[existing].tax_value = this.calculateItemTax(this.orderForm.items[existing]);
 					this.orderForm.items[existing].total = this.calculateItemTotalPrice(this.orderForm.items[existing]);
@@ -351,16 +347,8 @@
 			closeTable(error = "", tries = 0) {
 				if(tries == 0) {
 					if(this.invoices.length > 0) {
-						// Set the calculated data to form
-						this.form.total = this.total;
-						this.form.subtotal = this.subtotal;
-						this.form.tax = this.tax;
-						this.form.discount_type = this.selectedDiscountType;
-						// this.form.discount_amount = this.form.discount_amount; // Commented as it is user input
-						this.form.discount_value = this.discountValue; 
-						// this.form.paid = this.form.paid; // Commented as it is user input
-						// this.form.payment_method = this.form.payment_method;
-						this.form.rounding = this.rounding;
+						
+						this.setFormValues();
 						 
 						this.form.post("/tables/" + this.table.id + "/close")
 							.then(response => this.tableClosed(response))
@@ -375,6 +363,19 @@
 
 			},	
 
+			setFormValues() {
+				// Set the calculated data to form
+				this.form.total = this.rounded_total;
+				this.form.subtotal = this.subtotal;
+				this.form.tax = this.tax;
+				this.form.discount_type = this.selectedDiscountType;
+				// this.form.discount_amount = this.form.discount_amount; // Commented as it is user input
+				this.form.discount_value = this.discountValue; 
+				// this.form.paid = this.form.paid; // Commented as it is user input
+				// this.form.payment_method = this.form.payment_method;
+				this.form.rounding = this.rounding;
+			},
+
 			tableDeactivated(response) {
 				window.location.reload();
 			},
@@ -385,14 +386,15 @@
 			},
 
 			guestCheck(error, tries = 0) {
+				this.setFormValues();
 				if(tries < 3)
-					axios.get("/tables/" + this.table.id + "/check")
+					this.form.post("/tables/" + this.table.id + "/check", false)
 						.then(response => this.print(response))
 						.catch(error => this.guestCheck(error, ++tries));
 			},
 
 			print(response) {
-				window.open(response.data.redirect_url);
+				window.open(response.redirect_url);
 			},
 
 			confirmOrder() {
@@ -448,7 +450,7 @@
 				if(this.selectedDiscountType.value == "%")
 					discount = this.subtotal * this.form.discount_amount / 100;
 
-				return discount;
+				return parseFloat(discount);
 			},
 
 			rounded_total() {

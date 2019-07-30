@@ -118,6 +118,14 @@ class TableController extends Controller
     {
         $active_session = $table->sessions()->active()->first();
 
-        return json_encode(['redirect_url' => "/sessions/" . $active_session->id . "/receipt"]);
+        $active_session->update([
+            'discount' => request()->discount_amount,
+            'discount_value' => request()->discount_value,
+            'discount_mode' => request()->discount_type,
+            "total" => request()->total,
+            "rounding" => request()->rounding,
+        ]);
+
+        return json_encode(['message' => "Generating guest check", 'redirect_url' => "/sessions/" . $active_session->id . "/check"]);
     }
 }
