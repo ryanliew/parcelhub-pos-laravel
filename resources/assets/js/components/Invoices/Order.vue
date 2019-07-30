@@ -269,15 +269,11 @@
 			},
 
 			selectItem(e) {
-				console.log("Selecting items");
-				console.log(e);
-
 				let selectedItem = e.item ? e.item : e;
 
 				let existing = _.findIndex(this.orderForm.items, function(item){ return selectedItem.id == item.id; }.bind(selectedItem));
 
 				if(existing > -1) {
-					console.log("I am here");
 					this.orderForm.items[existing].unit++;
 					this.orderForm.items[existing].tax_value = this.calculateItemTax(this.orderForm.items[existing]);
 					this.orderForm.items[existing].total = this.calculateItemTotalPrice(this.orderForm.items[existing]);

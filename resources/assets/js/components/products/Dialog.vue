@@ -58,70 +58,57 @@
 						</div>
 						<div class="row">
 							<div class="col">
-								<text-input v-model="form.weight_start" 
-									:defaultValue="form.weight_start"
+								<text-input v-model="form.hour_start" 
+									:defaultValue="form.hour_start"
 									:required="false"
 									type="number"
-									label="Weight start"
-									name="weight_start"
+									label="Hour start"
+									name="hour_start"
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
-									:error="form.errors.get('weight_start')">
+									:error="form.errors.get('hour_start')">
 								</text-input>
 							</div>
 							<div class="col">
-								<text-input v-model="form.weight_end" 
-									:defaultValue="form.weight_end"
+								<text-input v-model="form.hour_end" 
+									:defaultValue="form.hour_end"
 									:required="false"
 									type="number"
-									label="Weight end"
-									name="weight_end"
+									label="Hour end"
+									name="hour_end"
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
-									:error="form.errors.get('weight_end')">
+									:error="form.errors.get('hour_end')">
 								</text-input>
 							</div>
 						</div>	
 						<div class="row">
 							<div class="col">
-								<text-input v-model="form.corporate_price" 
-									:defaultValue="form.corporate_price"
+								<text-input v-model="form.price" 
+									:defaultValue="form.price"
 									:required="true"
 									type="number"
-									label="Corporate price"
-									name="corporate_price"
+									label="Price"
+									name="price"
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
-									:error="form.errors.get('corporate_price')">
+									:error="form.errors.get('price')">
 								</text-input>
 							</div>
 							<div class="col">
-								<text-input v-model="form.walk_in_price" 
-									:defaultValue="form.walk_in_price"
-									:required="true"
+								<text-input v-model="form.member_price" 
+									:defaultValue="form.member_price"
+									:required="false"
 									type="number"
-									label="Walk in price"
-									name="walk_in_price"
+									label="Member price"
+									name="member_price"
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
-									:error="form.errors.get('walk_in_price')">
-								</text-input>
-							</div>
-							<div class="col">
-								<text-input v-model="form.walk_in_price_special" 
-									:defaultValue="form.walk_in_price_special"
-									:required="true"
-									type="number"
-									label="Walk in price (special)"
-									name="walk_in_price_special"
-									:editable="true"
-									:focus="false"
-									:hideLabel="false"
-									:error="form.errors.get('walk_in_price_special')">
+									:error="form.errors.get('member_price')">
 								</text-input>
 							</div>
 						</div>
@@ -161,35 +148,6 @@
 								</selector-input>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col">
-								<selector-input :potentialData="zonetypes"
-									v-model="selectedZoneType" 
-									:defaultData="selectedZoneType"
-									placeholder="Select zone type"
-									:required="false"
-									label="Zone type"
-									name="zone_type_id"
-									:editable="true"
-									:focus="false"
-									:hideLabel="false"
-									:error="form.errors.get('zone_type_id')">
-								</selector-input>
-							</div>
-							<div class="col">
-								<text-input v-model="form.zone" 
-									:defaultValue="form.zone"
-									:required="false"
-									type="number"
-									label="Zone"
-									name="zone"
-									:editable="true"
-									:focus="false"
-									:hideLabel="false"
-									:error="form.errors.get('zone')">
-								</text-input>
-							</div>
-						</div>
 					</form>
 	      		</div>
 	      		<div class="modal-footer">
@@ -226,16 +184,14 @@
 					sku: '',
 					description: '',
 					zone: '',
-					weight_start: '',
-					weight_end: '',
+					hour_start: '',
+					hour_end: '',
 					is_tax_inclusive: 1,
-					corporate_price: '',
-					walk_in_price: '',
-					walk_in_price_special: '',
+					price: '',
+					member_price: '',
 					vendor_id: '',
 					product_type_id: '',
 					tax_id: '',
-					zone_type_id: ''
 				})
 			};
 		},
@@ -264,25 +220,6 @@
 
 					obj['label'] = vendor.name;
 					obj['value'] = vendor.id;
-
-					return obj;
-				});
-
-				this.getZoneType();
-			},
-
-			getZoneType() {
-				axios.get("/data/zonetypes")
-					.then(response => this.setZoneType(response))
-					.catch(error => this.getZoneType());
-			},
-
-			setZoneType(response) {
-				this.zonetypes = response.data.map(function(type){
-					let obj = {};
-
-					obj['label'] = type.name;
-					obj['value'] = type.id;
 
 					return obj;
 				});
@@ -357,25 +294,18 @@
 				this.form.sku = this.selectedProduct.sku;
 				this.form.description = this.selectedProduct.description;
 				this.form.zone = this.selectedProduct.zone;
-				this.form.weight_start = this.selectedProduct.weight_start;
-				this.form.weight_end = this.selectedProduct.weight_end;
+				this.form.hour_start = this.selectedProduct.hour_start;
+				this.form.hour_end = this.selectedProduct.hour_end;
 				this.form.is_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-				this.form.corporate_price = this.selectedProduct.corporate_price + "";
-				this.form.walk_in_price = this.selectedProduct.walk_in_price + "";
-				this.form.walk_in_price_special = this.selectedProduct.walk_in_price_special + "";
+				this.form.price = this.selectedProduct.price + "";
+				this.form.member_price = this.selectedProduct.member_price + "";
 				this.form.vendor_id = this.selectedProduct.vendor_id;
 				this.form.product_type_id = this.selectedProduct.product_type_id;
 				this.form.tax_id = this.selectedProduct.tax_id;
-				this.form.zone_type_id = this.selectedProduct.zone_type_id;
 
 				this.selectedVendor = '';
 				this.selectedTax = '';
 				this.selectedType = '';
-				this.selectedZoneType = '';
-
-				if(this.form.zone_type_id) {
-					this.selectedZoneType = _.filter(this.zonetypes, function(type){ return this.form.zone_type_id == type.value; }.bind(this))[0];
-				}
 
 				if(this.form.vendor_id) {
 					this.selectedVendor = _.filter(this.vendors, function(type){ return this.form.vendor_id == type.value; }.bind(this))[0];
@@ -429,9 +359,6 @@
 		},
 
 		watch: {
-			selectedZoneType(newVal, oldVal) {
-				this.form.zone_type_id = newVal.value;
-			},
 
 			selectedVendor(newVal, oldVal) {
 				this.form.vendor_id = newVal.value;

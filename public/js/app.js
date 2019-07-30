@@ -30614,6 +30614,8 @@ Vue.component('cashup-details', __webpack_require__(280));
 
 Vue.component('sales-reports-dialog', __webpack_require__(283));
 
+Vue.component('members-dialog', __webpack_require__(289));
+
 var app = new Vue({
   el: '#app',
 
@@ -74711,48 +74713,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -74777,16 +74737,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				sku: '',
 				description: '',
 				zone: '',
-				weight_start: '',
-				weight_end: '',
+				hour_start: '',
+				hour_end: '',
 				is_tax_inclusive: 1,
-				corporate_price: '',
-				walk_in_price: '',
-				walk_in_price_special: '',
+				price: '',
+				member_price: '',
 				vendor_id: '',
 				product_type_id: '',
-				tax_id: '',
-				zone_type_id: ''
+				tax_id: ''
 			})
 		};
 	},
@@ -74828,36 +74786,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return obj;
 			});
 
-			this.getZoneType();
-		},
-		getZoneType: function getZoneType() {
-			var _this3 = this;
-
-			axios.get("/data/zonetypes").then(function (response) {
-				return _this3.setZoneType(response);
-			}).catch(function (error) {
-				return _this3.getZoneType();
-			});
-		},
-		setZoneType: function setZoneType(response) {
-			this.zonetypes = response.data.map(function (type) {
-				var obj = {};
-
-				obj['label'] = type.name;
-				obj['value'] = type.id;
-
-				return obj;
-			});
-
 			this.getProductType();
 		},
 		getProductType: function getProductType() {
-			var _this4 = this;
+			var _this3 = this;
 
 			axios.get("/data/producttypes").then(function (response) {
-				return _this4.setProductType(response);
+				return _this3.setProductType(response);
 			}).catch(function (error) {
-				return _this4.getProductType();
+				return _this3.getProductType();
 			});
 		},
 		setProductType: function setProductType(response) {
@@ -74873,12 +74810,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.getTaxes();
 		},
 		getTaxes: function getTaxes() {
-			var _this5 = this;
+			var _this4 = this;
 
 			axios.get("/data/taxes").then(function (response) {
-				return _this5.setTaxes(response);
+				return _this4.setTaxes(response);
 			}).catch(function (error) {
-				return _this5.getTaxes();
+				return _this4.getTaxes();
 			});
 		},
 		setTaxes: function setTaxes(response) {
@@ -74917,27 +74854,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.sku = this.selectedProduct.sku;
 			this.form.description = this.selectedProduct.description;
 			this.form.zone = this.selectedProduct.zone;
-			this.form.weight_start = this.selectedProduct.weight_start;
-			this.form.weight_end = this.selectedProduct.weight_end;
+			this.form.hour_start = this.selectedProduct.hour_start;
+			this.form.hour_end = this.selectedProduct.hour_end;
 			this.form.is_tax_inclusive = this.selectedProduct.is_tax_inclusive;
-			this.form.corporate_price = this.selectedProduct.corporate_price + "";
-			this.form.walk_in_price = this.selectedProduct.walk_in_price + "";
-			this.form.walk_in_price_special = this.selectedProduct.walk_in_price_special + "";
+			this.form.price = this.selectedProduct.price + "";
+			this.form.member_price = this.selectedProduct.member_price + "";
 			this.form.vendor_id = this.selectedProduct.vendor_id;
 			this.form.product_type_id = this.selectedProduct.product_type_id;
 			this.form.tax_id = this.selectedProduct.tax_id;
-			this.form.zone_type_id = this.selectedProduct.zone_type_id;
 
 			this.selectedVendor = '';
 			this.selectedTax = '';
 			this.selectedType = '';
-			this.selectedZoneType = '';
-
-			if (this.form.zone_type_id) {
-				this.selectedZoneType = _.filter(this.zonetypes, function (type) {
-					return this.form.zone_type_id == type.value;
-				}.bind(this))[0];
-			}
 
 			if (this.form.vendor_id) {
 				this.selectedVendor = _.filter(this.vendors, function (type) {
@@ -74961,11 +74889,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.isConfirming = true;
 		},
 		confirmSubmit: function confirmSubmit() {
-			var _this6 = this;
+			var _this5 = this;
 
 			this.isConfirming = false;
 			this.form.post(this.url).then(function (response) {
-				return _this6.onSuccess(response);
+				return _this5.onSuccess(response);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -74993,9 +74921,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	},
 
 	watch: {
-		selectedZoneType: function selectedZoneType(newVal, oldVal) {
-			this.form.zone_type_id = newVal.value;
-		},
 		selectedVendor: function selectedVendor(newVal, oldVal) {
 			this.form.vendor_id = newVal.value;
 		},
@@ -75151,22 +75076,22 @@ var render = function() {
                       [
                         _c("text-input", {
                           attrs: {
-                            defaultValue: _vm.form.weight_start,
+                            defaultValue: _vm.form.hour_start,
                             required: false,
                             type: "number",
-                            label: "Weight start",
-                            name: "weight_start",
+                            label: "Hour start",
+                            name: "hour_start",
                             editable: true,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("weight_start")
+                            error: _vm.form.errors.get("hour_start")
                           },
                           model: {
-                            value: _vm.form.weight_start,
+                            value: _vm.form.hour_start,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "weight_start", $$v)
+                              _vm.$set(_vm.form, "hour_start", $$v)
                             },
-                            expression: "form.weight_start"
+                            expression: "form.hour_start"
                           }
                         })
                       ],
@@ -75179,22 +75104,22 @@ var render = function() {
                       [
                         _c("text-input", {
                           attrs: {
-                            defaultValue: _vm.form.weight_end,
+                            defaultValue: _vm.form.hour_end,
                             required: false,
                             type: "number",
-                            label: "Weight end",
-                            name: "weight_end",
+                            label: "Hour end",
+                            name: "hour_end",
                             editable: true,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("weight_end")
+                            error: _vm.form.errors.get("hour_end")
                           },
                           model: {
-                            value: _vm.form.weight_end,
+                            value: _vm.form.hour_end,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "weight_end", $$v)
+                              _vm.$set(_vm.form, "hour_end", $$v)
                             },
-                            expression: "form.weight_end"
+                            expression: "form.hour_end"
                           }
                         })
                       ],
@@ -75209,22 +75134,22 @@ var render = function() {
                       [
                         _c("text-input", {
                           attrs: {
-                            defaultValue: _vm.form.corporate_price,
+                            defaultValue: _vm.form.price,
                             required: true,
                             type: "number",
-                            label: "Corporate price",
-                            name: "corporate_price",
+                            label: "Price",
+                            name: "price",
                             editable: true,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("corporate_price")
+                            error: _vm.form.errors.get("price")
                           },
                           model: {
-                            value: _vm.form.corporate_price,
+                            value: _vm.form.price,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "corporate_price", $$v)
+                              _vm.$set(_vm.form, "price", $$v)
                             },
-                            expression: "form.corporate_price"
+                            expression: "form.price"
                           }
                         })
                       ],
@@ -75237,50 +75162,22 @@ var render = function() {
                       [
                         _c("text-input", {
                           attrs: {
-                            defaultValue: _vm.form.walk_in_price,
-                            required: true,
+                            defaultValue: _vm.form.member_price,
+                            required: false,
                             type: "number",
-                            label: "Walk in price",
-                            name: "walk_in_price",
+                            label: "Member price",
+                            name: "member_price",
                             editable: true,
                             focus: false,
                             hideLabel: false,
-                            error: _vm.form.errors.get("walk_in_price")
+                            error: _vm.form.errors.get("member_price")
                           },
                           model: {
-                            value: _vm.form.walk_in_price,
+                            value: _vm.form.member_price,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "walk_in_price", $$v)
+                              _vm.$set(_vm.form, "member_price", $$v)
                             },
-                            expression: "form.walk_in_price"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.walk_in_price_special,
-                            required: true,
-                            type: "number",
-                            label: "Walk in price (special)",
-                            name: "walk_in_price_special",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("walk_in_price_special")
-                          },
-                          model: {
-                            value: _vm.form.walk_in_price_special,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "walk_in_price_special", $$v)
-                            },
-                            expression: "form.walk_in_price_special"
+                            expression: "form.member_price"
                           }
                         })
                       ],
@@ -75357,65 +75254,6 @@ var render = function() {
                               _vm.selectedVendor = $$v
                             },
                             expression: "selectedVendor"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("selector-input", {
-                          attrs: {
-                            potentialData: _vm.zonetypes,
-                            defaultData: _vm.selectedZoneType,
-                            placeholder: "Select zone type",
-                            required: false,
-                            label: "Zone type",
-                            name: "zone_type_id",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("zone_type_id")
-                          },
-                          model: {
-                            value: _vm.selectedZoneType,
-                            callback: function($$v) {
-                              _vm.selectedZoneType = $$v
-                            },
-                            expression: "selectedZoneType"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.zone,
-                            required: false,
-                            type: "number",
-                            label: "Zone",
-                            name: "zone",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            error: _vm.form.errors.get("zone")
-                          },
-                          model: {
-                            value: _vm.form.zone,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "zone", $$v)
-                            },
-                            expression: "form.zone"
                           }
                         })
                       ],
@@ -76402,9 +76240,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return total;
 		},
 		selectItem: function selectItem(e) {
-			console.log("Selecting items");
-			console.log(e);
-
 			var selectedItem = e.item ? e.item : e;
 
 			var existing = _.findIndex(this.orderForm.items, function (item) {
@@ -76412,7 +76247,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(selectedItem));
 
 			if (existing > -1) {
-				console.log("I am here");
 				this.orderForm.items[existing].unit++;
 				this.orderForm.items[existing].tax_value = this.calculateItemTax(this.orderForm.items[existing]);
 				this.orderForm.items[existing].total = this.calculateItemTotalPrice(this.orderForm.items[existing]);
@@ -77074,6 +76908,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -77218,13 +77063,39 @@ var render = function() {
         "div",
         { staticClass: "row mt-3" },
         _vm._l(_vm.selectedHead, function(head) {
-          return _c("div", { staticClass: "col-md-2 my-3" }, [
-            _c(
-              "button",
-              { staticClass: "btn btn-success btn-block btn-lg text-big" },
-              [_vm._v("\n\t\t\t\t" + _vm._s(head.number) + "\n\t\t\t")]
-            )
-          ])
+          return _c(
+            "div",
+            { staticClass: "col-md-2 my-3" },
+            [
+              _c(
+                "button",
+                { staticClass: "btn btn-success btn-block btn-lg text-big" },
+                [_vm._v("\n\t\t\t\t" + _vm._s(head.number) + "\n\t\t\t")]
+              ),
+              _vm._v(" "),
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.selectedHead.member_phone,
+                  required: false,
+                  type: "text",
+                  label: "Member",
+                  name: "member",
+                  editable: true,
+                  focus: true,
+                  hideLabel: true,
+                  error: _vm.form.errors.get("member")
+                },
+                model: {
+                  value: _vm.selectedHead.member_phone,
+                  callback: function($$v) {
+                    _vm.$set(_vm.selectedHead, "member_phone", $$v)
+                  },
+                  expression: "selectedHead.member_phone"
+                }
+              })
+            ],
+            1
+          )
         })
       ),
       _vm._v(" "),
@@ -83945,6 +83816,814 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 287 */,
+/* 288 */,
+/* 289 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(290)
+/* template */
+var __vue_template__ = __webpack_require__(291)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\members\\Dialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3da6b722", Component.options)
+  } else {
+    hotAPI.reload("data-v-3da6b722", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 290 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: {
+		data: {
+			type: Object
+		}
+	},
+
+	mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
+
+	data: function data() {
+		return {
+			isActive: false,
+			selectedMember: '',
+			isEdit: false,
+			form: new Form({
+				name: '',
+				email: '',
+				phone_number: '',
+				address_line_1: '',
+				address_line_2: '',
+				city: '',
+				postcode: '',
+				country: '',
+				gender: 'Male',
+				birthdate: ''
+			}),
+			genders: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }],
+			selectedGender: { label: 'Male', value: 'Male' }
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		window.events.$on('createMember', function (evt) {
+			return _this.createMember(evt);
+		});
+		window.events.$on('editMember', function (evt) {
+			return _this.editMember(evt);
+		});
+
+		$("#member-dialog").on("hide.bs.modal", function (e) {
+			this.closeDialog();
+		}.bind(this));
+	},
+
+
+	methods: {
+		createMember: function createMember(evt) {
+			this.openDialog();
+		},
+		editMember: function editMember(evt) {
+			this.selectedMember = evt[0];
+			this.isEdit = true;
+			this.setForm();
+			this.openDialog();
+		},
+		openDialog: function openDialog() {
+			$("#member-dialog").modal();
+			this.isActive = true;
+		},
+		closeDialog: function closeDialog() {
+			this.isActive = false;
+			this.selectedMember = '';
+			this.form.reset();
+		},
+		setForm: function setForm() {
+			this.form.name = this.selectedMember.name;
+			this.form.email = this.selectedMember.email;
+			this.form.phone_number = this.selectedMember.phone_number;
+			this.form.address_line_1 = this.selectedMember.address_line_1;
+			this.form.address_line_2 = this.selectedMember.address_line_2;
+			this.form.city = this.selectedMember.city;
+			this.form.postcode = this.selectedMember.postcode;
+			this.form.country = this.selectedMember.country;
+			this.form.gender = this.selectedMember.gender;
+			this.form.birthdate = this.selectedMember.birthdate;
+
+			this.selectedGender = { label: this.selectedMember.gender, value: this.selectedMember.gender };
+		},
+		submit: function submit() {
+			this.isConfirming = true;
+		},
+		confirmSubmit: function confirmSubmit() {
+			var _this2 = this;
+
+			this.isConfirming = false;
+
+			this.form.post(this.url).then(function (response) {
+				return _this2.onSuccess(response);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			this.$emit("memberCreated", { member: response.member });
+
+			$("#member-dialog").modal('hide');
+
+			this.closeDialog();
+
+			window.events.$emit("reload-table");
+		}
+	},
+
+	computed: {
+		title: function title() {
+			return this.selectedMember ? "Edit member - " + this.selectedMember.name : "Create member";
+		},
+		action: function action() {
+			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
+		},
+		actionText: function actionText() {
+			return this.selectedMember ? "Update" : "Create";
+		},
+		url: function url() {
+			return this.selectedMember ? "/members/" + this.selectedMember.id : "/members";
+		}
+	},
+
+	watch: {
+		selectedGender: function selectedGender(newVal, oldVal) {
+			this.form.gender = newVal.value;
+		}
+	}
+
+});
+
+/***/ }),
+/* 291 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: { id: "member-dialog", tabindex: "-1", role: "dialog" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("div", { staticClass: "modal-header" }, [
+              _c("h5", { staticClass: "modal-title" }, [
+                _vm._v(_vm._s(_vm.title))
+              ]),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
+            _vm._v(" "),
+            _vm.data
+              ? _c("div", { staticClass: "modal-body" }, [
+                  _c(
+                    "form",
+                    {
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.submit($event)
+                        },
+                        keydown: function($event) {
+                          _vm.form.errors.clear($event.target.name)
+                        },
+                        input: function($event) {
+                          _vm.form.errors.clear($event.target.name)
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.name,
+                                required: true,
+                                type: "text",
+                                label: "Name",
+                                name: "name",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("name")
+                              },
+                              model: {
+                                value: _vm.form.name,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "name", $$v)
+                                },
+                                expression: "form.name"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.phone_number,
+                                required: true,
+                                type: "string",
+                                label: "Phone number",
+                                name: "phone_number",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("phone_number")
+                              },
+                              model: {
+                                value: _vm.form.phone_number,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "phone_number", $$v)
+                                },
+                                expression: "form.phone_number"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.email,
+                                required: false,
+                                type: "string",
+                                label: "Email",
+                                name: "email",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("email")
+                              },
+                              model: {
+                                value: _vm.form.email,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "email", $$v)
+                                },
+                                expression: "form.email"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("selector-input", {
+                              ref: "genders",
+                              attrs: {
+                                potentialData: _vm.genders,
+                                defaultData: _vm.selectedGender,
+                                placeholder: "Select gender",
+                                required: true,
+                                label: "Gender",
+                                name: "gender",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("gender")
+                              },
+                              model: {
+                                value: _vm.selectedGender,
+                                callback: function($$v) {
+                                  _vm.selectedGender = $$v
+                                },
+                                expression: "selectedGender"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.birthdate,
+                                required: false,
+                                type: "date",
+                                label: "Birth date",
+                                name: "birthdate",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("birthdate")
+                              },
+                              model: {
+                                value: _vm.form.birthdate,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "birthdate", $$v)
+                                },
+                                expression: "form.birthdate"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.address_line_1,
+                                required: false,
+                                type: "string",
+                                label: "Address line 1",
+                                name: "address_line_1",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("address_line_1")
+                              },
+                              model: {
+                                value: _vm.form.address_line_1,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "address_line_1", $$v)
+                                },
+                                expression: "form.address_line_1"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.address_line_2,
+                                required: false,
+                                type: "string",
+                                label: "Address line 2",
+                                name: "address_line_2",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("address_line_2")
+                              },
+                              model: {
+                                value: _vm.form.address_line_2,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "address_line_2", $$v)
+                                },
+                                expression: "form.address_line_2"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.city,
+                                required: false,
+                                type: "string",
+                                label: "City",
+                                name: "city",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("city")
+                              },
+                              model: {
+                                value: _vm.form.city,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "city", $$v)
+                                },
+                                expression: "form.city"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.postcode,
+                                required: false,
+                                type: "string",
+                                label: "Postcode",
+                                name: "postcode",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("postcode")
+                              },
+                              model: {
+                                value: _vm.form.postcode,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "postcode", $$v)
+                                },
+                                expression: "form.postcode"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "row" }, [
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.state,
+                                required: false,
+                                type: "string",
+                                label: "State",
+                                name: "state",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("state")
+                              },
+                              model: {
+                                value: _vm.form.state,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "state", $$v)
+                                },
+                                expression: "form.state"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.country,
+                                required: false,
+                                type: "string",
+                                label: "Country",
+                                name: "country",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                error: _vm.form.errors.get("country")
+                              },
+                              model: {
+                                value: _vm.form.country,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "country", $$v)
+                                },
+                                expression: "form.country"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ])
+                    ]
+                  )
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("div", { staticClass: "modal-footer" }, [
+              _c("button", {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                domProps: { innerHTML: _vm._s(_vm.action) },
+                on: { click: _vm.submit }
+              }),
+              _vm._v(" "),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-secondary",
+                  attrs: { type: "button", "data-dismiss": "modal" }
+                },
+                [_vm._v("Close")]
+              )
+            ])
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("confirmation", {
+        attrs: {
+          message: _vm.confirm_message,
+          secondary: _vm.secondary_message,
+          confirming: _vm.isConfirming
+        },
+        on: {
+          cancel: function($event) {
+            _vm.isConfirming = false
+          },
+          confirm: _vm.confirmSubmit
+        }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-3da6b722", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

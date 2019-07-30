@@ -22,30 +22,24 @@ class ProductController extends Controller
 		request()->validate([
             "sku" => "required",
             "description" => "required",
-            "zone" => "integer",
-            "weight_start" => "numeric",
-            "weight_end" => "numeric",
-            "corporate_price" => "required|numeric",
-            "walk_in_price" => "required|numeric",
-            "walk_in_price_special" => "required|numeric",
+            "hour_start" => "numeric",
+            "hour_end" => "numeric",
+            "member_price" => "required|numeric",
+            "price" => "required|numeric",
             "vendor_id" => "integer",
             "product_type_id" => "required|integer",
             "tax_id" => "required|integer",
-            "zone_type_id" => "integer"
         ]);
 	}
 
     public function index()
     {
-    	return datatables()->of(Product::with(["vendor", "zone_type", "product_type", "tax"])->select("products.*"))
+    	return datatables()->of(Product::with(["vendor", "product_type", "tax"])->select("products.*"))
                         ->addColumn('product_type_name', function(Product $product){
                             return $product->product_type->name;
                         })
                         ->addColumn('vendor_name', function(Product $product){
                             return is_null($product->vendor_id) ? "---" : $product->vendor->name;
-                        })
-                        ->addColumn('zone_type_name', function(Product $product){
-                            return is_null($product->zone_type_id) ? "---" : $product->zone_type->name;
                         })
                         ->addColumn('tax_code', function(Product $product){
                             return $product->tax->code;
@@ -104,13 +98,6 @@ class ProductController extends Controller
                 }
 
 
-                $zone_type = ZoneType::where('name', $excelRow[4])->first();
-                if(is_null($zone_type) && !is_null($excelRow[4]) && $excelRow[4] !== "---")
-                {
-                    return $this->returnValidationErrorResponse(['file' => ['Zone type ' . $excelRow[4] . ' not found. Please create it from the zone type page first']]);
-                }
-
-
                 $tax = Tax::where('code', $excelRow[10])->first();
                 if(is_null($tax))
                 {
@@ -126,17 +113,14 @@ class ProductController extends Controller
 
                 $detail['sku'] = trim($excelRow[0]);
                 $detail['description'] = $excelRow[12];
-                $detail['zone'] = $excelRow[3];
-                $detail['weight_start'] = $excelRow[5];
-                $detail['weight_end'] = $excelRow[6];
-                $detail['corporate_price'] = $excelRow[7];
-                $detail['walk_in_price'] = $excelRow[8];
-                $detail['walk_in_price_special'] = $excelRow[9];
+                $detail['hour_start'] = $excelRow[5];
+                $detail['hour_end'] = $excelRow[6];
+                $detail['price'] = $excelRow[7];
+                $detail['member_price'] = $excelRow[8];
                 $detail['is_tax_inclusive'] = 1;
                 $detail['vendor_id'] = is_null($vendor) ? null : $vendor->id;
                 $detail['product_type_id'] = $product_type->id;
                 $detail['tax_id'] = $tax->id;
-                $detail['zone_type_id'] = is_null($zone_type) ? null : $zone_type->id;
                 $products->push($detail);
             }
         }
@@ -148,16 +132,14 @@ class ProductController extends Controller
                     "sku" => $product['sku'],
                     "description" => $product['description'],
                     "zone" => $product['zone'],
-                    "weight_start" => $product['weight_start'],
-                    "weight_end" => $product['weight_end'],
-                    "corporate_price" => $product['corporate_price'],
-                    "walk_in_price" => $product['walk_in_price'],
-                    "walk_in_price_special" => $product['walk_in_price_special'],
+                    "zone_start" => $product['zone_start'],
+                    "zone_end" => $product['zone_end'],
+                    "member_price" => $product['corporate_price'],
+                    "price" => $product['price'],
                     "is_tax_inclusive" => 1,
                     "vendor_id" => $product['vendor_id'],
                     "product_type_id" => $product['product_type_id'],
-                    "tax_id" => $product['tax_id'],
-                    "zone_type_id" => $product['zone_type_id']
+                    "tax_id" => $product['tax_id']
                 ]
             );
 

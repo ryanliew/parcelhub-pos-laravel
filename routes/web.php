@@ -245,6 +245,16 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/statement/{customer}","CustomerController@statement");
 	});
 
+	Route::group(['prefix' => 'members'], function(){
+		Route::get('/', "MemberController@page")->name('members.page');
+		Route::get("/index", "MemberController@index")->name('members.index');
+		Route::get("/list", "MemberController@list");
+		Route::get("/create", "MemberController@create")->name('members.create');
+		Route::post("/", "MemberController@store");
+		Route::post("/{member}", "MemberController@update");
+		Route::get("/{member}","MemberController@get");
+	});
+
 	Route::group(['prefix' => 'cashups'], function(){
 		Route::get("/", "CashupController@page")->name('cashups.page');
 		Route::post("/", "CashupController@store");

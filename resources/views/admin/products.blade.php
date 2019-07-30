@@ -25,6 +25,7 @@
 							<th>Hour start</th>
 							<th>Hour end</th>
 							<th>Price</th>
+							<th>Member price</th>
 							<th>Description</th>
 						</tr>
 					</thead>
@@ -111,6 +112,14 @@
 						}, "searchable": false
 					},
 					{data: 'price', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return parseFloat(data).toFixed(2);
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'member_price', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {
 								return parseFloat(data).toFixed(2);
 							}
