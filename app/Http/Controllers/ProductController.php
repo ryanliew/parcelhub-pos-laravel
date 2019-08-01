@@ -153,7 +153,7 @@ class ProductController extends Controller
                     "corporate_price" => $product['corporate_price'],
                     "walk_in_price" => $product['walk_in_price'],
                     "walk_in_price_special" => $product['walk_in_price_special'],
-                    "is_tax_inclusive" => $product['is_tax_inclusive'],
+                    "is_tax_inclusive" => $product['is_tax_inclusive'] == "TRUE",
                     "vendor_id" => $product['vendor_id'],
                     "product_type_id" => $product['product_type_id'],
                     "tax_id" => $product['tax_id'],
