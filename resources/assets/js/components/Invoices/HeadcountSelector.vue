@@ -24,22 +24,12 @@
 		</div>
 
 		<div class="row mt-3">
-			<div class="col-md-2 my-3" v-for="head in selectedHead">
-				<button class="btn btn-success btn-block btn-lg text-big">
+			<div class="col-md-2 my-3" v-for="(head, index) in selectedHead">
+				<button class="btn btn-success btn-block btn-lg text-big" @click="deselectHead(index)">
 					{{ head.number }}
 				</button>
 
-				<text-input v-model="selectedHead.member_phone" 
-					:defaultValue="selectedHead.member_phone"
-					:required="false"
-					type="text"
-					label="Member"
-					name="member"
-					:editable="true"
-					:focus="true"
-					:hideLabel="true"
-					:hideLabel="true">
-				</text-input>
+				<member-search v-if="head.is_active" class="mt-2" @member="setMember($event, index)"></member-search>
 			</div>
 		</div>
 
@@ -54,11 +44,14 @@
 
 <script>
 	import Modal from "../Modal.vue";
+	import MemberSearch from "../members/Search.vue";
+
 	export default {
 		props: ['table', 'show', 'currentFilter'],
 
 		components: {
 			Modal,
+			MemberSearch,
 		},
 
 		data() {
@@ -66,6 +59,7 @@
 				availableHead: [],
 				activeHead: [],
 				selectedHead: [],
+				phones: []
 			};
 		},
 
@@ -117,6 +111,14 @@
 
 			commitSelection() {
 				this.$emit("confirm", {heads: this.selectedHead});
+			},
+
+			deselectHead(index) {
+				this.selectedHead.splice(index, 1);
+			},
+
+			setMember(event, index) {
+				this.selectedHead[index].member = event;
 			}
 		}	
 	}

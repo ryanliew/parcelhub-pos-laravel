@@ -15,25 +15,26 @@ class HeadController extends Controller
 
     public function activate()
     {
-    	$heads = json_decode(request()->heads);
+    	$heads = collect(json_decode(request()->heads));
+
     	foreach($heads as $head_id) {
-    		$head = Head::find($head_id);
+    		$head = Head::find($head_id->id);
 
     		$head->activate();
     	}
 
-    	return ["message" => "Activated headcounts " . implode(",", $heads)];
+    	return ["message" => "Activated headcounts " . $heads->implode("id", ",")];
     }
 
     public function deactivate()
     {
-    	$heads = json_decode(request()->heads);
+    	$heads = collect(json_decode(request()->heads));
 
-        $headcounts = Head::whereIn('id', $heads)->get();
+        $headcounts = Head::whereIn('id', $heads->pluck('id'))->get();
 
         $items = collect();
 
-        foreach($headcounts as $head) {
+        foreach($headcounts as $key => $head) {
             $head->deactivate();
 
             $hours = $head->deactivated_at->diffInMinutes($head->activated_at) / 60;
@@ -46,11 +47,19 @@ class HeadController extends Controller
                         ->get()
                         ->first();
 
-            $product->actual_hours = $hours;
+            if($product) {
 
-            $items->push($product);
+                $product->actual_hours = $hours;
+
+                if(isset($heads[$key]->member)) {
+                    $product->description .= " (Member: " . $heads[$key]->member->name . ")";
+                    $product->price = $product->member_price;
+                }
+
+                $items->push($product);
+            }
         }
 
-        return ["message" => "Deactivated headcounts " . implode(",", $heads), "heads" => $headcounts, "products" => $items];
+        return ["message" => "Deactivated headcounts " . $heads->implode("id", ","), "heads" => $headcounts, "products" => $items];
     }
 }

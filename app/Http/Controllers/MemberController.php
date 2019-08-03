@@ -23,10 +23,16 @@ class MemberController extends Controller
     {
         $query = Member::query();
 
-
-    
         return datatables()->of($query)
                             ->toJson();
+    }
+
+    public function search()
+    {
+        return Member::where('phone_number', 'LIKE', '%' . request()->keyword . '%')
+                        ->orWhere('email', 'LIKE', '%' . request()->keyword . '%')
+                        ->get();
+
     }
 
 

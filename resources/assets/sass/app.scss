@@ -453,3 +453,15 @@ th, td { white-space: nowrap; }
 	background: #ccc;
 }
 
+.member-info {
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 5;
+}
+
+.relative {
+	position: relative;
+}
+

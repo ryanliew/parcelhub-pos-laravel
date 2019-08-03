@@ -30506,7 +30506,7 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(141);
-module.exports = __webpack_require__(286);
+module.exports = __webpack_require__(289);
 
 
 /***/ }),
@@ -30614,7 +30614,7 @@ Vue.component('cashup-details', __webpack_require__(280));
 
 Vue.component('sales-reports-dialog', __webpack_require__(283));
 
-Vue.component('members-dialog', __webpack_require__(289));
+Vue.component('members-dialog', __webpack_require__(286));
 
 var app = new Vue({
   el: '#app',
@@ -76250,7 +76250,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var selectedItem = e.item ? e.item : e;
 
 			var existing = _.findIndex(this.orderForm.items, function (item) {
-				return selectedItem.id == item.id;
+				return selectedItem.description == item.description;
 			}.bind(selectedItem));
 
 			if (existing > -1) {
@@ -76282,7 +76282,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.headForm.heads = [];
 
 			e.heads.forEach(function (head) {
-				this.headForm.heads.push(head.id);
+				this.headForm.heads.push({ id: head.id, member: head.member });
 			}.bind(this));
 
 			if (this.is_adding_headcount) {
@@ -76389,6 +76389,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			_.forEach(products, function (product) {
 				this.selectItem(product);
 			}.bind(this));
+
+			this.placeOrder();
 		}
 	},
 
@@ -76904,6 +76906,8 @@ module.exports = Component.exports
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Modal_vue__ = __webpack_require__(139);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Modal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Modal_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__members_Search_vue__ = __webpack_require__(292);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__members_Search_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__members_Search_vue__);
 //
 //
 //
@@ -76948,29 +76952,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['table', 'show', 'currentFilter'],
 
 	components: {
-		Modal: __WEBPACK_IMPORTED_MODULE_0__Modal_vue___default.a
+		Modal: __WEBPACK_IMPORTED_MODULE_0__Modal_vue___default.a,
+		MemberSearch: __WEBPACK_IMPORTED_MODULE_1__members_Search_vue___default.a
 	},
 
 	data: function data() {
 		return {
 			availableHead: [],
 			activeHead: [],
-			selectedHead: []
+			selectedHead: [],
+			phones: []
 		};
 	},
 	mounted: function mounted() {
@@ -77028,6 +77027,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		commitSelection: function commitSelection() {
 			this.$emit("confirm", { heads: this.selectedHead });
+		},
+		deselectHead: function deselectHead(index) {
+			this.selectedHead.splice(index, 1);
+		},
+		setMember: function setMember(event, index) {
+			this.selectedHead[index].member = event;
 		}
 	}
 });
@@ -77100,37 +77105,34 @@ var render = function() {
       _c(
         "div",
         { staticClass: "row mt-3" },
-        _vm._l(_vm.selectedHead, function(head) {
+        _vm._l(_vm.selectedHead, function(head, index) {
           return _c(
             "div",
             { staticClass: "col-md-2 my-3" },
             [
               _c(
                 "button",
-                { staticClass: "btn btn-success btn-block btn-lg text-big" },
+                {
+                  staticClass: "btn btn-success btn-block btn-lg text-big",
+                  on: {
+                    click: function($event) {
+                      _vm.deselectHead(index)
+                    }
+                  }
+                },
                 [_vm._v("\n\t\t\t\t" + _vm._s(head.number) + "\n\t\t\t")]
               ),
               _vm._v(" "),
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.selectedHead.member_phone,
-                  required: false,
-                  type: "text",
-                  label: "Member",
-                  name: "member",
-                  editable: true,
-                  focus: true,
-                  hideLabel: true,
-                  error: _vm.form.errors.get("member")
-                },
-                model: {
-                  value: _vm.selectedHead.member_phone,
-                  callback: function($$v) {
-                    _vm.$set(_vm.selectedHead, "member_phone", $$v)
-                  },
-                  expression: "selectedHead.member_phone"
-                }
-              })
+              head.is_active
+                ? _c("member-search", {
+                    staticClass: "mt-2",
+                    on: {
+                      member: function($event) {
+                        _vm.setMember($event, index)
+                      }
+                    }
+                  })
+                : _vm._e()
             ],
             1
           )
@@ -83860,22 +83862,14 @@ if (false) {
 
 /***/ }),
 /* 286 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 287 */,
-/* 288 */,
-/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(290)
+var __vue_script__ = __webpack_require__(287)
 /* template */
-var __vue_template__ = __webpack_require__(291)
+var __vue_template__ = __webpack_require__(288)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -83914,7 +83908,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 290 */
+/* 287 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -84234,7 +84228,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 291 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -84669,6 +84663,195 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-3da6b722", module.exports)
+  }
+}
+
+/***/ }),
+/* 289 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 290 */,
+/* 291 */,
+/* 292 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(293)
+/* template */
+var __vue_template__ = __webpack_require__(294)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\members\\Search.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-65dbef82", Component.options)
+  } else {
+    hotAPI.reload("data-v-65dbef82", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 293 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: [''],
+	data: function data() {
+		return {
+			member: '',
+			phone: '',
+			members: []
+		};
+	},
+
+
+	methods: {
+		search: function search() {
+			var _this = this;
+
+			axios.get("/members/search?keyword=" + this.phone).then(function (respond) {
+				return _this.setMember(respond);
+			}).catch(function (error) {
+				return _this.onError(error);
+			});
+		},
+		setMember: function setMember(respond) {
+			this.members = respond.data;
+
+			if (this.members.length == 1) this.member = this.members[0];
+		},
+		onError: function onError(error) {
+			console.log(error);
+		}
+	},
+
+	watch: {
+		member: function member(newVal) {
+			this.$emit('member', newVal);
+		}
+	}
+});
+
+/***/ }),
+/* 294 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "relative" },
+    [
+      _c("text-input", {
+        attrs: {
+          defaultValue: _vm.phone,
+          required: false,
+          type: "text",
+          label: "Member",
+          name: "member",
+          editable: true,
+          focus: true,
+          hideLabel: true,
+          placeholder: "Member ID"
+        },
+        on: { enter: _vm.search },
+        model: {
+          value: _vm.phone,
+          callback: function($$v) {
+            _vm.phone = $$v
+          },
+          expression: "phone"
+        }
+      }),
+      _vm._v(" "),
+      _vm.member
+        ? _c(
+            "div",
+            {
+              staticClass: "d-flex align-items-center member-info pt-1 px-2",
+              on: {
+                click: function($event) {
+                  _vm.member = ""
+                }
+              }
+            },
+            [
+              _c("img", {
+                staticClass: "mr-2",
+                attrs: { src: "/img/favicon.png", width: "30px" }
+              }),
+              _vm._v(_vm._s(_vm.member.name) + "\n\t")
+            ]
+          )
+        : _vm._e()
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-65dbef82", module.exports)
   }
 }
 

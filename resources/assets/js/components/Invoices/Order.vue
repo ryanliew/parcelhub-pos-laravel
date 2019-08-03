@@ -278,7 +278,7 @@
 			selectItem(e) {
 				let selectedItem = e.item ? e.item : e;
 
-				let existing = _.findIndex(this.orderForm.items, function(item){ return selectedItem.id == item.id; }.bind(selectedItem));
+				let existing = _.findIndex(this.orderForm.items, function(item){ return selectedItem.description == item.description; }.bind(selectedItem));
 
 				if(existing > -1) {
 					this.orderForm.items[existing].unit++;
@@ -311,7 +311,7 @@
 				this.headForm.heads = [];
 
 				e.heads.forEach(function(head){
-					this.headForm.heads.push(head.id);
+					this.headForm.heads.push({id: head.id, member: head.member});
 				}.bind(this));
 
 				if(this.is_adding_headcount) {
@@ -416,6 +416,8 @@
 				_.forEach(products, function(product){
 					this.selectItem(product);
 				}.bind(this));
+
+				this.placeOrder();
 			},
 		},
 

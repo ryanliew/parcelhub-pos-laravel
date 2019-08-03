@@ -247,6 +247,7 @@ Route::group(['middleware' => 'auth'], function(){
 
 	Route::group(['prefix' => 'members'], function(){
 		Route::get('/', "MemberController@page")->name('members.page');
+		Route::get("/search", "MemberController@search");
 		Route::get("/index", "MemberController@index")->name('members.index');
 		Route::get("/list", "MemberController@list");
 		Route::get("/create", "MemberController@create")->name('members.create');
