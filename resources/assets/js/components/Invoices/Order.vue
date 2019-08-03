@@ -10,7 +10,7 @@
 			<div class="order-items">
 				<table class="table">
 					<template  v-for="invoice in invoices" v-if="!invoice.canceled_on">
-						<hexa-item class="past-order" :item="item" v-for="item in invoice.items" :key="item.id" @delete="deleteInvoiceItem(item.id)"></hexa-item>
+						<hexa-item class="past-order" :item="item" v-for="item in invoice.items" :key="item.id" @delete="deleteInvoiceItem(item.id)" :canDelete="!session"></hexa-item>
 					</template>
 					<hexa-item :item="item" v-for="(item,index) in orderForm.items" :key="item.sku" @delete="deleteItem(index)"></hexa-item>
 				</table>
@@ -25,7 +25,7 @@
 							:required="false"
 							label="Discount type"
 							name="discount_type"
-							:editable="true"
+							:editable="!session"
 							:focus="false"
 							:hideLabel="false"
 							:error="form.errors.get('discount_type')">
@@ -37,7 +37,7 @@
 							type="number"
 							label="Discount"
 							name="discount"
-							:editable="true"
+							:editable="!session"
 							:focus="true"
 							:hideLabel="false"
 							:error="form.errors.get('discount')">
@@ -52,7 +52,7 @@
 							type="number"
 							label="Paid"
 							name="paid"
-							:editable="true"
+							:editable="!session"
 							:focus="true"
 							:hideLabel="false"
 							:error="form.errors.get('paid')">
@@ -65,7 +65,7 @@
 							:required="false"
 							label="Payment method"
 							name="payment_method"
-							:editable="true"
+							:editable="!session"
 							:focus="false"
 							:hideLabel="false"
 							:error="form.errors.get('payment_method')">
@@ -99,20 +99,23 @@
 				<button class="btn btn-small btn-secondary mr-2" @click="back">
 					Back
 				</button>
-				<button class="btn btn-small btn-primary mr-2" @click="addHeadcount">
+				<button class="btn btn-small btn-primary mr-2" @click="addHeadcount" v-if="!session">
 					Add headcount
 				</button>
-				<button class="btn btn-small btn-primary mr-2" @click="checkoutHeadcount">
+				<button class="btn btn-small btn-primary mr-2" @click="checkoutHeadcount" v-if="!session">
 					Checkout headcount
 				</button>
-				<button class="btn btn-small btn-primary mr-2" @click="placeOrder" :disabled="!canPlaceOrder">
+				<button class="btn btn-small btn-primary mr-2" @click="placeOrder" :disabled="!canPlaceOrder" v-if="!session">
 					Place order
 				</button>
 				<button class="btn btn-small btn-primary mr-2" @click="guestCheck">
 					Guest check
 				</button>
-				<button class="btn btn-small btn-primary mr-2" @click="closeTable" :disabled="!canCloseTable">
+				<button class="btn btn-small btn-primary mr-2" @click="closeTable" :disabled="!canCloseTable"  v-if="!session">
 					Close table
+				</button>
+				<button class="btn btn-small btn-primary mr-2" @click="printReceipt" v-if="session">
+					Print receipt
 				</button>
 			</div>
 			<headcount-selector 
@@ -141,7 +144,7 @@
 	import HeadcountSelector from "./HeadcountSelector.vue";
 
 	export default {
-		props: ['table', 'paymethods'],
+		props: ['table', 'paymethods', 'session'],
 
 		components: {
 			HexaItem,
@@ -196,10 +199,19 @@
 		},
 
 		mounted() {
-			this.currentTime = moment().format('LL LTS');
-			setInterval(() => this.updateCurrentTime(), 1000);
-			this.setPaymentMethods();
-			this.getItems();
+			if(this.session) {
+				this.currentTime = this.session.deactivated_at;
+				this.invoices = this.session.invoices;
+				this.form.paid = this.session.paid;
+				this.selectedPaymentType = {label: this.session.payment_type, value: this.session.payment_type};
+				this.form.discount = this.session.discount;
+				this.selectedDiscountType = this.session.discount_mode ? {label: this.session.discount_mode, value: this.session.discount_mode} : "";
+			} else {
+				this.currentTime = moment().format('LL LTS');
+				setInterval(() => this.updateCurrentTime(), 1000);
+				this.setPaymentMethods();
+				this.getItems();
+			}
 		},
 
 		methods: {
@@ -419,6 +431,10 @@
 
 				this.placeOrder();
 			},
+
+			printReceipt() {
+				window.open("/sessions/" + this.session.id + "/receipt");
+			}
 		},
 
 		computed: {
@@ -503,7 +519,7 @@
 					message = "Must pay full amount";
 
 				return message;
-			}
+			},
 
 
 		},

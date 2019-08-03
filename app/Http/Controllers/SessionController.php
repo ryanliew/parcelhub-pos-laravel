@@ -111,4 +111,25 @@ class SessionController extends Controller
 
         return response()->file($path);
     }
+
+    public function page()
+    {
+        return view("session.overview");
+    }
+
+    public function index()
+    {
+        $query = Session::with('table');
+
+        return datatables()->of($query)
+                            ->addColumn('table_name', function(Session $session){
+                                return $session->table->name;
+                            })
+                            ->toJson();
+    }    
+
+    public function view(Session $session)
+    {
+          return view("session.view", ['session' => $session->load('invoices.items', 'table')]);
+    }  
 }

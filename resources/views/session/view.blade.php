@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('page')
-	Edit invoice - {{ $invoice->displayText }}
+	View session
 @endsection
 
 @section('content')
 	<div class="container-fluid">
-		
+		<order :session="{{ $session }}" :table="{{ $session->table }}"></order>
 	</div>
 @endsection

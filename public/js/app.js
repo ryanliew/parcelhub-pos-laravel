@@ -30596,6 +30596,7 @@ Vue.component('products-importer', __webpack_require__(227));
 // Vue.component('invoices-create', require('./components/invoices/Form-Fast.vue'));
 Vue.component('hexaform', __webpack_require__(230));
 Vue.component('cancel-dialog', __webpack_require__(252));
+Vue.component('order', __webpack_require__(235));
 
 Vue.component('customers-dialog', __webpack_require__(255));
 Vue.component('statement-dialog', __webpack_require__(258));
@@ -76107,6 +76108,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
@@ -76114,7 +76118,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['table', 'paymethods'],
+	props: ['table', 'paymethods', 'session'],
 
 	components: {
 		HexaItem: __WEBPACK_IMPORTED_MODULE_1__HexaItem_vue___default.a,
@@ -76167,12 +76171,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	mounted: function mounted() {
 		var _this = this;
 
-		this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
-		setInterval(function () {
-			return _this.updateCurrentTime();
-		}, 1000);
-		this.setPaymentMethods();
-		this.getItems();
+		if (this.session) {
+			this.currentTime = this.session.deactivated_at;
+			this.invoices = this.session.invoices;
+			this.form.paid = this.session.paid;
+			this.selectedPaymentType = { label: this.session.payment_type, value: this.session.payment_type };
+			this.form.discount = this.session.discount;
+			this.selectedDiscountType = this.session.discount_mode ? { label: this.session.discount_mode, value: this.session.discount_mode } : "";
+		} else {
+			this.currentTime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('LL LTS');
+			setInterval(function () {
+				return _this.updateCurrentTime();
+			}, 1000);
+			this.setPaymentMethods();
+			this.getItems();
+		}
 	},
 
 
@@ -76391,6 +76404,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this));
 
 			this.placeOrder();
+		},
+		printReceipt: function printReceipt() {
+			window.open("/sessions/" + this.session.id + "/receipt");
 		}
 	},
 
@@ -76556,7 +76572,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['item'],
+	props: ['item', 'canDelete'],
 	data: function data() {
 		return {};
 	},
@@ -76600,19 +76616,21 @@ var render = function() {
     _vm._v(" "),
     _c("td", [_vm._v(_vm._s(_vm.totalPrice.toFixed(2)))]),
     _vm._v(" "),
-    _c("td", [
-      _c("a", { attrs: { href: "#" } }, [
-        _c("i", {
-          staticClass: "fas fa-trash-alt text-danger",
-          on: {
-            click: function($event) {
-              $event.preventDefault()
-              return _vm.deleteItem($event)
-            }
-          }
-        })
-      ])
-    ])
+    _vm.canDelete
+      ? _c("td", [
+          _c("a", { attrs: { href: "#" } }, [
+            _c("i", {
+              staticClass: "fas fa-trash-alt text-danger",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.deleteItem($event)
+                }
+              }
+            })
+          ])
+        ])
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
@@ -77389,7 +77407,7 @@ var render = function() {
                       return _c("hexa-item", {
                         key: item.id,
                         staticClass: "past-order",
-                        attrs: { item: item },
+                        attrs: { item: item, canDelete: !_vm.session },
                         on: {
                           delete: function($event) {
                             _vm.deleteInvoiceItem(item.id)
@@ -77430,7 +77448,7 @@ var render = function() {
                     required: false,
                     label: "Discount type",
                     name: "discount_type",
-                    editable: true,
+                    editable: !_vm.session,
                     focus: false,
                     hideLabel: false,
                     error: _vm.form.errors.get("discount_type")
@@ -77451,7 +77469,7 @@ var render = function() {
                     type: "number",
                     label: "Discount",
                     name: "discount",
-                    editable: true,
+                    editable: !_vm.session,
                     focus: true,
                     hideLabel: false,
                     error: _vm.form.errors.get("discount")
@@ -77481,7 +77499,7 @@ var render = function() {
                     type: "number",
                     label: "Paid",
                     name: "paid",
-                    editable: true,
+                    editable: !_vm.session,
                     focus: true,
                     hideLabel: false,
                     error: _vm.form.errors.get("paid")
@@ -77503,7 +77521,7 @@ var render = function() {
                     required: false,
                     label: "Payment method",
                     name: "payment_method",
-                    editable: true,
+                    editable: !_vm.session,
                     focus: false,
                     hideLabel: false,
                     error: _vm.form.errors.get("payment_method")
@@ -77565,33 +77583,39 @@ var render = function() {
             [_vm._v("\n\t\t\t\tBack\n\t\t\t")]
           ),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-small btn-primary mr-2",
-              on: { click: _vm.addHeadcount }
-            },
-            [_vm._v("\n\t\t\t\tAdd headcount\n\t\t\t")]
-          ),
+          !_vm.session
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-small btn-primary mr-2",
+                  on: { click: _vm.addHeadcount }
+                },
+                [_vm._v("\n\t\t\t\tAdd headcount\n\t\t\t")]
+              )
+            : _vm._e(),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-small btn-primary mr-2",
-              on: { click: _vm.checkoutHeadcount }
-            },
-            [_vm._v("\n\t\t\t\tCheckout headcount\n\t\t\t")]
-          ),
+          !_vm.session
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-small btn-primary mr-2",
+                  on: { click: _vm.checkoutHeadcount }
+                },
+                [_vm._v("\n\t\t\t\tCheckout headcount\n\t\t\t")]
+              )
+            : _vm._e(),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-small btn-primary mr-2",
-              attrs: { disabled: !_vm.canPlaceOrder },
-              on: { click: _vm.placeOrder }
-            },
-            [_vm._v("\n\t\t\t\tPlace order\n\t\t\t")]
-          ),
+          !_vm.session
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-small btn-primary mr-2",
+                  attrs: { disabled: !_vm.canPlaceOrder },
+                  on: { click: _vm.placeOrder }
+                },
+                [_vm._v("\n\t\t\t\tPlace order\n\t\t\t")]
+              )
+            : _vm._e(),
           _vm._v(" "),
           _c(
             "button",
@@ -77602,15 +77626,28 @@ var render = function() {
             [_vm._v("\n\t\t\t\tGuest check\n\t\t\t")]
           ),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-small btn-primary mr-2",
-              attrs: { disabled: !_vm.canCloseTable },
-              on: { click: _vm.closeTable }
-            },
-            [_vm._v("\n\t\t\t\tClose table\n\t\t\t")]
-          )
+          !_vm.session
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-small btn-primary mr-2",
+                  attrs: { disabled: !_vm.canCloseTable },
+                  on: { click: _vm.closeTable }
+                },
+                [_vm._v("\n\t\t\t\tClose table\n\t\t\t")]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.session
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-small btn-primary mr-2",
+                  on: { click: _vm.printReceipt }
+                },
+                [_vm._v("\n\t\t\t\tPrint receipt\n\t\t\t")]
+              )
+            : _vm._e()
         ]),
         _vm._v(" "),
         _c("headcount-selector", {

@@ -7,13 +7,13 @@
 		<!-- <td>{{ taxValue.toFixed(2) }}</td> -->
 		<td>{{ totalPrice.toFixed(2) }}</td>
 
-		<td><a href="#"><i class="fas fa-trash-alt text-danger" @click.prevent="deleteItem"></i></a></td>
+		<td v-if="canDelete"><a href="#"><i class="fas fa-trash-alt text-danger" @click.prevent="deleteItem"></i></a></td>
 	</tr>
 </template>
 
 <script>
 	export default {
-		props: ['item'],
+		props: ['item', 'canDelete'],
 		data() {
 			return {
 

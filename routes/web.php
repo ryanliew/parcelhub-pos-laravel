@@ -300,8 +300,11 @@ Route::group(['middleware' => 'auth'], function(){
 	});
 
 	Route::group(['prefix' => 'sessions'], function() {
+		Route::get("/", "SessionController@page")->name('sessions.page');
+		Route::get("/index", "SessionController@index")->name("sessions.index");
 		Route::get("/{session}/receipt", "SessionController@receipt");
 		Route::get("/{session}/check", "SessionController@check");
+		Route::get("/{session}/view", "SessionController@view");
 	});
 
 });

@@ -38,7 +38,7 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice)
     {
-        return view('invoice.edit', ["invoice" => $invoice]);
+        return view('invoice.edit', ["invoice" => $invoice->load('session.table'), 'methods' => PaymentType::all()]);
     }
 
     public function get($invoice)
@@ -52,7 +52,7 @@ class InvoiceController extends Controller
     {
         // Improve tracking number search performance by searching from items table directly then incorporate the invoice id to the invoices search
         $terminal = auth()->user()->terminal()->first();
-        $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])->select('invoices.*')->active();
+        $query = $terminal->invoices()->with(['session', 'branch', 'terminal', 'items'])->select('invoices.*')->active();
 
         $items = collect();
 
@@ -78,10 +78,10 @@ class InvoiceController extends Controller
                         });
                 }, true)
     			->addColumn('payment', function(Invoice $invoice) {
-                    return $invoice->payment->sum('total') + $invoice->paid;
+                    return $invoice->session->paid;
                 })
     			->addColumn('outstanding', function(Invoice $invoice) {
-                    $outstanding = $invoice->total  - $invoice->payment->sum('total') - $invoice->paid;
+                    $outstanding = $invoice->total  - $invoice->session->paid;;
                     
                     return $invoice->total < 0 ? 
                             $outstanding : 
