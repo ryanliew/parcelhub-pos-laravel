@@ -108,6 +108,9 @@
 				<button class="btn btn-small btn-primary mr-2" @click="placeOrder" :disabled="!canPlaceOrder">
 					Place order
 				</button>
+				<button class="btn btn-small btn-primary mr-2" @click="guestCheck">
+					Guest check
+				</button>
 				<button class="btn btn-small btn-primary mr-2" @click="closeTable" :disabled="!canCloseTable">
 					Close table
 				</button>
@@ -164,6 +167,10 @@
 
 				orderForm: new Form({
 					items: []
+				}),
+
+				tableForm: new Form({
+					table_id: this.table.id
 				}),
 
 				form: new Form({
@@ -339,22 +346,56 @@
 
 			closeTable(error = "", tries = 0) {
 				if(tries == 0) {
-					// Set the calculated data to form
-					this.form.total = this.total;
-					this.form.subtotal = this.subtotal;
-					this.form.tax = this.tax;
-					this.form.discount_type = this.selectedDiscountType;
-					// this.form.discount_amount = this.form.discount_amount; // Commented as it is user input
-					this.form.discount_value = this.discountValue; 
-					// this.form.paid = this.form.paid; // Commented as it is user input
-					// this.form.payment_method = this.form.payment_method;
-					this.form.rounding = this.rounding;
-					 
-					this.form.post("/tables/" + this.table.id + "/close")
-						.then(response => this.tableClosed(response))
-						.catch(error => this.closeTable(error, ++tries));
+					if(this.invoices.length > 0) {
+						
+						this.setFormValues();
+						 
+						this.form.post("/tables/" + this.table.id + "/close")
+							.then(response => this.tableClosed(response))
+							.catch(error => this.closeTable(error, ++tries));
+					} else {
+						this.tableForm.post('/tables/activate')
+							.then(response => this.tableDeactivated(response))
+							.catch(error => this.closeTable(error, ++tries));
+					}
 				}
+
+
 			},	
+
+			setFormValues() {
+				// Set the calculated data to form
+				this.form.total = this.rounded_total;
+				this.form.subtotal = this.subtotal;
+				this.form.tax = this.tax;
+				this.form.discount_type = this.selectedDiscountType;
+				// this.form.discount_amount = this.form.discount_amount; // Commented as it is user input
+				this.form.discount_value = this.discountValue; 
+				// this.form.paid = this.form.paid; // Commented as it is user input
+				// this.form.payment_method = this.form.payment_method;
+				this.form.rounding = this.rounding;
+			},
+
+			tableDeactivated(response) {
+				window.location.reload();
+			},
+
+			tableClosed(response) {
+				window.open(response.redirect_url);
+				window.location.reload();
+			},
+
+			guestCheck(error, tries = 0) {
+				this.setFormValues();
+				if(tries < 3)
+					this.form.post("/tables/" + this.table.id + "/check", false)
+						.then(response => this.print(response))
+						.catch(error => this.guestCheck(error, ++tries));
+			},
+
+			print(response) {
+				window.open(response.redirect_url);
+			},
 
 			confirmOrder() {
 
@@ -369,9 +410,6 @@
 			},
 
 			onDeactivateSuccess(response) {
-				console.log(response);
-				console.log(response.products);
-				console.log("Deactivated heads");
 
 				let products = response.products;
 
@@ -412,7 +450,7 @@
 				if(this.selectedDiscountType.value == "%")
 					discount = this.subtotal * this.form.discount_amount / 100;
 
-				return discount;
+				return parseFloat(discount);
 			},
 
 			rounded_total() {

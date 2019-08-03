@@ -15,7 +15,7 @@ class Branch extends Model
         parent::boot();
 
         static::created(function ($branch){
-            $branch->create_default_terminal();
+            $terminal = $branch->create_default_terminal();
 
             $branch->create_default_sequence();
 

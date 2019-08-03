@@ -76104,6 +76104,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
@@ -76137,6 +76140,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			orderForm: new Form({
 				items: []
+			}),
+
+			tableForm: new Form({
+				table_id: this.table.id
 			}),
 
 			form: new Form({
@@ -76320,31 +76327,62 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var tries = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
 			if (tries == 0) {
-				// Set the calculated data to form
-				this.form.total = this.total;
-				this.form.subtotal = this.subtotal;
-				this.form.tax = this.tax;
-				this.form.discount_type = this.selectedDiscountType;
-				// this.form.discount_amount = this.form.discount_amount; // Commented as it is user input
-				this.form.discount_value = this.discountValue;
-				// this.form.paid = this.form.paid; // Commented as it is user input
-				// this.form.payment_method = this.form.payment_method;
-				this.form.rounding = this.rounding;
+				if (this.invoices.length > 0) {
 
-				this.form.post("/tables/" + this.table.id + "/close").then(function (response) {
-					return _this6.tableClosed(response);
-				}).catch(function (error) {
-					return _this6.closeTable(error, ++tries);
-				});
+					this.setFormValues();
+
+					this.form.post("/tables/" + this.table.id + "/close").then(function (response) {
+						return _this6.tableClosed(response);
+					}).catch(function (error) {
+						return _this6.closeTable(error, ++tries);
+					});
+				} else {
+					this.tableForm.post('/tables/activate').then(function (response) {
+						return _this6.tableDeactivated(response);
+					}).catch(function (error) {
+						return _this6.closeTable(error, ++tries);
+					});
+				}
 			}
+		},
+		setFormValues: function setFormValues() {
+			// Set the calculated data to form
+			this.form.total = this.rounded_total;
+			this.form.subtotal = this.subtotal;
+			this.form.tax = this.tax;
+			this.form.discount_type = this.selectedDiscountType;
+			// this.form.discount_amount = this.form.discount_amount; // Commented as it is user input
+			this.form.discount_value = this.discountValue;
+			// this.form.paid = this.form.paid; // Commented as it is user input
+			// this.form.payment_method = this.form.payment_method;
+			this.form.rounding = this.rounding;
+		},
+		tableDeactivated: function tableDeactivated(response) {
+			window.location.reload();
+		},
+		tableClosed: function tableClosed(response) {
+			window.open(response.redirect_url);
+			window.location.reload();
+		},
+		guestCheck: function guestCheck(error) {
+			var _this7 = this;
+
+			var tries = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+			this.setFormValues();
+			if (tries < 3) this.form.post("/tables/" + this.table.id + "/check", false).then(function (response) {
+				return _this7.print(response);
+			}).catch(function (error) {
+				return _this7.guestCheck(error, ++tries);
+			});
+		},
+		print: function print(response) {
+			window.open(response.redirect_url);
 		},
 		confirmOrder: function confirmOrder() {},
 		onSuccess: function onSuccess(response) {},
 		onError: function onError(error) {},
 		onDeactivateSuccess: function onDeactivateSuccess(response) {
-			console.log(response);
-			console.log(response.products);
-			console.log("Deactivated heads");
 
 			var products = response.products;
 
@@ -76387,7 +76425,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			if (this.selectedDiscountType.value == "%") discount = this.subtotal * this.form.discount_amount / 100;
 
-			return discount;
+			return parseFloat(discount);
 		},
 		rounded_total: function rounded_total() {
 			return Math.round((this.total + this.rounding) * 100) / 100;
@@ -77370,6 +77408,15 @@ var render = function() {
               on: { click: _vm.placeOrder }
             },
             [_vm._v("\n\t\t\t\tPlace order\n\t\t\t")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-small btn-primary mr-2",
+              on: { click: _vm.guestCheck }
+            },
+            [_vm._v("\n\t\t\t\tGuest check\n\t\t\t")]
           ),
           _vm._v(" "),
           _c(

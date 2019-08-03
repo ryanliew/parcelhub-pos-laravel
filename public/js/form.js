@@ -80,6 +80,7 @@ class Form {
         this.errors = new Errors();
 
         this.submitting = false;
+        this.shouldReset = true;
     }
 
 
@@ -121,8 +122,8 @@ class Form {
      * .
      * @param {string} url
      */
-    post(url) {
-        return this.submit('post', url);
+    post(url, reset = true) {
+        return this.submit('post', url, reset);
     }
 
 
@@ -162,7 +163,8 @@ class Form {
      * @param {string} requestType
      * @param {string} url
      */
-    submit(requestType, url) {
+    submit(requestType, url, reset = true) {
+        this.shouldReset = reset;
         if(!this.submitting)
         {
             this.submitting = true;
@@ -199,7 +201,8 @@ class Form {
     onSuccess(data) {
         flash(data.message);
         
-        this.reset();
+        if(this.shouldReset)
+            this.reset();
     }
 
 

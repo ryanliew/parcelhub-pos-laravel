@@ -113,4 +113,19 @@ class TableController extends Controller
 
         return json_encode(['message' => "Table closed successfully, redirecting to invoice list page", "id" => $active_session->id, "redirect_url" => "/sessions/" . $active_session->id . "/receipt"]);
     }
+
+    public function check(Table $table)
+    {
+        $active_session = $table->sessions()->active()->first();
+
+        $active_session->update([
+            'discount' => request()->discount_amount,
+            'discount_value' => request()->discount_value,
+            'discount_mode' => request()->discount_type,
+            "total" => request()->total,
+            "rounding" => request()->rounding,
+        ]);
+
+        return json_encode(['message' => "Generating guest check", 'redirect_url' => "/sessions/" . $active_session->id . "/check"]);
+    }
 }
