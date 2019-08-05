@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4af1e3bb325500ae5714f4e3a918a462",
+    "content-hash": "d37fc23ff6c2123a0b32b96785f9405d",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -4234,6 +4234,42 @@
             "time": "2017-11-27T11:13:29+00:00"
         },
         {
+            "name": "titasgailius/search-relations",
+            "version": "1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TitasGailius/nova-search-relations.git",
+                "reference": "1e7408a678b9258537cb15ceb58a56016501243a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TitasGailius/nova-search-relations/zipball/1e7408a678b9258537cb15ceb58a56016501243a",
+                "reference": "1e7408a678b9258537cb15ceb58a56016501243a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Titasgailius\\SearchRelations\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova tool.",
+            "keywords": [
+                "laravel",
+                "nova",
+                "relations",
+                "search"
+            ],
+            "time": "2018-12-18T18:06:27+00:00"
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v3.4.0",
             "source": {
@@ -4459,8 +4495,8 @@
             "authors": [
                 {
                     "name": "Filipe Dobreira",
-                    "homepage": "https://github.com/filp",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "homepage": "https://github.com/filp"
                 }
             ],
             "description": "php error handling for cool kids",
@@ -5211,8 +5247,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Utility class for timing",
@@ -5342,8 +5378,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "The PHP Unit Testing framework.",

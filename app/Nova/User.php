@@ -2,12 +2,11 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Password;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Gravatar;
+use Laravel\Nova\Fields\Password;
 
 class User extends Resource
 {
@@ -45,6 +44,8 @@ class User extends Resource
         return [
             ID::make()->sortable(),
 
+            Gravatar::make(),
+
             Text::make('Name')
                 ->sortable()
                 ->rules('required', 'max:255'),
@@ -59,13 +60,6 @@ class User extends Resource
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:8')
                 ->updateRules('nullable', 'string', 'min:8'),
-
-            Text::make('Username')
-                ->rules('required'),
-
-            Boolean::make('is_staff'),
-
-            Boolean::make('is_admin'),
         ];
     }
 

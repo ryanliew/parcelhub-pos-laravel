@@ -19,6 +19,11 @@ class MemberController extends Controller
     	return view('member.overview');
     }
 
+    public function register()
+    {
+        return view('member.page');
+    }
+
     public function index()
     {
         $query = Member::query();
@@ -31,6 +36,7 @@ class MemberController extends Controller
     {
         return Member::where('phone_number', 'LIKE', '%' . request()->keyword . '%')
                         ->orWhere('email', 'LIKE', '%' . request()->keyword . '%')
+                        ->orWhere('identifier', 'LIKE', '%' . request()->keyword . '%')
                         ->get();
 
     }
@@ -50,7 +56,10 @@ class MemberController extends Controller
             "name" => "required",
             "phone_number" => ["required", $phone_unique],
             "email" => ["nullable", $mail_unique],
-            "gender" => "required"
+            "gender" => "required",
+            "birthdate" => "required",
+            "city" => "required",
+            "state" => "required",
         ]);
     }
 
@@ -75,5 +84,10 @@ class MemberController extends Controller
     public function get(Member $member)
     {
         return $member;
+    }
+
+    public function success(Member $member)
+    {
+        return view("member.success", ['member' => $member]);
     }
 }

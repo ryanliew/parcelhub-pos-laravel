@@ -169,7 +169,6 @@ class Form {
         {
             this.submitting = true;
 
-
             return new Promise((resolve, reject) => {
                 axios[requestType](url, this.data())
                     .then(response => {
@@ -216,7 +215,6 @@ class Form {
 
         if(errors.status == 500) { error = 'Something went wrong with the server, please try again'; }
         else {
-            
             if(errors.data.message) error = errors.data.message;
             
             this.errors.record(errors.data.errors);

@@ -96,6 +96,7 @@ Vue.component('cashup-details', require("./components/cashups/Details.vue"));
 Vue.component('sales-reports-dialog', require('./components/reports/SalesReportDialog.vue'));
 
 Vue.component('members-dialog', require('./components/members/Dialog.vue'));
+Vue.component('members-form', require('./components/members/Form.vue'));
  
 const app = new Vue({
     el: '#app',

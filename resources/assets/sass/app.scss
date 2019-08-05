@@ -455,10 +455,7 @@ th, td { white-space: nowrap; }
 
 .member-info {
 	cursor: pointer;
-	position: absolute;
-	top: 0;
-	right: 0;
-	z-index: 5;
+	margin-top: -10px;
 }
 
 .relative {

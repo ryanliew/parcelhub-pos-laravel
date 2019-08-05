@@ -3,29 +3,29 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\Heading;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Product extends Resource
+class Member extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\Product';
+    public static $model = 'App\Member';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'sku';
+    public static $title = 'name';
 
     /**
      * The columns that should be searched.
@@ -33,7 +33,7 @@ class Product extends Resource
      * @var array
      */
     public static $search = [
-        'sku', 'description'
+        'identifier', 'name', 'phone', 'email', 'city'
     ];
 
     /**
@@ -47,38 +47,57 @@ class Product extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make("SKU")
+            Text::make("Identifier")
+                ->exceptOnForms()
+                ->sortable(),
+
+            Text::make("Name")
+                ->rules("required")
+                ->sortable(),
+
+            Text::make("Email")
+                ->rules("required")
+                ->sortable(),
+
+            Text::make("Phone number")
+                ->rules("required")
+                ->sortable(),
+
+            Select::make("Gender")
+                ->options([
+                    "Male" => "Male",
+                    "Female" => "Female"
+                ])
+                ->sortable(),
+
+            Date::make("Birthdate")
                 ->sortable()
-                ->rules('required', 'max:254')
-                ->creationRules('unique:products,sku')
-                ->updateRules('unique:products,sku,{{resourceId}}'),
+                ->rules("required"),
 
-            Textarea::make('Description'),
+            Heading::make("Address information"),
 
-            Boolean::make('Is tax inclusive'),
+            Text::make("Address line 1")
+                ->hideFromIndex(),
 
-            BelongsTo::make("Vendor")->nullable(),
+            Text::make("Address line 2")
+                ->hideFromIndex(),
 
-            BelongsTo::make("Product type")
+            Text::make("Postcode")
+                ->hideFromIndex(),
+
+            Text::make("City")
+                ->rules("required")
                 ->sortable(),
 
-            BelongsTo::make("Tax"),
-
-            Number::make("Hour start")
-                ->step(0.01)
+            Text::make("State")
+                ->rules("required")
                 ->sortable(),
 
-            Number::make("Hour end")
-                ->step(0.01)
+            Text::make("Country")
+                ->hideFromIndex()
                 ->sortable(),
 
-            Number::make("Price")
-                ->step(0.01)
-                ->sortable(),
-
-            Number::make("Member price")
-                ->step(0.01)
-                ->sortable(),
+            HasMany::make("Visits"),
         ];
     }
 

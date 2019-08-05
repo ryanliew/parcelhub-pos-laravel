@@ -161,6 +161,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\NovaServiceProvider::class,
+        App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,

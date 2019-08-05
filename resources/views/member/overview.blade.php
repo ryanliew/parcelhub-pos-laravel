@@ -23,9 +23,10 @@
 							<th>Email</th>
 							<th>Gender</th>
 							<th>Birthdate</th>
-							<th>Country</th>
 							<th>State</th>
 							<th>City</th>
+							<th>Identifier</th>
+							<th>Country</th>
 							<th>Address</th>
 							<th>Address line 2</th>
 						</tr>
@@ -86,25 +87,12 @@
 					},
 					{data: 'gender'},
 					{data: 'birthdate'},
-					{data: 'country'},
 					{data: 'state'},
 					{data: 'city'},
-					{data: 'address_line_1', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return data ? data : "---";
-							}
-
-							return data;
-						}
-					},
-					{data: 'address_line_2', render: function(data, type, row){
-							if(type === 'display' || type === 'filter') {
-								return data ? data : "---";
-							}
-
-							return data;
-						}
-					},
+					{data: 'identifier'},
+					{data: 'country'},
+					{data: 'address_line_1'},
+					{data: 'address_line_2'},
 				]
 			});
 

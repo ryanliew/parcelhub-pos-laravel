@@ -12,11 +12,12 @@
         "fideloper/proxy": "^4.0",
         "lab404/laravel-impersonate": "^1.2",
         "laravel/framework": "5.8.*",
+        "laravel/nova": "~2.0",
         "laravel/tinker": "^1.0",
         "maatwebsite/excel": "~2.1.0",
         "mpdf/mpdf": "^7.1",
-        "yajra/laravel-datatables-oracle": "~9.0",
-        "laravel/nova": "~2.0"
+        "titasgailius/search-relations": "^1.0",
+        "yajra/laravel-datatables-oracle": "~9.0"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

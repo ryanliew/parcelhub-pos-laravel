@@ -6,6 +6,7 @@ use App\Item;
 use App\Session;
 use App\Tax;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
@@ -119,7 +120,14 @@ class SessionController extends Controller
 
     public function index()
     {
-        $query = Session::with('table');
+        $query = Session::select([
+                            'sessions.*',
+                            DB::raw('COUNT(invoices.id) as invoice_count'),
+                        ])
+                        ->rightJoin('invoices', 'invoices.session_id', '=', 'sessions.id')
+                        ->groupBy('invoices.session_id')
+                        ->having('invoice_count', '>', 0)
+                        ->with('table', 'invoices');
 
         return datatables()->of($query)
                             ->addColumn('table_name', function(Session $session){

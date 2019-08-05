@@ -15,61 +15,15 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get("/testscript", function() {
-	foreach(App\Cashup::all() as $cashup) {
-
-		$invoices = $cashup->invoices()->orderBy('invoice_no')->get();
-		foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records) {
-			$amount = $records->sum(function($invoice){ return $invoice->pivot->total; });
-			$legend = "00";
-
-			switch($type) {
-				case 'IBG':
-					$legend = "17";
-					break;
-				case 'Cash':
-					$legend = "01";
-					break;
-				case 'Credit card':
-					$legend = "02";
-					break;
-				case "Cheque":
-					$legend = "05";
-					break;
-			}
-
-			// Create payment type details
-			$cashup->details()->create([
-				'expected_amount' => $amount,
-				'actual_amount' => $amount,
-				'legend' => $legend,
-				'type' => $type,
-				'percentage' => $cashup->total > 0 ? $amount / $cashup->total * 100 : 0.00,
-				'count' => $records->count()
-			]);
-		}
-
-		// Create Float detail
-		$cashup->details()->create([
-			'expected_amount' => $cashup->float_value,
-			'actual_amount' => $cashup->float_value,
-			'legend' => "00",
-			'type' => "Float",
-			'percentage' => $cashup->total > 0 ? $cashup->float_value / $cashup->total * 100 : 0.00,
-		]);
-
-		$cashup->update([
-			'actual_amount' => $cashup->total,
-			'status' => 'confirmed'
-		]);
-	}
-});
-
 Auth::routes();
 
 Route::get('/home', function() {
 	return redirect("/invoices/create");
 })->name('home');
+
+Route::get("/members/registration", "MemberController@register");
+Route::get("/members/{member}/success", "MemberController@success");
+Route::post("/members", "MemberController@store");
 
 // Admins route
 Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
@@ -251,7 +205,6 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/index", "MemberController@index")->name('members.index');
 		Route::get("/list", "MemberController@list");
 		Route::get("/create", "MemberController@create")->name('members.create');
-		Route::post("/", "MemberController@store");
 		Route::post("/{member}", "MemberController@update");
 		Route::get("/{member}","MemberController@get");
 	});

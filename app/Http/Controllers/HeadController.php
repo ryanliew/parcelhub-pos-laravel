@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Head;
+use App\Member;
 use App\Product;
 use Illuminate\Http\Request;
 
@@ -52,8 +53,13 @@ class HeadController extends Controller
                 $product->actual_hours = $hours;
 
                 if(isset($heads[$key]->member)) {
-                    $product->description .= " (Member: " . $heads[$key]->member->name . ")";
+                    $product->description .= " (Member: " . $heads[$key]->member->identifier . ")";
                     $product->price = $product->member_price;
+
+                    $member = Member::find($heads[$key]->member->id);
+                    $member->visits()->create([
+                        'hours' => $hours
+                    ]);
                 }
 
                 $items->push($product);

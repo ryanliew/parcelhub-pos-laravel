@@ -4,36 +4,44 @@ namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Titasgailius\SearchRelations\SearchesRelations;
 
-class Product extends Resource
+class Visit extends Resource
 {
+    use SearchesRelations;
+
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\Product';
+    public static $model = 'App\Visit';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'sku';
+    public static $title = 'id';
 
     /**
      * The columns that should be searched.
      *
      * @var array
      */
-    public static $search = [
-        'sku', 'description'
+    public static $search = [];
+
+    /**
+     * The relationship columns that should be searched.
+     *
+     * @var array
+     */
+    public static $searchRelations = [
+        'member' => ['name', 'email', 'phone_number', 'identifier'],
     ];
 
     /**
@@ -47,37 +55,13 @@ class Product extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make("SKU")
-                ->sortable()
-                ->rules('required', 'max:254')
-                ->creationRules('unique:products,sku')
-                ->updateRules('unique:products,sku,{{resourceId}}'),
-
-            Textarea::make('Description'),
-
-            Boolean::make('Is tax inclusive'),
-
-            BelongsTo::make("Vendor")->nullable(),
-
-            BelongsTo::make("Product type")
+            BelongsTo::make("Member")
                 ->sortable(),
 
-            BelongsTo::make("Tax"),
-
-            Number::make("Hour start")
-                ->step(0.01)
+            Number::make("Hours visited", "hours")
                 ->sortable(),
 
-            Number::make("Hour end")
-                ->step(0.01)
-                ->sortable(),
-
-            Number::make("Price")
-                ->step(0.01)
-                ->sortable(),
-
-            Number::make("Member price")
-                ->step(0.01)
+            DateTime::make("Visited at", 'created_at')
                 ->sortable(),
         ];
     }
