@@ -39,8 +39,7 @@ class Product extends Resource
     ];
 
     public static $sortRelations = [
-        // overriding id with product.id (this prevent ambiguous id, if you select multiple ids)
-        'id'               => 'products.id',
+        'id' => "products.id",
         // overriding product_type relation sorting
         'product_type'         => [
             // sorting multiple columns
@@ -141,6 +140,8 @@ class Product extends Resource
     public static function indexQuery(NovaRequest $request, $query)
     {
         // You can modify your base query here.
-        return $query->leftJoin('product_types', 'product_types.id', 'products.id');
+        return $query
+                ->select('products.*', 'product_types.id as product_types_id', 'product_types.name')
+                ->leftJoin('product_types', 'product_types.id', '=', 'products.product_type_id');
     }
 }
