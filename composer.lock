@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d37fc23ff6c2123a0b32b96785f9405d",
+    "content-hash": "9c67a04591239555918f48141df773f9",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -1469,6 +1469,48 @@
                 "storage"
             ],
             "time": "2019-06-18T20:09:29+00:00"
+        },
+        {
+            "name": "lifeonscreen/nova-sort-relations",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LifeOnScreen/nova-sort-relations.git",
+                "reference": "56e7f96272a99a1abf3ce649168c8bc58606fe3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LifeOnScreen/nova-sort-relations/zipball/56e7f96272a99a1abf3ce649168c8bc58606fe3f",
+                "reference": "56e7f96272a99a1abf3ce649168c8bc58606fe3f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LifeOnScreen\\SortRelations\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jani Cerar",
+                    "email": "jani.cerar@lifeonscreen.com"
+                }
+            ],
+            "description": "This package improves support for sorting relations in Laravel Nova.",
+            "keywords": [
+                "laravel",
+                "nova",
+                "relations",
+                "sort"
+            ],
+            "time": "2019-03-11T08:04:50+00:00"
         },
         {
             "name": "maatwebsite/excel",

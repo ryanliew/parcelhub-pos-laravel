@@ -10,9 +10,11 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use LifeOnScreen\SortRelations\SortRelations;
 
 class Product extends Resource
 {
+    use SortRelations;
     /**
      * The model the resource corresponds to.
      *
@@ -34,6 +36,16 @@ class Product extends Resource
      */
     public static $search = [
         'sku', 'description'
+    ];
+
+    public static $sortRelations = [
+        // overriding id with product.id (this prevent ambiguous id, if you select multiple ids)
+        'id'               => 'product.id',
+        // overriding product_type relation sorting
+        'product_type'         => [
+            // sorting multiple columns
+            'product_types.name',
+        ],
     ];
 
     /**
@@ -124,5 +136,11 @@ class Product extends Resource
     public function actions(Request $request)
     {
         return [];
+    }
+
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        // You can modify your base query here.
+        return $query->leftJoin('product_types', 'product_types.id', 'products.id');
     }
 }

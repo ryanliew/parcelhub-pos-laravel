@@ -55,8 +55,7 @@ class Visit extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make("Member")
-                ->sortable(),
+            BelongsTo::make("Member"),
 
             Number::make("Hours visited", "hours")
                 ->sortable(),
