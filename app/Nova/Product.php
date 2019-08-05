@@ -40,7 +40,7 @@ class Product extends Resource
 
     public static $sortRelations = [
         // overriding id with product.id (this prevent ambiguous id, if you select multiple ids)
-        'id'               => 'product.id',
+        'id'               => 'products.id',
         // overriding product_type relation sorting
         'product_type'         => [
             // sorting multiple columns
