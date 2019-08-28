@@ -38,7 +38,7 @@ class HeadController extends Controller
         foreach($headcounts as $key => $head) {
             $head->deactivate();
 
-            $hours = $head->deactivated_at->diffInMinutes($head->activated_at) / 60;
+            $hours = $head->deactivated_at->diffInSeconds($head->activated_at) / 60;
 
             $product = Product::headcounts()
                         ->with('tax')

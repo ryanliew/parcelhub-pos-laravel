@@ -11530,3 +11530,8 @@ td {
   position: relative;
 }
 
+.headcount-scroller {
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
