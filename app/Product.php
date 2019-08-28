@@ -3,6 +3,7 @@
 namespace App;
 
 use App\CustomerGroup;
+use App\ProductType;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -59,7 +60,9 @@ class Product extends Model
 
     public function scopeHeadcounts($query) 
     {
-      return $query->where('product_type_id', 1);
+      $product_type_id = ProductType::where('is_hours', 1)->first()->id;
+      
+      return $query->where('product_type_id', $product_type_id);
     }
 
     public function getTaxTypeAttribute()
