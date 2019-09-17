@@ -76964,6 +76964,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Modal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Modal_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__members_Search_vue__ = __webpack_require__(246);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__members_Search_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__members_Search_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_moment__);
 //
 //
 //
@@ -77013,6 +77015,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 
 
@@ -77033,6 +77037,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			phones: []
 		};
 	},
+
+
+	filters: {
+		shortDate: function shortDate(value) {
+			return __WEBPACK_IMPORTED_MODULE_2_moment___default()(value).format("D/M H:mm");
+		}
+	},
+
 	mounted: function mounted() {
 		this.getHeads();
 	},
@@ -77306,7 +77318,7 @@ var render = function() {
             [
               _vm._l(_vm.availableHead, function(head) {
                 return _vm.currentFilter == "inactive"
-                  ? _c("div", { staticClass: "col-4 col-md-3 my-1" }, [
+                  ? _c("div", { staticClass: "col-6 col-md-3 my-1" }, [
                       _c(
                         "button",
                         {
@@ -77332,7 +77344,7 @@ var render = function() {
               _vm._v(" "),
               _vm._l(_vm.activeHead, function(head) {
                 return _vm.currentFilter == "active"
-                  ? _c("div", { staticClass: "col-4 col-md-2 my-1" }, [
+                  ? _c("div", { staticClass: "col-6 col-md-3 my-1" }, [
                       _c(
                         "button",
                         {
@@ -77345,11 +77357,14 @@ var render = function() {
                           }
                         },
                         [
-                          _vm._v(
-                            "\n\t\t\t\t\t\t" +
-                              _vm._s(head.number) +
-                              "\n\t\t\t\t\t"
-                          )
+                          _vm._v("\n\t\t\t\t\t\t" + _vm._s(head.number)),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("small", [
+                            _vm._v(
+                              _vm._s(_vm._f("shortDate")(head.activated_at))
+                            )
+                          ])
                         ]
                       )
                     ])
@@ -77367,7 +77382,7 @@ var render = function() {
             _vm._l(_vm.selectedHead, function(head, index) {
               return _c(
                 "div",
-                { staticClass: "col-4 col-md-6 my-1" },
+                { staticClass: "col-6 col-md-6 my-1" },
                 [
                   _c(
                     "button",
@@ -77461,12 +77476,12 @@ var render = function() {
           "div",
           { staticClass: "text-center table-name row align-items-center" },
           [
-            _c("div", { staticClass: "col-6" }, [
+            _c("div", { staticClass: "col-6 col-md-12" }, [
               _c("b", [_vm._v("Table:")]),
               _vm._v(" " + _vm._s(_vm.table.name) + "\n\t\t\t")
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "col-6" }, [
+            _c("div", { staticClass: "col-6 display-mobile" }, [
               _c(
                 "button",
                 {
@@ -77522,7 +77537,7 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "order-information row my-3" }, [
-          _c("div", { staticClass: "col-6" }, [
+          _c("div", { staticClass: "col-6 col-md-4" }, [
             _c(
               "div",
               { staticClass: "d-flex flex-column" },
@@ -77574,7 +77589,7 @@ var render = function() {
             )
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col-6" }, [
+          _c("div", { staticClass: "col-6 col-md-4" }, [
             _c(
               "div",
               { staticClass: "d-flex flex-column" },
@@ -77626,7 +77641,7 @@ var render = function() {
             )
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col" }, [
+          _c("div", { staticClass: "col-md-4" }, [
             _c("div", { staticClass: "order-summary d-flex" }, [
               _c("div", { staticClass: "col-6 col-md-12" }, [
                 _c("div", [

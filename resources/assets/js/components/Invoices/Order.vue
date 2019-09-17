@@ -5,10 +5,10 @@
 				<b>Current time</b>: {{ currentTime }}
 			</div>
 			<div class="text-center table-name row align-items-center">
-				<div class="col-6">
+				<div class="col-6 col-md-12">
 					<b>Table:</b> {{ table.name }}
 				</div>
-				<div class="col-6">
+				<div class="col-6 display-mobile">
 					<button class="btn btn-primary display-mobile" @click="is_selecting_items = true">Add Item</button>
 				</div>
 			</div>
@@ -25,7 +25,7 @@
 			</div>
 
 			<div class="order-information row my-3">
-				<div class="col-6">
+				<div class="col-6 col-md-4">
 					<div class="d-flex flex-column">
 						<selector-input :potentialData="discountTypes"
 							v-model="selectedDiscountType" 
@@ -53,7 +53,7 @@
 						</text-input>
 					</div>
 				</div>
-				<div class="col-6">
+				<div class="col-6 col-md-4">
 					<div class="d-flex flex-column">
 						<text-input v-model="form.paid" 
 							:defaultValue="form.paid"
@@ -81,7 +81,7 @@
 						</selector-input>
 					</div>
 				</div>
-				<div class="col">
+				<div class="col-md-4">
 					<div class="order-summary d-flex">
 						<div class="col-6 col-md-12">
 							<div>

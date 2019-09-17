@@ -11547,10 +11547,30 @@ td {
 
 .order-summary {
   text-align: right;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
 .items {
   padding: 1rem 0;
+}
+
+.display-mobile {
+  display: none;
+}
+
+.display-desktop {
+  display: block;
+}
+
+.headcount-scroller button.btn {
+  line-height: 2.5rem;
+}
+
+.headcount-scroller .btn small {
+  font-size: 40%;
 }
 
 @media screen and (max-width: 450px) {
@@ -11620,6 +11640,10 @@ td {
 
   .order-summary {
     text-align: left;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
   }
 
   .order-information {
