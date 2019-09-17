@@ -16,6 +16,8 @@
 
     <link rel="icon" href="/img/favicon.png">
 
+    <link rel="manifest" href="/manifest.json">
+
     <!-- Styles -->
     @yield('styles')
     <link href="{{ asset('css/app.css?v=' . config("app.version")) }}" rel="stylesheet">

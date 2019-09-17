@@ -12,22 +12,22 @@
 
 		<div class="row">
 			<div class="col-md-8 headcount-scroller">
-				<div class="row border-right mb-3">
-					<div class="col-md-3 my-3" v-for="head in availableHead" v-if="currentFilter == 'inactive'">
+				<div class="row border-right mb-3 border-bottom">
+					<div class="col-4 col-md-3 my-1" v-for="head in availableHead" v-if="currentFilter == 'inactive'">
 						<button class="btn btn-secondary btn-block btn-lg text-big" @click="selectInactiveHead(head)">
 							{{ head.number }}
 						</button>
 					</div>
-					<div class="col-md-2 my-3" v-for="head in activeHead" v-if="currentFilter == 'active'">
+					<div class="col-4 col-md-2 my-1" v-for="head in activeHead" v-if="currentFilter == 'active'">
 						<button class="btn btn-success btn-block btn-lg text-big" @click="selectActiveHead(head)">
 							{{ head.number }}
 						</button>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-4 headcout-scroller">
+			<div class="col-md-4 headcount-scroller">
 				<div class="row mt-3">
-					<div class="col-md-6 my-3" v-for="(head, index) in selectedHead">
+					<div class="col-4 col-md-6 my-1" v-for="(head, index) in selectedHead">
 						<button class="btn btn-success btn-block btn-lg text-big" @click="deselectHead(index)">
 							{{ head.number }}
 						</button>
@@ -111,7 +111,7 @@
 
 			selectHead(headOption) {
 				if(_.findIndex(this.selectedHead, function(head){ return head.number == headOption.number}.bind(headOption)) < 0)
-					this.selectedHead.push(headOption);
+					this.selectedHead.unshift(headOption);
 			},
 
 			commitSelection() {
@@ -125,6 +125,6 @@
 			setMember(event, index) {
 				this.selectedHead[index].member = event;
 			}
-		}	
+		},	
 	}
 </script>

@@ -1,7 +1,7 @@
 <template>
 	<tr>
-		<td>{{ item.sku }}</td>
-		<td><small><i>{{ item.description }}</i></small></td>
+		<td class="item-name">{{ item.sku }}<br><small class="display-mobile">{{ item.description }}</small></td>
+		<td class="display-desktop"><small><i>{{ item.description }}</i></small></td>
 		<td>{{ unitPrice.toFixed(2) }}</td>
 		<td>{{ item.unit }}</td>
 		<!-- <td>{{ taxValue.toFixed(2) }}</td> -->

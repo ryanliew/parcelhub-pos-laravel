@@ -1,0 +1,21 @@
+{
+  "short_name": "HexaPOS",
+  "name": "Hexabox POS System",
+  "icons": [
+    {
+      "src": "/img/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/icons-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/invoices/create",
+  "background_color": "#00a2e0",
+  "display": "standalone",
+  "scope": "/invoices",
+  "theme_color": "#00a2e0"
+}

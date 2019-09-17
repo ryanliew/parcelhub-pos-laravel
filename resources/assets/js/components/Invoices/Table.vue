@@ -1,5 +1,5 @@
 <template>
-	<div class="col-md-3 mt-3">
+	<div class="col-4 col-md-3 mt-3">
 		<div class="hexatable"  
 			:class="tableClass" 
 			@click="toggleTable">

@@ -11535,3 +11535,121 @@ td {
   max-height: 80vh;
 }
 
+.controls {
+  overflow-x: auto;
+}
+
+.v-select.searchable .dropdown-toggle {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.order-summary {
+  text-align: right;
+}
+
+.items {
+  padding: 1rem 0;
+}
+
+@media screen and (max-width: 450px) {
+  #terminal-selector {
+    margin-bottom: 25px;
+  }
+
+  .expand-button {
+    right: 10px;
+    bottom: -25px;
+  }
+
+  .hide-selector {
+    margin-top: -242px;
+  }
+
+  .hexatable {
+    width: 85px;
+    height: 53.6px;
+    margin: 25px 0;
+  }
+
+  .hexatable:before,
+  .hexatable:after {
+    border-left: 43.3px solid transparent;
+    border-right: 43.3px solid transparent;
+  }
+
+  .hexatable::before {
+    border-bottom: 25px solid #ecd5a7;
+  }
+
+  .hexatable::after {
+    border-top: 25px solid #ecd5a7;
+  }
+
+  .hexatable-active.hexatable::after {
+    border-top: 25px solid #30ff47;
+  }
+
+  .hexatable-active.hexatable::before {
+    border-bottom: 25px solid #30ff47;
+  }
+
+  .hexatable-name {
+    font-size: 2.4rem;
+    line-height: 1.4;
+  }
+
+  .table-name {
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .item-name {
+    white-space: break-spaces;
+    max-width: 90px;
+  }
+
+  .display-desktop {
+    display: none;
+  }
+
+  .display-mobile {
+    display: block;
+  }
+
+  .order-summary {
+    text-align: left;
+  }
+
+  .order-information {
+    height: 35vh;
+    overflow-y: visible;
+  }
+
+  .text-break {
+    white-space: normal;
+  }
+
+  #items-selector .modal-dialog {
+    position: fixed;
+    bottom: -45vh;
+    width: 100vw;
+    margin: 0;
+  }
+
+  #items-selector .modal-header,
+  #items-selector .modal-body {
+    padding: 0.3rem;
+  }
+
+  .items {
+    max-height: 35vh;
+    padding: 0;
+  }
+
+  .headcount-scroller {
+    max-height: 35vh;
+  }
+}
+

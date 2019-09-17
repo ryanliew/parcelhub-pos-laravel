@@ -1,22 +1,31 @@
 <template>
 	<div class="order-form row">
 		<div class="col-md-7 border-right d-flex flex-column">
-			<div>
+			<div class="d-none">
 				<b>Current time</b>: {{ currentTime }}
 			</div>
-			<div>
-				<b>Table:</b> {{ table.name }}
+			<div class="text-center table-name row align-items-center">
+				<div class="col-6">
+					<b>Table:</b> {{ table.name }}
+				</div>
+				<div class="col-6">
+					<button class="btn btn-primary display-mobile" @click="is_selecting_items = true">Add Item</button>
+				</div>
 			</div>
+
+
 			<div class="order-items">
 				<table class="table">
+					<hexa-item :item="item" v-for="(item,index) in orderForm.items" :key="item.sku" @delete="deleteItem(index)"></hexa-item>
 					<template  v-for="invoice in invoices" v-if="!invoice.canceled_on">
 						<hexa-item class="past-order" :item="item" v-for="item in invoice.items" :key="item.id" @delete="deleteInvoiceItem(item.id)" :canDelete="!session"></hexa-item>
 					</template>
-					<hexa-item :item="item" v-for="(item,index) in orderForm.items" :key="item.sku" @delete="deleteItem(index)"></hexa-item>
+					
 				</table>
 			</div>
+
 			<div class="order-information row my-3">
-				<div class="col">
+				<div class="col-6">
 					<div class="d-flex flex-column">
 						<selector-input :potentialData="discountTypes"
 							v-model="selectedDiscountType" 
@@ -44,7 +53,7 @@
 						</text-input>
 					</div>
 				</div>
-				<div class="col">
+				<div class="col-6">
 					<div class="d-flex flex-column">
 						<text-input v-model="form.paid" 
 							:defaultValue="form.paid"
@@ -73,24 +82,28 @@
 					</div>
 				</div>
 				<div class="col">
-					<div class="text-right d-flex flex-column">
-						<div>
-							<b>Subtotal:</b> RM{{ subtotal.toFixed(2) }}
+					<div class="order-summary d-flex">
+						<div class="col-6 col-md-12">
+							<div>
+								<b>Subtotal:</b> RM{{ subtotal.toFixed(2) }}
+							</div>
+							<!-- <div>
+								<b>Tax:</b> RM{{ tax.toFixed(2) }}
+							</div> -->
+							<div>
+								<b>Discount:</b> RM{{ discountValue.toFixed(2) }}
+							</div>
 						</div>
-						<!-- <div>
-							<b>Tax:</b> RM{{ tax.toFixed(2) }}
-						</div> -->
-						<div>
-							<b>Discount:</b> RM{{ discountValue.toFixed(2) }}
-						</div>
-						<div>
-							<b>Rounding:</b> RM{{ rounding.toFixed(2) }}
-						</div>
-						<div>
-							<b>Total:</b> RM{{ rounded_total.toFixed(2) }}
-						</div>
-						<div>
-							<b>Change:</b> RM{{ change.toFixed(2) }}
+						<div class="col-6 col-md-12">
+							<div>
+								<b>Rounding:</b> RM{{ rounding.toFixed(2) }}
+							</div>
+							<div>
+								<b>Total:</b> RM{{ rounded_total.toFixed(2) }}
+							</div>
+							<div>
+								<b>Change:</b> RM{{ change.toFixed(2) }}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -126,14 +139,33 @@
 				:currentFilter="headcount_type">
 
 			</headcount-selector>
+
+			<modal :active="is_selecting_items"
+				id="items-selector"
+				@close="is_selecting_items = false">
+				<item-selector
+					@selected="selectItem"
+					key="2"
+				>
+
+				<template slot="header">
+					Select item
+				</template>
+
+				</item-selector>
+			</modal>
 		</div>
-		<div class="col-md-5 border">
+
+		<div class="col-md-5 border display-desktop">
 			<item-selector
 				@selected="selectItem"
+				key="1"
 			>
 
 			</item-selector>
 		</div>
+
+
 	</div>
 </template>
 
@@ -163,6 +195,8 @@
 				is_select_headcount: false,
 				is_adding_headcount: false,
 				is_checking_out_headcount: false,
+
+				is_selecting_items: false,
 
 				headForm: new Form({
 					heads: []

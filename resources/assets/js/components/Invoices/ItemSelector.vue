@@ -1,6 +1,6 @@
 <template>
 	<div class="items-selector d-flex flex-column">
-		<carousel class="categories py-3 border-bottom"
+		<!-- <carousel class="categories py-3 border-bottom"
 			:perPage="4"
 			:navigationEnabled="true"
 			:paginationEnabled="false">
@@ -9,10 +9,17 @@
 					{{ category.name }}
 				</button>
 			</slide>
-		</carousel>
-		<div class="items py-3 flex-grow-1">
+		</carousel> -->
+		<div class="row no-gutters border-bottom pb-2">
+			<div class="col-4" v-for="category in categories" :key="category.id" v-if="category.products.length > 0">
+				<button class="btn btn-primary btn-block" @click="setCategory(category)">
+					{{ category.name }}
+				</button>
+			</div>
+		</div>
+		<div class="items flex-grow-1">
 			<div class="row no-gutters">
-				<div class="col-md-4" v-for="product in products">
+				<div class="col-6 col-md-4" v-for="product in products">
 					<button class="btn btn-primary btn-block text-break" @click="selectItem(product)">
 						{{ product.sku }} <br>
 						<small>{{ product.description }}</small>
