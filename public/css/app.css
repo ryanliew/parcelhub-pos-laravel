@@ -11675,5 +11675,13 @@ td {
   .headcount-scroller {
     max-height: 35vh;
   }
+
+  .headcount-scroller .btn small {
+    font-size: 20%;
+  }
+
+  .headcount-scroller button.btn {
+    line-height: 2rem;
+  }
 }
 

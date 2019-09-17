@@ -18,7 +18,7 @@
 				<table class="table">
 					<hexa-item :item="item" v-for="(item,index) in orderForm.items" :key="item.sku" @delete="deleteItem(index)"></hexa-item>
 					<template  v-for="invoice in invoices" v-if="!invoice.canceled_on">
-						<hexa-item class="past-order" :item="item" v-for="item in invoice.items" :key="item.id" @delete="deleteInvoiceItem(item.id)" :canDelete="!session"></hexa-item>
+						<hexa-item class="past-order" :item="item" v-for="item in invoice.items" :key="invoice.id + '-' + item.id" @delete="deleteInvoiceItem(item.id)" :canDelete="!session"></hexa-item>
 					</template>
 					
 				</table>
@@ -357,7 +357,7 @@
 				this.headForm.heads = [];
 
 				e.heads.forEach(function(head){
-					this.headForm.heads.push({id: head.id, member: head.member});
+					this.headForm.heads.push({id: head.id, member: head.member, product_id: head.product_id});
 				}.bind(this));
 
 				if(this.is_adding_headcount) {
@@ -452,7 +452,7 @@
 			},
 
 			onError(error) {
-
+				console.log(error);
 			},
 
 			onDeactivateSuccess(response) {

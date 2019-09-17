@@ -76330,7 +76330,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.headForm.heads = [];
 
 			e.heads.forEach(function (head) {
-				this.headForm.heads.push({ id: head.id, member: head.member });
+				this.headForm.heads.push({ id: head.id, member: head.member, product_id: head.product_id });
 			}.bind(this));
 
 			if (this.is_adding_headcount) {
@@ -76429,7 +76429,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		confirmOrder: function confirmOrder() {},
 		onSuccess: function onSuccess(response) {},
-		onError: function onError(error) {},
+		onError: function onError(error) {
+			console.log(error);
+		},
 		onDeactivateSuccess: function onDeactivateSuccess(response) {
 
 			var products = response.products;
@@ -77016,6 +77018,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -77034,7 +77054,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			availableHead: [],
 			activeHead: [],
 			selectedHead: [],
-			phones: []
+			phones: [],
+			selectedHour: '',
+			potentialHours: []
 		};
 	},
 
@@ -77060,11 +77082,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 			var tries = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-			if (tries < 3) axios.get("/data/heads").then(function (response) {
-				return _this.setHeads(response);
-			}).catch(function (error) {
-				return _this.getHeads(error, ++tries);
-			});
+			if (tries < 3) {
+				axios.get("/data/heads").then(function (response) {
+					return _this.setHeads(response);
+				}).catch(function (error) {
+					return _this.getHeads(error, ++tries);
+				});
+			}
+
+			this.getHours();
 		},
 		setHeads: function setHeads(response) {
 			var heads = response.data;
@@ -77075,8 +77101,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				return head.is_active;
 			});
 		},
+		getHours: function getHours() {
+			var _this2 = this;
+
+			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+			var tries = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+			if (tries < 3) {
+				axios.get("/data/hours").then(function (response) {
+					return _this2.setHours(response);
+				}).catch(function (error) {
+					return _this2.getHours(error, ++tries);
+				});
+			}
+		},
+		setHours: function setHours(response) {
+			this.potentialHours = response.data.map(function (hour) {
+				var obj = {};
+
+				obj['label'] = hour.description;
+				obj['value'] = hour.id;
+
+				return obj;
+			});
+		},
 		close: function close() {
 			this.selectedHead = [];
+			this.selectedHour = '';
 			this.$emit('close');
 		},
 		selectInactiveHead: function selectInactiveHead(headOption) {
@@ -77094,6 +77145,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.selectHead(headOption);
 		},
 		selectHead: function selectHead(headOption) {
+			if (this.selectedHour) {
+				headOption.product_id = this.selectedHour.value;
+				headOption.product_name = this.selectedHour.label;
+			}
+
 			if (_.findIndex(this.selectedHead, function (head) {
 				return head.number == headOption.number;
 			}.bind(headOption)) < 0) this.selectedHead.unshift(headOption);
@@ -77310,72 +77366,109 @@ var render = function() {
         _vm._v("\n\t\tSelect headcounts\n\t")
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-8 headcount-scroller" }, [
-          _c(
+      _vm.currentFilter == "active"
+        ? _c(
             "div",
-            { staticClass: "row border-right mb-3 border-bottom" },
+            { staticClass: "products-locking" },
             [
-              _vm._l(_vm.availableHead, function(head) {
-                return _vm.currentFilter == "inactive"
-                  ? _c("div", { staticClass: "col-6 col-md-3 my-1" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            "btn btn-secondary btn-block btn-lg text-big",
-                          on: {
-                            click: function($event) {
-                              _vm.selectInactiveHead(head)
-                            }
-                          }
-                        },
-                        [
-                          _vm._v(
-                            "\n\t\t\t\t\t\t" +
-                              _vm._s(head.number) +
-                              "\n\t\t\t\t\t"
-                          )
-                        ]
-                      )
-                    ])
-                  : _vm._e()
-              }),
-              _vm._v(" "),
-              _vm._l(_vm.activeHead, function(head) {
-                return _vm.currentFilter == "active"
-                  ? _c("div", { staticClass: "col-6 col-md-3 my-1" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            "btn btn-success btn-block btn-lg text-big",
-                          on: {
-                            click: function($event) {
-                              _vm.selectActiveHead(head)
-                            }
-                          }
-                        },
-                        [
-                          _vm._v("\n\t\t\t\t\t\t" + _vm._s(head.number)),
-                          _c("br"),
-                          _vm._v(" "),
-                          _c("small", [
-                            _vm._v(
-                              _vm._s(_vm._f("shortDate")(head.activated_at))
-                            )
-                          ])
-                        ]
-                      )
-                    ])
-                  : _vm._e()
+              _c("selector-input", {
+                attrs: {
+                  potentialData: _vm.potentialHours,
+                  defaultData: _vm.selectedHour,
+                  placeholder: "Select locked hours",
+                  required: false,
+                  label: "Hours",
+                  name: "hours",
+                  editable: true,
+                  focus: false,
+                  hideLabel: true
+                },
+                model: {
+                  value: _vm.selectedHour,
+                  callback: function($$v) {
+                    _vm.selectedHour = $$v
+                  },
+                  expression: "selectedHour"
+                }
               })
             ],
-            2
+            1
           )
-        ]),
+        : _vm._e(),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c(
+          "div",
+          {
+            staticClass:
+              "col-md-8 headcount-scroller border-bottom border-info py-1"
+          },
+          [
+            _c(
+              "div",
+              { staticClass: "row border-right mb-3" },
+              [
+                _vm._l(_vm.availableHead, function(head) {
+                  return _vm.currentFilter == "inactive"
+                    ? _c("div", { staticClass: "col-6 col-md-3 my-1" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn btn-secondary btn-block btn-lg text-big",
+                            on: {
+                              click: function($event) {
+                                _vm.selectInactiveHead(head)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n\t\t\t\t\t\t" +
+                                _vm._s(head.number) +
+                                "\n\t\t\t\t\t"
+                            )
+                          ]
+                        )
+                      ])
+                    : _vm._e()
+                }),
+                _vm._v(" "),
+                _vm._l(_vm.activeHead, function(head) {
+                  return _vm.currentFilter == "active"
+                    ? _c("div", { staticClass: "col-6 col-md-3 my-1" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn btn-success btn-block btn-lg text-big",
+                            on: {
+                              click: function($event) {
+                                _vm.selectActiveHead(head)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v("\n\t\t\t\t\t\t" + _vm._s(head.number)),
+                            _c("br"),
+                            _vm._v(" "),
+                            _c("small", [
+                              _vm._v(
+                                _vm._s(_vm._f("shortDate")(head.activated_at))
+                              )
+                            ])
+                          ]
+                        )
+                      ])
+                    : _vm._e()
+                })
+              ],
+              2
+            )
+          ]
+        ),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-4 headcount-scroller" }, [
+        _c("div", { staticClass: "col-md-4 headcount-scroller py-1" }, [
           _c(
             "div",
             { staticClass: "row mt-3" },
@@ -77396,9 +77489,19 @@ var render = function() {
                     },
                     [
                       _vm._v(
-                        "\n\t\t\t\t\t\t" + _vm._s(head.number) + "\n\t\t\t\t\t"
-                      )
-                    ]
+                        "\n\t\t\t\t\t\t" +
+                          _vm._s(head.number) +
+                          "\n\t\t\t\t\t\t"
+                      ),
+                      head.product_name
+                        ? [
+                            _c("br"),
+                            _vm._v(" "),
+                            _c("small", [_vm._v(_vm._s(head.product_name))])
+                          ]
+                        : _vm._e()
+                    ],
+                    2
                   ),
                   _vm._v(" "),
                   head.is_active
@@ -77519,7 +77622,7 @@ var render = function() {
                 return !invoice.canceled_on
                   ? _vm._l(invoice.items, function(item) {
                       return _c("hexa-item", {
-                        key: item.id,
+                        key: invoice.id + "-" + item.id,
                         staticClass: "past-order",
                         attrs: { item: item, canDelete: !_vm.session },
                         on: {

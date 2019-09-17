@@ -40,13 +40,21 @@ class HeadController extends Controller
 
             $hours = $head->deactivated_at->diffInSeconds($head->activated_at) / 60;
 
-            $product = Product::headcounts()
-                        ->with('tax')
-                        ->where("hour_start", "<=", $hours)
-                        ->where("hour_end", ">=", $hours)
-                        ->orderByDesc("hour_end")
-                        ->get()
-                        ->first();
+            if(isset($heads[$key]->product_id))
+            {
+                $product = Product::find($heads[$key]->product_id)->load('tax');
+            }
+            else
+            {
+                $product = Product::headcounts()
+                            ->with('tax')
+                            ->where("hour_start", "<=", $hours)
+                            ->where("hour_end", ">=", $hours)
+                            ->orderByDesc("hour_end")
+                            ->get()
+                            ->first();
+            }
+
 
             if($product) {
 

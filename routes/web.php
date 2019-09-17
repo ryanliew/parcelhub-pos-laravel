@@ -134,6 +134,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/groups", "CustomerGroupController@list");
 		Route::get("/tables", "TableController@list");
 		Route::get('/heads', "HeadController@list");
+		Route::get("/hours", "ProductController@list_hours");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){

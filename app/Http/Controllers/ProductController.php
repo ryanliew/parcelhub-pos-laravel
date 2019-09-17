@@ -184,4 +184,9 @@ class ProductController extends Controller
 
         return $query->with('tax')->get();
     }
+
+    public function list_hours()
+    {
+        return Product::headcounts()->get();
+    }
 }
