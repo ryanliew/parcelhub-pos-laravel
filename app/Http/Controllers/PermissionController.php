@@ -23,9 +23,19 @@ class PermissionController extends Controller
 
     public function index()
     {
-    	$query = auth()->user()->is_admin ? Permission::with('branch', 'user')->select('permissions.*') : auth()->user()->current->permissions()->with('branch', 'user')->select('permissions.*');
+        $query = auth()->user()->is_admin ? 
+                Permission::with('branch', 'user')->select('permissions.*') : 
+                auth()->user()->current->permissions()->with('branch', 'user')
+                    ->select('permissions.*', 'users.is_admin')
+                    ->leftJoin('users', 'permissions.user_id', '=', 'users.id');
 
-    	return datatables()->of($query)
+
+
+        return datatables()->of($query)
+                        ->filter(function($query){
+                            if(!auth()->user()->is_admin)
+                                $query->where('users.is_admin', "!=", 1);
+                        }, true)
                         ->addColumn('branch_name', function(Permission $permission){
                             return $permission->branch->name;
                         })
@@ -35,7 +45,7 @@ class PermissionController extends Controller
                         ->addColumn('level', function(Permission $permission){
                             return $permission->type == 'write' ? 'Branch admin' : 'Cashier';
                         })
-                        ->toJson();	
+                        ->toJson(); 
     }
 
     public function store()
