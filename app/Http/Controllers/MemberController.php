@@ -54,8 +54,9 @@ class MemberController extends Controller
 
         request()->validate([
             "name" => "required",
+            "last_name" => "required",
             "phone_number" => ["required", $phone_unique, 'regex:/^(\+?6?01?)[0-46-9]-*[0-9]{7,8}$/'],
-            "email" => ["nullable", $mail_unique],
+            "email" => ["nullable", "required", $mail_unique],
             "gender" => "required",
             "birthdate" => "required",
             "city" => "required",

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Newsletter;
 
 class Member extends Model
 {
@@ -16,6 +17,7 @@ class Member extends Model
 
         static::created(function ($user) {
             $user->setIdentifierCode();
+            $user->registerToMailchimp();
         });
     }
 
@@ -39,5 +41,14 @@ class Member extends Model
             $code = $this->generateReferralCode();
 
         return $code;
+    }
+
+    public function registerToMailchimp()
+    {
+        Newsletter::subscribeOrUpdate($this->email, [
+            'FNAME' => $this->name, 
+            'LNAME' => $this->last_name,
+            'PHONE' => $this->phone_number,
+        ]);
     }
 }

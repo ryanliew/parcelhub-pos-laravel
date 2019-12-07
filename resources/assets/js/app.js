@@ -97,6 +97,7 @@ Vue.component('sales-reports-dialog', require('./components/reports/SalesReportD
 
 Vue.component('members-dialog', require('./components/members/Dialog.vue'));
 Vue.component('members-form', require('./components/members/Form.vue'));
+Vue.component('members-page', require('./components/members/Page.vue'));
  
 const app = new Vue({
     el: '#app',

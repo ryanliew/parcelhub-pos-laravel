@@ -18,7 +18,8 @@
 				<table class="table table-bordered" id="members-table">
 					<thead>
 						<tr>
-							<th>Name</th>
+							<th>First name</th>
+							<th>Last name</th>
 							<th>Phone number</th>
 							<th>Email</th>
 							<th>Gender</th>
@@ -76,6 +77,7 @@
 				ajax: '{!! route("members.index") !!}',
 				columns: [
 					{data: 'name'},
+					{data: 'last_name'},
 					{data: 'phone_number'},
 					{data: 'email', render: function(data, type, row){
 							if(type === 'display' || type === 'filter') {

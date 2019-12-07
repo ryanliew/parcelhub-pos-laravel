@@ -8,12 +8,25 @@
 					:defaultValue="form.name"
 					:required="true"
 					type="text"
-					label="Name"
+					label="First name"
 					name="name"
 					:editable="true"
 					:focus="false"
 					:hideLabel="false"
 					:error="form.errors.get('name')">
+				</text-input>
+			</div>
+			<div class="col">
+				<text-input v-model="form.last_name" 
+					:defaultValue="form.last_name"
+					:required="true"
+					type="text"
+					label="Last name"
+					name="last_name"
+					:editable="true"
+					:focus="false"
+					:hideLabel="false"
+					:error="form.errors.get('last_name')">
 				</text-input>
 			</div>
 		</div>
@@ -34,7 +47,7 @@
 			<div class="col-12 col-md-6">
 				<text-input v-model="form.email" 
 					:defaultValue="form.email"
-					:required="false"
+					:required="true"
 					type="string"
 					label="Email"
 					name="email"
@@ -189,6 +202,7 @@
 				form: new Form({
 					name: '',
 					email: '',
+					last_name: '',
 					phone_number: '',
 					address_line_1:'',
 					address_line_2:'',

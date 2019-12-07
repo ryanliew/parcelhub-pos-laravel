@@ -90,8 +90,12 @@
         </main>
     </div>
 
+
+    <div id="fb-root"></div>
+
     <script src="{{ asset('js/form.js') }}"></script>
     <script src="{{ asset('js/app.js?v=' . config("app.version")) }}"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v5.0&appId=137954043268173&autoLogAppEvents=1"></script>
 
     @yield('js')
 </body>

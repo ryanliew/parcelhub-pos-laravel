@@ -23,6 +23,7 @@ Route::get('/home', function() {
 
 Route::get("/members/registration", "MemberController@register");
 Route::get("/members/{member}/success", "MemberController@success");
+Route::get("/members/search", "MemberController@search");
 Route::post("/members", "MemberController@store");
 
 // Admins route
@@ -202,7 +203,6 @@ Route::group(['middleware' => 'auth'], function(){
 
 	Route::group(['prefix' => 'members'], function(){
 		Route::get('/', "MemberController@page")->name('members.page');
-		Route::get("/search", "MemberController@search");
 		Route::get("/index", "MemberController@index")->name('members.index');
 		Route::get("/list", "MemberController@list");
 		Route::get("/create", "MemberController@create")->name('members.create');

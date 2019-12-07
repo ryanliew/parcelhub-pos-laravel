@@ -10,8 +10,10 @@
 			:focus="true"
 			:hideLabel="true"
 			@enter="search"
-			placeholder="Member ID">
+			placeholder="Member ID / Phone number">
 		</text-input>
+
+		<button class="btn btn-primary" v-if="manual" @click="search">Search</button>
 
 		<div class="d-flex align-items-center member-info pt-1 px-2" v-if="member" @click="member = ''">
 			<img src="/img/favicon.png" width="30px" class="mr-2">{{ member.name }}
@@ -21,7 +23,7 @@
 
 <script>
 	export default {
-		props: [''],
+		props: ['manual'],
 		data() {
 			return {
 				member: '',
@@ -39,6 +41,9 @@
 
 			setMember(respond) {
 				this.members = respond.data;
+
+				if(this.manual)
+					window.location.href = "/members/" + respond.data[0].id + "/success";
 
 				if(this.members.length == 1)
 					this.member = this.members[0];
