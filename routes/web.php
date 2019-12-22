@@ -247,6 +247,7 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'heads'], function() {
 		Route::post("/activate", "HeadController@activate");
 		Route::post("/deactivate", "HeadController@deactivate");
+		Route::get("/active")
 	});
 
 	Route::group(['prefix' => 'items'], function() {

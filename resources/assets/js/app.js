@@ -35,6 +35,7 @@ window.swalalert = function(title, message, level = 'warning', callback){
 
 
 require('./filters');
+require("./mixins");
 
 
 /**
