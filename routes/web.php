@@ -264,4 +264,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/{session}/view", "SessionController@view");
 	});
 
+	Route::group(["prefix" => 'bill'], function() {
+		Route::post("/", "InvoiceController@store");
+	});
+
 });

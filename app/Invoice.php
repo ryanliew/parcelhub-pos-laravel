@@ -15,7 +15,7 @@ class Invoice extends Model
 
     public function session()
     {
-        return $this->belongsTo("App\Session");
+        return $this->hasMany("App\Session");
     }
 
     public function branch()

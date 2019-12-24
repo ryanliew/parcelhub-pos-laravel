@@ -20,7 +20,7 @@ class Session extends Model
 
     public function invoices()
     {
-    	return $this->hasMany("App\Invoice");
+    	return $this->belongsTo("App\Invoice");
     }
 
     public function head()
@@ -31,6 +31,11 @@ class Session extends Model
     public function items()
     {
         return $this->hasMany("App\Item");
+    }
+
+    public function member()
+    {
+        return $this->belongsTo("App\Member");
     }
     /*
      *  Scopes

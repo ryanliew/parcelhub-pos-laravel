@@ -6,6 +6,7 @@ use App\Invoice;
 use App\Item;
 use App\PaymentType;
 use App\Product;
+use App\Session;
 use App\Tax;
 use App\User;
 use Carbon\Carbon;
@@ -141,94 +142,33 @@ class InvoiceController extends Controller
 
     public function store()
     {
-        $items = json_decode(request()->items);
+        // Get all sessions and heads
+        $heads = collect(json_decode(request()->heads));
 
-        // dd($items);
-        Log::info("Creating invoice by:" . auth()->user()->name);
-        Log::info(request()->all());
-        Log::info($items);
+        // Get members data
+        $members = json_decode(request()->members);
 
-        $repeating_trackings = collect();
+        // Get selected gaming
+        $gaming = Product::find(request()->gaming_id);
 
-        foreach($items as $item)
-        {
-            // We need to make sure that empty tracking codes don't get checked
+        // Add gaming item to sessions
+        // Determine gaming item if it is auto
+        
+        // Assign member to session
+        foreach($members as $member) {
+            $selected_head = $heads->filter(function($head){ return !$head->active_session->member_id; })
+                                    ->sortByDesc(function($head){
+                                        $items = collect($head->active_session->items);
+                                        return $items->sum('total_price') - $items->sum(function($item){ return $item->member_price * $item->unit; });
+                                    })
+                                    ->first();
 
-            $code = trim($item->tracking_code);
+            $selected_head->active_session->member_id = $member->id;
 
-            $repeating = Item::where('tracking_code', $code)
-                            ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
-                            ->where('invoices.branch_id', auth()->user()->current->id)
-                            ->count() > 0;
-
-            if($repeating && !empty($code)) {
-                $repeating_trackings->push($item->tracking_code);
-            }
-        }
-
-        if($repeating_trackings->count() > 0) {
-            $error = "These tracking number already exists: " . $repeating_trackings->implode(', ');
-           
-            return $this->returnValidationErrorResponse([['something' => 'something']], $error);
-        }
-
-        $user = User::find(request()->created_by);
-
-        $branch = auth()->user()->current;
-
-        $invoice_no = $branch->code . sprintf("%05d", ++$branch->sequence->last_id);
-
-        $invoice = Invoice::create([
-            'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
-            'total' =>  request()->has('total') ? request()->total : 0.00,
-            'tax' => request()->has('tax') ? request()->tax : 0.00,
-            'paid' => request()->has('paid') ? request()->paid : 0.00,
-            'type' => request()->type,
-            'payment_type' => request()->payment_type,
-            'branch_id' => $user->current_branch,
-            'terminal_no' => $user->current_terminal,
-            'created_by' => $user->id,
-            'discount_value' => request()->has('discount_value') ? request()->discount_value : 0.00,
-            'discount_mode' => request()->discount_mode,
-            'discount' => request()->has('discount') ? request()->discount : 0.00,
-            'remarks' => request()->remarks,
-            'customer_id' => request()->customer_id,
-            'invoice_no' => $invoice_no,
-        ]);
-
-        $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
-
-        foreach($items as $item)
-        { 
-            $product = Product::find($item->product_id);
-            
-            $invoice->items()->create([
-                'tracking_code' => $item->tracking_code,
-                'description' => $item->description,
-                'zone' => $item->zone,
-                'weight' => $item->weight,
-                'dimension_weight' => $item->dimension_weight,
-                'height' => isset($item->height) ? $item->height : 0,
-                'length' => isset($item->length) ? $item->length : 0,
-                'width' => isset($item->width) ? $item->width: 0,
-                'sku' => $item->sku,
-                'tax' => $item->tax == 'NaN' ? 0.00 : $item->tax, // To counter sometimes taxes will become "NaN" and causes failure
-                'price' => $item->price,
-                'courier_id' => isset($item->courier_id) ? $item->courier_id : 0,
-                'product_id' => $item->product_id,
-                'product_type_id' => $item->product_type_id,
-                'total_price' => $item->total_price,
-                'unit' => $item->unit,
-                'is_custom_pricing' => $item->is_custom_pricing,
-                'tax_rate' => $item->tax_rate,
-                'tax_type' => $item->tax_type,
-                'zone_type_id' => empty($item->zone_type_id) ? $product->zone_type_id : $item->zone_type_id,
+            Session::find($selected_head->active_session->id)->update([
+                'member_id' => $member->id,
             ]);
         }
-        //$invoice->items()->create($items);
-
-        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
-
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
     }
 

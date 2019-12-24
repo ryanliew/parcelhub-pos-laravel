@@ -35,6 +35,7 @@
 
 		mounted() {
 			this.startAndRefreshTimer();
+			window.events.$on('unselect', () => {this.selected = false});
 		},
 
 		methods: {

@@ -75,7 +75,7 @@
 				form: new Form({
 					gaming_id: 0,
 					members: [],
-
+					heads: [],
 				}),
 				gamings: [],
 				selectedGaming: {'label': 'Gaming Type: Auto', 'key': 0},
@@ -84,12 +84,16 @@
 
 		mounted() {
 			setTimeout(function(){ this.showMenu = true; }.bind(this), 500);
-
+			this.setBillingHeads();
 			this.getGamingProducts();
 		},
 
 
 		methods: {
+			setBillingHeads() {
+				this.form.heads = this.heads;
+			},
+
 			getGamingProducts() {
 				axios.get("/data/products/type/4")
 					.then(response => this.setGamingProducts(response))
@@ -109,6 +113,7 @@
 
 			setGamingType(e) {
 				this.selectedGaming = {'key': e.path[0], 'label': "Gaming type: " + e.pathName[0]};
+				this.form.gaming_id = e.path[0];
 			},
 
 			calculateHeadTotal(head) {
@@ -130,6 +135,16 @@
 			close() {
 				this.form.reset();
 				this.$emit('close');
+			},
+
+			confirmBilling() {
+				this.form.post("/bill", false)
+						.then(response => this.onBillSuccess(response))
+						.catch(error => this.catchAjaxError(error));
+			},
+
+			onBillSuccess(response) {
+				console.log(response);
 			}
 		}	
 	}

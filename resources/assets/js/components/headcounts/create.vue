@@ -69,6 +69,8 @@
 
 		methods: {
 			getHeadcounts() {
+				window.events.$emit('unselect');
+				this.selectedHeadcount = [];
 				axios.get("/heads/active")
 					.then(response => this.setHeadcounts(response))
 					.catch(error => this.catchAjaxError(error));
