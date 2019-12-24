@@ -136,6 +136,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/tables", "TableController@list");
 		Route::get('/heads', "HeadController@list");
 		Route::get("/hours", "ProductController@list_hours");
+		Route::get("/products/type/{type}", "ProductTypeController@products");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){
@@ -247,7 +248,8 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'heads'], function() {
 		Route::post("/activate", "HeadController@activate");
 		Route::post("/deactivate", "HeadController@deactivate");
-		Route::get("/active")
+		Route::get("/active", "HeadController@list_active");
+		Route::post("/{head}/order", "HeadController@place_order");
 	});
 
 	Route::group(['prefix' => 'items'], function() {

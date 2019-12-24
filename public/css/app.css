@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Montserrat);@import url(https://use.fontawesome.com/releases/v5.1.0/css/all.css);.noty_layout_mixin, #noty_layout__top, #noty_layout__topLeft, #noty_layout__topCenter, #noty_layout__topRight, #noty_layout__bottom, #noty_layout__bottomLeft, #noty_layout__bottomCenter, #noty_layout__bottomRight, #noty_layout__center, #noty_layout__centerLeft, #noty_layout__centerRight {
+@import url(https://fonts.googleapis.com/css?family=Montserrat);@import url(https://use.fontawesome.com/releases/v5.7.0/css/all.css);.noty_layout_mixin, #noty_layout__top, #noty_layout__topLeft, #noty_layout__topCenter, #noty_layout__topRight, #noty_layout__bottom, #noty_layout__bottomLeft, #noty_layout__bottomCenter, #noty_layout__bottomRight, #noty_layout__center, #noty_layout__centerLeft, #noty_layout__centerRight {
   position: fixed;
   margin: 0;
   padding: 0;
@@ -11069,7 +11069,7 @@ body {
 }
 
 .main-content {
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
 }
 
 .inset-shadow {
@@ -11478,6 +11478,14 @@ td {
   border-bottom: 43.30px solid #30ff4f;
 }
 
+.hexatable .items {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  bottom: -22px;
+  color: green;
+}
+
 .order-form {
   background: white;
 }
@@ -11573,6 +11581,111 @@ td {
   font-size: 40%;
 }
 
+.hexatable .date {
+  font-weight: bold;
+  position: absolute;
+  width: 100%;
+  top: -10px;
+  font-size: 15px;
+}
+
+.hexatable.create {
+  opacity: 0.8;
+}
+
+.hexatable.selected {
+  background-color: #70e4ff;
+}
+
+.hexatable.selected::before {
+  border-bottom: 25px solid #70e4ff;
+}
+
+.hexatable.selected::after {
+  border-top: 25px solid #70e4ff;
+}
+
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  background: white;
+  width: 100%;
+  padding: 15px;
+  left: 0;
+  -webkit-box-shadow: 0px -5px 5px 0px rgba(0, 0, 0, 0.25);
+          box-shadow: 0px -5px 5px 0px rgba(0, 0, 0, 0.25);
+}
+
+.hexaitems,
+.fullscreen-page {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  background: white;
+  left: 0;
+  top: 63px;
+  z-index: 1050;
+}
+
+.head-info {
+  background: gray;
+  padding: 15px;
+  color: white;
+  font-weight: bold;
+}
+
+.hexaitem {
+  padding: 15px;
+}
+
+.hexaitem.add {
+  border-top: 1px dashed gray;
+  border-bottom: 1px dashed gray;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  cursor: pointer;
+}
+
+.modal-backdrop {
+  display: none;
+}
+
+.hexaitem.confirmed {
+  background: #ccc;
+}
+
+.v-collapse-content {
+  max-height: 0;
+  -webkit-transition: max-height 0.3s ease-out;
+  transition: max-height 0.3s ease-out;
+  overflow: hidden;
+  padding: 0;
+}
+
+.v-collapse-content-end {
+  -webkit-transition: max-height 0.3s ease-in;
+  transition: max-height 0.3s ease-in;
+  max-height: 500px;
+}
+
+.members-list {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.members-adder {
+  width: 80vw;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  -webkit-box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.75);
+          box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.75);
+  max-height: 80vh;
+  position: fixed;
+  top: 20%;
+  left: 11vw;
+}
+
 @media screen and (max-width: 450px) {
   #terminal-selector {
     margin-bottom: 25px;
@@ -11589,7 +11702,7 @@ td {
 
   .hexatable {
     width: 85px;
-    height: 53.6px;
+    height: 59.6px;
     margin: 25px 0;
   }
 
@@ -11618,6 +11731,15 @@ td {
   .hexatable-name {
     font-size: 2.4rem;
     line-height: 1.4;
+  }
+
+  .hexatable .items {
+    bottom: -6px;
+  }
+
+  .hexatable .date {
+    top: -6px;
+    font-size: 12px;
   }
 
   .table-name {

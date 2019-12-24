@@ -12,9 +12,13 @@ window.Vue = require('vue');
 window.events = new Vue();
 import VueNoty from 'vuejs-noty';
 import VueSweetalert2 from 'vue-sweetalert2';
+import VueCollapse from 'vue2-collapse';
+import vCascade from 'v-cascade';
  
 Vue.use(VueSweetalert2);
 Vue.use(VueNoty);
+Vue.use(VueCollapse);
+Vue.use(vCascade);
 
 window.flash = function(message, level = 'success'){
  	window.events.$emit('flash', {message, level});

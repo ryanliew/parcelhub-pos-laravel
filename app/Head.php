@@ -13,6 +13,18 @@ class Head extends Model
 
     protected $appends = ['is_active'];
 
+    protected $with = ['active_session'];
+
+    public function sessions()
+    {
+    	return $this->hasMany("App\Session");
+    }
+
+    public function active_session()
+    {
+    	return $this->hasOne("App\Session")->where('is_active', true);
+    }
+
     public function getIsActiveAttribute()
     {
     	return $this->activated_at
@@ -25,12 +37,22 @@ class Head extends Model
 		$this->update([
 			'activated_at' => Carbon::now(),
 		]);
+
+		$this->sessions()->create([
+			'is_active' => true,
+			'activated_at' => now(),
+			'deactivated_at' => now()->subMinute(),
+		]);
 	}
 
 	public function deactivate()
 	{
 		$this->update([
 			'deactivated_at' => Carbon::now(),
+		]);
+
+		$this->active_session()->update([
+			'deactivated_at' => now(),
 		]);
 	}	
 }

@@ -11,16 +11,27 @@ class Session extends Model
 
     protected $dates = ['activated_at', 'deactivated_at'];
 
-    public function table()
-    {
-    	return $this->belongsTo("App\Table");
-    }
+    protected $with = ['items'];
+
+    // public function table()
+    // {
+    // 	return $this->belongsTo("App\Table");
+    // }
 
     public function invoices()
     {
     	return $this->hasMany("App\Invoice");
     }
 
+    public function head()
+    {
+        return $this->belongsTo("App\Head");
+    }
+
+    public function items()
+    {
+        return $this->hasMany("App\Item");
+    }
     /*
      *  Scopes
      */

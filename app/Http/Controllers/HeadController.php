@@ -14,17 +14,29 @@ class HeadController extends Controller
     	return Head::all();
     }
 
+    public function list_active()
+    {
+        return Head::whereNotNull('activated_at')
+                    ->where(function($query){ 
+                        return $query->whereNull('deactivated_at')
+                                    ->orWhereColumn('activated_at', '>', 'deactivated_at');
+                                })
+                    ->get();
+    }
+
     public function activate()
     {
     	$heads = collect(json_decode(request()->heads));
 
     	foreach($heads as $head_id) {
-    		$head = Head::find($head_id->id);
+    		$head = Head::where('number', $head_id)->first();
+
+            if(!$head) $head = Head::create(['number' => $head_id]);
 
     		$head->activate();
     	}
 
-    	return ["message" => "Activated headcounts " . $heads->implode("id", ",")];
+    	return ["message" => "Activated headcounts " . $heads->implode(",")];
     }
 
     public function deactivate()
@@ -75,5 +87,36 @@ class HeadController extends Controller
         }
 
         return ["message" => "Deactivated headcounts " . $heads->implode("id", ","), "heads" => $headcounts, "products" => $items];
+    }
+
+    public function place_order(Head $head)
+    {
+         // Get current active session
+        $current_session = $head->active_session()->first();
+
+        // Get current user
+        $branch = auth()->user()->current;
+
+        // Add all items into the invoice
+        foreach(json_decode(request()->items) as $item) {
+            $current_session->items()->create([
+                'description' => $item->description,
+                'sku' => $item->sku,
+                'tax' => $item->tax_value,
+                'price' => $item->price,
+                'member_price' => $item->member_price,
+                'product_id' => $item->id,
+                'product_type_id' => $item->product_type_id,
+                'total_price' => $item->total,
+                'unit' => $item->unit,
+                'is_custom_pricing' => false,
+                'tax_rate' => $item->tax->percentage,
+                'is_tax_inclusive' => $item->is_tax_inclusive ? true: false,
+                'tax_type' => $item->tax->code,
+            ]);
+        }
+
+        // Return the invoice with items
+        return ['message' => 'Order placed successfully', 'session' => $current_session->load('items')];
     }
 }

@@ -43,7 +43,6 @@
 			},
 
 			openOrderDialog() {
-				console.log("emit");
 				this.$emit("order");
 			}
 		},

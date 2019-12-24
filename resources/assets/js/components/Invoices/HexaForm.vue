@@ -2,12 +2,13 @@
 	<div>
 		<div class="container" v-if="!is_ordering">
 			<div class="row">
-				<hexatable :table="hexatable" 
+				<headcounts-create></headcounts-create>
+				<!-- <hexatable :table="hexatable" 
 					v-for="hexatable in tables" 
 					:key="hexatable.id"
 					@order="selectTable(hexatable)"
 					@back="back">
-				</hexatable>
+				</hexatable> -->
 			</div>
 		</div>
 		<div class="container-fluid" v-else>
@@ -19,12 +20,15 @@
 <script>
 	import hexatable from "./Table.vue";
 	import hexaorder from "./Order.vue";
+	import HeadcountsCreate from "../headcounts/create.vue";
+
 	export default {
-		props: ['paymethods'],
+		props: ['paymethods', 'branch'],
 
 		components: {
 			hexatable,
 			hexaorder,
+			HeadcountsCreate,
 		},
 
 		data() {

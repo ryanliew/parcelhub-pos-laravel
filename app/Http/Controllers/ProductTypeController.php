@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class ProductTypeController extends Controller
 {
+    public function products(ProductType $type)
+    {
+        return $type->products;
+    }
+
     public function page()
 	{
 		return view('admin.product_types');

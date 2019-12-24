@@ -13,8 +13,13 @@ class Item extends Model
 		return $this->belongsTo('App\Product');
 	}
 
-	public function invoice()
+	// public function invoice()
+	// {
+	// 	return $this->belongsTo("App\Invoice");
+	// }
+
+	public function session()
 	{
-		return $this->belongsTo("App\Invoice");
+		return $this->belongsTo("App\Session");
 	}
 }
