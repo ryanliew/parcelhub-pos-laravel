@@ -20,8 +20,11 @@
 			<div class="col-8 time">
 				{{ item.description }} x <b>{{ item.unit }}</b>
 			</div>
-			<div class="col-3 subtotal">
+			<div class="col-3 subtotal" v-if="!isMember">
 				RM{{ item.total | price }}
+			</div>
+			<div class="col-3 subtotal" v-else>
+				RM{{ item.member_total | price }}
 			</div>
 			<div class="col-1">
 				<i class="fas fa-trash-alt text-danger" @click="deleteItem(index)"></i>
@@ -31,7 +34,11 @@
 			<div class="col-8 time">
 				{{ item.description }} x <b>{{ item.unit }}</b>
 			</div>
-			<div class="col-3 subtotal">
+			<div class="col-3 subtotal" v-if="isMember">
+				RM{{ calculateItemTotalMemberPrice(item) | price }}
+			</div>
+
+			<div class="col-3 subtotal" v-else>
 				RM{{ calculateItemTotalPrice(item) | price }}
 			</div>
 			<div class="col-1">
@@ -112,10 +119,12 @@
 					this.form.items[existing].unit++;
 					this.form.items[existing].tax_value = this.calculateItemTax(this.form.items[existing]);
 					this.form.items[existing].total = this.calculateItemTotalPrice(this.form.items[existing]);
+					this.form.items[existing].member_total = this.calculateItemTotalPrice(this.form.items[existing]);
 				} else {
 					Vue.set(selectedItem, 'unit', 1);
 					Vue.set(selectedItem, 'tax_value', this.calculateItemTax(selectedItem));
 					Vue.set(selectedItem, 'total', this.calculateItemTotalPrice(selectedItem));
+					Vue.set(selectedItem, 'member_total', this.calculateItemMemberTotalPrice(selectedItem));
 					this.form.items.push(selectedItem);
 				}
 			},
@@ -128,28 +137,6 @@
 				axios.post("/items/destroy/" + id)
 					.then(response => this.deleteInvoiceItemSuccess(response))
 					.catch(error => this.handleError(error));
-			},
-
-			calculateItemTax(item) {
-				let tax = 0;
-
-				if(item.is_tax_inclusive) {
-					tax = item.price - (Math.round(parseFloat(item.price) / (item.tax.percentage / 100 + 1) * 100) / 100 );
-				}
-				else {
-					tax = Math.round(parseFloat(item.price) * item.tax_rate) / 100;
-				}
-
-				return tax * item.unit;
-			},
-
-			calculateItemTotalPrice(item) {
-				let total = parseFloat(item.price) * item.unit;
-				
-				if(!item.is_tax_inclusive)
-					total += this.calculateItemTax(item);
-
-				return total;
 			},
 
 			confirmOrder() {
@@ -174,7 +161,11 @@
 			},
 
 			subtotal() {
-				return _.sumBy(this.current_session.items, (item) => { return this.calculateItemTotalPrice(item); });
+				return _.sumBy(this.current_session.items, (item) => { return this.isMember ? this.calculateItemTotalMemberPrice(item) : this.calculateItemTotalPrice(item); });
+			},
+
+			isMember() {
+				return this.head.active_session.member_id ? true : false;
 			}
 		}	
 	}

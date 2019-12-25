@@ -1,28 +1,10 @@
 <template>
 	<div class="fullscreen-page">
 		<v-collapse-group>
-			<v-collapse-wrapper v-for="head in heads" :key="head.id">
-				<div class="head-info row" v-collapse-toggle>
-					<div class="col-2 number">
-						#{{ head.number }}
-					</div>
-					<div class="col-7 time">
-						{{ head.activated_at }}
-					</div>
-					<div class="col-3 subtotal">
-						RM{{ calculateHeadTotal(head) | price }}
-					</div>
-				</div>
-				<div v-collapse-content>
-					<div class="hexaitem row" v-for="item in head.active_session.items" :key="item.id">
-						<div class="col-9 time">
-							{{ item.description }} x <b>{{ item.unit }}</b>
-						</div>
-						<div class="col-3 subtotal">
-							RM{{ item.total_price | price }}
-						</div>
-					</div>
-				</div>
+			<v-collapse-wrapper v-for="head in form.heads" :key="head.id">
+				<bill-head :head="head">
+
+				</bill-head>
 			</v-collapse-wrapper>
 		</v-collapse-group>
 
@@ -49,7 +31,7 @@
 				:members="form.members" 
 				@add="addMember" 
 				@sub="subMember"
-				@close="isAddingMember = false"
+				@close="calculateMember"
 				v-if="isAddingMember">
 
 			</members-adder>
@@ -59,12 +41,13 @@
 
 <script>
 	import membersAdder from "./members.vue";
-
+	import billHead from "./BillHead.vue"
 	export default {
 		props: ['heads'],
 
 		components: {
-			membersAdder
+			membersAdder,
+			billHead,
 		},
 
 		data() {
@@ -78,7 +61,8 @@
 					heads: [],
 				}),
 				gamings: [],
-				selectedGaming: {'label': 'Gaming Type: Auto', 'key': 0},
+				originalGaming: [],
+				selectedGaming: {'label': 'Gaming Type: Select a gaming type', 'key': 0},
 			};
 		},
 
@@ -101,6 +85,7 @@
 			},
 
 			setGamingProducts(response) {
+				this.originalGaming = response.data;
 				this.gamings = response.data.map((product) => {
 					let obj = {};
 
@@ -116,10 +101,6 @@
 				this.form.gaming_id = e.path[0];
 			},
 
-			calculateHeadTotal(head) {
-				return _.sumBy(head.active_session.items, (item) => { return item.total_price; });
-			},
-
 			addMember(e) {
 				let existing = _.findIndex(this.form.members, function(member){ return e.id == member.id; }.bind(e));
 
@@ -130,6 +111,33 @@
 
 			subMember(e) {
 				this.form.members.splice(e, 1);
+			},
+
+			calculateMember() {
+				// Reset all members data
+				this.form.heads.forEach((head) => { head.active_session.member_id = null; });
+
+				this.form.members.forEach((member) => {
+					let selectedHead = _.reverse(
+											_.sortBy(
+												_.filter(this.form.heads, 
+															(head) => { 
+																return !head.active_session.member_id; 
+															}), 
+												(head) => {
+													return _.sumBy(head.active_session.items, (item) => {
+														return item.total_price;
+													}) - _.sumBy(head.active_session.items, (item) => {
+														return item.member_price * item.unit;
+													}) + head.gaming_item.total - head.gaming_item.member_price;
+
+												})
+											);
+
+					selectedHead[0].active_session.member_id = member.id;
+				});
+				
+				this.isAddingMember = false;
 			},
 
 			close() {
@@ -145,6 +153,23 @@
 
 			onBillSuccess(response) {
 				console.log(response);
+			}
+		},
+
+		watch: {
+			selectedGaming(newVal) {
+				// Try to find the gaming item from the original list
+				let gaming = _.filter(this.originalGaming, (product) => { return product.id == newVal.key; })[0];
+
+				if(gaming) {
+					this.form.heads.forEach((head) => {
+						Vue.set(gaming, 'unit', 1);
+						Vue.set(gaming, 'tax_value', this.calculateItemTax(gaming));
+						Vue.set(gaming, 'total', this.calculateItemTotalPrice(gaming));
+						Vue.set(gaming, 'member_total', this.calculateItemMemberTotalPrice(gaming));
+						Vue.set(head, 'gaming_item', gaming);
+					});
+				}
 			}
 		}	
 	}

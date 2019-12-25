@@ -68120,11 +68120,47 @@ Vue.filter('price', function (value) {
 /***/ (function(module, exports) {
 
 Vue.mixin({
-  methods: {
-    catchAjaxError: function catchAjaxError(error) {
-      console.log("Error detected: " + error);
-    }
-  }
+	methods: {
+		catchAjaxError: function catchAjaxError(error) {
+			console.log("Error detected: " + error);
+		},
+		calculateItemTax: function calculateItemTax(item) {
+			var tax = 0;
+
+			if (item.is_tax_inclusive) {
+				tax = item.price - Math.round(parseFloat(item.price) / (item.tax.percentage / 100 + 1) * 100) / 100;
+			} else {
+				tax = Math.round(parseFloat(item.price) * item.tax_rate) / 100;
+			}
+
+			return tax * item.unit;
+		},
+		calculateItemTotalPrice: function calculateItemTotalPrice(item) {
+			var total = parseFloat(item.price) * item.unit;
+
+			if (!item.is_tax_inclusive) total += this.calculateItemTax(item);
+
+			return total;
+		},
+		calculateItemMemberTotalPrice: function calculateItemMemberTotalPrice(item) {
+			var total = parseFloat(item.member_price) * item.unit;
+
+			if (!item.is_tax_inclusive) total += this.calculateItemMemberTax(item);
+
+			return total;
+		},
+		calculateMemberItemTax: function calculateMemberItemTax(item) {
+			var tax = 0;
+
+			if (item.is_tax_inclusive) {
+				tax = item.member_price - Math.round(parseFloat(item.member_price) / (item.tax.percentage / 100 + 1) * 100) / 100;
+			} else {
+				tax = Math.round(parseFloat(item.member_price) * item.tax_rate) / 100;
+			}
+
+			return tax * item.unit;
+		}
+	}
 });
 
 /***/ }),
@@ -79036,6 +79072,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -79080,10 +79123,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.form.items[existing].unit++;
 				this.form.items[existing].tax_value = this.calculateItemTax(this.form.items[existing]);
 				this.form.items[existing].total = this.calculateItemTotalPrice(this.form.items[existing]);
+				this.form.items[existing].member_total = this.calculateItemTotalPrice(this.form.items[existing]);
 			} else {
 				Vue.set(selectedItem, 'unit', 1);
 				Vue.set(selectedItem, 'tax_value', this.calculateItemTax(selectedItem));
 				Vue.set(selectedItem, 'total', this.calculateItemTotalPrice(selectedItem));
+				Vue.set(selectedItem, 'member_total', this.calculateItemMemberTotalPrice(selectedItem));
 				this.form.items.push(selectedItem);
 			}
 		},
@@ -79098,24 +79143,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}).catch(function (error) {
 				return _this.handleError(error);
 			});
-		},
-		calculateItemTax: function calculateItemTax(item) {
-			var tax = 0;
-
-			if (item.is_tax_inclusive) {
-				tax = item.price - Math.round(parseFloat(item.price) / (item.tax.percentage / 100 + 1) * 100) / 100;
-			} else {
-				tax = Math.round(parseFloat(item.price) * item.tax_rate) / 100;
-			}
-
-			return tax * item.unit;
-		},
-		calculateItemTotalPrice: function calculateItemTotalPrice(item) {
-			var total = parseFloat(item.price) * item.unit;
-
-			if (!item.is_tax_inclusive) total += this.calculateItemTax(item);
-
-			return total;
 		},
 		confirmOrder: function confirmOrder() {
 			var _this2 = this;
@@ -79145,8 +79172,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var _this3 = this;
 
 			return _.sumBy(this.current_session.items, function (item) {
-				return _this3.calculateItemTotalPrice(item);
+				return _this3.isMember ? _this3.calculateItemTotalMemberPrice(item) : _this3.calculateItemTotalPrice(item);
 			});
+		},
+		isMember: function isMember() {
+			return this.head.active_session.member_id ? true : false;
 		}
 	}
 });
@@ -79406,11 +79436,19 @@ var render = function() {
             _c("b", [_vm._v(_vm._s(item.unit))])
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col-3 subtotal" }, [
-            _vm._v(
-              "\n\t\t\tRM" + _vm._s(_vm._f("price")(item.total)) + "\n\t\t"
-            )
-          ]),
+          !_vm.isMember
+            ? _c("div", { staticClass: "col-3 subtotal" }, [
+                _vm._v(
+                  "\n\t\t\tRM" + _vm._s(_vm._f("price")(item.total)) + "\n\t\t"
+                )
+              ])
+            : _c("div", { staticClass: "col-3 subtotal" }, [
+                _vm._v(
+                  "\n\t\t\tRM" +
+                    _vm._s(_vm._f("price")(item.member_total)) +
+                    "\n\t\t"
+                )
+              ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-1" }, [
             _c("i", {
@@ -79432,13 +79470,23 @@ var render = function() {
             _c("b", [_vm._v(_vm._s(item.unit))])
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col-3 subtotal" }, [
-            _vm._v(
-              "\n\t\t\tRM" +
-                _vm._s(_vm._f("price")(_vm.calculateItemTotalPrice(item))) +
-                "\n\t\t"
-            )
-          ]),
+          _vm.isMember
+            ? _c("div", { staticClass: "col-3 subtotal" }, [
+                _vm._v(
+                  "\n\t\t\tRM" +
+                    _vm._s(
+                      _vm._f("price")(_vm.calculateItemTotalMemberPrice(item))
+                    ) +
+                    "\n\t\t"
+                )
+              ])
+            : _c("div", { staticClass: "col-3 subtotal" }, [
+                _vm._v(
+                  "\n\t\t\tRM" +
+                    _vm._s(_vm._f("price")(_vm.calculateItemTotalPrice(item))) +
+                    "\n\t\t"
+                )
+              ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-1" }, [
             _c("i", {
@@ -79596,24 +79644,8 @@ module.exports = Component.exports
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__members_vue__ = __webpack_require__(268);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__members_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__members_vue__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__BillHead_vue__ = __webpack_require__(323);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__BillHead_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__BillHead_vue__);
 //
 //
 //
@@ -79662,7 +79694,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	props: ['heads'],
 
 	components: {
-		membersAdder: __WEBPACK_IMPORTED_MODULE_0__members_vue___default.a
+		membersAdder: __WEBPACK_IMPORTED_MODULE_0__members_vue___default.a,
+		billHead: __WEBPACK_IMPORTED_MODULE_1__BillHead_vue___default.a
 	},
 
 	data: function data() {
@@ -79676,7 +79709,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				heads: []
 			}),
 			gamings: [],
-			selectedGaming: { 'label': 'Gaming Type: Auto', 'key': 0 }
+			originalGaming: [],
+			selectedGaming: { 'label': 'Gaming Type: Select a gaming type', 'key': 0 }
 		};
 	},
 	mounted: function mounted() {
@@ -79702,6 +79736,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 		},
 		setGamingProducts: function setGamingProducts(response) {
+			this.originalGaming = response.data;
 			this.gamings = response.data.map(function (product) {
 				var obj = {};
 
@@ -79715,11 +79750,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.selectedGaming = { 'key': e.path[0], 'label': "Gaming type: " + e.pathName[0] };
 			this.form.gaming_id = e.path[0];
 		},
-		calculateHeadTotal: function calculateHeadTotal(head) {
-			return _.sumBy(head.active_session.items, function (item) {
-				return item.total_price;
-			});
-		},
 		addMember: function addMember(e) {
 			var existing = _.findIndex(this.form.members, function (member) {
 				return e.id == member.id;
@@ -79732,21 +79762,66 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		subMember: function subMember(e) {
 			this.form.members.splice(e, 1);
 		},
+		calculateMember: function calculateMember() {
+			var _this2 = this;
+
+			// Reset all members data
+			this.form.heads.forEach(function (head) {
+				head.active_session.member_id = null;
+			});
+
+			this.form.members.forEach(function (member) {
+				var selectedHead = _.reverse(_.sortBy(_.filter(_this2.form.heads, function (head) {
+					return !head.active_session.member_id;
+				}), function (head) {
+					return _.sumBy(head.active_session.items, function (item) {
+						return item.total_price;
+					}) - _.sumBy(head.active_session.items, function (item) {
+						return item.member_price * item.unit;
+					}) + head.gaming_item.total - head.gaming_item.member_price;
+				}));
+
+				selectedHead[0].active_session.member_id = member.id;
+			});
+
+			this.isAddingMember = false;
+		},
 		close: function close() {
 			this.form.reset();
 			this.$emit('close');
 		},
 		confirmBilling: function confirmBilling() {
-			var _this2 = this;
+			var _this3 = this;
 
 			this.form.post("/bill", false).then(function (response) {
-				return _this2.onBillSuccess(response);
+				return _this3.onBillSuccess(response);
 			}).catch(function (error) {
-				return _this2.catchAjaxError(error);
+				return _this3.catchAjaxError(error);
 			});
 		},
 		onBillSuccess: function onBillSuccess(response) {
 			console.log(response);
+		}
+	},
+
+	watch: {
+		selectedGaming: function selectedGaming(newVal) {
+			var _this4 = this;
+
+			// Try to find the gaming item from the original list
+			var gaming = _.filter(this.originalGaming, function (product) {
+				return product.id == newVal.key;
+			})[0];
+
+			if (gaming) {
+				this.form.heads.forEach(function (head) {
+					Vue.set(gaming, 'unit', 1);
+					Vue.set(gaming, 'tax_value', _this4.calculateItemTax(gaming));
+					Vue.set(gaming, 'total', _this4.calculateItemTotalPrice(gaming));
+					Vue.set(gaming, 'member_total', _this4.calculateItemMemberTotalPrice(gaming));
+					Vue.set(head, 'gaming_item', gaming);
+				});
+			}
 		}
 	}
 });
@@ -79964,68 +80039,13 @@ var render = function() {
     [
       _c(
         "v-collapse-group",
-        _vm._l(_vm.heads, function(head) {
-          return _c("v-collapse-wrapper", { key: head.id }, [
-            _c(
-              "div",
-              {
-                directives: [
-                  { name: "collapse-toggle", rawName: "v-collapse-toggle" }
-                ],
-                staticClass: "head-info row"
-              },
-              [
-                _c("div", { staticClass: "col-2 number" }, [
-                  _vm._v("\n\t\t\t\t\t#" + _vm._s(head.number) + "\n\t\t\t\t")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-7 time" }, [
-                  _vm._v(
-                    "\n\t\t\t\t\t" + _vm._s(head.activated_at) + "\n\t\t\t\t"
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-3 subtotal" }, [
-                  _vm._v(
-                    "\n\t\t\t\t\tRM" +
-                      _vm._s(_vm._f("price")(_vm.calculateHeadTotal(head))) +
-                      "\n\t\t\t\t"
-                  )
-                ])
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                directives: [
-                  { name: "collapse-content", rawName: "v-collapse-content" }
-                ]
-              },
-              _vm._l(head.active_session.items, function(item) {
-                return _c(
-                  "div",
-                  { key: item.id, staticClass: "hexaitem row" },
-                  [
-                    _c("div", { staticClass: "col-9 time" }, [
-                      _vm._v(
-                        "\n\t\t\t\t\t\t" + _vm._s(item.description) + " x "
-                      ),
-                      _c("b", [_vm._v(_vm._s(item.unit))])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "col-3 subtotal" }, [
-                      _vm._v(
-                        "\n\t\t\t\t\t\tRM" +
-                          _vm._s(_vm._f("price")(item.total_price)) +
-                          "\n\t\t\t\t\t"
-                      )
-                    ])
-                  ]
-                )
-              })
-            )
-          ])
+        _vm._l(_vm.form.heads, function(head) {
+          return _c(
+            "v-collapse-wrapper",
+            { key: head.id },
+            [_c("bill-head", { attrs: { head: head } })],
+            1
+          )
         })
       ),
       _vm._v(" "),
@@ -80123,9 +80143,7 @@ var render = function() {
                 on: {
                   add: _vm.addMember,
                   sub: _vm.subMember,
-                  close: function($event) {
-                    _vm.isAddingMember = false
-                  }
+                  close: _vm.calculateMember
                 }
               })
             : _vm._e()
@@ -87833,6 +87851,266 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 321 */,
+/* 322 */,
+/* 323 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(324)
+/* template */
+var __vue_template__ = __webpack_require__(325)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/headcounts/BillHead.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d7c3fa2a", Component.options)
+  } else {
+    hotAPI.reload("data-v-d7c3fa2a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 324 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['head'],
+
+	data: function data() {
+		return {
+			now: __WEBPACK_IMPORTED_MODULE_0_moment___default()()
+		};
+	},
+
+
+	methods: {
+		calculateDuration: function calculateDuration(head) {
+			var duration = __WEBPACK_IMPORTED_MODULE_0_moment___default.a.duration(__WEBPACK_IMPORTED_MODULE_0_moment___default()(this.now).diff(head.activated_at));
+
+			var hours = duration.hours();
+			var minutes = duration.minutes();
+			var seconds = duration.seconds();
+
+			return hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+		}
+	},
+
+	computed: {
+		headTotal: function headTotal() {
+			var gaming_price = 0;
+			var is_member = this.head.active_session.member_id;
+
+			if (this.head.gaming_item) {
+				gaming_price = is_member ? this.head.gaming_item.member_total : this.head.gaming_item.total;
+			}
+
+			var itemTotal = _.sumBy(this.head.active_session.items, function (item) {
+				return is_member ? item.member_price * item.unit : item.total_price;
+			});
+
+			return itemTotal + gaming_price;
+		}
+	}
+});
+
+/***/ }),
+/* 325 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "div",
+      {
+        directives: [{ name: "collapse-toggle", rawName: "v-collapse-toggle" }],
+        staticClass: "head-info row"
+      },
+      [
+        _c("div", { staticClass: "col-2 number" }, [
+          _vm._v("\n\t\t\t#" + _vm._s(_vm.head.number) + " "),
+          _vm.head.active_session.member_id
+            ? _c("img", {
+                staticClass: "ml-2",
+                attrs: { src: "/img/favicon.png", width: "30px" }
+              })
+            : _vm._e()
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-7 time" }, [
+          _vm._v(
+            "\n\t\t\t" +
+              _vm._s(_vm.head.activated_at) +
+              " (" +
+              _vm._s(_vm.calculateDuration(_vm.head)) +
+              ")\n\t\t"
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-3 subtotal" }, [
+          _vm._v(
+            "\n\t\t\tRM" + _vm._s(_vm._f("price")(_vm.headTotal)) + "\n\t\t"
+          )
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          { name: "collapse-content", rawName: "v-collapse-content" }
+        ]
+      },
+      [
+        _vm._l(_vm.head.active_session.items, function(item) {
+          return _c("div", { key: item.id, staticClass: "hexaitem row" }, [
+            _c("div", { staticClass: "col-9 time" }, [
+              _vm._v("\n\t\t\t\t" + _vm._s(item.description) + " x "),
+              _c("b", [_vm._v(_vm._s(item.unit))])
+            ]),
+            _vm._v(" "),
+            !_vm.head.active_session.member_id
+              ? _c("div", { staticClass: "col-3 subtotal" }, [
+                  _vm._v(
+                    "\n\t\t\t\tRM" +
+                      _vm._s(_vm._f("price")(item.total_price)) +
+                      "\n\t\t\t"
+                  )
+                ])
+              : _c("div", { staticClass: "col-3 subtotal" }, [
+                  _vm._v(
+                    "\n\t\t\t\tRM" +
+                      _vm._s(_vm._f("price")(item.member_price * item.unit)) +
+                      "\n\t\t\t"
+                  )
+                ])
+          ])
+        }),
+        _vm._v(" "),
+        _vm.head.gaming_item
+          ? _c("div", { staticClass: "hexaitem row" }, [
+              _c("div", { staticClass: "col-9 time" }, [
+                _vm._v(
+                  "\n\t\t\t\t" +
+                    _vm._s(_vm.head.gaming_item.description) +
+                    " x "
+                ),
+                _c("b", [_vm._v(_vm._s(_vm.head.gaming_item.unit))])
+              ]),
+              _vm._v(" "),
+              !_vm.head.active_session.member_id
+                ? _c("div", { staticClass: "col-3 subtotal" }, [
+                    _vm._v(
+                      "\n\t\t\t\tRM" +
+                        _vm._s(_vm._f("price")(_vm.head.gaming_item.total)) +
+                        "\n\t\t\t"
+                    )
+                  ])
+                : _c("div", { staticClass: "col-3 subtotal" }, [
+                    _vm._v(
+                      "\n\t\t\t\tRM" +
+                        _vm._s(
+                          _vm._f("price")(_vm.head.gaming_item.member_total)
+                        ) +
+                        "\n\t\t\t"
+                    )
+                  ])
+            ])
+          : _vm._e()
+      ],
+      2
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-d7c3fa2a", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

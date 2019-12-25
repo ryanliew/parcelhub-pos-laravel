@@ -119,4 +119,29 @@ class HeadController extends Controller
         // Return the invoice with items
         return ['message' => 'Order placed successfully', 'session' => $current_session->load('items')];
     }
+
+    public function getGamingProduct()
+    {
+        $heads = collect(json_decode(request()->heads));
+        // Get selected gaming
+        $gaming = Product::find(request()->gaming_id);
+
+        // Determine gaming item if it is auto
+        if(!$gaming) {
+            // We get the person that is activated the earliest
+            $head = $heads->min('activated_at'); 
+
+            // Get the difference in minutes
+            $hours = now()->diffInSeconds($head->activated_at) / 60;
+
+            // Get the product
+            $gaming = Product::headcounts()
+                        ->with('tax')
+                        ->where("hour_start", "<=", $hours)
+                        ->where("hour_end", ">=", $hours)
+                        ->orderByDesc("hour_end")
+                        ->get()
+                        ->first();
+        }
+    }
 }

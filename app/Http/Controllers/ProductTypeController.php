@@ -9,7 +9,7 @@ class ProductTypeController extends Controller
 {
     public function products(ProductType $type)
     {
-        return $type->products;
+        return $type->products()->with('tax')->get();
     }
 
     public function page()

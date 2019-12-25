@@ -147,12 +147,6 @@ class InvoiceController extends Controller
 
         // Get members data
         $members = json_decode(request()->members);
-
-        // Get selected gaming
-        $gaming = Product::find(request()->gaming_id);
-
-        // Add gaming item to sessions
-        // Determine gaming item if it is auto
         
         // Assign member to session
         foreach($members as $member) {
