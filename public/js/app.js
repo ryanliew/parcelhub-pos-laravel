@@ -79163,6 +79163,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		onSuccess: function onSuccess(response) {
 			this.current_session = response.session;
 			this.form.items = [];
+			this.close();
 		},
 		close: function close() {
 			this.$emit("close");
@@ -79926,6 +79927,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		onBillSuccess: function onBillSuccess(response) {
 			window.location.reload();
+		},
+		setTotal: function setTotal() {
+			this.form.paid = this.total;
 		}
 	},
 
@@ -80434,6 +80438,7 @@ var render = function() {
     [
       _c(
         "v-collapse-group",
+        { staticClass: "bill-heads" },
         _vm._l(_vm.form.heads, function(head) {
           return _c(
             "v-collapse-wrapper",
@@ -80578,11 +80583,11 @@ var render = function() {
                   "div",
                   { staticClass: "row border-top border-bottom py-2 my-2" },
                   [
-                    _c("div", { staticClass: "col-9" }, [
+                    _c("div", { staticClass: "col-7" }, [
                       _c("b", [_vm._v("Subtotal")])
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-3" }, [
+                    _c("div", { staticClass: "col-5" }, [
                       _c("b", [
                         _vm._v(
                           "RM" + _vm._s(_vm._f("price")(_vm.form.subtotal))
@@ -80618,14 +80623,23 @@ var render = function() {
                   "div",
                   { staticClass: "row border-top border-bottom py-2 my-2" },
                   [
-                    _c("div", { staticClass: "col-9" }, [
+                    _c("div", { staticClass: "col-7" }, [
                       _c("b", [_vm._v("Total")])
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-3" }, [
-                      _c("b", [
-                        _vm._v("RM" + _vm._s(_vm._f("price")(_vm.total)))
-                      ])
+                    _c("div", { staticClass: "col-5" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary",
+                          on: { click: _vm.setTotal }
+                        },
+                        [
+                          _c("b", [
+                            _vm._v("RM" + _vm._s(_vm._f("price")(_vm.total)))
+                          ])
+                        ]
+                      )
                     ])
                   ]
                 ),
@@ -80656,11 +80670,11 @@ var render = function() {
                   "div",
                   { staticClass: "row border-top border-bottom py-2 my-2" },
                   [
-                    _c("div", { staticClass: "col-9" }, [
+                    _c("div", { staticClass: "col-7" }, [
                       _c("b", [_vm._v("Change")])
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-3" }, [
+                    _c("div", { staticClass: "col-5" }, [
                       _c("b", [
                         _vm._v("RM" + _vm._s(_vm._f("price")(_vm.change)))
                       ])

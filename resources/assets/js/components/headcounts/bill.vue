@@ -1,6 +1,6 @@
 <template>
 	<div class="fullscreen-page">
-		<v-collapse-group>
+		<v-collapse-group class="bill-heads">
 			<v-collapse-wrapper v-for="head in form.heads" :key="head.id">
 				<bill-head :head="head">
 
@@ -54,10 +54,10 @@
 				</selector-input>
 
 				<div class="row border-top border-bottom py-2 my-2">
-					<div class="col-9">
+					<div class="col-7">
 						<b>Subtotal</b>
 					</div>
-					<div class="col-3">
+					<div class="col-5">
 						<b>RM{{ form.subtotal | price }}</b>
 					</div>
 				</div>
@@ -76,11 +76,11 @@
 				</text-input>
 
 				<div class="row border-top border-bottom py-2 my-2">
-					<div class="col-9">
+					<div class="col-7">
 						<b>Total</b>
 					</div>
-					<div class="col-3">
-						<b>RM{{ total | price }}</b>
+					<div class="col-5">
+						<button class="btn btn-primary" @click="setTotal"><b>RM{{ total | price }}</b></button>
 					</div>
 				</div>
 
@@ -98,10 +98,10 @@
 				</text-input>
 
 				<div class="row border-top border-bottom py-2 my-2">
-					<div class="col-9">
+					<div class="col-7">
 						<b>Change</b>
 					</div>
-					<div class="col-3">
+					<div class="col-5">
 						<b>RM{{ change | price }}</b>
 					</div>
 				</div>
@@ -282,6 +282,10 @@
 
 			onBillSuccess(response) {
 				window.location.reload();
+			},
+
+			setTotal() {
+				this.form.paid = this.total;
 			}
 		},
 

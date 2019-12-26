@@ -148,6 +148,7 @@
 			onSuccess(response) {
 				this.current_session = response.session;
 				this.form.items = [];
+				this.close();
 			},
 
 			close() {

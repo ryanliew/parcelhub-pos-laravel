@@ -11069,7 +11069,7 @@ body {
 }
 
 .main-content {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 66px);
 }
 
 .inset-shadow {
@@ -11674,7 +11674,7 @@ td {
 }
 
 .members-adder {
-  width: 80vw;
+  width: 85vw;
   margin: auto;
   background: white;
   padding: 25px;
@@ -11682,8 +11682,17 @@ td {
           box-shadow: 1px 1px 5px 0px rgba(0, 0, 0, 0.75);
   max-height: 80vh;
   position: fixed;
-  top: 20%;
-  left: 11vw;
+  top: 10vh;
+  left: 8vw;
+}
+
+#items-selector .close span {
+  font-size: 35px;
+}
+
+.bill-heads {
+  max-height: calc(100vh - 258px - 60px);
+  overflow-y: auto;
 }
 
 @media screen and (max-width: 450px) {
