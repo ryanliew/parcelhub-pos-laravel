@@ -18,7 +18,7 @@ class Session extends Model
     // 	return $this->belongsTo("App\Table");
     // }
 
-    public function invoices()
+    public function invoice()
     {
     	return $this->belongsTo("App\Invoice");
     }

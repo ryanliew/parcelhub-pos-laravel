@@ -142,7 +142,9 @@
 			</thead>
 			<tbody>
 				<?php 
-					$items = $invoice->items
+					$sessions = $invoice->sessions()->with('items')->get();
+					$items = $sessions->pluck('items')
+								->flatten()
 								->groupBy([
 									'description',
 									function($item){
@@ -161,14 +163,6 @@
 							<td class="text-right ptb-5">{{ number_format(collect($item)->sum('total_price'), 2, '.', ',') }}</td>
 
 						</tr>
-
-						@foreach($item as $subitem)
-							@if(!empty($subitem['tracking_code']))
-								<tr>
-									<td class="pl-1 pb-5" colspan="4">S/No. {{ $subitem['tracking_code'] }}</td>
-								</tr>
-							@endif
-						@endforeach
 					@endforeach
 
 				@endforeach
@@ -229,7 +223,7 @@
 			@foreach($taxes as $tax)
 			<tr>
 				<td>{{ $tax->code }} @ {{ $tax->percentage }}%</td>
-				<?php $filtered = $invoice->items->filter(function($item) use ($tax){ return $item->tax_type == $tax->code; }) ?>
+				<?php $filtered = $sessions->pluck('items')->flatten()->filter(function($item) use ($tax){ return $item->tax_type == $tax->code; }) ?>
 				<td>{{ number_format( $filtered->sum('price'), 2, '.', ',') }}</td>
 				<td>{{ number_format( $filtered->sum('tax'), 2, '.', ',') }}</td>
 			</tr>

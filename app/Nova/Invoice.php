@@ -2,13 +2,16 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\PrintReceipt;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Heading;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 
@@ -57,18 +60,19 @@ class Invoice extends Resource
             BelongsTo::make("Branch"),
 
             BelongsTo::make("Terminal"),
-
-            BelongsTo::make("Session"),
-
+            
             BelongsTo::make("Creator", 'user', 'App\Nova\User'),
 
             DateTime::make("Canceled on"),
 
-            BelongsTo::make("Canceled by", 'canceled_by', 'App\Nova\User')->nullable(),
 
-            Heading::make("Payment information"),
+            Heading::make("Payment information")->exceptOnForms(),
+
+            Textarea::make("Remarks"),
 
             new Panel("Payment information", $this->paymentFields()),
+
+            HasMany::make("Session"),
 
             HasMany::make("Items"),
         ];
@@ -83,15 +87,7 @@ class Invoice extends Resource
             Number::make("Subtotal")
                 ->rules("required"),
 
-            Number::make("Discount"),
-
-            Select::make("Discount mode")
-                ->options([
-                    '%' => '%',
-                    'RM' => 'RM'
-                ]),
-
-            Number::make("Discount value")
+            Number::make("Discount")
                 ->step(0.01),
 
             Number::make("Tax")
@@ -143,6 +139,8 @@ class Invoice extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new PrintReceipt)->showOnTableRow(),
+        ];
     }
 }

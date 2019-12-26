@@ -13,7 +13,7 @@ class Invoice extends Model
 
     protected $dates = ['canceled_on'];
 
-    public function session()
+    public function sessions()
     {
         return $this->hasMany("App\Session");
     }
@@ -26,11 +26,6 @@ class Invoice extends Model
     public function terminal()
     {
         return $this->belongsTo('App\Terminal', 'terminal_no');
-    }
-
-    public function items()
-    {
-    	return $this->hasMany('App\Item');
     }
 
     public function user()
@@ -55,7 +50,7 @@ class Invoice extends Model
 
     public function canceled_by()
     {
-        return $this->belontsTo("App\User", "canceled_by");
+        return $this->belongsTo("App\User", "canceled_by");
     }
 
     public function scopeCashupRequired($query)

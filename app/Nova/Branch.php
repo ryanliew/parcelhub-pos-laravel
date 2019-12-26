@@ -84,8 +84,6 @@ class Branch extends Resource
             new Panel("Payment information", $this->paymentFields()),
 
             HasMany::make("Terminals"),
-
-            HasMany::make("Tables"),
         ];
     }
 

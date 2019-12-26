@@ -45,7 +45,7 @@ class Session extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('Table'),
+            BelongsTo::make('Head'),
 
             Boolean::make("Is active"),
 
@@ -53,7 +53,9 @@ class Session extends Resource
 
             DateTime::make("Deactivated at"),
 
-            HasMany::make("Invoices"),
+            BelongsTo::make("Invoice"),
+
+            BelongsTo::make("Member"),
         ];
     }
 

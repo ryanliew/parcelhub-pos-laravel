@@ -143,10 +143,12 @@ class InvoiceController extends Controller
 
     public function store()
     {
+        $branch = auth()->user()->current;
         // Get all sessions and heads
         $heads = collect(json_decode(request()->heads));
 
-        
+        $invoice_no = $branch->code . sprintf("%05d", ++$branch->sequence->last_id);
+
         $invoice = Invoice::create([
             'total' => request()->total,
             'paid' => request()->paid,
@@ -158,7 +160,10 @@ class InvoiceController extends Controller
             'terminal_no' => auth()->user()->current_terminal,
             'created_by' => auth()->id(),
             'type' => 'Cash',
+            'invoice_no' => $invoice_no,
         ]);
+
+        $branch->sequence()->update(["last_id" => $branch->sequence->last_id]);
 
         foreach($heads as $head) {
 
@@ -185,13 +190,15 @@ class InvoiceController extends Controller
                 'tax_rate' => $head->gaming_item->tax->percentage,
                 'is_tax_inclusive' => $head->gaming_item->is_tax_inclusive ? true: false,
                 'tax_type' => $head->gaming_item->tax->code,
+                'hours' => now()->diffInMinutes($head->activated_at) / 60,
+                'member_id' => $head->active_session->member_id,
             ]);
 
             $headObj->deactivate($invoice);
         }
 
         
-        return json_encode(['message' => "Invoice created successfully, redirecting to head list page"]);
+        return json_encode(['message' => "Invoice created successfully, redirecting to head list page", "url" => url('/invoices/receipt/' . $invoice->id) ]);
     }
 
     public function update(Invoice $invoice)
@@ -263,14 +270,7 @@ class InvoiceController extends Controller
 
         $html = View::make('invoice.receipt', ["invoice" => $invoice, "taxes" => Tax::all()])->render();
         
-        $mPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
-                        "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
-                        "fontdata" => $fontData + [
-                            'monaco' => [
-                                'R' => 'monaco.ttf'
-                            ]
-                        ],
-                        'defaul_font' => 'monaco' ));
+        $mPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P'));
 
         $p = 'P';
         $mPDF->_setPageSize(array(80, 1000), $p);
@@ -281,14 +281,8 @@ class InvoiceController extends Controller
         $mPDF->state  = 0;
         unset($mPDF->pages[0]);
 
-        $newPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
-                        "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
-                        "fontdata" => $fontData + [
-                            'monaco' => [
-                                'R' => 'monaco.ttf'
-                            ]
-                        ],
-                        'defaul_font' => 'monaco' ));
+        $newPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P'));
+        
         $newPDF->_setPageSize(array(80, $pageHeight), $p);
         $newPDF->WriteHTML($html);
 

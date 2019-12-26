@@ -1302,30 +1302,29 @@
         },
         {
             "name": "laravel/nova",
-            "version": "v2.0.9",
+            "version": "v2.9.2",
             "source": {
                 "type": "git",
                 "url": "git@github.com:laravel/nova.git",
-                "reference": "bdf511caee87870af32fedbed2dfa94c0a6483d3"
+                "reference": "a63196f3a4a6679efe4d6716327120739da87280"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-bdf511caee87870af32fedbed2dfa94c0a6483d3-zip-c14654.zip",
-                "reference": "bdf511caee87870af32fedbed2dfa94c0a6483d3",
-                "shasum": "87d9fe60f4f9504ed615f25690a3cb20e303d9f6"
+                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-a63196f3a4a6679efe4d6716327120739da87280-zip-53fb98.zip",
+                "reference": "a63196f3a4a6679efe4d6716327120739da87280",
+                "shasum": "7fd1c7a9dfbb72384399be64213ea219054a0369"
             },
             "require": {
                 "cakephp/chronos": "^1.0",
                 "doctrine/dbal": "^2.9",
-                "illuminate/support": "^5.7.15 | 5.8.*",
+                "illuminate/support": "^5.7.15 | 5.8.* | ^6.0",
                 "moontoast/math": "^1.1",
                 "php": ">=7.1.0",
-                "spatie/once": "^1.1",
+                "spatie/once": "^1.1 | ^2.0",
                 "symfony/finder": "^4.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.0",
-                "orchestra/database": "3.7.* | 3.8.*",
                 "orchestra/testbench": "3.7.* | 3.8.*",
                 "phpunit/phpunit": "^7.0 | ^8.0",
                 "predis/predis": "^1.1"
@@ -1333,7 +1332,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.x-dev"
                 },
                 "laravel": {
                     "providers": [
@@ -1368,7 +1367,7 @@
                 "admin",
                 "laravel"
             ],
-            "time": "2019-07-03T14:40:10+00:00"
+            "time": "2019-12-11T17:23:05+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -4644,8 +4643,8 @@
             "authors": [
                 {
                     "name": "Filipe Dobreira",
-                    "homepage": "https://github.com/filp",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "homepage": "https://github.com/filp"
                 }
             ],
             "description": "php error handling for cool kids",
@@ -5396,8 +5395,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Utility class for timing",
@@ -5527,8 +5526,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "The PHP Unit Testing framework.",

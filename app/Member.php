@@ -26,6 +26,11 @@ class Member extends Model
         return $this->hasMany("App\Visit");
     }
 
+    public function sessions()
+    {
+        return $this->hasMany("App\Sessions");
+    }
+
     public function setIdentifierCode()
     {
         $this->update([

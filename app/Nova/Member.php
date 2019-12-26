@@ -97,7 +97,9 @@ class Member extends Resource
                 ->hideFromIndex()
                 ->sortable(),
 
-            HasMany::make("Visits"),
+            HasMany::make("Sessions"),
+
+            HasMany::make("Items"),
         ];
     }
 

@@ -114,6 +114,15 @@
 				</button>
 			</div>
 		</scale-transition>
+
+		<scale-transition>
+			<div class="members-adder text-center" v-if="isPrintingConfirmation">
+				
+				<h1>Print receipt?</h1>
+				<button class="btn btn-secondary" @click="reload">No</button>
+				<button class="btn btn-primary" @click="redirect(receipt_url)">Yes</button>
+			</div>
+		</scale-transition>
 	</div>
 </template>
 
@@ -133,6 +142,7 @@
 				showMenu: false,
 				showGamingSelector: false,
 				isAddingMember: false,
+				isPrintingConfirmation: false,
 				form: new Form({
 					gaming_id: 0,
 					members: [],
@@ -157,6 +167,7 @@
 					{ label: 'Bank Transfer', value: 'Bank Transfer' }
 				],
 				selectedPaymentMethod: { label: 'Cash', value: 'Cash' },
+				receipt_url: ''
 			};
 		},
 
@@ -275,12 +286,22 @@
 				this.form.total = this.total;
 				this.form.change = this.change;
 
-				this.form.post("/bill")
+				this.form.post("/bill", false)
 					.then(response => this.onBillSuccess(response))
 					.catch(error => this.catchAjaxError(error));
 			},
 
 			onBillSuccess(response) {
+				this.isBilling = false;
+				this.receipt_url = response.url;
+				this.isPrintingConfirmation = true;
+			},
+
+			redirect(url) {
+				window.location.href = url;
+			},
+
+			reload() {
 				window.location.reload();
 			},
 

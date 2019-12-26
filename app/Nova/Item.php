@@ -2,8 +2,13 @@
 
 namespace App\Nova;
 
-use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Item extends Resource
@@ -46,7 +51,7 @@ class Item extends Resource
 
             Textarea::make("Description"),
 
-            BelongsTo::make("Invoice"),
+            BelongsTo::make("Session"),
 
             BelongsTo::make("Product"),
 
@@ -74,6 +79,11 @@ class Item extends Resource
 
             Number::make("Total price")
                 ->step(0.01),
+
+            Number::make("Member price")
+                ->step(0.01),
+
+            BelongsTo::make("Member")->nullable(),
 
         ];
     }

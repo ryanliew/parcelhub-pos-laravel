@@ -49,10 +49,10 @@ class Head extends Resource
                 ->rules('required')
                 ->sortable(),
 
-            DateTime::make("Activated on")
+            DateTime::make("Activated on", 'activated_at')
                 ->exceptOnForms(),
 
-            DateTime::make("Deactivated on")
+            DateTime::make("Deactivated on", 'deactivated_at')
                 ->exceptOnForms(),
 
             Boolean::make("Is active", function(){
