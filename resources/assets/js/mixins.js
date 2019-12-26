@@ -26,7 +26,7 @@ Vue.mixin({
 			let tax = 0;
 
 			if(item.is_tax_inclusive) {
-				let tax_value = item.tax.percentage ? (Math.round(parseFloat(item.price) / (item.tax.percentage / 100 + 1) * 100) / 100 ) : item.tax;
+				let tax_value = typeof item.tax == 'number' ? item.tax : (Math.round(parseFloat(item.price) / (item.tax.percentage / 100 + 1) * 100) / 100 );
 				tax = item.price - tax_value;
 			}
 			else {
@@ -42,7 +42,7 @@ Vue.mixin({
 			let tax = 0;
 
 			if(item.is_tax_inclusive) {
-				let tax_value = item.tax.percentage ? (Math.round(parseFloat(item.member_price) / (item.tax.percentage / 100 + 1) * 100) / 100 ) : item.tax;
+				let tax_value = typeof item.tax == 'number' ? item.tax : (Math.round(parseFloat(item.member_price) / (item.tax.percentage / 100 + 1) * 100) / 100 );
 
 				tax = item.member_price - tax_value;
 			}
