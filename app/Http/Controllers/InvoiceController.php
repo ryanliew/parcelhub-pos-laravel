@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Head;
 use App\Invoice;
 use App\Item;
 use App\PaymentType;
@@ -145,25 +146,52 @@ class InvoiceController extends Controller
         // Get all sessions and heads
         $heads = collect(json_decode(request()->heads));
 
-        // Get members data
-        $members = json_decode(request()->members);
         
-        // Assign member to session
-        foreach($members as $member) {
-            $selected_head = $heads->filter(function($head){ return !$head->active_session->member_id; })
-                                    ->sortByDesc(function($head){
-                                        $items = collect($head->active_session->items);
-                                        return $items->sum('total_price') - $items->sum(function($item){ return $item->member_price * $item->unit; });
-                                    })
-                                    ->first();
+        $invoice = Invoice::create([
+            'total' => request()->total,
+            'paid' => request()->paid,
+            'discount' => request()->discount,
+            'payment_type' => request()->payment_method,
+            'remarks' => request()->remarks,
+            'subtotal' => request()->subtotal,
+            'branch_id' => auth()->user()->current_branch,
+            'terminal_no' => auth()->user()->current_terminal,
+            'created_by' => auth()->id(),
+            'type' => 'Cash',
+        ]);
 
-            $selected_head->active_session->member_id = $member->id;
+        foreach($heads as $head) {
 
-            Session::find($selected_head->active_session->id)->update([
-                'member_id' => $member->id,
+            $headObj = Head::find($head->id);
+
+            $session = Session::find($head->active_session->id);
+
+            $session->update([
+                'member_id' => $head->active_session->member_id,
+                'total' => $head->total_price,
             ]);
+
+            $session->items()->create([
+                'description' => $head->gaming_item->description,
+                'sku' => $head->gaming_item->sku,
+                'tax' => $head->gaming_item->tax_value,
+                'price' => $head->gaming_item->price,
+                'member_price' => $head->gaming_item->member_price,
+                'product_id' => $head->gaming_item->id,
+                'product_type_id' => $head->gaming_item->product_type_id,
+                'total_price' => $head->gaming_item->total,
+                'unit' => 1,
+                'is_custom_pricing' => false,
+                'tax_rate' => $head->gaming_item->tax->percentage,
+                'is_tax_inclusive' => $head->gaming_item->is_tax_inclusive ? true: false,
+                'tax_type' => $head->gaming_item->tax->code,
+            ]);
+
+            $headObj->deactivate($invoice);
         }
-        return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
+
+        
+        return json_encode(['message' => "Invoice created successfully, redirecting to head list page"]);
     }
 
     public function update(Invoice $invoice)

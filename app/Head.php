@@ -45,7 +45,7 @@ class Head extends Model
 		]);
 	}
 
-	public function deactivate()
+	public function deactivate(Invoice $invoice)
 	{
 		$this->update([
 			'deactivated_at' => Carbon::now(),
@@ -53,6 +53,7 @@ class Head extends Model
 
 		$this->active_session()->update([
 			'deactivated_at' => now(),
+			'invoice_id' => $invoice->id,
 		]);
 	}	
 }

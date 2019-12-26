@@ -4,19 +4,6 @@ Vue.mixin({
     		console.log("Error detected: " + error);
     	},
 
-    	calculateItemTax(item) {
-			let tax = 0;
-
-			if(item.is_tax_inclusive) {
-				tax = item.price - (Math.round(parseFloat(item.price) / (item.tax.percentage / 100 + 1) * 100) / 100 );
-			}
-			else {
-				tax = Math.round(parseFloat(item.price) * item.tax_rate) / 100;
-			}
-
-			return tax * item.unit;
-		},
-
 		calculateItemTotalPrice(item) {
 			let total = parseFloat(item.price) * item.unit;
 			
@@ -35,13 +22,33 @@ Vue.mixin({
 			return total;
 		},
 
+		calculateItemTax(item) {
+			let tax = 0;
+
+			if(item.is_tax_inclusive) {
+				let tax_value = item.tax.percentage ? (Math.round(parseFloat(item.price) / (item.tax.percentage / 100 + 1) * 100) / 100 ) : item.tax;
+				tax = item.price - tax_value;
+			}
+			else {
+				let rate = item.tax.percentage ? item.tax.percentage : item.tax_rate;
+
+				tax = Math.round(parseFloat(item.price) * item.tax_rate) / 100;
+			}
+
+			return tax * item.unit;
+		},
+
 		calculateMemberItemTax(item) {
 			let tax = 0;
 
 			if(item.is_tax_inclusive) {
-				tax = item.member_price - (Math.round(parseFloat(item.member_price) / (item.tax.percentage / 100 + 1) * 100) / 100 );
+				let tax_value = item.tax.percentage ? (Math.round(parseFloat(item.member_price) / (item.tax.percentage / 100 + 1) * 100) / 100 ) : item.tax;
+
+				tax = item.member_price - tax_value;
 			}
 			else {
+				let rate = item.tax.percentage ? item.tax.percentage : item.tax_rate;
+				
 				tax = Math.round(parseFloat(item.member_price) * item.tax_rate) / 100;
 			}
 
