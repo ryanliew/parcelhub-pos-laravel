@@ -54,6 +54,7 @@ class Head extends Model
 		$this->active_session()->update([
 			'deactivated_at' => now(),
 			'invoice_id' => $invoice->id,
+			'is_active' => false,
 		]);
 	}	
 }
