@@ -119,7 +119,6 @@ class CustomerController extends Controller
         return response()->file($path);
     }
 
-
     public function statement(Customer $customer)
     {
 
@@ -129,6 +128,8 @@ class CustomerController extends Controller
         $date_to = Carbon::parse(Request()->date_to);
 
         $getAll = Request()->type == "All" ? true: false;
+        $getOutstanding = Request()->type == "Outstanding" ? true: false;
+        $getPaid = Request()->type == "Paid" ? true: false;
 
         $invoices = Invoice::with(['customer','payment'])
                     ->active()
@@ -141,13 +142,13 @@ class CustomerController extends Controller
                     ->get();
 
         $result = collect([]);
-
+                       
         foreach($invoices as $invoice)
         {
             $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
-
-            if( $getAll || $outstanding != 0)
-            {
+            
+            if( $getAll || ( $getOutstanding && $outstanding != 0 ) || ( $getPaid && $outstanding == 0 ) )
+            {                
                 $debit = [
                     'date' => $invoice->created_at, 
                     'total' => $invoice->total, 
@@ -158,7 +159,9 @@ class CustomerController extends Controller
                 ];
 
                 if($invoice->paid >= $invoice->total && $invoice->total > 0)
+                {
                     $debit['paid'] = $invoice->total;
+                }
 
                 $result->push($debit);
 
@@ -179,7 +182,6 @@ class CustomerController extends Controller
         }
 
         $sortedResult = $result->sortBy('date');
-
         $resultBalance = 0.0;
 
         foreach($sortedResult as $key => $collection)
