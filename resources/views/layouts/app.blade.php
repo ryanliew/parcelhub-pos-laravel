@@ -48,7 +48,7 @@
                         @else
                             @if(auth()->user()->isAdmin())
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('vendors.page') }}">
+                                    <a class="nav-link" href="/nova">
                                         Admin panel
                                     </a>
                                 </li>
@@ -60,7 +60,7 @@
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     @if(auth()->user()->isAdmin())
-                                        <a class="dropdown-item" href="{{ route('vendors.page') }}">
+                                        <a class="dropdown-item" href="/nova">
                                             Admin panel
                                         </a>
                                     @endif

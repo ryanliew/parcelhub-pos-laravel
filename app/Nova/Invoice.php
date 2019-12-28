@@ -3,6 +3,8 @@
 namespace App\Nova;
 
 use App\Nova\Actions\PrintReceipt;
+use App\Nova\Metrics\AverageSales;
+use App\Nova\Metrics\TotalSales;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
@@ -109,7 +111,10 @@ class Invoice extends Resource
      */
     public function cards(Request $request)
     {
-        return [];
+        return [
+            new AverageSales,
+            new TotalSales,
+        ];
     }
 
     /**

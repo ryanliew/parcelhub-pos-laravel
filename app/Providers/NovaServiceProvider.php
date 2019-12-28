@@ -2,9 +2,14 @@
 
 namespace App\Providers;
 
-use Laravel\Nova\Nova;
-use Laravel\Nova\Cards\Help;
+use App\Nova\Metrics\AverageCustomerPerWeek;
+use App\Nova\Metrics\AverageSales;
+use App\Nova\Metrics\CustomerPerDay;
+use App\Nova\Metrics\CustomerPerWeek;
+use App\Nova\Metrics\TotalSales;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Nova\Cards\Help;
+use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
@@ -42,8 +47,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function gate()
     {
         Gate::define('viewNova', function ($user) {
-            return in_array($user->email, [
-                //
+            return in_array($user->username, [
+                "junec",
+                "ryanliew"
             ]);
         });
     }
@@ -56,7 +62,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         return [
-            new Help,
+            new TotalSales,
+            new AverageSales,
+            new CustomerPerWeek,
         ];
     }
 
