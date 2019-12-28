@@ -93,6 +93,9 @@ class Invoice extends Resource
             Number::make("Tax")
                 ->step(0.01),
 
+            Number::make("Total")
+                ->step(0.01),
+                
             Number::make("Paid")
                 ->step(0.01),
         ];
