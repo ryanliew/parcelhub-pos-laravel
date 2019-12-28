@@ -72,7 +72,7 @@ class Invoice extends Resource
 
             new Panel("Payment information", $this->paymentFields()),
 
-            HasMany::make("Session"),
+            HasMany::make("Sessions"),
 
             HasMany::make("Items"),
         ];
