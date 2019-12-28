@@ -48,6 +48,11 @@ class Invoice extends Model
         return $this->belongsToMany("App\Cashup")->withTimestamps()->withPivot('total', 'payment_method', 'payment_id');
     }
 
+    public function items()
+    {
+        return $this->hasManyThrough("App\Item", "App\Session");
+    }
+
     public function canceled_by()
     {
         return $this->belongsTo("App\User", "canceled_by");
