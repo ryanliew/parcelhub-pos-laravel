@@ -154,6 +154,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::get("/", "ReportController@page")->name('reports.page');
 		Route::get("/sales", "ReportController@sales_report");
 	});
+
+	Route::group(['prefix' => 'global/consignment/notes'], function(){
+		Route::get('/', "ItemController@page")->name('items.page');
+		Route::get("/index", "ItemController@index")->name('items.index');
+	});
 });
 
 // Users route
