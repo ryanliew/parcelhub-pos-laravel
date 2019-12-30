@@ -29,7 +29,7 @@ class ItemController extends Controller
                 return $item->invoice? $item->invoice->invoice_no : "";
             })
             ->addColumn('product_type', function($item){
-                return ProductTYpe::find($item->product_type_id) ? ProductTYpe::find($item->product_type_id)->name : "";
+                return ProductType::find($item->product_type_id) ? ProductType::find($item->product_type_id)->name : "";
             })
             ->addColumn('zone_type', function($item){
                 return ZoneType::find($item->zone_type_id) ? ZoneType::find($item->zone_type_id)->name : "";
