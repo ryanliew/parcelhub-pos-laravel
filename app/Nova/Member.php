@@ -33,7 +33,7 @@ class Member extends Resource
      * @var array
      */
     public static $search = [
-        'identifier', 'name', 'phone', 'email', 'city'
+        'identifier', 'name', 'phone_number', 'email', 'city'
     ];
 
     /**
