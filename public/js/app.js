@@ -80218,7 +80218,7 @@ var render = function() {
           )
         })
       ),
-      _vm._v("\n\t<"),
+      _vm._v(" "),
       _c("qrcode-stream", { on: { decode: _vm.addQrcode } }),
       _vm._v(" "),
       _c("input", {
