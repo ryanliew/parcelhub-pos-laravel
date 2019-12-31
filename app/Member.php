@@ -30,7 +30,12 @@ class Member extends Model
 
     public function sessions()
     {
-        return $this->hasMany("App\Sessions");
+        return $this->hasMany("App\Session");
+    }
+
+    public function items()
+    {
+        return $this->hasMany("App\Item");
     }
 
     public function setIdentifierCode()
