@@ -63,6 +63,10 @@ class Member extends Resource
                 ->rules("required")
                 ->sortable(),
 
+            Date::make("Expire date")
+                ->sortable()
+                ->rules("required"),
+
             Select::make("Gender")
                 ->options([
                     "Male" => "Male",

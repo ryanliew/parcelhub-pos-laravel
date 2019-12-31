@@ -206,7 +206,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/', "MemberController@page")->name('members.page');
 		Route::get("/index", "MemberController@index")->name('members.index');
 		Route::get("/list", "MemberController@list");
+		Route::get("/inactive", "MemberController@list_inactive");
 		Route::get("/create", "MemberController@create")->name('members.create');
+		Route::post("/activate/{member}", "MemberController@activate_member");
 		Route::post("/{member}", "MemberController@update");
 		Route::get("/{member}","MemberController@get");
 	});

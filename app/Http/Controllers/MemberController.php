@@ -14,6 +14,11 @@ class MemberController extends Controller
         return Member::orderBy('name')->get();
     }
 
+    public function list_inactive()
+    {
+        return view('member.inactive', ['members' => Member::inactive()->get()]);
+    }
+
     public function page()
     {
     	return view('member.overview');
@@ -55,20 +60,22 @@ class MemberController extends Controller
         request()->validate([
             "name" => "required",
             "last_name" => "required",
-            "phone_number" => ["required", $phone_unique, 'regex:/^(\+?6?01?)[0-46-9]-*[0-9]{7,8}$/'],
+            "phone_number" => ["required", $phone_unique, 'regex:/^(\+?6?01?)[0-46-9]*[0-9]{7,8}$/'],
             "email" => ["nullable", "required", $mail_unique],
             "gender" => "required",
             "birthdate" => "required",
             "city" => "required",
             "state" => "required",
         ], [
-            'phone_number.regex' => "Incorrect format. Please follow this format: +6012-1234567"
+            'phone_number.regex' => "Incorrect format. Please follow this format: +60121234567"
         ]);
     }
 
     public function store()
     {
         $this->validate_input();
+
+        request()->merge(['expire_date' => now()->subDay()]);
 
         $member = Member::create(request()->all());
 
@@ -86,11 +93,19 @@ class MemberController extends Controller
 
     public function get(Member $member)
     {
-        return $member;
+        if($member->is_active)
+            return $member;
     }
 
     public function success(Member $member)
     {
         return view("member.success", ['member' => $member]);
+    }
+
+    public function activate_member(Member $member)
+    {
+        $member->activate();
+
+        return redirect('/members/inactive');
     }
 }
