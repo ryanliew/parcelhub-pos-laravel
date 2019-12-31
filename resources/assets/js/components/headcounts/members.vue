@@ -8,8 +8,13 @@
 				<i class="fas fa-trash text-danger" @click="sub(index)"></i>
 			</div>
 		</div>
-		<qrcode-stream @decode="addQrcode"></qrcode-stream>
+		<scale-transition>
+			<template v-if="is_scanning">
+				<qrcode-stream @decode="addQrcode"></qrcode-stream>
+			</template>
+		</scale-transition>
 		<input class="form-control my-3" placeholder="Member ID / Phone number" v-model="member_id" @key.enter="add"/>
+		<button class="btn btn-success" @click="is_scanning = true">Scan QR code</button>
 		<button class="btn btn-success" @click="add">Add</button>
 		<button class="btn btn-secondary" @click="close">Complete</button>
 	</div>
@@ -23,6 +28,7 @@
 		data() {
 			return {
 				member_id: "",
+				is_scanning: false,
 			};
 		},
 
@@ -45,6 +51,8 @@
 			},
 
 			setMember(respond) {
+				this.is_scanning = false;
+
 				this.member_id = '';
 
 				if(!respond.data[0]) flash("Member not found");
