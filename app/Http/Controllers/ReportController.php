@@ -24,36 +24,67 @@ class ReportController extends Controller
         $branch = auth()->user()->current;
 
         if(request()->has('branch'))
-            $branch = Branch::find(request()->branch);
-
-    	$invoices = $branch->invoices()->active()->whereBetween('created_at', [$from, $to->toDateString()])->get()->pluck('id');
-
-    	$items = Item::with('product.vendor', 'product.product_type', 'invoice')->whereIn('invoice_id', $invoices)->get();
-
-    	$vendors = $items->filter(function($item, $key){ return !is_null($item->product->vendor); })
-                        ->groupBy(function($item, $key){ return $item->product->vendor->name; });
-                        
-        $vendors_sum = $vendors->sum(function($vendor)
         {
-            return $vendor->sum('total_price');
-        });
+            if(request()->branch == '0') //all branches
+            {
+                $branch = Branch::all();
+            }
+            else
+            {
+                $branch = Branch::where('id', '=', request()->branch)->get();
+            }
+        }
+        $report_detail = collect([]);
+       
+        if(request()->export)
+        {
+            $user = auth()->user()->id;
+            $current_timestamp = str_slug(Carbon::now());
+            $folder_name = 'Sales_reports_' . $user . "_" . $current_timestamp;
+        }
 
-        $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
+        foreach($branch as $b)
+        {
+            $invoices = $b->invoices()->active()->whereBetween('created_at', [$from, $to->toDateString()])->get()->pluck('id');
+            $items = Item::with('product.vendor', 'product.product_type', 'invoice')->whereIn('invoice_id', $invoices)->get();
+    	    $vendors = $items->filter(function($item, $key){ return !is_null($item->product->vendor); })
+                        ->groupBy(function($item, $key){ return $item->product->vendor->name; });                 
+            $vendors_sum = $vendors->sum(function($vendor)
+            {
+                return $vendor->sum('total_price');
+            });
+            $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
+
+            $detail = ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $b, 'vendors_sum' => $vendors_sum];           
+
+            if(request()->export)
+            {
+                $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name);
+            }
+
+            $report_detail->push($detail);
+        }
 
         if(request()->export)
         {
-            return $this->export_sales_report($vendors, $products, $items, $branch, $from, $to);
+            return $this->compress_sales_report_in_zip($folder_name);
         }
 
-    	return view('reports.sales', ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $branch, 'vendors_sum' => $vendors_sum]);
+        return view('reports.sales', ['report_detail' => $report_detail] );
     }
 
-    public function export_sales_report($vendors, $products, $items, $branch, $from, $to) 
+    public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name) 
     {
-
         $filename = "Sales Report (" . $from . " - " .  $to->toDateString() . ')';
 
-        if($branch) $filename = $filename . " " . $branch->name;
+        if($branch)
+        {
+            if (!file_exists(storage_path('exports/' . $folder_name))) {                
+               mkdir(storage_path('exports/' . $folder_name), 0777, true);
+            }
+
+            $filename = $folder_name . '/' . $filename . " " . $branch->name;
+        }
 
         return Excel::create($filename, function($excel) use ($vendors, $products, $items){ 
             $excel->sheet('Sales by product', function($sheet) use ($products) {
@@ -71,6 +102,31 @@ class ReportController extends Controller
                 $sheet->loadView('reports.sheets.detailed_sales', ['items' => $items]);
                 
             });
-        })->download('xlsx');
+        })->store('xlsx');
+    }
+
+    public function compress_sales_report_in_zip($folder_name)
+    {
+        $zip_file = $folder_name . '.zip';
+        $zip = new \ZipArchive();
+        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip->addEmptyDir(storage_path($folder_name));
+
+        $path = storage_path('exports/' . $folder_name);
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        foreach ($files as $name => $file)
+        {
+            // We're skipping all subfolders
+            if (!$file->isDir()) {
+                $filePath     = $file->getRealPath();
+
+                // extracting filename with substr/strlen
+                $relativePath = $folder_name . '/' . substr($filePath, strlen($path) + 1);
+
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+        $zip->close();
+        return response()->download($zip_file);
     }
 }
