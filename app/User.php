@@ -46,6 +46,11 @@ class User extends Authenticatable
         return $this->belongsTo("App\Terminal", "current_terminal");
     }
 
+    public function profit_and_losses()
+    {
+        return $this->hasMany("App\ProfitAndLoss", "created_by");
+    }
+
     public function allowed_users()
     {
         return $this->belongsToMany("App\User", "users_permissions", "user_id", "target_id")->withTimestamps();

@@ -80,7 +80,7 @@
 				      	<th>%</th>
 				      	<th>Payment #</th>
 				  	</tr>
-				  	<tr class="item-row" v-for="invoice in cashup.invoices" v-if="invoice.pivot.total > 0">
+				  	<tr class="item-row" v-for="invoice in cashup.invoices">		
 				  		<td>{{ invoice.invoice_no }}</td>
 				  		<td>{{ invoice.pivot.payment_method }}</td>
 				  		<td>{{ invoice.pivot.total | price }}</td>

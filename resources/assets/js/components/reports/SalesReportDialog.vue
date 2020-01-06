@@ -111,6 +111,9 @@ export default {
 
         return obj;
       });
+      
+      var allbranch = {value:"0", label:"All branches"};
+      this.branches.unshift(allbranch);
 
       this.selectedBranch = _.filter(
         this.branches,

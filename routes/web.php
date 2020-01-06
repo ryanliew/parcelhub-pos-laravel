@@ -154,6 +154,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::get("/", "ReportController@page")->name('reports.page');
 		Route::get("/sales", "ReportController@sales_report");
 	});
+
+	Route::group(['prefix' => 'global/consignment/notes'], function(){
+		Route::get('/', "ItemController@page")->name('items.page');
+		Route::get("/index", "ItemController@index")->name('items.index');
+	});
 });
 
 // Users route
@@ -267,6 +272,12 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/{group}/products/import", "CustomerGroupController@import");
 		Route::post("/{group}/products/{product}", "CustomerGroupController@update_product");
 		Route::delete("/{group}/products/{product}", "CustomerGroupController@delete_product");
+	});
+
+	Route::group(['prefix' => 'profit_and_loss'], function(){
+		Route::get("/", "ProfitAndLossController@page")->name('profit-and-loss.page');
+		Route::post("/import", "ProfitAndLossController@import");
+		Route::get("/index", "ProfitAndLossController@index")->name('profit-and-loss.index');
 	});
 
 });
