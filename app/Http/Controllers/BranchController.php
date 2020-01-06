@@ -52,6 +52,8 @@ class BranchController extends Controller
 
         $branch->create_default_user($terminal->id);
 
+        $branch->grant_admin_permission();
+
     	return json_encode(['message' => "New branch created. User " . $branch->code . " has been assigned to the branch."]);
     }
 
