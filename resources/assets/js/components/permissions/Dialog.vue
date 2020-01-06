@@ -84,6 +84,7 @@
 				selectedPermission: '',
 
 				isEdit: false,
+				isDelete: false,
 				branches: [],
 				levels: [{value: 'read', label: 'Cashier'}, {value:'write', label:'Branch admin'}],
 				users: [],
@@ -99,6 +100,7 @@
 		mounted() {
 			window.events.$on('createPermission', evt => this.createPermission(evt));
 			window.events.$on('editPermission', evt => this.editPermission(evt));
+			window.events.$on('deletePermission', evt => this.deletePermission(evt));
 
 			$("#permission-dialog").on("hide.bs.modal", function(e){
 				this.closeDialog();
@@ -220,7 +222,13 @@
 				this.closeDialog();
 
 				window.events.$emit("reload-table");
-			}
+			}, 
+
+			deletePermission(evt) {
+				this.selectedPermission = evt[0];
+				this.isDelete = true;
+				this.isConfirming = true;
+			},
 		},
 
 		computed: {
@@ -237,7 +245,12 @@
 			},
 
 			url() {
-				return this.selectedPermission ? "/admin/permissions/" + this.selectedPermission.id : "/admin/permissions";
+				if(!this.isDelete) {
+					return this.selectedPermission ? "/admin/permissions/" + this.selectedPermission.id : "/admin/permissions";
+				}
+				else {
+					return "/admin/permissions/" + this.selectedPermission.id + "/delete";
+				}
 			},
 
 			canEditBranch() {

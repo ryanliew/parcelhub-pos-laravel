@@ -44,6 +44,20 @@ class VendorController extends Controller
     	return json_encode(['message' => "Vendor updated"]);
     }
 
+    public function delete(Vendor $vendor)
+    {
+        $items_count = $vendor->items->count();
+        if($items_count > 0) {
+            $message = 'Not allowed to delete this vendor due to items exists for this vendor';
+        }
+        else {
+            $vendor->delete();
+            $message = 'Vendor deleted';
+        }
+
+    	return json_encode(['message' => $message]);
+    }
+
     public function list()
     {
         return Vendor::all();
