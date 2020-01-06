@@ -100,6 +100,7 @@
 				types: [
 						{label: 'All', value: 'All'},
 						{label: 'Outstanding', value: 'Outstanding'},
+						{label: 'Paid', value: 'Paid'},
 						],
 			};
 		},
