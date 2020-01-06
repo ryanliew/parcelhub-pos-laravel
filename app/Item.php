@@ -22,6 +22,8 @@ class Item extends Model
  
 	public function getTotalPriceAfterDiscountAttribute()
 	{
-		return $this->total_price - ((($this->invoice->discount_value) / ($this->invoice->subtotal)) *  $this->total_price );
+		return $this->invoice->subtotal == 0?
+				0:
+				$this->total_price - ((($this->invoice->discount_value) / ($this->invoice->subtotal)) *  $this->total_price );
 	}
 }
