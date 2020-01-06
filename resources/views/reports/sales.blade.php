@@ -33,7 +33,7 @@
 					</div>
 					<div class="col-12 col-md-4 text-center">
 						Total sales <br>
-						<h4>RM{{ number_format($items->sum('total_price'), 2, ".", "") }}</h4>
+						<h4>RM{{ number_format($items->sum('total_price_after_discount'), 2, ".", "") }}</h4>
 					</div>
 					<div class="col-12 col-md-4 text-center">
 						Total items <br>
@@ -61,8 +61,8 @@
 					<tbody>
 						@foreach($vendors as $name => $vendor_item)
 							<tr>
-								<td>{{ $name }}</td>
-								<td>RM{{ number_format($vendor_item->sum('total_price'), 2, ".", "") }}</td>
+								<td>{{ $name }}</td>								
+								<td>RM{{ number_format($vendor_item->sum('total_price_after_discount'), 2, ".", "") }}</td>                            
 							</tr>
 						@endforeach
 					</tbody>
@@ -95,8 +95,8 @@
 								<td>{{ $product->first()->product->zone }}</td>
 								<td>@if($product->first()->product->vendor_id) {{ $product->first()->product->vendor->name }} @else - @endif</td>
 								<td>{{ $product->first()->product->weight_start }} - {{ $product->first()->product->weight_end }}</td>
-								<td>{{ $product->first()->product->product_type->name }}</td>
-								<td>RM{{ number_format($product->sum('total_price'), 2, ".", "") }}</td>
+								<td>{{ $product->first()->product->product_type->name }}</td>								
+								<td>RM{{ number_format($product->sum('total_price_after_discount'), 2, ".", "") }}</td>                            
 							</tr>
 						@endforeach
 					</tbody>
@@ -137,7 +137,7 @@
 								<td>{{ $item->product->product_type->name }}</td>
 								<td><a href="/invoices/edit/{{ $item->invoice->id }}" target="_blank">{{ $item->invoice->invoice_no }}</a></td>
 								<td>{{ $item->tracking_code }}</td>
-								<td>RM{{ number_format($item->total_price, 2, ".", "") }}</td>
+								<td>RM{{ number_format($item->total_price_after_discount, 2, ".", "") }}</td>
 								<td>{{ $item->created_at->toDateString() }}</td>
 							</tr>
 						@endforeach
