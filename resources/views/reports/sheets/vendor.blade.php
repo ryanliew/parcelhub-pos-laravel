@@ -9,7 +9,7 @@
         @foreach($vendors as $name => $vendor_item)
         <tr>
             <td>{{ $name }}</td>
-            <td>{{ number_format($vendor_item->sum('total_price'), 2, ".", "") }}</td>
+            <td>{{ number_format($vendor_item->sum('total_price_after_discount'), 2, ".", "") }}</td>
         </tr>
         @endforeach
     </tbody>

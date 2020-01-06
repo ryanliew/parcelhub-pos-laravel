@@ -84,6 +84,14 @@ class Branch extends Model
         return $user;
     }
 
+    public function grant_admin_permission()
+    {
+        $admins = User::where('is_admin', true)->get();
+        $this->grant_permission($admins, Permission::Write);
+            
+        return $admins;
+    }
+
     public function create_default_terminal()
     {
         $terminal = $this->terminals()->create([
