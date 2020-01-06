@@ -51,7 +51,7 @@ class ReportController extends Controller
                         ->groupBy(function($item, $key){ return $item->product->vendor->name; });                 
             $vendors_sum = $vendors->sum(function($vendor)
             {
-                return $vendor->sum('total_price');
+                return $vendor->sum('total_price_after_discount');
             });
             $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
 
