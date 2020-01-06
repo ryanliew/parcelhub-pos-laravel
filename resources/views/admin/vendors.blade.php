@@ -62,15 +62,16 @@
 						},
 						enabled: false
 					},
+					
+					//Enable the following if delete is allowed
+					{
+						text: 'Delete',
+						action: function( e, dt, node, config ) {
+							window.events.$emit('deleteVendor', table.rows({selected: true}).data().toArray());
+						},
+						enabled: false
+					},
 					@endif
-					// Enable the following if delete is allowed
-					// {
-					// 	text: 'Delete',
-					// 	action: function( e, dt, node, config ) {
-					// 		window.events.$emit('deleteZone', table.rows({selected: true}).data().toArray());
-					// 	},
-					// 	enabled: false
-					// },
 					'excel', 'colvis'
 				],
 				ajax: '{!! route("vendors.index") !!}',
@@ -87,7 +88,7 @@
 		 
 		        table.button( 1 ).enable( selectedRows === 1 );
 		        // Enable if delete is allowed
-		        // table.button( 2 ).enable( selectedRows > 0 );
+		        table.button( 2 ).enable( selectedRows > 0 );
 		    });
 		    @endif
 

@@ -74,6 +74,13 @@ class PermissionController extends Controller
     	return json_encode(['message' => "Permission updated"]);
     }
 
+    public function delete(Permission $permission)
+    {
+        $permission->delete();
+    	
+    	return json_encode(['message' => "Permission deleted"]);
+    }
+
     public function list()
     {
         return Permission::all();

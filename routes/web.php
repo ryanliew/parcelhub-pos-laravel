@@ -86,6 +86,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/", "VendorController@store");
 		Route::get("/index", "VendorController@index")->name('vendors.index');
 		Route::post("/{vendor}", "VendorController@update");
+		Route::post("/{vendor}/delete", "VendorController@delete");
 	});
 
 	Route::group(['prefix' => 'zones'], function(){
@@ -148,6 +149,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/", "PermissionController@store");
 		Route::get("/index", "PermissionController@index")->name('permissions.index');
 		Route::post("/{permission}", "PermissionController@update");
+		Route::post("/{permission}/delete", "PermissionController@delete");
 	});
 
 	Route::group(['prefix' => "reports"], function(){
