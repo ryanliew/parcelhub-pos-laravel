@@ -4,6 +4,9 @@
 			<div class="card-body">            
     			<input class="file-input" type="file" ref="file" name="file" @change="fileUploaded">
 				<button @click="importFromExcel()" :disabled="!form.file">Import</button>
+				<a href="/profit_and_loss.xlsx" target="_blank">
+					<button style="float: right;" title="Download sample excel">Download</button>
+				</a>
             </div>		
 		</div>
 	</div>
