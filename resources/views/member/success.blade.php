@@ -15,7 +15,7 @@
 					<h3>Like our Facebook page below and show this screen to our cashier to enjoy your discounts!</h3>
 					<div class="fb-like" data-href="https://www.facebook.com/hexabox.puchong/" data-width="" data-layout="button_count" data-action="recommend" data-size="large" data-share="true"></div>
 				@else
-					Oops, your membership has expired / inactive, please approach our friendly staff for assistance
+					Oops, your membership is inactive, please approach our counter to activate your account
 				@endif
 				
 			</div>
