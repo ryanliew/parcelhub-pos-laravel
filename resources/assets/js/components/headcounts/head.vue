@@ -2,8 +2,11 @@
 	<zoom-x-transition :delay="transitionDelay">
 		<div class="col-4 col-md-3 mt-3">
 			<div class="hexatable d-flex flex-column" :class="extraClasses" @click="select">
-				<div class="date text-center">
+				<div class="date text-center" v-if="!warning">
 					{{ gamingTime }}
+				</div>
+				<div class="date text-center text-danger" v-else>
+					<i class="fas fa-exclamation-circle fa-lg"></i> {{ date }}
 				</div>
 				<div class="hexatable-name">
 					{{ head.number }}
@@ -84,6 +87,18 @@
 
 		    transitionDelay() {
 		    	return parseInt(this.index) * 100;
+		    },
+
+		    warning() {
+		    	var duration = moment.duration(
+		          moment(this.now).diff(this.head.activated_at)
+		        );
+
+		        return duration.days() > 1;
+		    },
+
+		    date() {
+		    	return moment(this.head.activated_at).format('YYYY-MM-DD');
 		    }
 		}
 	}

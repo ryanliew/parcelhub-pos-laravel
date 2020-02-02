@@ -8,7 +8,7 @@
 			</div>
 		</div>
 
-		<headcount v-for="(head, key) in headcounts"
+		<headcount v-for="(head, key) in sortedHeadcounts"
 			@selected="selectHead(head)"
 			:key="head.id"
 			:head="head"
@@ -129,6 +129,12 @@
 				this.isBilling = false;
 			}
 
+		},
+
+		computed: {
+			sortedHeadcounts() {
+				return _.sortBy(this.headcounts, (headcount) => { return headcount.activated_at; });
+			}
 		}
 	}
 </script>
