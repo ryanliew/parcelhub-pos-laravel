@@ -22,6 +22,12 @@ class ReportController extends Controller
     	$to = Carbon::parse(request()->to)->addDay();
 
         $branch = auth()->user()->current;
+        $report_view = 'reports.sales';
+
+        if((request()->allbranch)  && !request()->has('branch')){
+            $branch = Branch::all();
+            $report_view = 'reports.sales_all_branches';
+        }
 
         if(request()->has('branch'))
         {
@@ -57,7 +63,7 @@ class ReportController extends Controller
 
             $detail = ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $b, 'vendors_sum' => $vendors_sum];           
 
-            if(request()->export)
+            if(request()->export)   
             {
                 $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name);
             }
@@ -70,7 +76,8 @@ class ReportController extends Controller
             return $this->compress_sales_report_in_zip($folder_name);
         }
 
-        return view('reports.sales', ['report_detail' => $report_detail] );
+        return view($report_view, ['report_detail' => $report_detail] ); 
+        //return view('reports.sales', ['report_detail' => $report_detail] );
     }
 
     public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name) 
