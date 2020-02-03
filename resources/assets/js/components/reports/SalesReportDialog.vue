@@ -134,9 +134,16 @@ export default {
 
     submit() {
       let url = this.url;
-
-      if (this.user.is_admin && this.branch) url += "&branch=" + this.branch;
-
+      
+      if (this.user.is_admin && this.branch) {
+        if (this.branch == "0") {
+           url += "&allbranch=true";
+        }
+        else {
+          url += "&branch=" + this.branch;
+        }
+      }
+  
       window.location.href = url;
     },
 
