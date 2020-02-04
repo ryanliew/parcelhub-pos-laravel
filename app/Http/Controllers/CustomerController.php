@@ -38,7 +38,6 @@ class CustomerController extends Controller
 
     public function index()
     {
-        
         if(auth()->user()->is_admin)
         {
             $query = Customer::with('branch');
@@ -128,8 +127,6 @@ class CustomerController extends Controller
         $date_to = Carbon::parse(Request()->date_to);
 
         $getAll = Request()->type == "All" ? true: false;
-        $getOutstanding = Request()->type == "Outstanding" ? true: false;
-        $getPaid = Request()->type == "Paid" ? true: false;
 
         $invoices = Invoice::with(['customer','payment'])
                     ->active()
@@ -147,7 +144,7 @@ class CustomerController extends Controller
         {
             $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
             
-            if( $getAll || ( $getOutstanding && $outstanding != 0 ) || ( $getPaid && $outstanding == 0 ) )
+            if( $getAll || $outstanding != 0)
             {                
                 $debit = [
                     'date' => $invoice->created_at, 
@@ -312,4 +309,82 @@ class CustomerController extends Controller
                             "end" => request()->date_to ]);
     }
 
+    public function statement_multiple()
+    {
+        $customers = collect(json_decode(Request()->customers));
+        $customers_id = $customers->pluck('id');
+
+        foreach( Customer::whereIn('id', $customers_id)->get() as $customer ) {
+           $this->statement($customer);
+        }
+        
+        return json_encode(["message" => "Statement created succesfully",  
+                            "id" =>$customers_id, 
+                            "start" => request()->date_from, 
+                            "end" => request()->date_to ]);       
+    }
+
+    public function customerTypeStatement()
+	{
+        if(!request()->has('data'))
+            return view('customer.customer_type_statement');
+        
+
+        $date_from = request()->from;
+        $date_to = Carbon::parse(request()->to);
+        $isOutstanding = request()->type == "Outstanding" ? true: false;
+        $isZeroBalance = request()->type == "Zero balance" ? true: false;
+
+        if(auth()->user()->is_admin)
+        {
+            $customers = Customer::with('branch')->get();
+        }
+        else
+        {
+            $branch = auth()->user()->current;
+            $customers = $branch->customers()->with('branch')->get();
+        }
+
+        $result = collect();
+        foreach($customers as $customer)
+        {
+            $invoices = Invoice::with(['customer','payment'])
+            ->active()
+            ->where([
+                    ['customer_id', $customer->id],
+                    ['created_at', '>=', $date_from],
+                    ['created_at', '<=', $date_to->addDays(1)->toDateString()],
+                    ])
+            ->orderby('created_at')
+            ->get();
+
+            $zerobalance = true;
+            foreach($invoices as $invoice)
+            {
+                if($zerobalance){
+                    $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
+
+                    if($outstanding > 0){
+                        $zerobalance = false;
+                    }
+                }
+            }
+
+            if( $isOutstanding && !$zerobalance )
+            {
+                $result->push($customer);
+            }
+            else if( $isZeroBalance && $zerobalance )
+            {
+                $result->push($customer);
+            }
+        }
+
+        return datatables()->of($result)
+                            ->addColumn('group_name', function($customer){
+                                return $customer->group ? $customer->group->name : "---";
+                            })
+                            ->toJson();
+ 
+    }
 }
