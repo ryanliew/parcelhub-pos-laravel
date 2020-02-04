@@ -78,6 +78,7 @@ Vue.component('cancel-dialog', require("./components/invoices/Cancel-Dialog.vue"
 
 Vue.component('customers-dialog', require('./components/customers/Dialog.vue'));
 Vue.component('statement-dialog', require('./components/customers/Statement.vue'));
+Vue.component('customer-type-statements', require('./components/customers/CustomerTypeStatement.vue'));
 
 Vue.component('terminals-dialog', require('./components/terminals/Dialog.vue'));
 

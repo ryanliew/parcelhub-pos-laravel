@@ -37,6 +37,7 @@
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
+									:disabled="this.isMultiple"
 									:error="form.errors.get('date_from')">
 								</text-input>
 							</div>
@@ -50,6 +51,7 @@
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
+									:disabled="this.isMultiple"
 									:error="form.errors.get('date_to')">
 								</text-input>
 							</div>
@@ -84,29 +86,36 @@
 	export default {
 		props: {
 		    data: {
-		        type: Object
-		    }
+				type: Object,
+			}, 
+			isMultiple: {
+				type: Boolean,
+			},
+			from: {
+				type: "",
+			},
+			to: {
+				type: "",
+			},
 		  },
 		data() {
 			return {
 				form: new Form({
-					date_to: moment().format("YYYY-MM-DD"),
-					date_from: moment().startOf('month').format("YYYY-MM-DD"),
+					date_to: this.isMultiple? this.to : moment().format("YYYY-MM-DD"),
+					date_from: this.isMultiple? this.from : moment().startOf('month').format("YYYY-MM-DD"),
 					type: 'All',
+					customers: [],
 				}),
-
 				selected_customer:'',
 				selectedType: {label: 'All', value: 'All'},
 				types: [
 						{label: 'All', value: 'All'},
 						{label: 'Outstanding', value: 'Outstanding'},
-						{label: 'Paid', value: 'Paid'},
 						],
 			};
 		},
 
 		mounted() {
-
 			window.events.$on('generateStatement', evt => this.generateStatement(evt));
 
 			$("#customer-statement").on("hide.bs.modal", function(e){
@@ -116,10 +125,17 @@
  
 		methods: {
 			generateStatement(evt) {
-				this.selected_customer = evt[0];
-				this.openDialog();
+				if( this.isMultiple ){
+					this.form.customers = [];
+					evt.forEach(element => {
+						this.form.customers.push(element);
+					});
+				}
+				else {
+					this.selected_customer = evt[0];
+				}
+			    this.openDialog();
 			},
-
 
 			openDialog() {
 				$("#customer-statement").modal();
@@ -144,8 +160,14 @@
 
 				this.closeDialog();
 
-				window.open("/customers/statement/" + response.id + '/' + response.start + '/' + response.end, '_blank');
-
+				if( this.isMultiple ){
+					response['id'].forEach(element => {
+					window.open("/customers/statement/" + element + '/' + response.start + '/' + response.end, '_blank');					
+					});
+				}
+				else {
+					window.open("/customers/statement/" + response.id + '/' + response.start + '/' + response.end, '_blank');
+				}	
 			},
 
 		},
@@ -164,9 +186,8 @@
 			},
 
 			url() {
-				return "/customers/statement/" + this.selected_customer.id;
+				return this.isMultiple? "/customers/statement_multiple/" : "/customers/statement/" + this.selected_customer.id;
 			},
-
 		},
 
 		watch: {

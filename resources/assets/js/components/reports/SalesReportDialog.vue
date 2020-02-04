@@ -164,6 +164,7 @@ export default {
     url() {
       return "/admin/reports/sales?from=" + this.from + "&to=" + this.to;
     },
+    
     action() {
       return "View";
     },
