@@ -361,3 +361,17 @@ th, td { white-space: nowrap; }
 	text-decoration: none !important;
 	z-index: 2;
 }
+
+#processingIndicator {
+	position: absolute;
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.5;
+    top: 0;
+    left: 0;
+    text-align: center;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+}
