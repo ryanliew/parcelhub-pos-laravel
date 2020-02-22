@@ -14,7 +14,7 @@ import VueNoty from 'vuejs-noty';
 import VueSweetalert2 from 'vue-sweetalert2';
  
 Vue.use(VueSweetalert2);
-Vue.use(VueNoty);
+Vue.use(VueNoty, {layout: 'topCenter'});
 
 window.flash = function(message, level = 'success'){
  	window.events.$emit('flash', {message, level});

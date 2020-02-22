@@ -64,7 +64,7 @@
             let selected_detail = report_detail.find(element => element.branch.owner == branch.innerHTML );
             
             if( selected_detail ){
-                window.location = this.location.href + "&branch=" + selected_detail.branch.id;
+                window.open(this.location.href + "&branch=" + selected_detail.branch.id);
             }    
         }
 	</script>

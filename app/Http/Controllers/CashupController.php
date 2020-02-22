@@ -172,7 +172,9 @@ class CashupController extends Controller
         $arr = [];
 
         foreach($invoices as $invoice) {
-            $arr[$invoice->id] = ['total' => $invoice->total <= $invoice->paid ? $invoice->total : $invoice->paid, 'payment_method' => $invoice->payment_type, 'payment_id' => $invoice->payment_id ?: 0];
+            $arr[$invoice->id] = ['total' => $invoice->total, 
+            'payment_method' => $invoice->payment_type, 
+            'payment_id' => $invoice->payment_id ?: 0];
         }
 
         return $arr;
