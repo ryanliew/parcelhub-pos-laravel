@@ -243,10 +243,10 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/index", "CustomerController@index")->name('customers.index');
 		Route::get("/list", "CustomerController@list");
 		Route::get("/create", "CustomerController@create")->name('customers.create');
+		Route::post("/statement_multiple", "CustomerController@statementMultiple"); 
 		Route::post("/", "CustomerController@store");
 		Route::get("/statement/{customer}/{start}/{end}","CustomerController@view");
 		Route::post("/statement/{customer}","CustomerController@statement");
-		Route::post("/statement_multiple","CustomerController@statement_multiple"); 
 		Route::get('/type-statement', "CustomerController@customerTypeStatement")->name('customers.type-statement');
 		Route::post("/{customer}", "CustomerController@update");
 		Route::get("/{customer}","CustomerController@get");

@@ -127,6 +127,7 @@
 			generateStatement(evt) {
 				if( this.isMultiple ){
 					this.form.customers = [];
+
 					evt.forEach(element => {
 						this.form.customers.push(element);
 					});
@@ -151,7 +152,8 @@
 
 			submit() {
 				this.form.post(this.url)
-					.then(response => this.onSuccess(response));
+					.then(response => this.onSuccess(response))
+					.catch(error => this.onError(error));
 			},
 
 			onSuccess(response) {
@@ -162,7 +164,7 @@
 
 				if( this.isMultiple ){
 					response['id'].forEach(element => {
-					window.open("/customers/statement/" + element + '/' + response.start + '/' + response.end, '_blank');					
+						window.open("/customers/statement/" + element + '/' + response.start + '/' + response.end, '_blank');					
 					});
 				}
 				else {
@@ -170,11 +172,15 @@
 				}	
 			},
 
+			onError(error) {
+				console.log(error);
+			}
+
 		},
 
 		computed: {
 			title() {
-				return "Generate account of statement";
+				return "Generate statement of account";
 			},
 
 			action() {
@@ -186,7 +192,7 @@
 			},
 
 			url() {
-				return this.isMultiple? "/customers/statement_multiple/" : "/customers/statement/" + this.selected_customer.id;
+				return this.isMultiple? "/customers/statement_multiple" : "/customers/statement/" + this.selected_customer.id;
 			},
 		},
 

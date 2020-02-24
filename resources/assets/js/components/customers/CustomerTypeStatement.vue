@@ -43,6 +43,8 @@
 							:error="form.errors.get('type')">
 						</selector-input>
 					</div>
+				</div>
+				<div class="row">
 					<button type="button" class="btn btn-primary" @click="submit">Refresh</button>
 				</div>
 			</div>
@@ -83,7 +85,7 @@
 			},
 
 			onSuccess(response) {
-				console.log("Success");
+				// console.log("Success");
 				window.events.$emit("reload-table");
 			},
 

@@ -30487,7 +30487,7 @@ window.events = new Vue();
 
 
 Vue.use(__WEBPACK_IMPORTED_MODULE_1_vue_sweetalert2__["a" /* default */]);
-Vue.use(__WEBPACK_IMPORTED_MODULE_0_vuejs_noty___default.a);
+Vue.use(__WEBPACK_IMPORTED_MODULE_0_vuejs_noty___default.a, { layout: 'topCenter' });
 
 window.flash = function (message) {
   var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
@@ -80825,6 +80825,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			if (this.isMultiple) {
 				this.form.customers = [];
+
 				evt.forEach(function (element) {
 					_this2.form.customers.push(element);
 				});
@@ -80847,6 +80848,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			this.form.post(this.url).then(function (response) {
 				return _this3.onSuccess(response);
+			}).catch(function (error) {
+				return _this3.onError(error);
 			});
 		},
 		onSuccess: function onSuccess(response) {
@@ -80862,12 +80865,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			} else {
 				window.open("/customers/statement/" + response.id + '/' + response.start + '/' + response.end, '_blank');
 			}
+		},
+		onError: function onError(error) {
+			console.log(error);
 		}
 	},
 
 	computed: {
 		title: function title() {
-			return "Generate account of statement";
+			return "Generate statement of account";
 		},
 		action: function action() {
 			return this.form.submitting ? "<i class='fas fa-circle-notch fa-spin'></i>" : this.actionText;
@@ -80876,7 +80882,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			return "Generate statement";
 		},
 		url: function url() {
-			return this.isMultiple ? "/customers/statement_multiple/" : "/customers/statement/" + this.selected_customer.id;
+			return this.isMultiple ? "/customers/statement_multiple" : "/customers/statement/" + this.selected_customer.id;
 		}
 	},
 
@@ -81184,6 +81190,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -81215,7 +81223,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			window.location.href = this.url;
 		},
 		onSuccess: function onSuccess(response) {
-			console.log("Success");
+			// console.log("Success");
 			window.events.$emit("reload-table");
 		},
 		onError: function onError(error) {}
@@ -81326,8 +81334,10 @@ var render = function() {
                 })
               ],
               1
-            ),
-            _vm._v(" "),
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
             _c(
               "button",
               {

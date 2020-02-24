@@ -309,9 +309,9 @@ class CustomerController extends Controller
                             "end" => request()->date_to ]);
     }
 
-    public function statement_multiple()
+    public function statementMultiple()
     {
-        $customers = collect(json_decode(Request()->customers));
+        $customers = collect(json_decode(request()->customers));
         $customers_id = $customers->pluck('id');
 
         foreach( Customer::whereIn('id', $customers_id)->get() as $customer ) {
