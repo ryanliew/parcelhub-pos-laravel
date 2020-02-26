@@ -295,7 +295,7 @@ class CustomerController extends Controller
                          ])
                 ->render();
 
-        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF = new mPDF(['tempDir' => storage_path('mpdf'), 'format' => 'Legal']);
         $newPDF->WriteHTML($html);
         $newPDF->setFooter('{PAGENO}/{nbpg}');
 
