@@ -22,7 +22,7 @@
 		<div class="card">
 			<div class="card-header">
 				<div class="d-flex align-items-center">
-					<b class="flex-grow-1">Period: {{ request()->from }} - {{ request()->to }} - ( Total: RM{{number_format($report_detail->sum("vendors_sum"), 2, ".", "") }} )</b>
+					<b class="flex-grow-1">Period: {{ request()->from }} - {{ request()->to }} - ( Total: RM{{number_format($report_detail->sum("total_sales"), 2, ".", "") }} )</b>
 				</div>
 			</div>
 			<div class="card-body">
