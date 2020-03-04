@@ -91,6 +91,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('reports.page') }}">Reports</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('items.page') }}">CN Search</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('profit-and-loss.page') }}">Profit & Loss</a></li>
                         <li class="nav-item dropdown">
                             <a id="settings-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 Settings <span class="caret"></span>
