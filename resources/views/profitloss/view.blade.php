@@ -23,8 +23,8 @@
 						<thead>
 							<tr>
 								<th>Tracking code</th>
-								<th>Sales</th>
-								<th>Price</th>
+								<th>Cost Price</th>
+								<th>Sell Price</th>
 								<th>Margin (%)</th>
 								<th>Profit</th>
 							</tr>

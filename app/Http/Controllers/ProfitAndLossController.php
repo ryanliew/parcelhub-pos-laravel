@@ -35,10 +35,10 @@ class ProfitAndLossController extends Controller
             if(!is_null($excelRow[0])) {
                 $item = Item::where('tracking_code', $excelRow[0])->first();
 
-                if(is_null($item) && !is_null($excelRow[0]) && $excelRow[0] !== "---")
-                {
-                    return $this->returnValidationErrorResponse(['file' => ['Tracking code ' . $excelRow[0] . ' not found.']]);
-                }
+                // if(is_null($item) && !is_null($excelRow[0]) && $excelRow[0] !== "---")
+                // {
+                //     return $this->returnValidationErrorResponse(['file' => ['Tracking code ' . $excelRow[0] . ' not found.']]);
+                // }
 
                 $detail['tracking_code'] = $excelRow[0];
 				$detail['sales'] = $excelRow[1];

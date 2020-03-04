@@ -24,9 +24,12 @@ class ReportController extends Controller
         $branch = auth()->user()->current;
         $report_view = 'reports.sales';
 
+        $total_branches_sales = 0;
+
         if((request()->allbranch)  && !request()->has('branch')){
             $branch = Branch::all();
             $report_view = 'reports.sales_all_branches';
+           
         }
 
         if(request()->has('branch'))

@@ -52,7 +52,7 @@
         
         <li class="nav-item"><a class="nav-link" href="{{ route('groups.page') }}">Customer groups</a></li>
 
-        <li class="nav-item"><a class="nav-link" href="{{ route('profit-and-loss.page') }}">Profit & Loss</a></li>
+        <!-- <li class="nav-item"><a class="nav-link" href="{{ route('profit-and-loss.page') }}">Profit & Loss</a></li> -->
 
     </ul>
 @endif

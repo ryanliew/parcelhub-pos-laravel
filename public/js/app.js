@@ -80941,63 +80941,67 @@ var render = function() {
                 },
                 [
                   _c("div", { staticClass: "row" }, [
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.date_from,
-                            required: true,
-                            type: "date",
-                            label: "Date from:",
-                            name: "date_from",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            disabled: this.isMultiple,
-                            error: _vm.form.errors.get("date_from")
-                          },
-                          model: {
-                            value: _vm.form.date_from,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "date_from", $$v)
-                            },
-                            expression: "form.date_from"
-                          }
-                        })
-                      ],
-                      1
-                    ),
+                    !this.isMultiple
+                      ? _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.date_from,
+                                required: true,
+                                type: "date",
+                                label: "Date from:",
+                                name: "date_from",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                disabled: this.isMultiple,
+                                error: _vm.form.errors.get("date_from")
+                              },
+                              model: {
+                                value: _vm.form.date_from,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "date_from", $$v)
+                                },
+                                expression: "form.date_from"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      : _vm._e(),
                     _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col" },
-                      [
-                        _c("text-input", {
-                          attrs: {
-                            defaultValue: _vm.form.date_to,
-                            required: true,
-                            type: "date",
-                            label: "Date to:",
-                            name: "date_to",
-                            editable: true,
-                            focus: false,
-                            hideLabel: false,
-                            disabled: this.isMultiple,
-                            error: _vm.form.errors.get("date_to")
-                          },
-                          model: {
-                            value: _vm.form.date_to,
-                            callback: function($$v) {
-                              _vm.$set(_vm.form, "date_to", $$v)
-                            },
-                            expression: "form.date_to"
-                          }
-                        })
-                      ],
-                      1
-                    ),
+                    !this.isMultiple
+                      ? _c(
+                          "div",
+                          { staticClass: "col" },
+                          [
+                            _c("text-input", {
+                              attrs: {
+                                defaultValue: _vm.form.date_to,
+                                required: true,
+                                type: "date",
+                                label: "Date to:",
+                                name: "date_to",
+                                editable: true,
+                                focus: false,
+                                hideLabel: false,
+                                disabled: this.isMultiple,
+                                error: _vm.form.errors.get("date_to")
+                              },
+                              model: {
+                                value: _vm.form.date_to,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "date_to", $$v)
+                                },
+                                expression: "form.date_to"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      : _vm._e(),
                     _vm._v(" "),
                     _c(
                       "div",

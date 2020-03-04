@@ -26,8 +26,8 @@
 	        		<form @submit.prevent="submit" 
 						@keydown="form.errors.clear($event.target.name)" 
 						@input="form.errors.clear($event.target.name)">
-						<div class="row">
-							<div class="col">
+						<div class="row" >
+							<div class="col" v-if="!this.isMultiple">
 								<text-input v-model="form.date_from" 
 									:defaultValue="form.date_from"
 									:required="true"
@@ -41,7 +41,7 @@
 									:error="form.errors.get('date_from')">
 								</text-input>
 							</div>
-							<div class="col">
+							<div class="col" v-if="!this.isMultiple">
 								<text-input v-model="form.date_to" 
 									:defaultValue="form.date_to"
 									:required="true"

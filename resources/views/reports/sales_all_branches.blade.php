@@ -22,7 +22,7 @@
 		<div class="card">
 			<div class="card-header">
 				<div class="d-flex align-items-center">
-					<b class="flex-grow-1">Period: {{ request()->from }} - {{ request()->to }}</b>
+					<b class="flex-grow-1">Period: {{ request()->from }} - {{ request()->to }} - ( Total: RM{{number_format($report_detail->sum("vendors_sum"), 2, ".", "") }} )</b>
 				</div>
 			</div>
 			<div class="card-body">
@@ -31,13 +31,15 @@
 						<tr>
 							<th>Branch</th>
 							<th>Total Sales Amount</th>
+							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
                         @foreach($report_detail as $detail)
 							<tr>                               
-                                <td><a onclick="generate(this)">{{ $detail['branch']->owner }}</a></td>
+                                <td>{{ $detail['branch']->owner }}</a></td>
                                 <td>RM{{ number_format($detail['items']->sum('total_price_after_discount'), 2, ".", "") }}</td>
+								<td><button class="btn btn-primary" onclick="generate('{{$detail['branch']->owner}}')">View</button></td>							
 							</tr>
 						@endforeach
 					</tbody>
@@ -59,9 +61,8 @@
         });	
 
         function generate(branch) {
-          
-            var report_detail = {!! json_encode($report_detail) !!};           
-            let selected_detail = report_detail.find(element => element.branch.owner == branch.innerHTML );
+			var report_detail = {!! json_encode($report_detail) !!};        
+            let selected_detail = report_detail.find(element => element.branch.owner == branch );
             
             if( selected_detail ){
                 window.open(this.location.href + "&branch=" + selected_detail.branch.id);
