@@ -62,9 +62,10 @@ class ReportController extends Controller
             {
                 return $vendor->sum('total_price_after_discount');
             });
+            $total_sales = $items->sum('total_price_after_discount');
             $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
 
-            $detail = ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $b, 'vendors_sum' => $vendors_sum];           
+            $detail = ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $b, 'vendors_sum' => $vendors_sum, 'total_sales' => $total_sales];           
 
             if(request()->export)   
             {
