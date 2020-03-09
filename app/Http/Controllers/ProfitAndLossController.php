@@ -89,5 +89,6 @@ class ProfitAndLossController extends Controller
 								return $profit_and_loss->item ? number_format((float) $margin * 100 ,2,'.','') : "N/A";
 							})
                             ->toJson();
+
     }
 }

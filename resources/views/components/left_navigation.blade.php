@@ -51,7 +51,8 @@
         <li class="nav-item"><a class="nav-link" href="{{ route('cashups.page') }}">Cash up reports</a></li>
         
         <li class="nav-item"><a class="nav-link" href="{{ route('groups.page') }}">Customer groups</a></li>
-
+        
+        <li class="nav-item"><a class="nav-link" href="{{ route('parcels.page') }}">Check in parcels</a></li>
         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('profit-and-loss.page') }}">Profit & Loss</a></li> -->
 
     </ul>
