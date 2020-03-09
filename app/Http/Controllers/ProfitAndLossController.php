@@ -83,8 +83,9 @@ class ProfitAndLossController extends Controller
 							})
 							->addColumn('margin', function($profit_and_loss){
 								$margin = 0;
-								if($profit_and_loss->item){
-                                    $margin = ( $profit_and_loss->item->price - $profit_and_loss->sales ) / ( $profit_and_loss->sales );
+								if($profit_and_loss->item && $profit_and_loss->item->price > 0){
+                                    $margin = ( 1 - ( $profit_and_loss->sales / $profit_and_loss->item->price ) );
+                                    //$margin = ( $profit_and_loss->item->price - $profit_and_loss->sales ) / ( $profit_and_loss->sales );
                                 }                                
 								return $profit_and_loss->item ? number_format((float) $margin * 100 ,2,'.','') : "N/A";
 							})
