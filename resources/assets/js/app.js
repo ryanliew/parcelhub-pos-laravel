@@ -14,7 +14,9 @@ import VueNoty from 'vuejs-noty';
 import VueSweetalert2 from 'vue-sweetalert2';
 import VueCollapse from 'vue2-collapse';
 import vCascade from 'v-cascade';
- 
+import VueQrcodeReader from "vue-qrcode-reader";
+
+Vue.use(VueQrcodeReader);
 Vue.use(VueSweetalert2);
 Vue.use(VueNoty);
 Vue.use(VueCollapse);

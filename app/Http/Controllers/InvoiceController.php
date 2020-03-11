@@ -150,12 +150,12 @@ class InvoiceController extends Controller
         $invoice_no = $branch->code . sprintf("%05d", ++$branch->sequence->last_id);
 
         $invoice = Invoice::create([
-            'total' => request()->total,
-            'paid' => request()->paid,
-            'discount' => request()->discount,
+            'total' => request()->total ?: 0.00,
+            'paid' => request()->paid ?: 0.00,
+            'discount' => request()->discount ?: 0.00,
             'payment_type' => request()->payment_method,
             'remarks' => request()->remarks,
-            'subtotal' => request()->subtotal,
+            'subtotal' => request()->subtotal ?: 0.00,
             'branch_id' => auth()->user()->current_branch,
             'terminal_no' => auth()->user()->current_terminal,
             'created_by' => auth()->id(),

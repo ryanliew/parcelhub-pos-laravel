@@ -9,7 +9,9 @@ class Member extends Model
 {
     protected $guarded = [];
 
-    protected $dates = ['birthdate'];
+    protected $dates = ['birthdate', 'expire_date'];
+
+    protected $appends = ['is_active'];
 
     public static function boot()
     {
@@ -28,7 +30,12 @@ class Member extends Model
 
     public function sessions()
     {
-        return $this->hasMany("App\Sessions");
+        return $this->hasMany("App\Session");
+    }
+
+    public function items()
+    {
+        return $this->hasMany("App\Item");
     }
 
     public function setIdentifierCode()
@@ -36,6 +43,21 @@ class Member extends Model
         $this->update([
             'identifier' => $this->generateReferralCode()
         ]);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('expire_date', ">", now()->toDateString());
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('expire_date', "<=", now()->toDateString());
+    }
+
+    public function scopeNew($query)
+    {
+        return $query->whereColumn('expire_data', "<", "created_at");
     }
 
     public function generateReferralCode()
@@ -48,12 +70,24 @@ class Member extends Model
         return $code;
     }
 
+    public function getIsActiveAttribute()
+    {
+        return $this->expire_date->gt(now());
+    }
+
     public function registerToMailchimp()
     {
         Newsletter::subscribeOrUpdate($this->email, [
             'FNAME' => $this->name, 
             'LNAME' => $this->last_name,
             'PHONE' => $this->phone_number,
+        ]);
+    }
+
+    public function activate()
+    {
+        $this->update([
+            'expire_date' => now()->addYear(),
         ]);
     }
 }

@@ -60,6 +60,19 @@ class User extends Resource
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:8')
                 ->updateRules('nullable', 'string', 'min:8'),
+
+            Text::make("Username")
+                ->rules("required", 'max:255')
+                ->creationRules('unique:users,username')
+                ->updateRules('unique:users,username,{{resourceId}}'),
+
+            Boolean::make("Is Staff"),
+
+            Boolean::make("Is Admin"),
+
+            BelongsTo::make("Current branch"),
+
+
         ];
     }
 

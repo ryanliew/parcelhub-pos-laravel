@@ -33,7 +33,7 @@ class Member extends Resource
      * @var array
      */
     public static $search = [
-        'identifier', 'name', 'phone', 'email', 'city'
+        'identifier', 'name', 'phone_number', 'email', 'city'
     ];
 
     /**
@@ -62,6 +62,10 @@ class Member extends Resource
             Text::make("Phone number")
                 ->rules("required")
                 ->sortable(),
+
+            Date::make("Expire date")
+                ->sortable()
+                ->rules("required"),
 
             Select::make("Gender")
                 ->options([
