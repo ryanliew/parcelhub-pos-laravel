@@ -42,8 +42,10 @@
 			setMember(respond) {
 				this.members = respond.data;
 
-				if(this.manual)
+				if(this.manual && respond.data[0])
 					window.location.href = "/members/" + respond.data[0].id + "/success";
+				else
+					flash("Sorry we are unable to find your details, please contact our staff for assistance", "danger");
 
 				if(this.members.length == 1)
 					this.member = this.members[0];
