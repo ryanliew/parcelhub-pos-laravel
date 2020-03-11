@@ -53,7 +53,7 @@
 			setMember(respond) {
 				this.is_scanning = false;
 
-				if(!respond.data[0]) flash("Member not found");
+				if(respond.data && !respond.data[0]) flash("Member not found");
 
 				else if(!respond.data[0].is_active) flash("Member expired on " + respond.data[0].expire_date);
 				
