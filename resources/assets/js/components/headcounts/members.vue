@@ -53,11 +53,11 @@
 			setMember(respond) {
 				this.is_scanning = false;
 
-				if(!respond.data[0]) { flash("Member not found"); this.member_id = ''; }
+				if(!respond.data[0]) flash("Member not found");
 
 				else if(!respond.data[0].is_active) flash("Member expired on " + respond.data[0].expire_date);
 				
-				else this.$emit('add', respond.data[0]);
+				else { this.$emit('add', respond.data[0]); this.member_id = ''; }
 			},
 
 			onError(error) {
