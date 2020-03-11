@@ -34,7 +34,7 @@ class MemberController extends Controller
 
     public function search()
     {
-        return Member::where('phone_number', 'LIKE', '%' . request()->keyword . '%')
+        return Member::where('phone_number', 'LIKE', '%+' . request()->keyword . '%')
                         ->orWhere('email', 'LIKE', '%' . request()->keyword . '%')
                         ->orWhere('identifier', 'LIKE', '%' . request()->keyword . '%')
                         ->get();

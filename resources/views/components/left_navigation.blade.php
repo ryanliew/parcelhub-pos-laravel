@@ -14,7 +14,7 @@
                 </a>
             </div>
         </li>
-        {{-- <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li> --}}
+        <li class="nav-item"><a class="nav-link" href="{{ route('members.page') }}">Members</a></li>
 
          <!-- <li class="nav-item"><a class="nav-link" href="{{ route('payments.page') }}">Payment overview</a></li> -->
          {{-- <li class="nav-item dropdown">

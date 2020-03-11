@@ -35,10 +35,10 @@
 			},
 
 			setMember(respond) {
-				this.member_id = '';
+				
 
 				if(!respond.data[0]) flash("Member not found");
-				else this.$emit('add', respond.data[0]);
+				else { this.$emit('add', respond.data[0]); this.member_id = ''; }
 			},
 
 			onError(error) {
