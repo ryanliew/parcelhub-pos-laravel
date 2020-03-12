@@ -293,7 +293,9 @@
 
 				products: [],
 
-				hasNetworkError: false
+				hasNetworkError: false,
+
+				
 			};
 		},
 
@@ -652,7 +654,8 @@
 
 			networkErrorClass() {
 				return this.hasNetworkError ? "text-danger" : "text-white";
-			}
+			}, 
+
 		},
 
 		watch: {
@@ -769,6 +772,7 @@
 			tax_type(newVal) {
 				this.$emit('update', {attribute: 'tax_type', value: newVal ? newVal : 'SR'});
 			},
+
 		}	
 	}
 </script>

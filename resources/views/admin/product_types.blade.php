@@ -23,6 +23,8 @@
 							<th>Is merchandise</th>
 							<th>Is document</th>
 							<th>Has detail</th>
+							<th>Is vmb parcel</th>
+							<th>Is topup</th>
 						</tr>
 					</thead>
 				</table>
@@ -95,6 +97,22 @@
 						}
 					},
 					{data: 'has_detail', render: function(data,type,row){
+							if(type === 'display' || type === 'filter') {
+								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
+							}
+
+							return data;
+						}
+					},
+					{data: 'is_vmb_parcel', render: function(data,type,row){
+							if(type === 'display' || type === 'filter') {
+								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
+							}
+
+							return data;
+						}
+					},
+					{data: 'is_topup', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
 								return data ? "<i class='fas fa-check'></i>" : "<i class='fas fa-times'></i>";
 							}

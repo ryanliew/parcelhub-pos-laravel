@@ -304,6 +304,21 @@
 					<div class="header">Price:</div>
 					<div class="header"><i class="fa fa-exclamation-circle text-white pl-1"></i></div>
 					<div class="header">Total price:</div>
+					<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="calcParcelsPrice">Check price</button></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
 					<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
 				</div>
 				<template v-for="(item, index) in form.items" v-if="!item.is_deleted">
@@ -338,7 +353,6 @@
 					{{ tracking }}
 				</li>
 			</ol>
-			
 
 			<template slot="footer">
 				<button type="button" class="btn btn-secondary" @click="closeMassInput">Cancel</button>
@@ -378,7 +392,7 @@
 					type: 'Cash',
 					payment_type: 'Cash',
 					type: 'Cash',
-					discount_value: 0
+					discount_value: 0, 
 				}),
 
 				product_types: [],
@@ -622,8 +636,9 @@
 					is_deleted: false, // A flag to determine if we have deleted this item
 					default_details: true // A flag that determines if we should go get the default details for this item row
 
-
 				});
+
+
 
 				// this.$refs['track_code_' + ( this.form.items.length - 1 )][0].triggerFocus();
 			},
@@ -666,16 +681,35 @@
 			},
 
 			confirmSubmit() {
-				this.form.total = this.rounded_total;
-				this.form.subtotal = this.subtotal;
-				this.form.tax = this.tax;
-				this.form.discount_value = this.discount_value;
-
-				let url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
+				let url = "/parcels/validate";
 				this.form.post(url)
-					.then(response => this.onSuccess(response))
-					.catch(error => this.onError(error));
+					.then(response => this.onSuccessValidate(response))
+					.catch(error => this.onErrorValidate(error));
 			},
+
+			onSuccessValidate(response)
+			{	
+				if(response.is_valid){
+
+					this.form.total = this.rounded_total;
+					this.form.subtotal = this.subtotal;
+					this.form.tax = this.tax;
+					this.form.discount_value = this.discount_value;
+
+					let url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
+					this.form.post(url)
+						.then(response => this.onSuccess(response))
+						.catch(error => this.onError(error));
+				}
+				else{
+					this.isConfirming = false;
+				}
+			},
+			onErrorValidate(response)
+			{
+				this.isConfirming = false;
+			},
+
 
 			onSuccess(response) {
 				console.log("Success");
@@ -759,8 +793,27 @@
 
 				this.deleteMassItem(this.mass_input_target);
 				Vue.nextTick( () => this.addItem() );
-			}
+			}, 
 
+			calcParcelsPrice() {
+				let url = "/parcels/charge";
+				this.form.post(url)
+					.then(response => this.onSuccessGetParcelsPrice(response))
+					.catch(error => this.onError(error));
+			},
+
+			onSuccessGetParcelsPrice(response){
+			    response.return_items.forEach(function(response_item){
+					this.form.items.forEach(function(item, index){
+						if(item.tracking_code == response_item.tracking_code) 
+						{
+							this.form.items[index]["price"] = response_item.charge;
+						}
+					}.bind(this));
+				}.bind(this));
+				
+				window.events.$emit("updateItemsValue");
+			}
 		},
 
 		computed: {
@@ -849,7 +902,7 @@
 			},
 
 			canEdit() {
-				return  ( !this.invoice ||  this.can_edit_invoice ) ;
+				return  ( !this.invoice ||  this.can_edit_invoice );
 			},
 
 			canEditItem() {

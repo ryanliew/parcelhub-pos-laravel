@@ -73789,6 +73789,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -73812,7 +73828,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				is_merchandise: '',
 				default_vendor_id: '',
 				default_zone_type_id: '',
-				has_detail: ''
+				has_detail: '',
+				is_vmb_parcel: '',
+				is_topup: ''
 			})
 		};
 	},
@@ -73896,6 +73914,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.default_vendor_id = this.selectedProductType.default_vendor_id;
 			this.form.default_zone_type_id = this.selectedProductType.default_zone_type_id;
 			this.form.has_detail = this.selectedProductType.has_detail;
+			this.form.is_vmb_parcel = this.selectedProductType.is_vmb_parcel;
+			this.form.is_topup = this.selectedProductType.is_topup;
 
 			this.selectedVendor = '';
 			this.selectedZoneType = '';
@@ -74095,6 +74115,52 @@ var render = function() {
                                   _vm.$set(_vm.form, "has_detail", $$v)
                                 },
                                 expression: "form.has_detail"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "ml-2" },
+                          [
+                            _c("checkbox-input", {
+                              attrs: {
+                                defaultChecked: _vm.form.is_vmb_parcel,
+                                label: "Is VMB Parcel",
+                                name: "is_vmb_parcel",
+                                editable: true
+                              },
+                              model: {
+                                value: _vm.form.is_vmb_parcel,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "is_vmb_parcel", $$v)
+                                },
+                                expression: "form.is_vmb_parcel"
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "ml-2" },
+                          [
+                            _c("checkbox-input", {
+                              attrs: {
+                                defaultChecked: _vm.form.is_topup,
+                                label: "Is topup",
+                                name: "is_topup",
+                                editable: true
+                              },
+                              model: {
+                                value: _vm.form.is_topup,
+                                callback: function($$v) {
+                                  _vm.$set(_vm.form, "is_topup", $$v)
+                                },
+                                expression: "form.is_topup"
                               }
                             })
                           ],
@@ -76327,6 +76393,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -76593,7 +76673,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				is_deleted: false, // A flag to determine if we have deleted this item
 				default_details: true // A flag that determines if we should go get the default details for this item row
 
-
 			});
 
 			// this.$refs['track_code_' + ( this.form.items.length - 1 )][0].triggerFocus();
@@ -76631,17 +76710,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		confirmSubmit: function confirmSubmit() {
 			var _this7 = this;
 
-			this.form.total = this.rounded_total;
-			this.form.subtotal = this.subtotal;
-			this.form.tax = this.tax;
-			this.form.discount_value = this.discount_value;
-
-			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
+			var url = "/parcels/validate";
 			this.form.post(url).then(function (response) {
-				return _this7.onSuccess(response);
+				return _this7.onSuccessValidate(response);
 			}).catch(function (error) {
-				return _this7.onError(error);
+				return _this7.onErrorValidate(error);
 			});
+		},
+		onSuccessValidate: function onSuccessValidate(response) {
+			var _this8 = this;
+
+			if (response.is_valid) {
+
+				this.form.total = this.rounded_total;
+				this.form.subtotal = this.subtotal;
+				this.form.tax = this.tax;
+				this.form.discount_value = this.discount_value;
+
+				var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
+				this.form.post(url).then(function (response) {
+					return _this8.onSuccess(response);
+				}).catch(function (error) {
+					return _this8.onError(error);
+				});
+			} else {
+				this.isConfirming = false;
+			}
+		},
+		onErrorValidate: function onErrorValidate(response) {
+			this.isConfirming = false;
 		},
 		onSuccess: function onSuccess(response) {
 			console.log("Success");
@@ -76693,7 +76790,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.mass_tracking_no = '';
 		},
 		confirmTrackingNumber: function confirmTrackingNumber() {
-			var _this8 = this;
+			var _this9 = this;
 
 			this.trackings.forEach(function (tracking, key) {
 
@@ -76714,8 +76811,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			this.deleteMassItem(this.mass_input_target);
 			Vue.nextTick(function () {
-				return _this8.addItem();
+				return _this9.addItem();
 			});
+		},
+		calcParcelsPrice: function calcParcelsPrice() {
+			var _this10 = this;
+
+			var url = "/parcels/charge";
+			this.form.post(url).then(function (response) {
+				return _this10.onSuccessGetParcelsPrice(response);
+			}).catch(function (error) {
+				return _this10.onError(error);
+			});
+		},
+		onSuccessGetParcelsPrice: function onSuccessGetParcelsPrice(response) {
+			response.return_items.forEach(function (response_item) {
+				this.form.items.forEach(function (item, index) {
+					if (item.tracking_code == response_item.tracking_code) {
+						this.form.items[index]["price"] = response_item.charge;
+					}
+				}.bind(this));
+			}.bind(this));
+
+			window.events.$emit("updateItemsValue");
 		}
 	},
 
@@ -77204,6 +77322,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			products: [],
 
 			hasNetworkError: false
+
 		};
 	},
 	mounted: function mounted() {
@@ -78909,6 +79028,46 @@ var render = function() {
               _vm._m(0),
               _vm._v(" "),
               _c("div", { staticClass: "header" }, [_vm._v("Total price:")]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-primary mb-3",
+                    attrs: { type: "button" },
+                    on: { click: _vm.calcParcelsPrice }
+                  },
+                  [_vm._v("Check price")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "header" }),
               _vm._v(" "),
               _c("div", { staticClass: "header" }, [
                 _c(

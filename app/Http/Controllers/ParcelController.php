@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GuzzleClient;
 use App\Branch;
+use App\ProductType;
+use App\ParcelIntegrate;
 
 class ParcelController extends Controller
 {
@@ -24,7 +26,7 @@ class ParcelController extends Controller
         $phone_number = request()->phone;
         $branch = auth()->user()->current->code;
 
-        $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/data/pos/parcels', [
+        $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcel/checkin', [
         'headers' => [
             'Authorization' => env('VMB_USER_TOKEN'),
         ], 
@@ -73,41 +75,11 @@ class ParcelController extends Controller
                         'charge' => $parcel->charge];      
             $parcels_detail->push($detail);
         }
-        //dd(json_encode($parcels_detail));
-
-
         $data = (object) [];
         $prop = 'data';
         $data->{$prop} = $parcels_detail;
-
-
-        // $data = (object);
-        // $data->createProperty('data', json_encode($parcels_detail));
-       // $data = (object)json_encode($parcels_detail);
-        //dd($data);
-        // $data = json_encode($parcels_detail); 
-        // dd($data);
+        
         return json_encode($data);
-
-
-
-		// $user = auth()->user();
-		// $query = $user->profit_and_losses()->with([])->select('profit_and_losses.*');
-
-        // return datatables()->of($query)
-        //                     ->addColumn('tracking_code', function($parcel){
-        //                         return $parcel->tracking_code;
-		// 					})							
-		// 					->addColumn('phone', function($profit_and_loss){
-        //                         return $parcel->phone;
-        //                     })
-        //                     ->addColumn('status', function($profit_and_loss){
-        //                         return $parcel->status;
-        //                     })
-        //                     ->addColumn('charge', function($profit_and_loss){
-        //                         return $parcel->charge; //number_format((float) $parcel->charge ,2,'.','')
-        //                     })
-        //                     ->toJson();
     }
     
     public function validate_input()
@@ -117,4 +89,54 @@ class ParcelController extends Controller
             "phone" => "required|regex:/^(01)[0-46-9]*[0-9]{7,8}$/",
         ]);
     }   
+
+    public function parcelCharge() 
+    {           
+        $parcel = new ParcelIntegrate;
+        $vmb_items = $parcel->getParcelItems(request()->items);
+
+        $client = new \GuzzleHttp\Client();
+    
+        $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcels/charge', [
+        'headers' => [
+            'Authorization' => env('VMB_USER_TOKEN'),
+        ], 
+        'json' => ['items' => $vmb_items, 
+                    'pos_user_email' => auth()->user()->email] //change to access token after authorize set
+        ]);
+      
+        $response->getStatusCode(); 
+        $response->getBody();
+        $data = json_decode( $response->getBody()->getContents() );
+
+        return json_encode(['message' => $data->message, "return_items" => $data->return_items]);        
+    }
+
+    public function validateItems()
+    {
+        $parcel = new ParcelIntegrate;
+        $vmb_items = $parcel->getParcelItems(request()->items);
+        $cancel_reset = false;
+
+        $client = new \GuzzleHttp\Client();
+    
+        $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcels/charge/validate', [
+        'headers' => [
+            'Authorization' => env('VMB_USER_TOKEN'),
+        ], 
+        'json' => ['items' => $vmb_items, 
+                    'pos_user_email' => auth()->user()->email] //change to access token after authorize set
+        ]);
+      
+        $response->getStatusCode(); 
+        $response->getBody();
+        $data = json_decode( $response->getBody()->getContents() ); 
+
+        if(!$data->is_valid)
+        {
+            $cancel_reset = true;
+        }
+
+        return json_encode(['message' => $data->message, 'is_valid' => $data->is_valid, 'cancel_reset' => $cancel_reset]);  
+    }
 }

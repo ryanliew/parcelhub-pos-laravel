@@ -16,6 +16,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
+use App\ParcelIntegrate;
 
 class InvoiceController extends Controller
 {
@@ -145,7 +146,6 @@ class InvoiceController extends Controller
         Log::info("Creating invoice by:" . auth()->user()->name);
         Log::info(request()->all());
         Log::info($items);
-
         $repeating_trackings = collect();
 
         foreach($items as $item)
@@ -166,7 +166,7 @@ class InvoiceController extends Controller
 
         if($repeating_trackings->count() > 0) {
             $error = "These tracking number already exists: " . $repeating_trackings->implode(', ');
-           
+        
             return $this->returnValidationErrorResponse([['something' => 'something']], $error);
         }
 
@@ -225,9 +225,32 @@ class InvoiceController extends Controller
         }
         //$invoice->items()->create($items);
 
-        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
+        // create transactions in virtual mail box
+        $parcel = new ParcelIntegrate;
+        $vmb_items = $parcel->getParcelItems(request()->items);
+        $this->createVMBTransations($vmb_items);
 
+        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
+        
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
+    }
+
+    public function createVMBTransations($items)
+    {
+        $client = new \GuzzleHttp\Client();
+    
+        $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcels/transactions', [
+        'headers' => [
+            'Authorization' => env('VMB_USER_TOKEN'),
+        ], 
+        'json' => ['items' => $items, 
+                    'pos_user_name' => auth()->user()->name,
+                    'pos_user_email' => auth()->user()->email] //change to access token after authorize set
+        ]);
+      
+        $response->getStatusCode(); 
+        $response->getBody();
+        $data = json_decode( $response->getBody()->getContents() );
     }
 
     public function update(Invoice $invoice)

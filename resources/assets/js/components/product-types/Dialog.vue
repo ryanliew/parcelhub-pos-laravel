@@ -51,6 +51,22 @@
 										:editable="true">
 									</checkbox-input>
 								</div>
+								<div class="ml-2">
+									<checkbox-input v-model="form.is_vmb_parcel"
+										:defaultChecked="form.is_vmb_parcel"
+										label="Is VMB Parcel"
+										name="is_vmb_parcel"
+										:editable="true">
+									</checkbox-input>
+								</div>
+								<div class="ml-2">
+									<checkbox-input v-model="form.is_topup"
+										:defaultChecked="form.is_topup"
+										label="Is topup"
+										name="is_topup"
+										:editable="true">
+									</checkbox-input>
+								</div>
 							</div>
 						</div>
 						<div class="row">
@@ -118,7 +134,9 @@
 					is_merchandise: '',
 					default_vendor_id: '',
 					default_zone_type_id: '',
-					has_detail: ''
+					has_detail: '',
+					is_vmb_parcel: '',
+					is_topup: '',
 				})
 			};
 		},
@@ -198,7 +216,9 @@
 				this.form.default_vendor_id = this.selectedProductType.default_vendor_id;				
 				this.form.default_zone_type_id = this.selectedProductType.default_zone_type_id;
 				this.form.has_detail = this.selectedProductType.has_detail;
-
+				this.form.is_vmb_parcel = this.selectedProductType.is_vmb_parcel;
+				this.form.is_topup = this.selectedProductType.is_topup;
+				
 				this.selectedVendor = '';
 				this.selectedZoneType = '';
 

@@ -288,6 +288,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/", "ParcelController@pageCheckInParcels")->name('parcels.page');
 		Route::post("/checkin", "ParcelController@checkInParcels");
 		Route::get("/index", "ParcelController@index")->name('parcels.index');
+		Route::post("/charge", "ParcelController@parcelCharge");
+		Route::post('/validate', "ParcelController@validateItems");
 	});
 
 });

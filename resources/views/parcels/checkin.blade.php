@@ -43,7 +43,7 @@
         $(function(){
 			var table = $("#parcels-table").DataTable({
 				processing: true,
-				serverSide: true,
+				serverSide: false,
 				responsive: true,
 				colReorder: true,
 				select: {
