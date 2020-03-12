@@ -30455,53 +30455,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 139 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(277)
-/* template */
-var __vue_template__ = __webpack_require__(278)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources\\assets\\js\\components\\parcels\\ParcelsCheckIn.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4cf0a4a8", Component.options)
-  } else {
-    hotAPI.reload("data-v-4cf0a4a8", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 139 */,
 /* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -30615,7 +30569,6 @@ Vue.component('cashup-details', __webpack_require__(271));
 Vue.component('sales-reports-dialog', __webpack_require__(274));
 
 Vue.component('profit-and-loss-import', __webpack_require__(282));
-Vue.component('parcels-check-in', __webpack_require__(139));
 
 var app = new Vue({
   el: '#app',
@@ -73789,22 +73742,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -73828,9 +73765,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				is_merchandise: '',
 				default_vendor_id: '',
 				default_zone_type_id: '',
-				has_detail: '',
-				is_vmb_parcel: '',
-				is_topup: ''
+				has_detail: ''
 			})
 		};
 	},
@@ -73914,8 +73849,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.default_vendor_id = this.selectedProductType.default_vendor_id;
 			this.form.default_zone_type_id = this.selectedProductType.default_zone_type_id;
 			this.form.has_detail = this.selectedProductType.has_detail;
-			this.form.is_vmb_parcel = this.selectedProductType.is_vmb_parcel;
-			this.form.is_topup = this.selectedProductType.is_topup;
 
 			this.selectedVendor = '';
 			this.selectedZoneType = '';
@@ -74115,52 +74048,6 @@ var render = function() {
                                   _vm.$set(_vm.form, "has_detail", $$v)
                                 },
                                 expression: "form.has_detail"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "ml-2" },
-                          [
-                            _c("checkbox-input", {
-                              attrs: {
-                                defaultChecked: _vm.form.is_vmb_parcel,
-                                label: "Is VMB Parcel",
-                                name: "is_vmb_parcel",
-                                editable: true
-                              },
-                              model: {
-                                value: _vm.form.is_vmb_parcel,
-                                callback: function($$v) {
-                                  _vm.$set(_vm.form, "is_vmb_parcel", $$v)
-                                },
-                                expression: "form.is_vmb_parcel"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          { staticClass: "ml-2" },
-                          [
-                            _c("checkbox-input", {
-                              attrs: {
-                                defaultChecked: _vm.form.is_topup,
-                                label: "Is topup",
-                                name: "is_topup",
-                                editable: true
-                              },
-                              model: {
-                                value: _vm.form.is_topup,
-                                callback: function($$v) {
-                                  _vm.$set(_vm.form, "is_topup", $$v)
-                                },
-                                expression: "form.is_topup"
                               }
                             })
                           ],
@@ -76393,20 +76280,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -76673,6 +76546,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				is_deleted: false, // A flag to determine if we have deleted this item
 				default_details: true // A flag that determines if we should go get the default details for this item row
 
+
 			});
 
 			// this.$refs['track_code_' + ( this.form.items.length - 1 )][0].triggerFocus();
@@ -76710,35 +76584,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		confirmSubmit: function confirmSubmit() {
 			var _this7 = this;
 
-			var url = "/parcels/validate";
+			this.form.total = this.rounded_total;
+			this.form.subtotal = this.subtotal;
+			this.form.tax = this.tax;
+			this.form.discount_value = this.discount_value;
+
+			var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 			this.form.post(url).then(function (response) {
-				return _this7.onSuccessValidate(response);
+				return _this7.onSuccess(response);
 			}).catch(function (error) {
-				return _this7.onErrorValidate(error);
+				return _this7.onError(error);
 			});
-		},
-		onSuccessValidate: function onSuccessValidate(response) {
-			var _this8 = this;
-
-			if (response.is_valid) {
-
-				this.form.total = this.rounded_total;
-				this.form.subtotal = this.subtotal;
-				this.form.tax = this.tax;
-				this.form.discount_value = this.discount_value;
-
-				var url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
-				this.form.post(url).then(function (response) {
-					return _this8.onSuccess(response);
-				}).catch(function (error) {
-					return _this8.onError(error);
-				});
-			} else {
-				this.isConfirming = false;
-			}
-		},
-		onErrorValidate: function onErrorValidate(response) {
-			this.isConfirming = false;
 		},
 		onSuccess: function onSuccess(response) {
 			console.log("Success");
@@ -76790,7 +76646,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			this.mass_tracking_no = '';
 		},
 		confirmTrackingNumber: function confirmTrackingNumber() {
-			var _this9 = this;
+			var _this8 = this;
 
 			this.trackings.forEach(function (tracking, key) {
 
@@ -76811,29 +76667,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			this.deleteMassItem(this.mass_input_target);
 			Vue.nextTick(function () {
-				return _this9.addItem();
+				return _this8.addItem();
 			});
-		},
-		calcParcelsPrice: function calcParcelsPrice() {
-			var _this10 = this;
-
-			var url = "/parcels/charge";
-			this.form.post(url).then(function (response) {
-				return _this10.onSuccessGetParcelsPrice(response);
-			}).catch(function (error) {
-				return _this10.onError(error);
-			});
-		},
-		onSuccessGetParcelsPrice: function onSuccessGetParcelsPrice(response) {
-			response.return_items.forEach(function (response_item) {
-				this.form.items.forEach(function (item, index) {
-					if (item.tracking_code == response_item.tracking_code) {
-						this.form.items[index]["price"] = response_item.charge;
-					}
-				}.bind(this));
-			}.bind(this));
-
-			window.events.$emit("updateItemsValue");
 		}
 	},
 
@@ -77322,7 +77157,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			products: [],
 
 			hasNetworkError: false
-
 		};
 	},
 	mounted: function mounted() {
@@ -79028,46 +78862,6 @@ var render = function() {
               _vm._m(0),
               _vm._v(" "),
               _c("div", { staticClass: "header" }, [_vm._v("Total price:")]),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-sm btn-primary mb-3",
-                    attrs: { type: "button" },
-                    on: { click: _vm.calcParcelsPrice }
-                  },
-                  [_vm._v("Check price")]
-                )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "header" }),
               _vm._v(" "),
               _c("div", { staticClass: "header" }, [
                 _c(
@@ -85912,210 +85706,8 @@ if (false) {
 }
 
 /***/ }),
-/* 277 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	props: ["created_by"],
-	data: function data() {
-		return {
-			form: new Form({
-				//recipient_name: this.created_by,
-				phone: "",
-				tracking_code: ""
-			})
-		};
-	},
-	mounted: function mounted() {},
-
-
-	methods: {
-		checkInParcels: function checkInParcels() {
-			var _this = this;
-
-			var url = "parcels/checkin";
-			this.form.post(url).then(function (response) {
-				return _this.onSuccess(response);
-			}).catch(function (error) {
-				return _this.onError(error);
-			});
-		},
-		onSuccess: function onSuccess(response) {
-			console.log("Success");
-			window.events.$emit("reload-table");
-		},
-		onError: function onError(error) {}
-	}
-});
-
-/***/ }),
-/* 278 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("div", { staticClass: "card", attrs: { id: "import-header" } }, [
-      _c("div", { staticClass: "card-body" }, [
-        _c("div", { staticClass: "row" }, [
-          _c(
-            "div",
-            { staticClass: "col" },
-            [
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.form.phone,
-                  required: true,
-                  type: "text",
-                  label: "Phone number",
-                  name: "phone",
-                  editable: true,
-                  focus: false,
-                  hideLabel: false,
-                  isHorizontal: false,
-                  error: _vm.form.errors.get("phone")
-                },
-                model: {
-                  value: _vm.form.phone,
-                  callback: function($$v) {
-                    _vm.$set(_vm.form, "phone", $$v)
-                  },
-                  expression: "form.phone"
-                }
-              })
-            ],
-            1
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c(
-            "div",
-            { staticClass: "col" },
-            [
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.form.tracking_code,
-                  required: true,
-                  type: "text",
-                  label: "Tracking code",
-                  name: "tracking_code",
-                  editable: true,
-                  focus: false,
-                  hideLabel: false,
-                  isHorizontal: false,
-                  error: _vm.form.errors.get("tracking_code")
-                },
-                model: {
-                  value: _vm.form.tracking_code,
-                  callback: function($$v) {
-                    _vm.$set(_vm.form, "tracking_code", $$v)
-                  },
-                  expression: "form.tracking_code"
-                }
-              })
-            ],
-            1
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row", staticStyle: { float: "right" } }, [
-          _c("div", { staticClass: "col" }, [
-            _c(
-              "button",
-              {
-                on: {
-                  click: function($event) {
-                    _vm.checkInParcels()
-                  }
-                }
-              },
-              [_vm._v("Check in")]
-            )
-          ])
-        ])
-      ])
-    ])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-4cf0a4a8", module.exports)
-  }
-}
-
-/***/ }),
+/* 277 */,
+/* 278 */,
 /* 279 */
 /***/ (function(module, exports) {
 
