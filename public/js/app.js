@@ -85118,7 +85118,7 @@ var render = function() {
                       )
                     ]),
                 _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(detail.percentage))]),
+                _c("td", [_vm._v(_vm._s(detail.percentage.toFixed(2)))]),
                 _vm._v(" "),
                 _c("td", [_vm._v(_vm._s(detail.count))])
               ])
@@ -85169,7 +85169,10 @@ var render = function() {
                     _vm._s(
                       _vm._f("price")(
                         _vm.cashup.total > 0
-                          ? (invoice.pivot.total / _vm.cashup.total) * 100
+                          ? (
+                              (invoice.pivot.total / _vm.cashup.total) *
+                              100
+                            ).toFixed(2)
                           : 0.0
                       )
                     )
