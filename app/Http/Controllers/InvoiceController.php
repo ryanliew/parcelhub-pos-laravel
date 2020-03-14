@@ -245,7 +245,9 @@ class InvoiceController extends Controller
         ], 
         'json' => ['items' => $items, 
                     'pos_user_name' => auth()->user()->name,
-                    'pos_user_email' => auth()->user()->email] //change to access token after authorize set
+                    'pos_user_email' => auth()->user()->email, 
+                    'pos_user_branch_code' => auth()->user()->current->code 
+                ]
         ]);
       
         $response->getStatusCode(); 

@@ -102,7 +102,8 @@ class ParcelController extends Controller
             'Authorization' => env('VMB_USER_TOKEN'),
         ], 
         'json' => ['items' => $vmb_items, 
-                    'pos_user_email' => auth()->user()->email] //change to access token after authorize set
+                    'pos_user_email' => auth()->user()->email,                     
+                    'pos_user_branch_code' => auth()->user()->current->code]
         ]);
       
         $response->getStatusCode(); 
@@ -125,17 +126,15 @@ class ParcelController extends Controller
             'Authorization' => env('VMB_USER_TOKEN'),
         ], 
         'json' => ['items' => $vmb_items, 
-                    'pos_user_email' => auth()->user()->email] //change to access token after authorize set
+                    'pos_user_email' => auth()->user()->email,                     
+                    'pos_user_branch_code' => auth()->user()->current->code ]
         ]);
       
         $response->getStatusCode(); 
         $response->getBody();
         $data = json_decode( $response->getBody()->getContents() ); 
 
-        if(!$data->is_valid)
-        {
-            $cancel_reset = true;
-        }
+        $cancel_reset = false;  // do not reset the data for validation    
 
         return json_encode(['message' => $data->message, 'is_valid' => $data->is_valid, 'cancel_reset' => $cancel_reset]);  
     }

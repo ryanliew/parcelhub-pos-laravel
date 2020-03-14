@@ -326,7 +326,7 @@
 				</template>
 			</div>
 		</div>
-		<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
+		<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" :hideconfirm="isHideConfirm" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
 		<customers-dialog :data="auth_user" @customerCreated="addCustomer"></customers-dialog>
 
 		<modal :active="isMassInput"
@@ -432,7 +432,9 @@
 				isMassInput: false,
 				mass_tracking_no: '',
 				trackings: [],
-				mass_input_target: ''
+				mass_input_target: '', 
+
+				isHideConfirm: false,
 			};
 		},
 
@@ -668,43 +670,45 @@
 			submit() {
 				if(this.canSubmit) {
 					// console.log("Submitting");
-					this.form.items = _.filter(this.form.items, function(item){ return item.product_id && !item.is_deleted ? true : false; });
-
-					this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
-												+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
-												+ "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>"
-												+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
-												+ "</div>"
-					this.isConfirming = true;
-				}
-
+					this.form.items = _.filter(this.form.items, function(item){ return item.product_id && !item.is_deleted ? true : false; });		
+					let url = "/parcels/validate";
+					this.form.post(url)
+						.then(response => this.onSuccessValidate(response))
+						.catch(error => this.onErrorValidate(error));
+					}				
 			},
 
-			confirmSubmit() {
-				let url = "/parcels/validate";
+			confirmSubmit() {				
+				this.form.total = this.rounded_total;
+				this.form.subtotal = this.subtotal;
+				this.form.tax = this.tax;
+				this.form.discount_value = this.discount_value;
+
+				let url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
 				this.form.post(url)
-					.then(response => this.onSuccessValidate(response))
-					.catch(error => this.onErrorValidate(error));
+					.then(response => this.onSuccess(response))
+					.catch(error => this.onError(error));
 			},
 
 			onSuccessValidate(response)
 			{	
-				if(response.is_valid){
-
-					this.form.total = this.rounded_total;
-					this.form.subtotal = this.subtotal;
-					this.form.tax = this.tax;
-					this.form.discount_value = this.discount_value;
-
-					let url = this.invoice ? "/invoices/update/" + this.invoice : "/invoices";
-					this.form.post(url)
-						.then(response => this.onSuccess(response))
-						.catch(error => this.onError(error));
-				}
-				else{
-					this.isConfirming = false;
-				}
+				this.isHideConfirm = false;
+				let validate_message = "Are you sure?"
+				if(!response.is_valid){
+					validate_message = "<div class='alert alert-danger error-message'>"
+										+ "<div>" + response.message + "</div>"
+										+ "</div>"
+					this.isHideConfirm = true;
+				}	
+				this.confirm_message = validate_message
+				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
+											+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
+											+ "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>"
+											+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
+											+ "</div>"
+				this.isConfirming = true;	
 			},
+
 			onErrorValidate(response)
 			{
 				this.isConfirming = false;
