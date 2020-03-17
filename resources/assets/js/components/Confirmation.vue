@@ -7,7 +7,7 @@
 <script>
 
 	export default {
-		props: ['message', 'confirming', 'secondary'],
+		props: ['message', 'confirming', 'secondary', 'hideconfirm'],
 		data() {
 			return {
 
@@ -21,7 +21,8 @@
 						title: this.message,
 						type: 'warning',
 						html: this.secondary,
-						showCancelButton: true
+						showCancelButton: true,
+						showConfirmButton: this.hideconfirm ? false : true,
 					}).then((result) => {
 						if(result.value) {
 							this.$emit('confirm');

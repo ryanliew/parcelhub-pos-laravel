@@ -304,6 +304,21 @@
 					<div class="header">Price:</div>
 					<div class="header"><i class="fa fa-exclamation-circle text-white pl-1"></i></div>
 					<div class="header">Total price:</div>
+					<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="calcParcelsPrice">Check price</button></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
+					<div class="header"></div>
 					<div class="header"><button type="button" class="btn btn-sm btn-primary mb-3" @click="addItem" :disabled="!canAddItem">Add Item (F8)</button></div>
 				</div>
 				<template v-for="(item, index) in form.items" v-if="!item.is_deleted">
@@ -311,7 +326,7 @@
 				</template>
 			</div>
 		</div>
-		<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
+		<confirmation :message="confirm_message" :secondary="secondary_message" :confirming="isConfirming" :hideconfirm="isHideConfirm" @cancel="isConfirming = false" @confirm="confirmSubmit"></confirmation>
 		<customers-dialog :data="auth_user" @customerCreated="addCustomer"></customers-dialog>
 
 		<modal :active="isMassInput"
@@ -338,7 +353,6 @@
 					{{ tracking }}
 				</li>
 			</ol>
-			
 
 			<template slot="footer">
 				<button type="button" class="btn btn-secondary" @click="closeMassInput">Cancel</button>
@@ -378,7 +392,7 @@
 					type: 'Cash',
 					payment_type: 'Cash',
 					type: 'Cash',
-					discount_value: 0
+					discount_value: 0, 
 				}),
 
 				product_types: [],
@@ -418,7 +432,9 @@
 				isMassInput: false,
 				mass_tracking_no: '',
 				trackings: [],
-				mass_input_target: ''
+				mass_input_target: '', 
+
+				isHideConfirm: false,
 			};
 		},
 
@@ -622,8 +638,9 @@
 					is_deleted: false, // A flag to determine if we have deleted this item
 					default_details: true // A flag that determines if we should go get the default details for this item row
 
-
 				});
+
+
 
 				// this.$refs['track_code_' + ( this.form.items.length - 1 )][0].triggerFocus();
 			},
@@ -653,19 +670,15 @@
 			submit() {
 				if(this.canSubmit) {
 					// console.log("Submitting");
-					this.form.items = _.filter(this.form.items, function(item){ return item.product_id && !item.is_deleted ? true : false; });
-
-					this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
-												+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
-												+ "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>"
-												+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
-												+ "</div>"
-					this.isConfirming = true;
-				}
-
+					this.form.items = _.filter(this.form.items, function(item){ return item.product_id && !item.is_deleted ? true : false; });		
+					let url = "/parcels/validate";
+					this.form.post(url)
+						.then(response => this.onSuccessValidate(response))
+						.catch(error => this.onErrorValidate(error));
+					}				
 			},
 
-			confirmSubmit() {
+			confirmSubmit() {				
 				this.form.total = this.rounded_total;
 				this.form.subtotal = this.subtotal;
 				this.form.tax = this.tax;
@@ -676,6 +689,31 @@
 					.then(response => this.onSuccess(response))
 					.catch(error => this.onError(error));
 			},
+
+			onSuccessValidate(response)
+			{	
+				this.isHideConfirm = false;
+				let validate_message = "Are you sure?"
+				if(!response.is_valid){
+					validate_message = "<div class='alert alert-danger error-message'>"
+										+ "<div>" + response.message + "</div>"
+										+ "</div>"
+					this.isHideConfirm = true;
+				}	
+				this.confirm_message = validate_message
+				this.secondary_message = "<div class='d-flex flex-column font-weight-normal'>"
+											+ "<div><b>Total: </b> RM" + this.rounded_total.toFixed(2) + "</div>"
+											+ "<div><b>Paid: </b> RM" + parseFloat(this.form.paid).toFixed(2) + "</div>"
+											+ "<div><b>Change: </b> RM" + this.change.toFixed(2) + "</div>"
+											+ "</div>"
+				this.isConfirming = true;	
+			},
+
+			onErrorValidate(response)
+			{
+				this.isConfirming = false;
+			},
+
 
 			onSuccess(response) {
 				console.log("Success");
@@ -759,8 +797,27 @@
 
 				this.deleteMassItem(this.mass_input_target);
 				Vue.nextTick( () => this.addItem() );
-			}
+			}, 
 
+			calcParcelsPrice() {
+				let url = "/parcels/charge";
+				this.form.post(url)
+					.then(response => this.onSuccessGetParcelsPrice(response))
+					.catch(error => this.onError(error));
+			},
+
+			onSuccessGetParcelsPrice(response){
+			    response.return_items.forEach(function(response_item){
+					this.form.items.forEach(function(item, index){
+						if(item.tracking_code == response_item.tracking_code) 
+						{
+							this.form.items[index]["price"] = response_item.charge;
+						}
+					}.bind(this));
+				}.bind(this));
+				
+				window.events.$emit("updateItemsValue");
+			}
 		},
 
 		computed: {
@@ -849,7 +906,7 @@
 			},
 
 			canEdit() {
-				return  ( !this.invoice ||  this.can_edit_invoice ) ;
+				return  ( !this.invoice ||  this.can_edit_invoice );
 			},
 
 			canEditItem() {

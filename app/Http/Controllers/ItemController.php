@@ -7,6 +7,8 @@ use App\ZoneType;
 use App\Zone;
 use App\ProductType;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client as GuzzleClient;
+use App\Branch;
 
 class ItemController extends Controller
 {

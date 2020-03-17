@@ -200,7 +200,10 @@ class Form {
     onSuccess(data) {
         flash(data.message);
         
-        this.reset();
+        if(!data.cancel_reset)
+        {
+            this.reset();
+        }
     }
 
 

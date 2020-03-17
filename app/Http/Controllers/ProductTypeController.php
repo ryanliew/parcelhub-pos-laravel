@@ -36,7 +36,9 @@ class ProductTypeController extends Controller
             'is_merchandise' => request()->has('is_merchandise'),
             'default_vendor_id' => request()->default_vendor_id,
             'default_zone_type_id' => request()->default_zone_type_id,
-            'has_detail' => request()->has('has_detail')
+            'has_detail' => request()->has('has_detail'), 
+            'is_vmb_parcel' => request()->has('is_vmb_parcel'),
+            'is_topup' => request()->has('is_topup'),
         ]);
 
     	return json_encode(['message' => "New product type created."]);
@@ -52,7 +54,9 @@ class ProductTypeController extends Controller
             'is_merchandise' => request()->has('is_merchandise'),
             'default_vendor_id' => request()->default_vendor_id,
             'default_zone_type_id' => request()->default_zone_type_id,
-            'has_detail' => request()->has('has_detail')
+            'has_detail' => request()->has('has_detail'),
+            'is_vmb_parcel' => request()->has('is_vmb_parcel'),
+            'is_topup' => request()->has('is_topup'),
         ]);
     	
     	return json_encode(['message' => "Product type updated"]);

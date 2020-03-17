@@ -284,4 +284,12 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/index", "ProfitAndLossController@index")->name('profit-and-loss.index');
 	});
 
+	Route::group(['prefix' => 'parcels'], function(){
+		Route::get("/", "ParcelController@pageCheckInParcels")->name('parcels.page');
+		Route::post("/checkin", "ParcelController@checkInParcels");
+		Route::get("/index", "ParcelController@index")->name('parcels.index');
+		Route::post("/charge", "ParcelController@parcelCharge");
+		Route::post('/validate', "ParcelController@validateItems");
+	});
+
 });

@@ -95,6 +95,7 @@ Vue.component('cashup-details', require("./components/cashups/Details.vue"));
 Vue.component('sales-reports-dialog', require('./components/reports/SalesReportDialog.vue'));
 
 Vue.component('profit-and-loss-import', require('./components/profit-and-loss/Import.vue'));
+Vue.component('parcels-check-in', require('./components/parcels/ParcelsCheckIn.vue'));
 
 const app = new Vue({
     el: '#app',
