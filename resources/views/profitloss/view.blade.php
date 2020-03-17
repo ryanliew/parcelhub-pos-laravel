@@ -61,7 +61,8 @@
 					{data: 'price'},
 					{data: 'margin'},					
 					{data: 'profit'} ,
-				]
+				],
+				"order": [[ 0, "asc" ]]
 			});
 
 			// table.on( 'select deselect', function () {
