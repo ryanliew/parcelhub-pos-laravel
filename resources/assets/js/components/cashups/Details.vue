@@ -53,7 +53,7 @@
 				  		<td v-else>
 				  			{{ detail.actual_amount | price }}
 				  		</td>
-				  		<td>{{ detail.percentage }}</td>
+				  		<td>{{ detail.percentage.toFixed(2) }}</td>
 				  		<td>{{ detail.count }}</td>
 				  	</tr>
 
@@ -80,11 +80,11 @@
 				      	<th>%</th>
 				      	<th>Payment #</th>
 				  	</tr>
-				  	<tr class="item-row" v-for="invoice in cashup.invoices" v-if="invoice.pivot.total > 0">
+				  	<tr class="item-row" v-for="invoice in cashup.invoices">		
 				  		<td>{{ invoice.invoice_no }}</td>
 				  		<td>{{ invoice.pivot.payment_method }}</td>
 				  		<td>{{ invoice.pivot.total | price }}</td>
-				  		<td>{{ cashup.total > 0 ? invoice.pivot.total / cashup.total * 100 : 0.00 | price }}</td>
+				  		<td>{{ cashup.total > 0 ? ( invoice.pivot.total / cashup.total * 100 ).toFixed(2) : 0.00 | price }}</td>
 				  		<td>{{ invoice.pivot.payment_id ? invoice.pivot.payment_id : 'N/A' }}</td>
 				  	</tr>
 				</tbody>

@@ -111,6 +111,9 @@ export default {
 
         return obj;
       });
+      
+      var allbranch = {value:"0", label:"All branches"};
+      this.branches.unshift(allbranch);
 
       this.selectedBranch = _.filter(
         this.branches,
@@ -131,9 +134,16 @@ export default {
 
     submit() {
       let url = this.url;
-
-      if (this.user.is_admin && this.branch) url += "&branch=" + this.branch;
-
+      
+      if (this.user.is_admin && this.branch) {
+        if (this.branch == "0") {
+           url += "&allbranch=true";
+        }
+        else {
+          url += "&branch=" + this.branch;
+        }
+      }
+  
       window.location.href = url;
     },
 
@@ -154,6 +164,7 @@ export default {
     url() {
       return "/admin/reports/sales?from=" + this.from + "&to=" + this.to;
     },
+    
     action() {
       return "View";
     },

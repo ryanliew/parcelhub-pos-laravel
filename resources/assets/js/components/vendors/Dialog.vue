@@ -83,6 +83,7 @@
 				selectedVendor: '',
 				selectedZoneType: '',
 				isEdit: false,
+				isDelete: false,
 				zonetypes: [],
 				form: new Form({
 					name: '',
@@ -95,6 +96,7 @@
 		mounted() {
 			window.events.$on('createVendor', evt => this.createVendor(evt));
 			window.events.$on('editVendor', evt => this.editVendor(evt));
+			window.events.$on('deleteVendor', evt => this.deleteVendor(evt));
 
 			$("#vendor-dialog").on("hide.bs.modal", function(e){
 				this.closeDialog();
@@ -173,7 +175,13 @@
 				this.closeDialog();
 
 				window.events.$emit("reload-table");
-			}
+			},
+
+			deleteVendor(evt) {
+				this.selectedVendor = evt[0];
+				this.isDelete = true;
+				this.isConfirming = true;
+			},
 		},
 
 		computed: {
@@ -190,7 +198,12 @@
 			},
 
 			url() {
-				return this.selectedVendor ? "/admin/vendors/" + this.selectedVendor.id : "/admin/vendors";
+				if(!this.isDelete) {
+					return this.selectedVendor ? "/admin/vendors/" + this.selectedVendor.id : "/admin/vendors";
+				}
+				else {
+					return "/admin/vendors/" + this.selectedVendor.id + "/delete";
+				}				
 			}
 		},
 

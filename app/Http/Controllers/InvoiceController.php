@@ -299,7 +299,7 @@ class InvoiceController extends Controller
 
         $html = View::make('invoice.receipt', ["invoice" => $invoice, "taxes" => Tax::all()])->render();
         
-        $mPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
+        $mPDF = new mPDF(array('tempDir' => storage_path('mpdf'), 'utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
                         "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
                         "fontdata" => $fontData + [
                             'monaco' => [
@@ -317,7 +317,7 @@ class InvoiceController extends Controller
         $mPDF->state  = 0;
         unset($mPDF->pages[0]);
 
-        $newPDF = new mPDF(array('utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
+        $newPDF = new mPDF(array('tempDir' => storage_path('mpdf'), 'utf-8', array(80, 1000), 5, 'freesans', 2, 2, 2, 0, 0, 0, 'P', 
                         "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
                         "fontdata" => $fontData + [
                             'monaco' => [

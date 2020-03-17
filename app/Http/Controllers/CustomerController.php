@@ -38,7 +38,6 @@ class CustomerController extends Controller
 
     public function index()
     {
-        
         if(auth()->user()->is_admin)
         {
             $query = Customer::with('branch');
@@ -119,7 +118,6 @@ class CustomerController extends Controller
         return response()->file($path);
     }
 
-
     public function statement(Customer $customer)
     {
 
@@ -141,13 +139,13 @@ class CustomerController extends Controller
                     ->get();
 
         $result = collect([]);
-
+                       
         foreach($invoices as $invoice)
         {
             $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
-
+            
             if( $getAll || $outstanding != 0)
-            {
+            {                
                 $debit = [
                     'date' => $invoice->created_at, 
                     'total' => $invoice->total, 
@@ -158,7 +156,9 @@ class CustomerController extends Controller
                 ];
 
                 if($invoice->paid >= $invoice->total && $invoice->total > 0)
+                {
                     $debit['paid'] = $invoice->total;
+                }
 
                 $result->push($debit);
 
@@ -179,7 +179,6 @@ class CustomerController extends Controller
         }
 
         $sortedResult = $result->sortBy('date');
-
         $resultBalance = 0.0;
 
         foreach($sortedResult as $key => $collection)
@@ -296,7 +295,7 @@ class CustomerController extends Controller
                          ])
                 ->render();
 
-        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF = new mPDF(['tempDir' => storage_path('mpdf'), 'format' => 'Legal']);
         $newPDF->WriteHTML($html);
         $newPDF->setFooter('{PAGENO}/{nbpg}');
 
@@ -310,4 +309,82 @@ class CustomerController extends Controller
                             "end" => request()->date_to ]);
     }
 
+    public function statementMultiple()
+    {
+        $customers = collect(json_decode(request()->customers));
+        $customers_id = $customers->pluck('id');
+
+        foreach( Customer::whereIn('id', $customers_id)->get() as $customer ) {
+           $this->statement($customer);
+        }
+        
+        return json_encode(["message" => "Statement created succesfully",  
+                            "id" =>$customers_id, 
+                            "start" => request()->date_from, 
+                            "end" => request()->date_to ]);       
+    }
+
+    public function customerTypeStatement()
+	{
+        if(!request()->has('data'))
+            return view('customer.customer_type_statement');
+        
+
+        $date_from = request()->from;
+        $date_to = Carbon::parse(request()->to);
+        $isOutstanding = request()->type == "Outstanding" ? true: false;
+        $isZeroBalance = request()->type == "Zero balance" ? true: false;
+
+        if(auth()->user()->is_admin)
+        {
+            $customers = Customer::with('branch')->get();
+        }
+        else
+        {
+            $branch = auth()->user()->current;
+            $customers = $branch->customers()->with('branch')->get();
+        }
+
+        $result = collect();
+        foreach($customers as $customer)
+        {
+            $invoices = Invoice::with(['customer','payment'])
+            ->active()
+            ->where([
+                    ['customer_id', $customer->id],
+                    ['created_at', '>=', $date_from],
+                    ['created_at', '<=', $date_to->addDays(1)->toDateString()],
+                    ])
+            ->orderby('created_at')
+            ->get();
+
+            $zerobalance = true;
+            foreach($invoices as $invoice)
+            {
+                if($zerobalance){
+                    $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
+
+                    if($outstanding > 0){
+                        $zerobalance = false;
+                    }
+                }
+            }
+
+            if( $isOutstanding && !$zerobalance )
+            {
+                $result->push($customer);
+            }
+            else if( $isZeroBalance && $zerobalance )
+            {
+                $result->push($customer);
+            }
+        }
+
+        return datatables()->of($result)
+                            ->addColumn('group_name', function($customer){
+                                return $customer->group ? $customer->group->name : "---";
+                            })
+                            ->toJson();
+ 
+    }
 }

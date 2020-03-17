@@ -26,8 +26,8 @@
 	        		<form @submit.prevent="submit" 
 						@keydown="form.errors.clear($event.target.name)" 
 						@input="form.errors.clear($event.target.name)">
-						<div class="row">
-							<div class="col">
+						<div class="row" >
+							<div class="col" v-if="!this.isMultiple">
 								<text-input v-model="form.date_from" 
 									:defaultValue="form.date_from"
 									:required="true"
@@ -37,10 +37,11 @@
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
+									:disabled="this.isMultiple"
 									:error="form.errors.get('date_from')">
 								</text-input>
 							</div>
-							<div class="col">
+							<div class="col" v-if="!this.isMultiple">
 								<text-input v-model="form.date_to" 
 									:defaultValue="form.date_to"
 									:required="true"
@@ -50,6 +51,7 @@
 									:editable="true"
 									:focus="false"
 									:hideLabel="false"
+									:disabled="this.isMultiple"
 									:error="form.errors.get('date_to')">
 								</text-input>
 							</div>
@@ -84,17 +86,26 @@
 	export default {
 		props: {
 		    data: {
-		        type: Object
-		    }
+				type: Object,
+			}, 
+			isMultiple: {
+				type: Boolean,
+			},
+			from: {
+				type: "",
+			},
+			to: {
+				type: "",
+			},
 		  },
 		data() {
 			return {
 				form: new Form({
-					date_to: moment().format("YYYY-MM-DD"),
-					date_from: moment().startOf('month').format("YYYY-MM-DD"),
+					date_to: this.isMultiple? this.to : moment().format("YYYY-MM-DD"),
+					date_from: this.isMultiple? this.from : moment().startOf('month').format("YYYY-MM-DD"),
 					type: 'All',
+					customers: [],
 				}),
-
 				selected_customer:'',
 				selectedType: {label: 'All', value: 'All'},
 				types: [
@@ -105,7 +116,6 @@
 		},
 
 		mounted() {
-
 			window.events.$on('generateStatement', evt => this.generateStatement(evt));
 
 			$("#customer-statement").on("hide.bs.modal", function(e){
@@ -115,10 +125,18 @@
  
 		methods: {
 			generateStatement(evt) {
-				this.selected_customer = evt[0];
-				this.openDialog();
-			},
+				if( this.isMultiple ){
+					this.form.customers = [];
 
+					evt.forEach(element => {
+						this.form.customers.push(element);
+					});
+				}
+				else {
+					this.selected_customer = evt[0];
+				}
+			    this.openDialog();
+			},
 
 			openDialog() {
 				$("#customer-statement").modal();
@@ -134,7 +152,8 @@
 
 			submit() {
 				this.form.post(this.url)
-					.then(response => this.onSuccess(response));
+					.then(response => this.onSuccess(response))
+					.catch(error => this.onError(error));
 			},
 
 			onSuccess(response) {
@@ -143,15 +162,25 @@
 
 				this.closeDialog();
 
-				window.open("/customers/statement/" + response.id + '/' + response.start + '/' + response.end, '_blank');
-
+				if( this.isMultiple ){
+					response['id'].forEach(element => {
+						window.open("/customers/statement/" + element + '/' + response.start + '/' + response.end, '_blank');					
+					});
+				}
+				else {
+					window.open("/customers/statement/" + response.id + '/' + response.start + '/' + response.end, '_blank');
+				}	
 			},
+
+			onError(error) {
+				console.log(error);
+			}
 
 		},
 
 		computed: {
 			title() {
-				return "Generate account of statement";
+				return "Generate statement of account";
 			},
 
 			action() {
@@ -163,9 +192,8 @@
 			},
 
 			url() {
-				return "/customers/statement/" + this.selected_customer.id;
+				return this.isMultiple? "/customers/statement_multiple" : "/customers/statement/" + this.selected_customer.id;
 			},
-
 		},
 
 		watch: {

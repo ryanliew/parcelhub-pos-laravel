@@ -393,6 +393,7 @@
 						{label: 'Cash', value: 'Cash'},
 						{label: 'Credit Card', value: 'Credit Card'},
 						{label: 'Cheque', value: 'Cheque'},
+						{label: 'GrabPay', value: 'GrabPay'},
 						{label: 'IBG', value: 'IBG'},
 						{label: 'Others', value: 'Others'}
 						],
@@ -898,6 +899,7 @@
 							{label: 'Cash', value: 'Cash'},
 							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Cheque', value: 'Cheque'},
+							{label: 'GrabPay', value: 'GrabPay'},
 							{label: 'IBG', value: 'IBG'},
 							{label: 'Others', value: 'Others'}
 						];
@@ -909,6 +911,7 @@
 							{label: 'Cash', value: 'Cash'},
 							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Cheque', value: 'Cheque'},
+							{label: 'GrabPay', value: 'GrabPay'},
 							{label: 'IBG', value: 'IBG'},
 							{label: 'Others', value: 'Others'}
 						];

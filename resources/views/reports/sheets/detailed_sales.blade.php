@@ -26,7 +26,7 @@
             <td>{{ $item->product->product_type->name }}</td>
             <td>{{ $item->invoice->invoice_no }}</td>
             <td>{{ $item->tracking_code }}</td>
-            <td>{{ number_format($item->total_price, 2, ".", "") }}</td>
+            <td>{{ number_format($item->total_price_after_discount, 2, ".", "") }}</td>
             <td>{{ $item->created_at->toDateString() }}</td>
         </tr>
         @endforeach

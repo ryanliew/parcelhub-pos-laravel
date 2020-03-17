@@ -61,14 +61,14 @@
 						},
 						enabled: false
 					},
-					// Enable the following if delete is allowed
-					// {
-					// 	text: 'Delete',
-					// 	action: function( e, dt, node, config ) {
-					// 		window.events.$emit('deletePermission', table.rows({selected: true}).data().toArray());
-					// 	},
-					// 	enabled: false
-					// },
+					//Enable the following if delete is allowed
+					{
+						text: 'Delete',
+						action: function( e, dt, node, config ) {
+							window.events.$emit('deletePermission', table.rows({selected: true}).data().toArray());
+						},
+						enabled: false
+					},
 					'excel', 'colvis'
 				],
 				ajax: '{!! route("permissions.index") !!}',
@@ -83,8 +83,8 @@
 		        var selectedRows = table.rows( { selected: true } ).count();
 		 
 		        table.button( 1 ).enable( selectedRows === 1 );
-		        // Enable if delete is allowed
-		        // table.button( 2 ).enable( selectedRows > 0 );
+		        //Enable if delete is allowed
+		        table.button( 2 ).enable( selectedRows > 0 );
 		    });
 
 		    window.events.$on("reload-table", function(){

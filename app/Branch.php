@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model
 {
-	protected $guarded = [];
-	
+    protected $guarded = [];
+    
     public function invoices()
     {
     	return $this->hasMany('App\Invoice');
@@ -82,6 +82,14 @@ class Branch extends Model
         $this->grant_permission($user, Permission::Write);
 
         return $user;
+    }
+
+    public function grant_admin_permission()
+    {
+        $admins = User::where('is_admin', true)->get();
+        $this->grant_permission($admins, Permission::Write);
+            
+        return $admins;
     }
 
     public function create_default_terminal()

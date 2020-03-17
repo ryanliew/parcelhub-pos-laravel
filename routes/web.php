@@ -87,6 +87,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/", "VendorController@store");
 		Route::get("/index", "VendorController@index")->name('vendors.index');
 		Route::post("/{vendor}", "VendorController@update");
+		Route::post("/{vendor}/delete", "VendorController@delete");
 	});
 
 	Route::group(['prefix' => 'zones'], function(){
@@ -149,11 +150,17 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/", "PermissionController@store");
 		Route::get("/index", "PermissionController@index")->name('permissions.index');
 		Route::post("/{permission}", "PermissionController@update");
+		Route::post("/{permission}/delete", "PermissionController@delete");
 	});
 
 	Route::group(['prefix' => "reports"], function(){
 		Route::get("/", "ReportController@page")->name('reports.page');
 		Route::get("/sales", "ReportController@sales_report");
+	});
+
+	Route::group(['prefix' => 'global/consignment/notes'], function(){
+		Route::get('/', "ItemController@page")->name('items.page');
+		Route::get("/index", "ItemController@index")->name('items.index');
 	});
 });
 
@@ -237,11 +244,13 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/index", "CustomerController@index")->name('customers.index');
 		Route::get("/list", "CustomerController@list");
 		Route::get("/create", "CustomerController@create")->name('customers.create');
+		Route::post("/statement_multiple", "CustomerController@statementMultiple"); 
 		Route::post("/", "CustomerController@store");
-		Route::post("/{customer}", "CustomerController@update");
-		Route::get("/{customer}","CustomerController@get");
 		Route::get("/statement/{customer}/{start}/{end}","CustomerController@view");
 		Route::post("/statement/{customer}","CustomerController@statement");
+		Route::get('/type-statement', "CustomerController@customerTypeStatement")->name('customers.type-statement');
+		Route::post("/{customer}", "CustomerController@update");
+		Route::get("/{customer}","CustomerController@get");
 	});
 
 	Route::group(['prefix' => 'cashups'], function(){
@@ -268,6 +277,12 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/{group}/products/import", "CustomerGroupController@import");
 		Route::post("/{group}/products/{product}", "CustomerGroupController@update_product");
 		Route::delete("/{group}/products/{product}", "CustomerGroupController@delete_product");
+	});
+
+	Route::group(['prefix' => 'profit_and_loss'], function(){
+		Route::get("/", "ProfitAndLossController@page")->name('profit-and-loss.page');
+		Route::post("/import", "ProfitAndLossController@import");
+		Route::get("/index", "ProfitAndLossController@index")->name('profit-and-loss.index');
 	});
 
 });
