@@ -23,6 +23,7 @@
 			<div class="card-header">
 				<div class="d-flex align-items-center">
 					<b class="flex-grow-1">Period: {{ request()->from }} - {{ request()->to }} - ( Total: RM{{number_format($report_detail->sum("total_sales"), 2, ".", "") }} )</b>
+					<a class="download-button" href="{{ url()->full() }}&exportall=true">Generate excel</a>
 				</div>
 			</div>
 			<div class="card-body">

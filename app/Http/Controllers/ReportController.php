@@ -45,13 +45,16 @@ class ReportController extends Controller
         }
         $report_detail = collect([]);
        
-        if(request()->export)
+        if(request()->export || request()->exportall)
         {
             $user = auth()->user()->id;
             $current_timestamp = str_slug(Carbon::now());
             $folder_name = 'Sales_reports_' . $user . "_" . $current_timestamp;
         }
 
+        $all_branches_products = collect([]);
+        $all_branches_vendors = collect([]);
+        $all_branches_items = collect([]);
         foreach($branch as $b)
         {
             $invoices = $b->invoices()->active()->whereBetween('created_at', [$from, $to->toDateString()])->get()->pluck('id');
@@ -65,17 +68,35 @@ class ReportController extends Controller
             $total_sales = $items->sum('total_price_after_discount');
             $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
 
+            $branch_products = ['products' => $products, 'branch' => $b];
+            $branch_vendors = ['vendors' => $vendors, 'branch' => $b];
+            $branch_items = ['items' => $items];
             $detail = ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $b, 'vendors_sum' => $vendors_sum, 'total_sales' => $total_sales];           
 
-            if(request()->export)   
+            if(!request()->exportall) // exportall only true when click download inside the all branches sales report, when download in dialog, excel are generated branch per branch
             {
-                $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name);
+                $all_branches_products = collect([]);
+                $all_branches_vendors = collect([]);
+                $all_branches_items = collect([]);
+            }
+            $all_branches_products->push($branch_products);
+            $all_branches_vendors->push($branch_vendors);
+            $all_branches_items->push($branch_items);
+
+            if(request()->export)   
+            {                
+                $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items);
             }
 
             $report_detail->push($detail);
         }
+        
+        if(request()->exportall)
+        {
+           $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items);      
+        }
 
-        if(request()->export)
+        if(request()->export || request()->exportall)
         {
             return $this->compress_sales_report_in_zip($folder_name);
         }
@@ -84,7 +105,7 @@ class ReportController extends Controller
         //return view('reports.sales', ['report_detail' => $report_detail] );
     }
 
-    public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name) 
+    public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items) 
     {
         $filename = "Sales Report (" . $from . " - " .  $to->toDateString() . ')';
 
@@ -94,23 +115,30 @@ class ReportController extends Controller
                mkdir(storage_path('exports/' . $folder_name), 0777, true);
             }
 
-            $filename = $folder_name . '/' . $filename . " " . $branch->name;
+            if(request()->exportall)
+            {
+                $filename = $folder_name . '/' . $filename . " all branches";
+            }
+            else
+            {
+                $filename = $folder_name . '/' . $filename . " " . $branch->name;
+            } 
         }
 
-        return Excel::create($filename, function($excel) use ($vendors, $products, $items){ 
-            $excel->sheet('Sales by product', function($sheet) use ($products) {
-                $sheet->loadView('reports.sheets.sales', ['products' => $products]);
+        return Excel::create($filename, function($excel) use ($vendors, $products, $items, $all_branches_products, $all_branches_vendors, $all_branches_items){ 
+            $excel->sheet('Sales by product', function($sheet) use ($all_branches_products) {
+                $sheet->loadView('reports.sheets.sales', ['all_branches_products' => $all_branches_products]);
             });
 
-            $excel->sheet('Vendor sale', function($sheet) use ($vendors){
-                $sheet->loadView('reports.sheets.vendor', ['vendors' => $vendors]);
+            $excel->sheet('Vendor sale', function($sheet) use ($all_branches_vendors){
+                $sheet->loadView('reports.sheets.vendor', ['all_branches_vendors' => $all_branches_vendors]);
             });
 
-            $excel->sheet('Detailed sales', function($sheet) use ($items){
+            $excel->sheet('Detailed sales', function($sheet) use ($all_branches_items){
                 $sheet->setColumnFormat([
                     'H' => '@'
                 ]);
-                $sheet->loadView('reports.sheets.detailed_sales', ['items' => $items]);
+                $sheet->loadView('reports.sheets.detailed_sales', ['all_branches_items' => $all_branches_items]);
                 
             });
         })->store('xlsx');
