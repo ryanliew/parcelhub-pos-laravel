@@ -403,9 +403,6 @@ class InvoiceController extends Controller
         if(!$admins->contains(function($value, $key) use ($password){ return Hash::check($password, $value->password); })) 
             $message = "Incorrect password, you need an admin password";
 
-        if(!auth()->user()->isAdmin()) 
-            $message = "This feature is not opened yet";
-
         if($invoice->cashup()->count() > 0)
             $message = "Invoice already included in cash up";
 
