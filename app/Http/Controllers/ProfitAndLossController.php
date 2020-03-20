@@ -53,13 +53,17 @@ class ProfitAndLossController extends Controller
 		// create new records from excel record
         foreach($profit_losses as $profit_loss)
         {
-            ProfitAndLoss::updateOrCreate(["tracking_code" => $profit_loss["tracking_code"], "created_by" => request()->created_by],
-                [
-                    "tracking_code" => $profit_loss['tracking_code'],
-					"sales" => $profit_loss['sales'],
-					"created_by" => request()->created_by,
-                ]
-            );
+            // ProfitAndLoss::updateOrCreate(["tracking_code" => $profit_loss["tracking_code"], 
+            //                                 "created_by" => request()->created_by],
+            //                                 [
+            //                                     "tracking_code" => $profit_loss['tracking_code'],
+            //                                     "sales" => $profit_loss['sales'],
+            //                                     "created_by" => request()->created_by,
+            //                                 ]);
+
+            ProfitAndLoss::Create([ "tracking_code" => $profit_loss['tracking_code'],
+                                    "sales" => $profit_loss['sales'],
+                                    "created_by" => request()->created_by ]);
 
             $count++;
         }

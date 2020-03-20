@@ -112,13 +112,15 @@
 	<div id="page-wrap">
 		<div class="border-bottom" style="padding-bottom: 50px">
 			<div class="header-center">
-				<strong>{{ $customer->branch->owner }}({{ $customer->branch->registration_no }}) </strong> 
-				@if($customer->branch->gst_no )
-					<strong>| (GST No: {{$customer->branch->gst_no }})</strong>
-				@endif
+				<strong style="font-size: 25px;">{{ $customer->branch->owner }}</strong> 
 
+				{{-- @if($customer->branch->gst_no )
+					<strong>| (GST No: {{$customer->branch->gst_no }})</strong>
+				@endif --}}
 			</div>
+
 			<div style="vertical-align: middle; text-align: center;"> 
+				{{ $customer->branch->registered_company_name }} <small><i>({{ $customer->branch->registration_no }})</i></small>)<br>
 				{{ $customer->branch->address }}
 			</div>
 			<div style="vertical-align: middle; text-align: center;"> 
