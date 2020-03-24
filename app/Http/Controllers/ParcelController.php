@@ -28,7 +28,7 @@ class ParcelController extends Controller
 
         $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcel/checkin', [
         'headers' => [
-            'Authorization' => env('VMB_USER_TOKEN'),
+            'Authorization' => "Bearer " . env('VMB_USER_TOKEN'),
         ], 
         'json' => ['tracking_code' => $tracking_code, 
                     'process_by_name' => $process_by_name, 
@@ -57,7 +57,7 @@ class ParcelController extends Controller
         $item = Branch::all();
         $response = $client->request('GET', env('VIRTUAL_MAILBOX_URI').'/api/data/parcels', [
         'headers' => [
-            'Authorization' => env('VMB_USER_TOKEN'),
+            'Authorization' => "Bearer " . env('VMB_USER_TOKEN'),
         ], 
         'json' => ['branch_code' => $branch_code]
         ]);
@@ -67,17 +67,20 @@ class ParcelController extends Controller
         $data = json_decode( $response->getBody()->getContents() );     
 
         $parcels_detail = collect([]);
-        foreach($data->parcels as $parcel)
+        if($data)
         {
-            $detail = ['tracking_code' => $parcel->tracking_code, 
-                        'phone' => $parcel->phone,
-                        'status' => $parcel->status,
-                        'charge' => $parcel->charge];      
-            $parcels_detail->push($detail);
+            foreach($data->parcels as $parcel)
+            {
+                $detail = ['tracking_code' => $parcel->tracking_code, 
+                            'phone' => $parcel->phone,
+                            'status' => $parcel->status,
+                            'charge' => $parcel->charge];      
+                $parcels_detail->push($detail);
+            }
+            $data = (object) [];
+            $prop = 'data';
+            $data->{$prop} = $parcels_detail;
         }
-        $data = (object) [];
-        $prop = 'data';
-        $data->{$prop} = $parcels_detail;
         
         return json_encode($data);
     }
@@ -99,7 +102,7 @@ class ParcelController extends Controller
     
         $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcels/charge', [
         'headers' => [
-            'Authorization' => env('VMB_USER_TOKEN'),
+            'Authorization' => "Bearer " . env('VMB_USER_TOKEN'),
         ], 
         'json' => ['items' => $vmb_items, 
                     'pos_user_email' => auth()->user()->email,                     
@@ -123,7 +126,7 @@ class ParcelController extends Controller
     
         $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcels/charge/validate', [
         'headers' => [
-            'Authorization' => env('VMB_USER_TOKEN'),
+            'Authorization' => "Bearer " . env('VMB_USER_TOKEN'),
         ], 
         'json' => ['items' => $vmb_items, 
                     'pos_user_email' => auth()->user()->email,                     
