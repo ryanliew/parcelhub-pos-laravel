@@ -295,7 +295,7 @@
 
 				hasNetworkError: false,
 
-				
+				is_topup: false,
 			};
 		},
 
@@ -357,6 +357,7 @@
 				this.selectedCourier = _.filter(this.couriers, function(courier){ return this.item.courier_id == courier.value; }.bind(this))[0];
 				
 				this.has_detail = this.selectedProductType.has_detail;
+				this.is_topup = this.selectedProductType.is_topup;
 				this.getProducts();
 				// this.should_update = true;
 			},
@@ -402,6 +403,7 @@
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
 					this.has_detail = this.selectedProductType.has_detail;
+					this.is_topup = this.selectedProductType.is_topup;
 					let selectedZone = this.item.zone ? this.item.zone : 0;
 					axios.get('/data/products?zone=' + selectedZone + '&type=' + this.selectedProductType.value)
 						.then(response => this.setProducts(response))
@@ -638,8 +640,10 @@
 				if(this.selectedProductType.has_detail && this.description && !this.tracking_no)
 					// We already have a product which needs tracking code selected but tracking code not entered
 					return 'Required';
-				else if(this.tracking_no_repeating && this.canEdit)
+				else if(this.tracking_no_repeating && this.canEdit && !this.selectedProductType.is_topup)
+				{
 					return 'Invalid';
+				}
 
 				return '';
 			},
