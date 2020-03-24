@@ -172,6 +172,11 @@ class InvoiceController extends Controller
             return $this->returnValidationErrorResponse([['something' => 'something']], $error);
         }
 
+        // create transactions in virtual mail box
+        $parcel = new ParcelIntegrate;
+        $vmb_items = $parcel->getParcelItems(request()->items);
+        $this->createVMBTransations($vmb_items);
+
         $user = User::find(request()->created_by);
 
         $branch = auth()->user()->current;
@@ -227,11 +232,7 @@ class InvoiceController extends Controller
         }
         //$invoice->items()->create($items);
 
-        // create transactions in virtual mail box
-        $parcel = new ParcelIntegrate;
-        $vmb_items = $parcel->getParcelItems(request()->items);
-        $this->createVMBTransations($vmb_items);
-
+      
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
         
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
