@@ -241,7 +241,7 @@ class InvoiceController extends Controller
     
         $response = $client->request('POST', env('VIRTUAL_MAILBOX_URI').'/api/parcels/transactions', [
         'headers' => [
-            'Authorization' => env('VMB_USER_TOKEN'),
+            'Authorization' => "Bearer " . env('VMB_USER_TOKEN'),
         ], 
         'json' => ['items' => $items, 
                     'pos_user_name' => auth()->user()->name,
