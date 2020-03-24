@@ -152,12 +152,14 @@ class InvoiceController extends Controller
         {
             // We need to make sure that empty tracking codes don't get checked
 
-            $code = trim($item->tracking_code);
+            $code = trim($item->tracking_code);            
 
             $repeating = Item::where('tracking_code', $code)
-                            ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
-                            ->where('invoices.branch_id', auth()->user()->current->id)
-                            ->count() > 0;
+                        ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                        ->where('invoices.branch_id', auth()->user()->current->id)
+                        ->join('product_types', 'product_type_id' , '=' , 'product_types.id')
+                        ->where('product_types.is_topup', false)
+                        ->count() > 0;
 
             if($repeating && !empty($code)) {
                 $repeating_trackings->push($item->tracking_code);
@@ -391,6 +393,8 @@ class InvoiceController extends Controller
                         ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
                         ->where('invoices.branch_id', auth()->user()->current->id)
                         ->whereNull('invoices.canceled_on')
+                        ->join('product_types', 'product_type_id' , '=' , 'product_types.id')
+                        ->where('product_types.is_topup', false)
                         ->count() > 0];
     }
 
