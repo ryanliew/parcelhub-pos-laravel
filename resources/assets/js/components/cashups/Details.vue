@@ -74,17 +74,19 @@
 			<table class="table" id="invoices">
 			  	<tbody>
 				  	<tr>
+				  		<th>Invoice Date</th>
 				   		<th>Invoice no</th>
 					    <th>Payment Type</th>
 				      	<th>Expected RM</th>
 				      	<th>%</th>
 				      	<th>Payment #</th>
 				  	</tr>
-				  	<tr class="item-row" v-for="invoice in cashup.invoices">		
+				  	<tr class="item-row" v-for="invoice in sortedInvoices">		
+				  		<td>{{ invoice.created_at }}</td>
 				  		<td>{{ invoice.invoice_no }}</td>
 				  		<td>{{ invoice.pivot.payment_method }}</td>
 				  		<td>{{ invoice.pivot.total | price }}</td>
-				  		<td>{{ cashup.total > 0 ? ( invoice.pivot.total / cashup.total * 100 ).toFixed(2) : 0.00 | price }}</td>
+				  		<td>{{ cashup.total > 0 ? ( invoice.pivot.total / cashup.total * 100 ) : 0.00 | price }}</td>
 				  		<td>{{ invoice.pivot.payment_id ? invoice.pivot.payment_id : 'N/A' }}</td>
 				  	</tr>
 				</tbody>
@@ -179,6 +181,10 @@
 
 			submitTooltip() {
 				return Number.isNaN(this.actual) ? "Please fill in all actual amount" : "";
+			},
+
+			sortedInvoices() {
+				return _.sortBy(this.cashup.invoices, function(invoice){ return invoice.created_at; });
 			}
 		}
 
