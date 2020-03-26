@@ -199,10 +199,14 @@ class Form {
      */
     onSuccess(data) {
         flash(data.message);
-        
+
         if(!data.cancel_reset)
         {
             this.reset();
+        }
+        else
+        {
+            this.submitting = false;
         }
     }
 

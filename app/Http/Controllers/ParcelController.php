@@ -113,7 +113,9 @@ class ParcelController extends Controller
         $response->getBody();
         $data = json_decode( $response->getBody()->getContents() );
 
-        return json_encode(['message' => $data->message, "return_items" => $data->return_items]);        
+        $cancel_reset = true;   
+
+        return json_encode(['message' => $data->message, "return_items" => $data->return_items, 'cancel_reset' => $cancel_reset]);        
     }
 
     public function validateItems()
@@ -137,7 +139,7 @@ class ParcelController extends Controller
         $response->getBody();
         $data = json_decode( $response->getBody()->getContents() ); 
 
-        $cancel_reset = false;  // do not reset the data for validation    
+        $cancel_reset = true;  // do not reset the data for validation    
 
         return json_encode(['message' => $data->message, 'is_valid' => $data->is_valid, 'cancel_reset' => $cancel_reset]);  
     }
