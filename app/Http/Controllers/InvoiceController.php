@@ -152,14 +152,14 @@ class InvoiceController extends Controller
         {
             // We need to make sure that empty tracking codes don't get checked
 
-            $code = trim($item->tracking_code);            
+            $code = trim($item->tracking_code);
 
             $repeating = Item::where('tracking_code', $code)
-                        ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
-                        ->where('invoices.branch_id', auth()->user()->current->id)
-                        ->join('product_types', 'product_type_id' , '=' , 'product_types.id')
-                        ->where('product_types.is_topup', false)
-                        ->count() > 0;
+                            ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                            ->where('invoices.branch_id', auth()->user()->current->id)
+                            ->join('product_types', 'product_type_id' , '=' , 'product_types.id')
+                            ->where('product_types.is_topup', false)
+                            ->count() > 0;
 
             if($repeating && !empty($code)) {
                 $repeating_trackings->push($item->tracking_code);
@@ -175,7 +175,10 @@ class InvoiceController extends Controller
         // create transactions in virtual mail box
         $parcel = new ParcelIntegrate;
         $vmb_items = $parcel->getParcelItems(request()->items);
-        $this->createVMBTransations($vmb_items);
+        if($vmb_items)
+        {
+            $this->createVMBTransations($vmb_items);
+        }
 
         $user = User::find(request()->created_by);
 
@@ -232,7 +235,6 @@ class InvoiceController extends Controller
         }
         //$invoice->items()->create($items);
 
-      
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
         
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
@@ -407,6 +409,9 @@ class InvoiceController extends Controller
 
         if(!$admins->contains(function($value, $key) use ($password){ return Hash::check($password, $value->password); })) 
             $message = "Incorrect password, you need an admin password";
+
+        if(!auth()->user()->isAdmin()) 
+            $message = "This feature is not opened yet";
 
         if($invoice->cashup()->count() > 0)
             $message = "Invoice already included in cash up";
