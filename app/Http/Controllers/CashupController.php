@@ -200,7 +200,7 @@ class CashupController extends Controller
 
     public function report(Cashup $cashup)
     {
-    	$html = View::make('cashup.report', ["cashup" => $cashup, "invoices" => $cashup->invoices])->render();
+    	$html = View::make('cashup.report', ["cashup" => $cashup, "invoices" => $cashup->invoices()->orderBy('created_at')->get()])->render();
 
         $newPDF = new mPDF(['tempDir' => storage_path('mpdf'), 'format' => 'Legal']);
         $newPDF->WriteHTML($html);
