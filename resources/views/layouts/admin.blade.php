@@ -110,7 +110,7 @@
                         </li>
                     </ul>
                 </div>
-                <span class="badge badge-danger">You are in Admin panel</span>
+                <span class="badge badge-danger">Admin panel</span>
             </div>
         </div>
 
