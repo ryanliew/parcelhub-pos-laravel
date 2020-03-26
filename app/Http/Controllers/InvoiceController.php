@@ -373,7 +373,7 @@ class InvoiceController extends Controller
     {
         $html = View::make($view, ["invoice" => $invoice])->render();
 
-        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF = new mPDF(['format' => 'Legal', 'tempDir' => storage_path('mpdf')]);
         $newPDF->WriteHTML($html);
         $newPDF->setFooter('{PAGENO}/{nbpg}');
 
