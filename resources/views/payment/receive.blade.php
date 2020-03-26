@@ -92,6 +92,7 @@
 												<option value="Cash">Cash</option>
 				  								<option value="Cheque">Cheque</option>
 				  								<option value="Credit card">Credit card</option>
+				  								<option value="GrabPay">GrabPay</option>
 				  								<option value="IBG">IBG</option>
 				  								<option value="Others">Others</option>
 										</select>
