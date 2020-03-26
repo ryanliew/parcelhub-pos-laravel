@@ -157,6 +157,8 @@ class InvoiceController extends Controller
             $repeating = Item::where('tracking_code', $code)
                             ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
                             ->where('invoices.branch_id', auth()->user()->current->id)
+                            ->join('product_types', 'product_type_id' , '=' , 'product_types.id')
+                            ->where('product_types.is_topup', false)
                             ->count() > 0;
 
             if($repeating && !empty($code)) {
@@ -168,6 +170,14 @@ class InvoiceController extends Controller
             $error = "These tracking number already exists: " . $repeating_trackings->implode(', ');
         
             return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+        }
+
+        // create transactions in virtual mail box
+        $parcel = new ParcelIntegrate;
+        $vmb_items = $parcel->getParcelItems(request()->items);
+        if($vmb_items)
+        {
+            $this->createVMBTransations($vmb_items);
         }
 
         $user = User::find(request()->created_by);
@@ -224,11 +234,6 @@ class InvoiceController extends Controller
             ]);
         }
         //$invoice->items()->create($items);
-
-        // create transactions in virtual mail box
-        $parcel = new ParcelIntegrate;
-        $vmb_items = $parcel->getParcelItems(request()->items);
-        $this->createVMBTransations($vmb_items);
 
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
         
@@ -391,6 +396,8 @@ class InvoiceController extends Controller
                         ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
                         ->where('invoices.branch_id', auth()->user()->current->id)
                         ->whereNull('invoices.canceled_on')
+                        ->join('product_types', 'product_type_id' , '=' , 'product_types.id')
+                        ->where('product_types.is_topup', false)
                         ->count() > 0];
     }
 
