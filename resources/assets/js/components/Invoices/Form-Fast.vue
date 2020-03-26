@@ -694,6 +694,7 @@
 			{	
 				this.isHideConfirm = false;
 				let validate_message = "Are you sure?"
+				
 				if(!response.is_valid){
 					validate_message = "<div class='alert alert-danger error-message'>"
 										+ "<div>" + response.message + "</div>"
