@@ -85953,6 +85953,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ["created_by"],
@@ -85962,7 +85963,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				created_by: this.created_by,
 				fileName: "",
 				file: ""
-			})
+
+			}),
+			processing: false
 		};
 	},
 	mounted: function mounted() {},
@@ -85975,6 +85978,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		importFromExcel: function importFromExcel() {
 			var _this = this;
 
+			this.processing = true;
 			var url = "profit_and_loss/import";
 			this.form.post(url).then(function (response) {
 				return _this.onSuccess(response);
@@ -85984,9 +85988,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		onSuccess: function onSuccess(response) {
 			console.log("Success");
+			this.processing = false;
 			window.events.$emit("reload-table");
 		},
-		onError: function onError(error) {}
+		onError: function onError(error) {
+			this.processing = false;
+		}
 	}
 });
 
@@ -86011,6 +86018,7 @@ var render = function() {
         _c(
           "button",
           {
+            staticClass: "btn btn-primary",
             attrs: { disabled: !_vm.form.file },
             on: {
               click: function($event) {
@@ -86020,6 +86028,10 @@ var render = function() {
           },
           [_vm._v("Import")]
         ),
+        _vm._v(" "),
+        _vm.processing
+          ? _c("i", { staticClass: "fa fa-spinner fa-spin fa-2x fa-fw" })
+          : _vm._e(),
         _vm._v(" "),
         _vm._m(0)
       ])
@@ -86038,6 +86050,7 @@ var staticRenderFns = [
         _c(
           "button",
           {
+            staticClass: "btn btn-primary",
             staticStyle: { float: "right" },
             attrs: { title: "Download sample excel" }
           },
