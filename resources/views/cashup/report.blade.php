@@ -190,6 +190,7 @@
 			<table id="invoices" cellpadding="5" height=100% >
 			  	<tbody>
 				  	<tr>
+				  		<th>Invoice date</th>
 				   		<th>Invoice no</th>
 					    <th>Payment Type</th>
 				      	<th>Expected RM</th>
@@ -199,6 +200,7 @@
 				  	@foreach($invoices as $invoice)
 				  		@if($invoice->pivot->total > 0)
 						  	<tr class="item-row text-center">
+						  		<td class="text-left">{{ $invoice->created_at }}</td>
 						  		<td class="text-left">{{ $invoice->invoice_no }}</td>
 						  		<td class="text-center">{{ $invoice->pivot->payment_method }}</td>
 						  		<td class="text-right">{{ number_format( $invoice->pivot->total, 2, ".", ",") }}</td>

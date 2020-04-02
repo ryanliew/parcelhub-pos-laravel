@@ -30,6 +30,7 @@
 							</tr>
 						</thead>
 					</table> 
+					<div id="processingIndicator"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>Loading...</div>
 				</div>
 			</div>
 		</div>
@@ -97,6 +98,10 @@
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();
 		    });
+
+			table.on( 'processing.dt', function ( e, settings, processing ) {
+				$('#processingIndicator').css( 'display', processing ? 'flex' : 'none' );
+			});
 		});
 
 		

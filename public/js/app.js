@@ -77279,8 +77279,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			products: [],
 
-			hasNetworkError: false
+			hasNetworkError: false,
 
+			is_topup: false
 		};
 	},
 	mounted: function mounted() {
@@ -77349,6 +77350,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			}.bind(this))[0];
 
 			this.has_detail = this.selectedProductType.has_detail;
+			this.is_topup = this.selectedProductType.is_topup;
 			this.getProducts();
 			// this.should_update = true;
 		},
@@ -77397,6 +77399,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// Product type selected, get the products of the same type
 			if (this.selectedProductType) {
 				this.has_detail = this.selectedProductType.has_detail;
+				this.is_topup = this.selectedProductType.is_topup;
 				var selectedZone = this.item.zone ? this.item.zone : 0;
 				axios.get('/data/products?zone=' + selectedZone + '&type=' + this.selectedProductType.value).then(function (response) {
 					return _this2.setProducts(response);
@@ -77644,7 +77647,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		tracking_no_error: function tracking_no_error() {
 			if (this.selectedProductType.has_detail && this.description && !this.tracking_no)
 				// We already have a product which needs tracking code selected but tracking code not entered
-				return 'Required';else if (this.tracking_no_repeating && this.canEdit) return 'Invalid';
+				return 'Required';else if (this.tracking_no_repeating && this.canEdit && !this.selectedProductType.is_topup) {
+				return 'Invalid';
+			}
 
 			return '';
 		},
@@ -85050,6 +85055,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -85125,6 +85132,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		submitTooltip: function submitTooltip() {
 			return Number.isNaN(this.actual) ? "Please fill in all actual amount" : "";
+		},
+		sortedInvoices: function sortedInvoices() {
+			return _.sortBy(this.cashup.invoices, function (invoice) {
+				return invoice.created_at;
+			});
 		}
 	}
 
@@ -85319,8 +85331,10 @@ var render = function() {
           [
             _vm._m(5),
             _vm._v(" "),
-            _vm._l(_vm.cashup.invoices, function(invoice) {
+            _vm._l(_vm.sortedInvoices, function(invoice) {
               return _c("tr", { staticClass: "item-row" }, [
+                _c("td", [_vm._v(_vm._s(invoice.created_at))]),
+                _vm._v(" "),
                 _c("td", [_vm._v(_vm._s(invoice.invoice_no))]),
                 _vm._v(" "),
                 _c("td", [_vm._v(_vm._s(invoice.pivot.payment_method))]),
@@ -85334,10 +85348,7 @@ var render = function() {
                     _vm._s(
                       _vm._f("price")(
                         _vm.cashup.total > 0
-                          ? (
-                              (invoice.pivot.total / _vm.cashup.total) *
-                              100
-                            ).toFixed(2)
+                          ? (invoice.pivot.total / _vm.cashup.total) * 100
                           : 0.0
                       )
                     )
@@ -85436,6 +85447,8 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("tr", [
+      _c("th", [_vm._v("Invoice Date")]),
+      _vm._v(" "),
       _c("th", [_vm._v("Invoice no")]),
       _vm._v(" "),
       _c("th", [_vm._v("Payment Type")]),
@@ -85940,6 +85953,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ["created_by"],
@@ -85949,7 +85963,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				created_by: this.created_by,
 				fileName: "",
 				file: ""
-			})
+
+			}),
+			processing: false
 		};
 	},
 	mounted: function mounted() {},
@@ -85962,6 +85978,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		importFromExcel: function importFromExcel() {
 			var _this = this;
 
+			this.processing = true;
 			var url = "profit_and_loss/import";
 			this.form.post(url).then(function (response) {
 				return _this.onSuccess(response);
@@ -85971,9 +85988,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		onSuccess: function onSuccess(response) {
 			console.log("Success");
+			this.processing = false;
 			window.events.$emit("reload-table");
 		},
-		onError: function onError(error) {}
+		onError: function onError(error) {
+			this.processing = false;
+		}
 	}
 });
 
@@ -85998,6 +86018,7 @@ var render = function() {
         _c(
           "button",
           {
+            staticClass: "btn btn-primary",
             attrs: { disabled: !_vm.form.file },
             on: {
               click: function($event) {
@@ -86007,6 +86028,10 @@ var render = function() {
           },
           [_vm._v("Import")]
         ),
+        _vm._v(" "),
+        _vm.processing
+          ? _c("i", { staticClass: "fa fa-spinner fa-spin fa-2x fa-fw" })
+          : _vm._e(),
         _vm._v(" "),
         _vm._m(0)
       ])
@@ -86025,6 +86050,7 @@ var staticRenderFns = [
         _c(
           "button",
           {
+            staticClass: "btn btn-primary",
             staticStyle: { float: "right" },
             attrs: { title: "Download sample excel" }
           },
