@@ -1,11 +1,12 @@
 <template>
 	<div>
 		<div class="card" id="import-header">
-			<div class="card-body">            
+			<div class="card-body">          
     			<input class="file-input" type="file" ref="file" name="file" @change="fileUploaded">
-				<button @click="importFromExcel()" :disabled="!form.file">Import</button>
+				<button class="btn btn-primary" @click="importFromExcel()" :disabled="!form.file">Import</button>
+				<i v-if="processing" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
 				<a href="/profit_and_loss.xlsx" target="_blank">
-					<button style="float: right;" title="Download sample excel">Download</button>
+					<button class="btn btn-primary" style="float: right;" title="Download sample excel">Download</button>
 				</a>
             </div>		
 		</div>
@@ -21,11 +22,14 @@
 					created_by: this.created_by,
 					fileName: "",
 					file: "",
+					
 				}),	
+				processing: false,
 			};
 		},
 
 		mounted() {
+			
 		},
 
 		methods: {
@@ -33,7 +37,8 @@
 				this.form.file = this.$refs.file.files[0];
 			},
 
-            importFromExcel() {				
+            importFromExcel() {		
+				this.processing = true;
 				let url = "profit_and_loss/import";
 				this.form.post(url)
 					.then(response => this.onSuccess(response))
@@ -42,10 +47,12 @@
 
 			onSuccess(response) {
 				console.log("Success");
+				this.processing = false;
 				window.events.$emit("reload-table");
 			},
 
-			onError(error) {				
+			onError(error) {	
+				this.processing = false;			
 			},		
 		}		
 	}
