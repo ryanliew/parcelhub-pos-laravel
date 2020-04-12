@@ -45,7 +45,8 @@ class ParcelController extends Controller
 
         $data = json_decode( $response->getBody()->getContents() );
 
-        return json_encode(['message' => $data->message]);        
+        $cancel_reset = $data->invalid;
+        return json_encode(['message' => $data->message, 'cancel_reset' => $cancel_reset]);        
     }
 
     public function index()
@@ -89,7 +90,7 @@ class ParcelController extends Controller
 	{
 		request()->validate([
 			"tracking_code" => 'required',
-            "phone" => "required|regex:/^(01)[0-46-9]*[0-9]{7,8}$/",
+            "phone" => "required|regex:/^(601)[0-46-9]*[0-9]{7,8}$/",
         ]);
     }   
 
