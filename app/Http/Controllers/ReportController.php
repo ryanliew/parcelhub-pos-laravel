@@ -49,7 +49,7 @@ class ReportController extends Controller
         {
             $user = auth()->user()->id;
             $current_timestamp = str_slug(Carbon::now());
-            $folder_name = 'Sales_reports_' . $user;
+            $folder_name = 'salesreports';
         }
 
         $all_branches_products = collect([]);
