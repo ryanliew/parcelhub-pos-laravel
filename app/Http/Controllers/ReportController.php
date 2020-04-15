@@ -49,7 +49,7 @@ class ReportController extends Controller
         {
             $user = auth()->user()->id;
             $current_timestamp = str_slug(Carbon::now());
-            $folder_name = 'salesreports';
+            $folder_name = 'Sales_reports_' . $user . "_" . $current_timestamp;
         }
 
         $all_branches_products = collect([]);
@@ -146,7 +146,7 @@ class ReportController extends Controller
 
     public function compress_sales_report_in_zip($folder_name)
     {
-        $zip_file = $folder_name . '.zip';
+        $zip_file = 'storage/' . $folder_name . '.zip';
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         $zip->addEmptyDir(storage_path($folder_name));
