@@ -11,7 +11,8 @@ return [
     | to clear the cached version.
     |
     */
-    'version' => '2.7.1.2',
+
+    'version' => '2.8.0.4',
     /*
     |--------------------------------------------------------------------------
     | Application Name
