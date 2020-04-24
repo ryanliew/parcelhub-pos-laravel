@@ -85168,10 +85168,7 @@ var render = function() {
                     _vm._s(
                       _vm._f("price")(
                         _vm.cashup.total > 0
-                          ? (
-                              (invoice.pivot.total / _vm.cashup.total) *
-                              100
-                            ).toFixed(2)
+                          ? (invoice.pivot.total / _vm.cashup.total) * 100
                           : 0.0
                       )
                     )

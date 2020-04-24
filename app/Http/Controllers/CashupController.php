@@ -70,7 +70,10 @@ class CashupController extends Controller
 
             if($payments->count() > 0) {
                 
-                $cashup->invoices()->attach($this->formatPayments($payments));
+                $payments = $this->formatAndAttachPayments($payments, $cashup);
+
+                // To cater for multiple same payment for the same invoice within this cashup
+                // $cashup->invoices()->attach($this->formatPayments($payments));
 
                 $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
 
@@ -180,9 +183,9 @@ class CashupController extends Controller
         return $arr;
     }
 
-    public function formatPayments($payments)
+    public function formatAndAttachPayments($payments, $cashup)
     {   
-        $invoices = collect();
+        // $invoices = collect();
 
         foreach($payments as $payment) {
             foreach($payment->payments as $payment_invoice) {
@@ -190,12 +193,21 @@ class CashupController extends Controller
                 $payment_invoice->invoice->paid = $payment_invoice->total;
                 $payment_invoice->invoice->payment_type = $payment->payment_method;
                 $payment_invoice->invoice->payment_id = $payment->id;
-                $invoices->push($payment_invoice->invoice);
+
+                $invoice = $payment_invoice->invoice;
+                // $invoices->push($payment_invoice->invoice);
+
+                $cashup->invoices()
+                        ->attach($invoice->id, [
+                            'total' => $invoice->total, 
+                            'payment_method' => $invoice->payment_type, 
+                            'payment_id' => $invoice->payment_id
+                        ]);
             }
         }
 
-        return $this->formatInvoices($invoices);
-
+        // To cater for multiple same payment for the same invoice within this cashup
+        return $cashup;
     }
 
     public function report(Cashup $cashup)
