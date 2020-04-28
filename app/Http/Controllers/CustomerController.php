@@ -142,10 +142,17 @@ class CustomerController extends Controller
                        
         foreach($invoices as $invoice)
         {
-            $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
+            $outstanding = $invoice->total 
+                            - $invoice->payment->sum('paid') 
+                            - ($invoice->total > 0 
+                                ? min($invoice->paid, $invoice->total) 
+                                : max($invoice->paid, $invoice->total)
+                            );
+
+            
             
             if( $getAll || $outstanding != 0)
-            {                
+            {   
                 $debit = [
                     'date' => $invoice->created_at, 
                     'total' => $invoice->total, 
