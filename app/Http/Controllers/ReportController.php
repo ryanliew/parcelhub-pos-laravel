@@ -90,10 +90,11 @@ class ReportController extends Controller
 
             $report_detail->push($detail);
         }
+
         
         if(request()->exportall)
         {
-           $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items);      
+           $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items, $report_detail);      
         }
 
         if(request()->export || request()->exportall)
@@ -105,7 +106,7 @@ class ReportController extends Controller
         //return view('reports.sales', ['report_detail' => $report_detail] );
     }
 
-    public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items) 
+    public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items, $report_detail = null) 
     {
         $filename = "Sales Report (" . $from . " - " .  $to->toDateString() . ')';
 
@@ -125,7 +126,13 @@ class ReportController extends Controller
             } 
         }
 
-        return Excel::create($filename, function($excel) use ($vendors, $products, $items, $all_branches_products, $all_branches_vendors, $all_branches_items){ 
+        return Excel::create($filename, function($excel) use ($vendors, $products, $items, $report_detail, $all_branches_products, $all_branches_vendors, $all_branches_items){ 
+            if($report_detail) {
+                $excel->sheet('Sales by outlet', function($sheet) use ($report_detail) {
+                    $sheet->loadView('reports.sheets.total_sales_by_outlet', ['report_details' => $report_detail]);
+                });
+            }
+
             $excel->sheet('Sales by product', function($sheet) use ($all_branches_products) {
                 $sheet->loadView('reports.sheets.sales', ['all_branches_products' => $all_branches_products]);
             });
