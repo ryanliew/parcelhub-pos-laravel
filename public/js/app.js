@@ -77271,6 +77271,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			// Product type selected, get the products of the same type
 			if (this.selectedProductType) {
+				console.log("Getting products list");
 				this.has_detail = this.selectedProductType.has_detail;
 				var selectedZone = this.item.zone ? this.item.zone : 0;
 				axios.get('/data/products?zone=' + selectedZone + '&type=' + this.selectedProductType.value).then(function (response) {
@@ -77307,7 +77308,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				this.productChange();
 			}
 			// If we dont have any products that matches
-			if (this.products.length == 0) {
+			if (this.products.length == 0 && this.canEdit) {
+				console.log("Equals 0!");
 				this.selectedProduct = '';
 				this.selectedProduct_error = "No matching SKU";
 				this.price = 0;
