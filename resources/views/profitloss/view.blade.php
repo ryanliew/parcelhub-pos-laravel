@@ -30,6 +30,7 @@
 							</tr>
 						</thead>
 					</table> 
+					<div id="processingIndicator"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>Loading...</div>
 				</div>
 			</div>
 		</div>
@@ -47,12 +48,19 @@
 				serverSide: true,
 				responsive: true,
 				colReorder: true,
+				lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
 				select: {
 					style: 'single'
 				},
 				dom: 'Blftip',
 				buttons: [
-					'excel', 'colvis'
+					{
+						extend: 'excel',
+						text: function ( dt, button, config ) {
+							return dt.i18n( 'buttons.excel', 'Generate excel' );
+						}
+					},
+					'colvis'
 				],
 				ajax: '{!! route("profit-and-loss.index") !!}',
 				columns: [
@@ -62,7 +70,20 @@
 					{data: 'margin'},					
 					{data: 'profit'} ,
 				],
-				"order": [[ 0, "asc" ]]
+				"order": [[ 0, "asc" ]],
+
+				"rowCallback": function( row, data, index ) {
+					var allData = this.api().column(0).data().toArray();
+					var num = 0;
+					allData.forEach( function (trackingcode) {
+					if(trackingcode == data.tracking_code){
+							num ++;
+						}
+					})
+					if(num>1){
+						$('td', row).css('background-color', 'Yellow');
+					}
+				}
 			});
 
 			// table.on( 'select deselect', function () {
@@ -73,11 +94,15 @@
 			//     @else
 			//     		table.button( 0 ).enable( selectedRows > 0 );
 			//     @endif
-		    // });
+			// });
 
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();
 		    });
+
+			table.on( 'processing.dt', function ( e, settings, processing ) {
+				$('#processingIndicator').css( 'display', processing ? 'flex' : 'none' );
+			});
 		});
 
 		
