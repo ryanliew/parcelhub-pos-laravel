@@ -208,6 +208,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/", "InvoiceController@page")->name('invoices.page');
 		Route::post("/", "InvoiceController@store");
 		Route::get("/index", "InvoiceController@index")->name('invoices.index');
+		Route::get("/index/payment", "InvoiceController@index_payment")->name("invoices.payment");
 		Route::get("/index/canceled", "InvoiceController@index_canceled")->name('invoices.index_canceled');
 		Route::get("/canceled", "InvoiceController@page_canceled")->name('invoices.canceled');
 		Route::post("/cancel/{invoice}", "InvoiceController@cancel");

@@ -7,6 +7,7 @@ use App\Item;
 use App\Product;
 use App\Tax;
 use App\User;
+use App\Customer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -92,6 +93,59 @@ class InvoiceController extends Controller
                     return $invoice->items->implode('tracking_code', ', ');
                 })
     			->toJson();   
+    }
+
+    public function index_payment()
+    {
+        // Improve tracking number search performance by searching from items table directly then incorporate the invoice id to the invoices search
+        $terminal = auth()->user()->terminal()->first();
+
+        $customer = Customer::where('name', request()->customer)->first()->id;
+        $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])
+                        ->whereBetween('created_at', [request()->start, request()->end])
+                        ->where('customer_id', $customer)
+                        ->select('invoices.*')->active();
+
+        $items = collect();
+
+        if(request()['search']['value'])
+            $items = Item::where('tracking_code', 'like', '%' . request()['search']['value'] . '%')
+                    ->where('branch_id', $terminal->branch->id)
+                    ->join('invoices', 'invoice_id' , '=' , 'invoices.id')
+                    ->get();
+
+        return datatables()
+            ->of($query)
+                ->filter(function($query) use ($items){
+                    if($items->count() > 0) {
+                        $query->orWhere(function($query) use ($items) {
+                            $query->whereIn('invoices.id', $items->pluck('invoice_id'));
+                        });
+                    }
+
+                    if(request()['search']['value'])
+                        $query->orWhere(function($query) use ($items) {
+                            $query->where('type', 'like', '%' . request()['search']['value'] . '%')
+                                  ->where('terminal_no', auth()->user()->current_terminal);
+                        });
+                }, true)
+                ->addColumn('payment', function(Invoice $invoice) {
+                    return $invoice->payment->sum('total') + $invoice->paid;
+                })
+                ->addColumn('outstanding', function(Invoice $invoice) {
+                    $outstanding = $invoice->total  - $invoice->payment->sum('total') - $invoice->paid;
+                    
+                    return $invoice->total < 0 ? 
+                            $outstanding : 
+                            max($outstanding, 0);
+                })
+                ->addColumn('customer', function(Invoice $invoice){ 
+                    return $invoice->customer ? $invoice->customer->name : "Cash";
+                })
+                ->addColumn('tracking_codes', function(Invoice $invoice){
+                    return $invoice->items->implode('tracking_code', ', ');
+                })
+                ->toJson();   
     }
 
     public function index_canceled()
