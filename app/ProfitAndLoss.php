@@ -13,6 +13,6 @@ class ProfitAndLoss extends Model
     {
     	return $this->belongsTo('App\Item', 'tracking_code', 'tracking_code')
     				->leftJoin('invoices', 'invoices.id', '=', 'invoice_id')
-    				->where('branch_id', 'invoices.branch_id');
+    				->where('branch_id', auth()->user()->current_branch);
     }
 }
