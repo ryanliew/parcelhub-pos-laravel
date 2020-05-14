@@ -33,7 +33,9 @@ class ProfitAndLossController extends Controller
             $count = 0;
             
             if(!is_null($excelRow[0])) {
-                $item = Item::where('tracking_code', $excelRow[0])->where('branch_id', auth()->user()->current_branch)->first();
+                $item = Item::where('tracking_code', $excelRow[0])->whereHas('invoice', function(Builder $query){
+                    $query->where('branch_id', auth()->user()->current_branch);
+                })->first();
 
                 // if(is_null($item) && !is_null($excelRow[0]) && $excelRow[0] !== "---")
                 // {
