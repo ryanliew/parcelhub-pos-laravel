@@ -21,7 +21,7 @@ class ReportController extends Controller
     	$from = request()->from;
     	$to = Carbon::parse(request()->to)->addDay();
 
-        $branch = auth()->user()->current;
+        $branch = Branch::where('id', auth()->user()->current_branch)->get();
         $report_view = 'reports.sales';
 
         $total_branches_sales = 0;
