@@ -82,17 +82,17 @@ class ProfitAndLossController extends Controller
 
         return datatables()->of($query)
                             ->addColumn('price', function($profit_and_loss){
-                                return $profit_and_loss->item ? $profit_and_loss->item->price : 'N/A';
+                                return $profit_and_loss->item ? $profit_and_loss->item->total_price_after_discount : 'N/A';
 							})
 							
 							->addColumn('profit', function($profit_and_loss){
                                 return $profit_and_loss->item? 
-									   $profit_and_loss->item->price - $profit_and_loss->sales : 'N/A';
+									   $profit_and_loss->item->total_price_after_discount - $profit_and_loss->sales : 'N/A';
 							})
 							->addColumn('margin', function($profit_and_loss){
 								$margin = 0;
-								if($profit_and_loss->item && $profit_and_loss->item->price > 0){
-                                    $margin = ( 1 - ( $profit_and_loss->sales / $profit_and_loss->item->price ) );
+								if($profit_and_loss->item && $profit_and_loss->item->total_price_after_discount > 0){
+                                    $margin = ( 1 - ( $profit_and_loss->sales / $profit_and_loss->item->total_price_after_discount ) );
                                     //$margin = ( $profit_and_loss->item->price - $profit_and_loss->sales ) / ( $profit_and_loss->sales );
                                 }                                
 								return $profit_and_loss->item ? number_format((float) $margin * 100 ,2,'.','') : "N/A";

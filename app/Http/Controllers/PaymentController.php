@@ -51,7 +51,7 @@ class PaymentController extends Controller
         {
             $customer = $customer->map(function($customer, $key){
                 $customer->label = $customer->name;
-                $customer->value = $customer->name;
+                $customer->value = $customer->id;
 
                 return $customer;
             });

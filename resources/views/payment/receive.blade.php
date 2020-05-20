@@ -267,7 +267,6 @@
 		    		table.ajax.url('{!! route("invoices.payment") !!}' + '?start=' + min + "&end=" + max + "&customer=" + customer).load();
 
 		    		table
-	   				.columns( 2 ).search( customer, false, false, true)
 	   				.draw();
 		    	}
 

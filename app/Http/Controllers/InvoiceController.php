@@ -100,10 +100,9 @@ class InvoiceController extends Controller
         // Improve tracking number search performance by searching from items table directly then incorporate the invoice id to the invoices search
         $terminal = auth()->user()->terminal()->first();
 
-        $customer = Customer::where('name', request()->customer)->first()->id;
         $query = $terminal->invoices()->with(['customer','payment', 'branch', 'terminal', 'items'])
                         ->whereBetween('created_at', [request()->start, request()->end])
-                        ->where('customer_id', $customer)
+                        ->where('customer_id', request()->customer)
                         ->select('invoices.*')->active();
 
         $items = collect();
