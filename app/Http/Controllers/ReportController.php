@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Branch;
+use App\Exports\SalesExport;
 use App\Item;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Exports\SalesExport;
+use Illuminate\Support\Facades\DB;
 use \Excel;
 
 class ReportController extends Controller
@@ -58,13 +59,30 @@ class ReportController extends Controller
         foreach($branch as $b)
         {
             $invoices = $b->invoices()->active()->whereBetween('created_at', [$from, $to->toDateString()])->get()->pluck('id');
-            $items = Item::with('product.vendor', 'product.product_type', 'invoice')->whereIn('invoice_id', $invoices)->get();
-    	    $vendors = $items->filter(function($item, $key){ return !is_null($item->product->vendor); })
-                        ->groupBy(function($item, $key){ return $item->product->vendor->name; });                 
+
+            $items = Item::select(DB::raw("items.*, ROUND(items.total_price - (invoices.discount_value / invoices.subtotal * items.total_price), 2) as total_price_after_discount"))
+                        ->with('product.vendor', 'product.product_type', 'invoice')
+                        ->leftJoin("invoices", "invoice_id", "=", "invoices.id")
+                        ->whereIn('invoice_id', $invoices)
+                        ->get();
+
+
+            $vendors = Item::select(
+                            DB::raw("items.*, vendors.*,
+                                ROUND(items.total_price - (invoices.discount_value / invoices.subtotal * items.total_price), 2) as total_price_after_discount"))
+                        ->leftJoin("invoices", "invoice_id", "=", "invoices.id")
+                        ->leftJoin("vendors", "vendors.id", "=", "courier_id")
+                        ->whereIn('invoice_id', $invoices)
+                        ->whereNotNull('courier_id')
+                        ->get();
+
+    	    $vendors = $vendors->groupBy("name");   
+
             $vendors_sum = $vendors->sum(function($vendor)
             {
                 return $vendor->sum('total_price_after_discount');
             });
+
             $total_sales = $items->sum('total_price_after_discount');
             $products = $items->groupBy(function($item, $key){ return $item->product->sku; });
 
