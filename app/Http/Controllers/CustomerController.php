@@ -49,10 +49,19 @@ class CustomerController extends Controller
             $query = $branch->customers()->with('branch');
         }
 
-    
+
         return datatables()->of($query)
                             ->addColumn('group_name', function($customer){
                                 return $customer->group ? $customer->group->name : "---";
+                            })
+                            ->addColumn('status', function($customer){
+                                $outstanding_amount = $customer->outstanding_amount;
+                                if($outstanding_amount == 0)
+                                    return "Zero balance";
+                                else if($outstanding_amount > 0)
+                                    return "Outstanding amount";
+                                else if($outstanding_amount < 0)
+                                    return "Negative amount";
                             })
                             ->toJson();
     }

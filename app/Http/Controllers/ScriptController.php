@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Invoice;
 use App\Branch;
+use App\Customer;
 
 class ScriptController extends Controller
 {
@@ -27,5 +28,15 @@ class ScriptController extends Controller
     	}
 
     	return $invoices->first()->id . " , " . $invoices->sortByDesc('created_at')->first()->id;
+	}
+	
+	public function update_customers_outstanding_amount()
+    {
+		foreach(Customer::all() as $customer) {
+
+			$outstanding_amount = ( $customer->invoices? $customer->invoices->sum('total') : 0 ) - 
+								( $customer->payments? $customer->payments->sum('total') : 0 );
+    		$customer->update(["outstanding_amount" => $outstanding_amount]);
+    	}
     }
 }

@@ -73,6 +73,30 @@
 
 		<div class="card mt-5">
 			<div class="card-header">
+				<b>SKU types sale ({{ request()->from }} - {{ request()->to }}) - {{ $detail['branch']->name }} - ( Total: RM{{number_format($detail['skutypes_sum'], 2, ".", "") }} )</b>
+			</div>
+			<div class="card-body">
+				<table class="table table-bordered" id="product-types-table">
+					<thead>
+						<tr>
+							<th>SKU type</th>
+							<th>Amount</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach($detail['skutypes'] as $name => $skutype_item)
+							<tr>
+								<td>{{ $name }}</td>
+								<td>RM{{ number_format($skutype_item->sum('total_price_after_discount'), 2, ".", "") }}</td>
+							</tr>
+						@endforeach
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="card mt-5">
+			<div class="card-header">
 				<b>Sales by Product ({{ request()->from }} - {{ request()->to }}) - {{ $detail['branch']->name }}</b>
 			</div>
 			<div class="card-body">
@@ -156,6 +180,11 @@
 		$(function(){
 
 			var table = $("#vendors-table").DataTable({
+				paging: false,
+				searching: false
+			});
+
+			var skutypeTable = $("#product-types-table").DataTable({
 				paging: false,
 				searching: false
 			});

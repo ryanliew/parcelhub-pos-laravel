@@ -278,6 +278,12 @@ class InvoiceController extends Controller
         }
         //$invoice->items()->create($items);
 
+        //update customer outstanding amount        
+        $customer = Customer::find(request()->customer_id);
+        if($customer){
+            $customer->update(['outstanding_amount' => request()->has('total') ? request()->total : 0.00]);
+        }
+
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
 
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);

@@ -31,6 +31,7 @@
 							<th>Address Line 3</th>
 							<th>Address Line 4</th>
 							<th>Branch</th>
+							<th>Status</th>
 						</tr>
 					</thead>
 				</table>
@@ -149,6 +150,7 @@
 						}
 					},
 					{data: 'branch.name'} ,
+					{data: 'status'} ,
 				]
 			});
 

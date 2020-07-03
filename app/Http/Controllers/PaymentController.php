@@ -151,6 +151,12 @@ class PaymentController extends Controller
             }
         }
         
+        //update customer outstanding amount        
+        $customerinstance = Customer::find($customer);        
+        if($customerinstance){
+            $outstanding_amount = $customerinstance->outstanding_amount;
+            $customerinstance->update(['outstanding_amount' => $outstanding_amount - $amount]);
+        }
 
         return json_encode(['message' => "Payment created",'payment_id' => $payment_id ] );
     }
