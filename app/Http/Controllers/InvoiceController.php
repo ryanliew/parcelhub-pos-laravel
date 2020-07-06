@@ -17,6 +17,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
+use Maatwebsite\Excel\Facades\Excel as Excel;
 
 class InvoiceController extends Controller
 {
@@ -281,7 +282,8 @@ class InvoiceController extends Controller
         //update customer outstanding amount        
         $customer = Customer::find(request()->customer_id);
         if($customer){
-            $customer->update(['outstanding_amount' => request()->has('total') ? request()->total : 0.00]);
+            $outstanding_amount = $customer->outstanding_amount;
+            $customer->update(['outstanding_amount' => $outstanding_amount + (request()->has('total') ? request()->total : 0.00)]);
         }
 
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
@@ -462,5 +464,163 @@ class InvoiceController extends Controller
 
         return json_encode(['error' => $message, 'message' => "Unable to cancel invoice"]);
     }
+   
+    public function import()
+	{
+		request()->validate([
+            "file" => "required"
+        ]);
+        $excelRows = Excel::load(request()->file('file'))->noHeading()->toArray(); //skipRows(1)->toArray();
+        $invoice_detail = [];
+        $items = collect([]);
+        $stop = false;
+        $customer = null;
+        $invoice_total = 0.00;
 
+        foreach($excelRows as $row_index => $excelRow) {      
+            $detail = [];
+            $count = 0;
+        
+            // invoice section
+            if($row_index == 9){
+                if(!is_null($excelRow[7])){
+                    $invoice_detail['invoice_no'] = $excelRow[7];
+                }
+                else{
+                    $error = "Invoice no. mandatory";         
+                    return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                }
+                if(!is_null($excelRow[0])){
+                    $customer = Customer::where('name', $excelRow[0])->first();
+                    if($customer){
+                        $invoice_detail['invoice_customer_name'] = $excelRow[0];
+                    }
+                    else{
+                        $error = "Customer no found";         
+                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                    }                   
+                }
+            }
+            if($row_index == 10){
+                if(!is_null($excelRow[7])){
+                    $invoice_detail['invoice_create_at'] = $excelRow[7];
+                }
+            }
+            if($row_index == 11){
+                if(!is_null($excelRow[7])){
+                    $invoice_detail['invoice_payment_type'] = $excelRow[7];
+                }
+                else{
+                    $error = "Invoice payment type mandatory";         
+                    return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                }
+            } 
+            // items section
+            if($row_index > 16 && !$stop){
+                // to stop the loop till footer
+                if(is_null($excelRow[0])){
+                    $stop = true;
+                }
+                else{               
+                    // validate mandatory cannot be null - productType, ZoneType, Courier, TrackingCode, SKU
+                    if(is_null($excelRow[2])){
+                        $error = "Tracking code mandatory";         
+                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                    }
+                    else if(is_null($excelRow[8])){
+                        $error = "Product type mandatory";         
+                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                    }
+                    else if(is_null($excelRow[9])){
+                        $error = "Zone type mandatory";         
+                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                    }
+                    else if(is_null($excelRow[11])){
+                        $error = "Courier mandatory";         
+                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                    }
+                    else if(is_null($excelRow[12])){
+                        $error = "Product mandatory";         
+                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                    }
+                    else{
+                        $detail['posting_date'] = $excelRow[0];
+                        $detail['pl_9'] = $excelRow[1];
+                        $detail['tracking_code'] = $excelRow[2];
+                        $detail['weight'] = $excelRow[3];
+                        $detail['zone'] = $excelRow[4];
+                        $detail['charges'] = $excelRow[7];
+                        $detail['product_type_id'] = $excelRow[8];
+                        $detail['zone_type_id'] = $excelRow[9];
+                        $detail['dim'] = $excelRow[10];
+                        $detail['courier_id'] = $excelRow[11];
+                        $detail['product_id'] = $excelRow[12];
+                        $detail['description'] = $excelRow[13];
+                        $detail['unit'] = $excelRow[14];
+                        $items->push($detail);
+                    }        
+                }        
+            }
+        }
+        // create invoice and items from excel record
+        $user = auth()->user();// User::find(request()->created_by);
+        $branch = auth()->user()->current;
+        $invoice_total = $items? $items->sum('charges') : 0.00;
+
+        Log::info($customer);
+        $invoice = Invoice::create([
+            'subtotal' => $invoice_total,
+            'total' => $invoice_total,
+            'tax' => 0.00,
+            'paid' => 0.00,
+            'type' => $customer? $customer->type : "Corporate",
+            'payment_type' => $invoice_detail['invoice_payment_type'],
+            'branch_id' => $user->current_branch,
+            'terminal_no' => $user->current_terminal,
+            'created_by' => $user->id,
+            'discount_value' =>0.00,
+            'discount_mode' => "%",
+            'discount' => 0.00,
+            'remarks' => "",
+            'customer_id' => $customer? $customer->id : "",
+            'invoice_no' => $invoice_detail['invoice_no'],
+            //'created_at' => $invoice_detail['invoice_create_at'],
+        ]);
+
+        $tax = Tax::where('code', 'SR')->first();
+        foreach($items as $item)
+        { 
+            $product = Product::find($item['product_id']);            
+            $invoice->items()->create([
+                'tracking_code' => $item['tracking_code'],
+                'description' => $item['description'],
+                'zone' => $item['zone'],
+                'weight' => $item['weight'] ? $item['weight'] : 0,
+                'dimension_weight' => $item['dim'] ? $item['dim'] : 0,
+                'height' => 0,
+                'length' => 0,
+                'width' => 0,
+                'sku' => $product? $product->sku: "",// $item['sku']? $item['sku'] : 0,
+                'tax' => 0.00,
+                'price' => $item['charges']? $item['charges'] : 0,
+                'courier_id' => $item['courier_id']? $item['courier_id'] : 0,
+                'product_id' => $item['product_id'] ? $item['product_id'] : 0,
+                'product_type_id' => $item['product_type_id']? $item['product_type_id'] : 0,
+                'total_price' => $item['charges']? $item['charges'] : 0,
+                'unit' => $item['unit']? $item['unit'] : 0,
+                'is_custom_pricing' => false,
+                'tax_rate' => $tax? $tax->percentage : 0.00,
+                'tax_type' => 'SR', //$tax? $tax->code,
+                'zone_type_id' => $item['zone_type_id']? $item['zone_type_id'] : ( $product? $product->zone_type_id : 0 ),
+            ]);
+        }
+
+        //update customer outstanding amount        
+        if($customer){
+            $outstanding_amount = $customer->outstanding_amount;
+            $customer->update(['outstanding_amount' => ( $outstanding_amount + $invoice_total )]);
+        }
+
+        return ["message" => "Invoice and items created", "invoice_id" => $invoice->id];
+	}
 }

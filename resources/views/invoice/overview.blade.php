@@ -38,6 +38,7 @@
 	</div>
 
 	<cancel-dialog></cancel-dialog>
+	<import-dialog></import-dialog>
 @endsection
 
 @section('js')
@@ -77,6 +78,13 @@
 
 						},
 						enabled: false
+					},
+					{
+						text: 'Import',
+						action: function( e, dt, node, config ) {				
+							window.events.$emit('importInvoice');
+						},
+						enabled: true
 					},
 					'excel', 'colvis',
 				],
@@ -157,7 +165,7 @@
 		 
 		        table.button( 0 ).enable( selectedRows === 1 );
 		        table.button( 1 ).enable( selectedRows === 1 );
-		    });
+			});
 
 		    window.events.$on("reload-table", function(){
 		    	table.ajax.reload();
