@@ -128,6 +128,30 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::post("/{sku}", "ProductController@update");
 	});
 
+	Route::group(['prefix' => 'inventory'], function(){
+		Route::get('/', "InventoryController@page")->name('inventory.page');
+		Route::post("/", "InventoryController@store");
+		Route::get("/index", "InventoryController@index")->name('inventory.index');
+		Route::post("/{inventory}", "InventoryController@update");
+		Route::post("/{inventory}/delete", "InventoryController@delete");
+	});
+
+	Route::group(['prefix' => 'inventory_product'], function(){
+		Route::get('/', "InventoryProductController@page")->name('inventory-products.page');
+		Route::post("/", "InventoryProductController@store");
+		Route::get("/index", "InventoryProductController@index")->name('inventory-products.index');
+		Route::post("/{inventory_product}", "InventoryProductController@update");
+		Route::post("/{inventory_product}/delete", "InventoryProductController@delete");
+	});
+
+	Route::group(['prefix' => 'stocks'], function(){
+		Route::get('/', "StockController@page")->name('stocks.page');
+		Route::post("/", "StockController@store");
+		Route::get("/index", "StockController@index")->name('stocks.index');
+		Route::post("/{stock}", "StockController@update");
+		Route::post("/{stock}/delete", "StockController@delete");
+	});
+
 	Route::group(['prefix' => 'terminals'], function(){
 		Route::get('/', "TerminalController@page")->name('terminals.page');
 		Route::post("/", "TerminalController@store");
@@ -188,6 +212,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/users", "UserController@list");
 		Route::get("/trackings/check", "InvoiceController@validateTracking");
 		Route::get("/groups", "CustomerGroupController@list");
+		Route::get("/inventories", "InventoryController@list");
+		Route::get("/stocks", "StockController@list");
 	});
 
 	Route::group(['prefix' => 'impersonate'], function(){

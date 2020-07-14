@@ -470,7 +470,7 @@ class InvoiceController extends Controller
 		request()->validate([
             "file" => "required"
         ]);
-        $excelRows = Excel::load(request()->file('file'))->noHeading()->toArray(); //skipRows(1)->toArray();
+        $excelRows = Excel::load(request()->file('file'))->noHeading()->formatDates(false)->toArray(); //skipRows(1)->toArray();
         $invoice_detail = [];
         $items = collect([]);
         $stop = false;
@@ -503,7 +503,10 @@ class InvoiceController extends Controller
             }
             if($row_index == 10){
                 if(!is_null($excelRow[7])){
-                    $invoice_detail['invoice_create_at'] = $excelRow[7];
+                    $invoice_detail['invoice_create_at'] = Carbon::createFromFormat('d/m/Y', $excelRow[7]) ;
+                }
+                else{
+                    $invoice_detail['invoice_create_at'] = Carbon::now()->toDateTimeString();
                 }
             }
             if($row_index == 11){
@@ -567,7 +570,6 @@ class InvoiceController extends Controller
         $branch = auth()->user()->current;
         $invoice_total = $items? $items->sum('charges') : 0.00;
 
-        Log::info($customer);
         $invoice = Invoice::create([
             'subtotal' => $invoice_total,
             'total' => $invoice_total,
@@ -584,7 +586,7 @@ class InvoiceController extends Controller
             'remarks' => "",
             'customer_id' => $customer? $customer->id : "",
             'invoice_no' => $invoice_detail['invoice_no'],
-            //'created_at' => $invoice_detail['invoice_create_at'],
+            'created_at' => $invoice_detail['invoice_create_at'],
         ]);
 
         $tax = Tax::where('code', 'SR')->first();

@@ -13,7 +13,7 @@
                         <div class="card" id="invoice-import-header">
                             <div class="card-body">
                                 <div class="row">
-                                    <input class="file-input" type="file" ref="file" name="file" @change="fileUploaded">
+                                    <input class="file-input" type="file" ref="file" name="file" id="uploadFile" style="width:100%" @change="fileUploaded">
                                 </div>
                             </div>
                         </div>
@@ -49,11 +49,12 @@
 			openDialog(evt) {
 				this.form.reset();				
                 $("#import-dialog").modal();	
+                document.getElementById('uploadFile').value = "";
                 this.isActive = true;			
 			},
 
 			closeDialog() {
-                this.form.reset();
+                this.form.reset();                 
                 this.isActive = false;
             },            
             
@@ -82,7 +83,7 @@
 				}
 			},
 
-			onImportError(error) {	
+			onImportError(error) {	               
 			},
 		},
 
