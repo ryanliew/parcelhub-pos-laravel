@@ -86406,10 +86406,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			form: new Form({
 				inventory_id: '',
 				quantity: 0,
-				type: 'In',
+				type: '',
 				date: '',
 				invoice_no: '',
-				active: false
+				active: 1
 			})
 		};
 	},
@@ -86539,6 +86539,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	watch: {
 		selectedInventory: function selectedInventory(newVal, oldVal) {
 			this.form.inventory_id = newVal.value;
+		},
+		selectedType: function selectedType(newVal, oldVal) {
+			this.form.type = newVal;
 		}
 	}
 });

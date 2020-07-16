@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\InventoryProduct;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel as Excel;
 use Illuminate\Support\Facades\Log;
@@ -32,6 +33,12 @@ class InventoryProductController extends Controller
         ->addColumn('product_sku', function(InventoryProduct $inventory_product){
                      return is_null($inventory_product->product_id) ? "---" : $inventory_product->product->sku;
                     })
+        ->addColumn('max_quantity', function(InventoryProduct $inventory_product){
+            return $inventory_product->max_quantity;
+        })
+        ->addColumn('max_quantity_on_date', function(InventoryProduct $inventory_product){
+            return $inventory_product->get_max_quantity_on_date(Carbon::now()->endOfDay());
+        })
         ->toJson();	
     }
 

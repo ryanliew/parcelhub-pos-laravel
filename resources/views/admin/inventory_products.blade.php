@@ -20,7 +20,9 @@
 						<tr>
 							<th>Inventory</th>
                             <th>Product</th>
-                            <th>Quantity</th>							
+                            <th>Quantity</th>	
+							<th>Max Quantity</th>	
+							<th>Max Quantity on Date</th>									
 						</tr>
 					</thead>
 				</table>
@@ -79,6 +81,8 @@
 					{data: 'inventory_name'},
                 	{data: 'product_sku'},
 					{data: 'quantity'},
+					{data: 'max_quantity'},
+					{data: 'max_quantity_on_date'}
 				]
 			});
 

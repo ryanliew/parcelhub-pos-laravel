@@ -18,7 +18,9 @@
 				<table class="table table-bordered" id="inventory-table">
 					<thead>
 						<tr>
-							<th>Name</th>							
+							<th>Name</th>				
+							<th>Quantity</th>	
+							<th>Quantity on Date</th>				
 						</tr>
 					</thead>
 				</table>
@@ -74,7 +76,9 @@
 				],
 				ajax: '{!! route("inventory.index") !!}',
 				columns: [
-					{data: 'name'}
+					{data: 'name'},
+					{data: 'quantity'},
+					{data: 'quantity_on_date'}
 				]
 			});
 

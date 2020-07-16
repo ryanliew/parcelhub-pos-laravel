@@ -32,6 +32,8 @@
 							<th>Tax</th>
 							<th>Tax inclusive</th>
 							<th>Description</th>
+							<th>Quantity</th>	
+							<th>Quantity on Date</th>	
 						</tr>
 					</thead>
 				</table>
@@ -151,8 +153,9 @@
 							return data;
 						}
 					},
-					{data: 'description'}
-					
+					{data: 'description'},
+					{data: 'quantity'},
+					{data: 'quantity_on_date'}					
 				]
 			});
 

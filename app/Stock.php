@@ -32,4 +32,9 @@ class Stock extends Model
     {
         return $query->where('type', 'Out');
     }
+
+    public function scopeByDate($query, $date)
+    {
+        return $query->where('date', '<=', $date);
+    }
 }

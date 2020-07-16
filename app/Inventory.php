@@ -25,16 +25,13 @@ class Inventory extends Model
  
 	public function getStockCountAttribute()
 	{
-        return 0; 
-        //$this->stocks()->active()->current()->in()->sum('quantity')
-        //    - $this->stocks()->active()->current()->out()->sum('quantity');
+        return $this->stocks()->active()->in()->sum('quantity')
+          		- $this->stocks()->active()->out()->sum('quantity');
     }
     
     public function get_stock_count_on_date($date)
 	{
-        return 0; 
-        // $this->stocks()->active()->byDate($date)->in()->sum('quantity')
-        //     - $this->stocks()->active()->byDate($date)->out()->sum('quantity');
+        return $this->stocks()->active()->byDate($date)->in()->sum('quantity')
+            - $this->stocks()->active()->byDate($date)->out()->sum('quantity');
 	}
-
 }
