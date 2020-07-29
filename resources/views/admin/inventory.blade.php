@@ -77,8 +77,22 @@
 				ajax: '{!! route("inventory.index") !!}',
 				columns: [
 					{data: 'name'},
-					{data: 'quantity'},
-					{data: 'quantity_on_date'}
+					{data: 'quantity', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data? parseFloat(data).toFixed(2) : 0;
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'quantity_on_date', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data? parseFloat(data).toFixed(2) : 0;
+							}
+
+							return data;
+						}, "searchable": false
+					},		
 				]
 			});
 

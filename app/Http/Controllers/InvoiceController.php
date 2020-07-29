@@ -8,6 +8,9 @@ use App\Product;
 use App\Tax;
 use App\User;
 use App\Customer;
+use App\ProductType;
+use App\Vendor;
+use App\Stock;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -276,6 +279,18 @@ class InvoiceController extends Controller
                 'tax_type' => $item->tax_type,
                 'zone_type_id' => empty($item->zone_type_id) ? $product->zone_type_id : $item->zone_type_id,
             ]);
+            
+            // create stock
+            if($product){
+                foreach($product->inventory_products as $inventory_product){
+                    $stock = Stock::create(['date' => Carbon::now()->toDateTimeString(),
+                    'quantity' =>  $item->unit,
+                    'type' => 'Out',
+                    'active' => true,
+                    'invoice_no' => $invoice_no,
+                    'inventory_id' => $inventory_product->inventory->id ]);
+                }             
+            }            
         }
         //$invoice->items()->create($items);
 
@@ -483,8 +498,8 @@ class InvoiceController extends Controller
         
             // invoice section
             if($row_index == 9){
-                if(!is_null($excelRow[7])){
-                    $invoice_detail['invoice_no'] = $excelRow[7];
+                if(!is_null($excelRow[8])){
+                    $invoice_detail['invoice_no'] = $excelRow[8];
                 }
                 else{
                     $error = "Invoice no. mandatory";         
@@ -502,16 +517,16 @@ class InvoiceController extends Controller
                 }
             }
             if($row_index == 10){
-                if(!is_null($excelRow[7])){
-                    $invoice_detail['invoice_create_at'] = Carbon::createFromFormat('d/m/Y', $excelRow[7]) ;
+                if(!is_null($excelRow[8])){
+                    $invoice_detail['invoice_create_at'] = Carbon::createFromFormat('d/m/Y', $excelRow[8]) ;
                 }
                 else{
                     $invoice_detail['invoice_create_at'] = Carbon::now()->toDateTimeString();
                 }
             }
             if($row_index == 11){
-                if(!is_null($excelRow[7])){
-                    $invoice_detail['invoice_payment_type'] = $excelRow[7];
+                if(!is_null($excelRow[8])){
+                    $invoice_detail['invoice_payment_type'] = $excelRow[8];
                 }
                 else{
                     $error = "Invoice payment type mandatory";         
@@ -525,41 +540,33 @@ class InvoiceController extends Controller
                     $stop = true;
                 }
                 else{               
-                    // validate mandatory cannot be null - productType, ZoneType, Courier, TrackingCode, SKU
-                    if(is_null($excelRow[2])){
+                    // validate mandatory cannot be null - productType, ZoneType, Courier, TrackingCode
+                    if(is_null($excelRow[3])){
                         $error = "Tracking code mandatory";         
-                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
                     }
-                    else if(is_null($excelRow[8])){
+                    else if(is_null($excelRow[2])){
                         $error = "Product type mandatory";         
-                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
                     }
-                    else if(is_null($excelRow[9])){
+                    else if(is_null($excelRow[5])){
                         $error = "Zone type mandatory";         
-                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
                     }
-                    else if(is_null($excelRow[11])){
+                    else if(is_null($excelRow[1])){
                         $error = "Courier mandatory";         
-                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
                     }
-                    else if(is_null($excelRow[12])){
-                        $error = "Product mandatory";         
-                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
-                    }
-                    else{
+                    else{   
                         $detail['posting_date'] = $excelRow[0];
-                        $detail['pl_9'] = $excelRow[1];
-                        $detail['tracking_code'] = $excelRow[2];
-                        $detail['weight'] = $excelRow[3];
-                        $detail['zone'] = $excelRow[4];
-                        $detail['charges'] = $excelRow[7];
-                        $detail['product_type_id'] = $excelRow[8];
-                        $detail['zone_type_id'] = $excelRow[9];
-                        $detail['dim'] = $excelRow[10];
-                        $detail['courier_id'] = $excelRow[11];
-                        $detail['product_id'] = $excelRow[12];
-                        $detail['description'] = $excelRow[13];
-                        $detail['unit'] = $excelRow[14];
+                        $detail['courier_name'] = $excelRow[1];
+                        $detail['product_type_name'] = $excelRow[2];
+                        $detail['tracking_code'] = $excelRow[3];
+                        $detail['weight'] = $excelRow[4];
+                        $detail['zone_type_id'] = $excelRow[5] == "I" ? 2 : ( $excelRow[5] == "D" ? 1: $excelRow[5] );
+                        $detail['description'] = $excelRow[6];
+                        $detail['charges'] = $excelRow[8];
+                        $detail['zone'] = 2; // mictest zone data missing $excelRow[4];       
                         $items->push($detail);
                     }        
                 }        
@@ -592,29 +599,55 @@ class InvoiceController extends Controller
         $tax = Tax::where('code', 'SR')->first();
         foreach($items as $item)
         { 
-            $product = Product::find($item['product_id']);            
+            Log::info("mictest");
+            Log::info($item);
+            $courier = Vendor::where('name', $item['courier_name'])->first(); 
+            $courier_id = $courier? $courier->id : 0;
+            $product_type = ProductType::where('name', $item['product_type_name'])->first(); 
+            $product_type_id = $product_type? $product_type->id : 0;
+            $product = Product::with('vendor', 'product_type')
+            ->where('product_type_id', $product_type_id)
+            ->where('zone', $item['zone'])
+            ->where('vendor_id',  $courier_id)
+            ->where('zone_type_id', $item['zone_type_id'])
+            ->where('weight_start', "<=",  $item['weight'])
+            ->where('weight_end', ">=",  $item['weight'])
+            ->first();  
+        
             $invoice->items()->create([
                 'tracking_code' => $item['tracking_code'],
-                'description' => $item['description'],
-                'zone' => $item['zone'],
+                'description' => $item['description'] != "" ? $item['description'] : ( $product? $product->description : "" ),
+                'zone' => $item['zone'], 
                 'weight' => $item['weight'] ? $item['weight'] : 0,
-                'dimension_weight' => $item['dim'] ? $item['dim'] : 0,
+                'dimension_weight' => 0,
                 'height' => 0,
                 'length' => 0,
                 'width' => 0,
-                'sku' => $product? $product->sku: "",// $item['sku']? $item['sku'] : 0,
+                'sku' => $product? $product->sku: "",
                 'tax' => 0.00,
                 'price' => $item['charges']? $item['charges'] : 0,
-                'courier_id' => $item['courier_id']? $item['courier_id'] : 0,
-                'product_id' => $item['product_id'] ? $item['product_id'] : 0,
-                'product_type_id' => $item['product_type_id']? $item['product_type_id'] : 0,
+                'courier_id' => $courier_id,
+                'product_id' => $product? $product->id: 0,
+                'product_type_id' => $product_type_id,
                 'total_price' => $item['charges']? $item['charges'] : 0,
-                'unit' => $item['unit']? $item['unit'] : 0,
+                'unit' => 1,
                 'is_custom_pricing' => false,
                 'tax_rate' => $tax? $tax->percentage : 0.00,
                 'tax_type' => 'SR', //$tax? $tax->code,
                 'zone_type_id' => $item['zone_type_id']? $item['zone_type_id'] : ( $product? $product->zone_type_id : 0 ),
             ]);
+
+            // create stock
+            if($product){
+                foreach($product->inventory_products as $inventory_product){
+                    $stock = Stock::create(['date' => Carbon::now()->toDateTimeString(),
+                    'quantity' =>  $item->unit,
+                    'type' => 'Out',
+                    'active' => true,
+                    'invoice_no' => $invoice_no,
+                    'inventory_id' => $inventory_product->inventory->id ]);
+                }             
+            }
         }
 
         //update customer outstanding amount        

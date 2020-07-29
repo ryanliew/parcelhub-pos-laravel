@@ -86,7 +86,14 @@
 						}
 						return data;
 					}, "searchable": false},
-                    {data: 'quantity'},
+					{data: 'quantity', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data? parseFloat(data).toFixed(2) : 0;
+							}
+
+							return data;
+						}, "searchable": false
+					},
                     {data: 'type'},
                     {data: 'active', render: function(data,type,row){
 							if(type === 'display' || type === 'filter') {
