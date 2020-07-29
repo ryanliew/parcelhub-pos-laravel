@@ -599,8 +599,6 @@ class InvoiceController extends Controller
         $tax = Tax::where('code', 'SR')->first();
         foreach($items as $item)
         { 
-            Log::info("mictest");
-            Log::info($item);
             $courier = Vendor::where('name', $item['courier_name'])->first(); 
             $courier_id = $courier? $courier->id : 0;
             $product_type = ProductType::where('name', $item['product_type_name'])->first(); 
