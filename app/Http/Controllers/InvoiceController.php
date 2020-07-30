@@ -603,15 +603,22 @@ class InvoiceController extends Controller
             $courier_id = $courier? $courier->id : 0;
             $product_type = ProductType::where('name', $item['product_type_name'])->first(); 
             $product_type_id = $product_type? $product_type->id : 0;
-            $product = Product::with('vendor', 'product_type')
+            $products = Product::with('vendor', 'product_type')
             ->where('product_type_id', $product_type_id)
-            ->where('zone', $item['zone'])
+            //->where('zone', $item['zone'])
             ->where('vendor_id',  $courier_id)
             ->where('zone_type_id', $item['zone_type_id'])
             ->where('weight_start', "<=",  $item['weight'])
-            ->where('weight_end', ">=",  $item['weight'])
-            ->first();  
-        
+            ->where('weight_end', ">=",  $item['weight']);
+
+            if($item['zone'] == 0){
+                $products->whereNull('zone');
+            }
+            else{
+                $products->where('zone', $item['zone']);
+            }
+            $product = $products->first();
+            
             $invoice->items()->create([
                 'tracking_code' => $item['tracking_code'],
                 'description' => $item['description'] != "" ? $item['description'] : ( $product? $product->description : "" ),
@@ -639,10 +646,10 @@ class InvoiceController extends Controller
             if($product){
                 foreach($product->inventory_products as $inventory_product){
                     $stock = Stock::create(['date' => Carbon::now()->toDateTimeString(),
-                    'quantity' =>  $item->unit,
+                    'quantity' =>  1,
                     'type' => 'Out',
                     'active' => true,
-                    'invoice_no' => $invoice_no,
+                    'invoice_no' => $invoice_detail['invoice_no'],
                     'inventory_id' => $inventory_product->inventory->id ]);
                 }             
             }

@@ -76995,7 +76995,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.inventory_id = this.selectedStock.inventory_id;
 			this.form.quantity = this.selectedStock.quantity;
 			this.form.type = this.selectedStock.type;
-			this.form.date = this.selectedStock.date;
+			this.form.date = moment(String(this.selectedStock.date)).format('YYYY-MM-DD');
 			this.form.invoice_no = this.selectedStock.invoice_no;
 			this.form.active = this.selectedStock.active;
 
