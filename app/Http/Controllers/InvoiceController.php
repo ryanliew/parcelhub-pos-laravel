@@ -498,8 +498,8 @@ class InvoiceController extends Controller
         
             // invoice section
             if($row_index == 9){
-                if(!is_null($excelRow[8])){
-                    $invoice_detail['invoice_no'] = $excelRow[8];
+                if(!is_null($excelRow[10])){
+                    $invoice_detail['invoice_no'] = $excelRow[10];
                 }
                 else{
                     $error = "Invoice no. mandatory";         
@@ -517,16 +517,16 @@ class InvoiceController extends Controller
                 }
             }
             if($row_index == 10){
-                if(!is_null($excelRow[8])){
-                    $invoice_detail['invoice_create_at'] = Carbon::createFromFormat('d/m/Y', $excelRow[8]) ;
+                if(!is_null($excelRow[10])){
+                    $invoice_detail['invoice_create_at'] = Carbon::createFromFormat('d/m/Y', $excelRow[10]) ;
                 }
                 else{
                     $invoice_detail['invoice_create_at'] = Carbon::now()->toDateTimeString();
                 }
             }
             if($row_index == 11){
-                if(!is_null($excelRow[8])){
-                    $invoice_detail['invoice_payment_type'] = $excelRow[8];
+                if(!is_null($excelRow[10])){
+                    $invoice_detail['invoice_payment_type'] = $excelRow[10];
                 }
                 else{
                     $error = "Invoice payment type mandatory";         
@@ -549,24 +549,24 @@ class InvoiceController extends Controller
                         $error = "Product type mandatory";         
                         return $this->returnValidationErrorResponse(['file' => [$error]]);
                     }
-                    else if(is_null($excelRow[5])){
+                    else if(is_null($excelRow[4])){
                         $error = "Zone type mandatory";         
                         return $this->returnValidationErrorResponse(['file' => [$error]]);
                     }
-                    else if(is_null($excelRow[1])){
+                    else if(is_null($excelRow[5])){
                         $error = "Courier mandatory";         
                         return $this->returnValidationErrorResponse(['file' => [$error]]);
                     }
                     else{   
                         $detail['posting_date'] = $excelRow[0];
-                        $detail['courier_name'] = $excelRow[1];
+                        $detail['pl9'] = $excelRow[1];
                         $detail['product_type_name'] = $excelRow[2];
                         $detail['tracking_code'] = $excelRow[3];
-                        $detail['weight'] = $excelRow[4];
-                        $detail['zone_type_id'] = $excelRow[5] == "I" ? 2 : ( $excelRow[5] == "D" ? 1: $excelRow[5] );
-                        $detail['description'] = $excelRow[6];
-                        $detail['charges'] = $excelRow[8];
-                        $detail['zone'] = 2; // mictest zone data missing $excelRow[4];       
+                        $detail['zone_type_id'] = $excelRow[4] == "I" ? 2 : ( $excelRow[4] == "D" ? 1: $excelRow[4] );
+                        $detail['courier_name'] = $excelRow[5];                        
+                        $detail['weight'] = $excelRow[6];
+                        $detail['zone'] = $excelRow[7];
+                        $detail['charges'] = $excelRow[10];     
                         $items->push($detail);
                     }        
                 }        
@@ -621,7 +621,7 @@ class InvoiceController extends Controller
             
             $invoice->items()->create([
                 'tracking_code' => $item['tracking_code'],
-                'description' => $item['description'] != "" ? $item['description'] : ( $product? $product->description : "" ),
+                'description' => $product? $product->description : "", //$item['description'] != "" ? $item['description'] : ( $product? $product->description : "" ),
                 'zone' => $item['zone'], 
                 'weight' => $item['weight'] ? $item['weight'] : 0,
                 'dimension_weight' => 0,
