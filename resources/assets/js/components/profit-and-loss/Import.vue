@@ -6,7 +6,7 @@
 				<button class="btn btn-primary" @click="importFromExcel()" :disabled="!form.file">Import</button>
 				<i v-if="processing" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
 				<a href="/profit_and_loss.xlsx" target="_blank">
-					<button class="btn btn-primary" style="float: right;" title="Download sample excel">Download</button>
+					<button class="btn btn-primary" style="float: right;" title="Download sample excel">Download Template</button>
 				</a>
             </div>		
 		</div>

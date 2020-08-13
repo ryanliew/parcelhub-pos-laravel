@@ -51,7 +51,7 @@ class PaymentController extends Controller
         {
             $customer = $customer->map(function($customer, $key){
                 $customer->label = $customer->name;
-                $customer->value = $customer->name;
+                $customer->value = $customer->id;
 
                 return $customer;
             });
@@ -151,6 +151,12 @@ class PaymentController extends Controller
             }
         }
         
+        //update customer outstanding amount        
+        $customerinstance = Customer::find($customer);        
+        if($customerinstance){
+            $outstanding_amount = $customerinstance->outstanding_amount;
+            $customerinstance->update(['outstanding_amount' => $outstanding_amount - $amount]);
+        }
 
         return json_encode(['message' => "Payment created",'payment_id' => $payment_id ] );
     }

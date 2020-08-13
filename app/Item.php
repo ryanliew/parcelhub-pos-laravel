@@ -8,7 +8,7 @@ class Item extends Model
 {
 	protected $guarded = [];
 	
-	protected $appends = ['total_price_after_discount'];
+	// protected $appends = ['total_price_after_discount'];
 	
 	public function product()
 	{

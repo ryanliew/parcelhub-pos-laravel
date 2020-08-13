@@ -49,10 +49,19 @@ class CustomerController extends Controller
             $query = $branch->customers()->with('branch');
         }
 
-    
+
         return datatables()->of($query)
                             ->addColumn('group_name', function($customer){
                                 return $customer->group ? $customer->group->name : "---";
+                            })
+                            ->addColumn('status', function($customer){
+                                $outstanding_amount = $customer->outstanding_amount;
+                                if($outstanding_amount == 0)
+                                    return "Zero balance";
+                                else if($outstanding_amount > 0)
+                                    return "Outstanding amount";
+                                else if($outstanding_amount < 0)
+                                    return "Negative amount";
                             })
                             ->toJson();
     }
@@ -142,7 +151,12 @@ class CustomerController extends Controller
                        
         foreach($invoices as $invoice)
         {
-            $outstanding = $invoice->total - $invoice->payment->sum('total') - min($invoice->paid, $invoice->total);
+            $outstanding = $invoice->total 
+                            - $invoice->payment->sum('total') 
+                            - ($invoice->total > 0 
+                                ? min($invoice->paid, $invoice->total)
+                                : max($invoice->paid, $invoice->total)
+                            );
             
             if( $getAll || $outstanding != 0)
             {                

@@ -18,6 +18,11 @@ class customer extends Model
     	return $this->hasMany('App\Invoice', 'customer_id');
     }
 
+    public function payments()
+    {
+    	return $this->hasMany('App\Payment', 'customer_id');
+    }
+
     public function group()
     {
     	return $this->belongsTo('App\CustomerGroup', 'customer_group_id');

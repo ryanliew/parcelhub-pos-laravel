@@ -248,6 +248,10 @@
 
 			$("#btnSearch").click(function() {
 		    	
+				var min  = $('#min').val();
+		        var max  = $('#max').val();
+		        // Include invoices from that day as well
+		        max = moment(max).add(1, "days").format("YYYY-MM-DD");
 
 		    	var customerInput = document.getElementById("customer_name");
 		    	customer = customerInput.value;
@@ -261,10 +265,9 @@
 		    	}
 		    	else
 		    	{
-		    		table.ajax.url('{!! route("invoices.index") !!}').load();
+		    		table.ajax.url('{!! route("invoices.payment") !!}' + '?start=' + min + "&end=" + max + "&customer=" + customer).load();
 
 		    		table
-	   				.columns( 2 ).search( customer, false, false, true)
 	   				.draw();
 		    	}
 

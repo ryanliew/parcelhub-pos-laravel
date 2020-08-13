@@ -402,6 +402,7 @@
 			getProducts(error = "No error") { 
 				// Product type selected, get the products of the same type
 				if(this.selectedProductType) {
+					console.log("Getting products list");
 					this.has_detail = this.selectedProductType.has_detail;
 					this.is_topup = this.selectedProductType.is_topup;
 					let selectedZone = this.item.zone ? this.item.zone : 0;
@@ -437,7 +438,8 @@
 					this.productChange();
 				}
 				// If we dont have any products that matches
-				if(this.products.length == 0) {
+				if(this.products.length == 0 && this.canEdit) {
+					console.log("Equals 0!");
 					this.selectedProduct = '';
 					this.selectedProduct_error = "No matching SKU";
 					this.price = 0;
