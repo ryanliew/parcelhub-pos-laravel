@@ -10,7 +10,6 @@ use App\PaymentInvoice;
 use App\Product;
 use App\Tax;
 use App\User;
-use App\Customer;
 use App\ProductType;
 use App\Vendor;
 use App\Stock;
