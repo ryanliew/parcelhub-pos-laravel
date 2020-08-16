@@ -930,6 +930,7 @@
 
 			selectedPaymentType(newVal, oldVal) {
 				this.form.payment_type = newVal.value;
+				if(newVal.value == 'Account') this.form.paid = 0;
 			},
 
 			selectedCustomer(newVal, oldVal) {
