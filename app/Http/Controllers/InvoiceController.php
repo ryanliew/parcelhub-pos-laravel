@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Customer;
 use App\Invoice;
 use App\Item;
-use App\Payment;
-use App\PaymentInvoice;
 use App\Product;
 use App\Tax;
 use App\User;
+use App\Customer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -281,29 +279,6 @@ class InvoiceController extends Controller
         //$invoice->items()->create($items);
 
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
-
-        if($invoice->payment_type == "Account" && $invoice->paid > 0) {
-            // We need to create a payment receive if it's an account invoice and there is paid value
-            $payment = Payment::create([
-                'customer_id'   => $invoice->customer->id,
-                'branch_id'     => $user->current_branch,
-                'terminal_no'   => $user->current_terminal,
-                'total'         =>  $invoice->paid,
-                'payment_method' => 'Cash', // hardcoding it into Cash since the customer is paying it on the spot
-                'created_by'    => $user->id,
-            ]);
-
-            PaymentInvoice::create([
-                'payment_id'    => $payment->id,
-                'invoice_no'    => $invoice->invoice_no,
-                'total'         => $invoice->paid,
-                'invoice_total' => $invoice->total,
-                'outstanding'   => $invoice->total,
-                'paid'          => $invoice->paid
-            ]);
-
-            // $invoice->update(['paid' => 0 ]);
-        }
 
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
     }

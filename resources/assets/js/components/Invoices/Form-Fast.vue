@@ -885,8 +885,7 @@
 			},
 
 			canPay() {
-				return true;
-				// return this.selectedPaymentType.value.toLowerCase() !== 'account'; Everyone can pay now
+				return this.selectedPaymentType.value.toLowerCase() !== 'account';
 			}
 		},
 
