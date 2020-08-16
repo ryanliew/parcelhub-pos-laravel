@@ -78380,8 +78380,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			return this.canEdit;
 		},
 		canPay: function canPay() {
-			return true;
-			// return this.selectedPaymentType.value.toLowerCase() !== 'account'; Everyone can pay now
+			return this.selectedPaymentType.value.toLowerCase() !== 'account';
 		}
 	},
 
@@ -78408,6 +78407,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 		},
 		selectedPaymentType: function selectedPaymentType(newVal, oldVal) {
 			this.form.payment_type = newVal.value;
+			if (newVal.value == 'Account') this.form.paid = 0;
 		},
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
 			if (newVal) this.form.customer_id = newVal.value;
