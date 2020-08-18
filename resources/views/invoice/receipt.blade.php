@@ -158,10 +158,22 @@
 							<td class="ptb-5" colspan="4">{{ $dkey }}</td>
 						</tr>
 						<tr>
-							<td class="text-right ptb-5" colspan="2">{{ number_format($item[0]['price'], 2, '.', ',') }}</td>
+							<td class="text-right ptb-5" colspan="2">
+								@if($item[0]['member_id'])
+									{{ number_format($item[0]['member_price'], 2, '.', ',')}}
+								@else
+									{{ number_format($item[0]['price'], 2, '.', ',') }}
+								@endif
+							</td>
 							<td class="ptb-5 text-right pr-1">{{ collect($item)->sum('unit') }}</td>
-							<td class="text-right ptb-5">{{ number_format(collect($item)->sum('total_price'), 2, '.', ',') }}</td>
+							<td class="text-right ptb-5">
 
+								@if($item[0]['member_id'])
+									{{ number_format(collect($item)->sum(function($item){ $item['member_price'] * $item['unit']; }), 2, '.', ',') }}
+								@else
+									{{ number_format(collect($item)->sum('total_price'), 2, '.', ',') }}
+								@endif
+							</td>
 						</tr>
 					@endforeach
 
