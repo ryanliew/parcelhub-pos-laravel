@@ -28,7 +28,7 @@ class Item extends Model
 		}
 		else if($this->total_price <= 0)
 		{
-			return 0;
+			return $this->total_price;
 		}
 		else
 		{
