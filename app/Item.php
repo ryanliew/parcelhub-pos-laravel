@@ -38,7 +38,7 @@ class Item extends Model
 
 			$final = $rounded_total > 0 ?
 					 $rounded_total / 20 :
-					 ;
+					 0;
 
 			return $final;			
 		}
