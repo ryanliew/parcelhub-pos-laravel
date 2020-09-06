@@ -60,6 +60,6 @@ class VendorController extends Controller
 
     public function list()
     {
-        return Vendor::whereNotIn('id', [5,9,14,12,18])->get();
+        return Vendor::whereNotIn('id', [5,9,14,12,18,25])->get();
     }
 }
