@@ -538,7 +538,6 @@ class InvoiceController extends Controller
                     return $this->returnValidationErrorResponse([['something' => 'something']], $error);
                 }
                 if(!is_null($excelRow[0])){
-                    dd($excelRow[0]);
                     $customer = Customer::where('name', $excelRow[0])->first();
                     if($customer){
                         $invoice_detail['invoice_customer_name'] = $excelRow[0];
