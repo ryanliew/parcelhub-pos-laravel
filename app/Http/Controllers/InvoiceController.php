@@ -413,7 +413,7 @@ class InvoiceController extends Controller
 
     public function validateTracking()
     {
-        $tracking = request()->code;
+        $tracking = trim(request()->code);
 
         return ['result' => Item::where('tracking_code', $tracking)
                         ->join('invoices', 'invoice_id' , '=' , 'invoices.id')

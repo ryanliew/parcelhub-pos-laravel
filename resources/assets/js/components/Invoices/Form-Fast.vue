@@ -141,6 +141,10 @@
 							<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
 							<button type="button" class="btn btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 						</div>
+						<small class="d-flex text-danger" v-if="editTooltip">
+							<div class="invoice-label"></div>
+							<small>{{ editTooltip }}</small>
+						</small>
 					</div>
 				</div>
 			</div>

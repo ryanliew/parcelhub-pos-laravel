@@ -602,7 +602,7 @@
 
 			checkTrackingNo: _.debounce(function (error = "No error") {
 				// console.log(error);
-				axios.get("/data/trackings/check?code=" + this.tracking_no)
+				axios.get("/data/trackings/check?code=" + this.tracking_no.trim())
 					.then(response => this.setTrackingNoResult(response))
 					.catch(error => this.checkTrackingNo(error));
 			}, 1000),
@@ -613,7 +613,7 @@
 
 				if(!response.data.result) {
 					this.tracking_no_repeating = _.filter(this.items, function(item){
-						return item.tracking_code && item.tracking_code == this.tracking_no;
+						return item.tracking_code && item.tracking_code.trim() == this.tracking_no.trim();
 					}.bind(this)).length > 1;
 				}
 			}
