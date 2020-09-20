@@ -13,7 +13,10 @@ class ItemController extends Controller
     //
     public function page()
 	{
-		return view('admin.global_consignment_notes');
+        if(auth()->user()->is_admin)
+		  return view('admin.global_consignment_notes');
+
+        return abort(403); 
     }
     
     public function index()
