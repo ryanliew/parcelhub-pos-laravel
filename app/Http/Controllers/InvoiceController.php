@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\Invoice;
 use App\Item;
+use App\Payment;
+use App\PaymentInvoice;
 use App\Product;
 use App\Tax;
 use App\User;
-use App\Customer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -276,11 +278,48 @@ class InvoiceController extends Controller
                 'zone_type_id' => empty($item->zone_type_id) ? $product->zone_type_id : $item->zone_type_id,
             ]);
         }
+
+        $invoice_url = self::checkForCustomerPayment($invoice);
         //$invoice->items()->create($items);
 
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
 
-        return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
+        return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url, "invoice_url" => $invoice_url]);
+    }
+
+    public function checkForCustomerPayment($invoice)
+    {
+        $url = "";
+
+        if($invoice->customer_id && $invoice->paid != 0) {
+            Log::info("Creating payment by : " . auth()->user()->name);
+            Log::info($invoice);
+
+            $payment = Payment::create([
+                'customer_id'   => $invoice->customer_id,
+                'branch_id'     => $invoice->branch_id,
+                'terminal_no'   => $invoice->terminal_no,
+                'total'         =>  min($invoice->total, $invoice->paid),
+                'payment_method' => $invoice->payment_type,
+                'created_by'    => $invoice->created_by,
+            ]);
+
+            $receipt = PaymentInvoice::create([
+                'payment_id'    => $payment->id,
+                'invoice_no'    => $invoice->invoice_no,
+                'total'         => $invoice->total,
+                'invoice_total' => $invoice->total,
+                'outstanding'   => max($invoice->paid - $invoice->total, 0),
+                'paid'          => $invoice->paid
+            ]);
+
+            $invoice->paid = 0;
+            $invoice->save();
+
+            $url = "/payments/receipt/" . $payment->id;
+        }
+
+        return $url;
     }
 
     public function update(Invoice $invoice)

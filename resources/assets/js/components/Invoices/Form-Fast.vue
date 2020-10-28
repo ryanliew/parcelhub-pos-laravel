@@ -685,6 +685,11 @@
 				console.log("Success");
 				window.open(response.redirect_url, '_blank');
 
+				console.log(response.invoice_url);
+				if(response.invoice_url) {
+					window.open(response.invoice_url, '_blank');
+				}
+
 				setInterval(function(){
 					window.location.href = "/invoices/create";
 				}, 3000);
