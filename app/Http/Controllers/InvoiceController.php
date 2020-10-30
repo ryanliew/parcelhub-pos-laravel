@@ -312,7 +312,8 @@ class InvoiceController extends Controller
                 'outstanding'   => max($invoice->paid - $invoice->total, 0),
                 'paid'          => $invoice->paid
             ]);
-
+            
+            $invoice->payment_type = "Account";
             $invoice->paid = 0;
             $invoice->save();
 
