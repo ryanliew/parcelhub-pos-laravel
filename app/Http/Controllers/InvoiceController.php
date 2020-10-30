@@ -279,10 +279,11 @@ class InvoiceController extends Controller
             ]);
         }
 
+        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
+        
         $invoice_url = self::checkForCustomerPayment($invoice);
         //$invoice->items()->create($items);
 
-        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
 
         return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url, "invoice_url" => $invoice_url]);
     }
@@ -312,7 +313,7 @@ class InvoiceController extends Controller
                 'outstanding'   => max($invoice->paid - $invoice->total, 0),
                 'paid'          => $invoice->paid
             ]);
-            
+
             $invoice->payment_type = "Account";
             $invoice->paid = 0;
             $invoice->save();
