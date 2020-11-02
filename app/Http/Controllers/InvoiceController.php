@@ -314,6 +314,7 @@ class InvoiceController extends Controller
                 'paid'          => $invoice->paid
             ]);
 
+            $invoice->remark = $invoice->remark . "SYSTEM: " . $invoice->payment_type . " payment received";
             $invoice->payment_type = "Account";
             $invoice->paid = 0;
             $invoice->save();
