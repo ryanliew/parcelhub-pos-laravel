@@ -48,7 +48,21 @@ class CashupController extends Controller
 
             $last_id = $invoices->last()->invoice_no;
             $first_id = $invoices->first()->invoice_no;
-            $session_start = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
+          
+            // use mindate(invoice date, payment date)
+            $earliest_invoice_date = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
+            $earliest_payment_date = $payments->count() > 0 ? $payments->last()->created_at : $invoices->last()->created_at;
+            $session_start = $earliest_invoice_date < $earliest_payment_date ? $earliest_invoice_date : $earliest_payment_date;
+
+            //$session_start = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
+
+            // set previous draft to canceled
+            $lastCashup = $terminal->cashups()->where('status','draft')->get()->last();
+            if($lastCashup){
+                $lastCashup->update([
+                    'status' => 'canceled'
+                ]);
+            }            
 
 	    	$cashup = $terminal->cashups()->create([
 
@@ -59,13 +73,13 @@ class CashupController extends Controller
 	    		'created_by' => auth()->id(),
 	    		'branch_id' => $terminal->branch_id,
                 'float_value' => $terminal->float
-	    	]);
-
+	    	]);            
+            
             if($invoices->count() > 0) {
 
                 $cashup->invoices()->attach($this->formatInvoices($invoices));
 
-    	    	$terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true]);
+                // $terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true]);
             }
 
             if($payments->count() > 0) {
@@ -75,8 +89,7 @@ class CashupController extends Controller
                 // To cater for multiple same payment for the same invoice within this cashup
                 // $cashup->invoices()->attach($this->formatPayments($payments));
 
-                $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
-
+                // $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
             }
 
             $invoices = $cashup->invoices()->orderBy('invoice_no')->get();
@@ -149,6 +162,17 @@ class CashupController extends Controller
             'status' => 'confirmed'
         ]);
 
+        $terminal = auth()->user()->terminal;
+    	$invoices = $terminal->invoices()->cashupRequired()->active()->latest()->get();
+        $payments = $terminal->payments()->cashupRequired()->with('payments.invoice')->latest()->get();
+        if($invoices->count() > 0) {
+            $terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true]);
+        }
+
+        if($payments->count() > 0) {                
+            $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
+        }
+
         return json_encode(['message' => "Cashup complete"]);
     }
 
@@ -176,7 +200,7 @@ class CashupController extends Controller
 
         foreach($invoices as $invoice) {
             $arr[$invoice->id] = ['total' => $invoice->total, 
-            'payment_method' => $invoice->payment_type, 
+            'payment_method' => $invoice->payment_type . ( $invoice->type != 'Cash'?  " - " . $invoice->type : "" ),
             'payment_id' => $invoice->payment_id ?: 0];
         }
 
@@ -200,7 +224,7 @@ class CashupController extends Controller
                 $cashup->invoices()
                         ->attach($invoice->id, [
                             'total' => $invoice->total, 
-                            'payment_method' => $invoice->payment_type, 
+                            'payment_method' => $invoice->payment_type . ( $invoice->type != 'Cash'?  " - " . $invoice->type : "" ),
                             'payment_id' => $invoice->payment_id
                         ]);
             }

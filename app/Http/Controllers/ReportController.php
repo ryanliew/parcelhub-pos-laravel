@@ -30,7 +30,6 @@ class ReportController extends Controller
         if((request()->allbranch)  && !request()->has('branch')){
             $branch = Branch::all();
             $report_view = 'reports.sales_all_branches';
-           
         }
 
         if(request()->has('branch'))
@@ -55,6 +54,7 @@ class ReportController extends Controller
 
         $all_branches_products = collect([]);
         $all_branches_vendors = collect([]);
+        $all_branches_skutypes = collect([]);
         $all_branches_items = collect([]);
         foreach($branch as $b)
         {
@@ -75,8 +75,17 @@ class ReportController extends Controller
                         ->whereIn('invoice_id', $invoices)
                         ->whereNotNull('courier_id')
                         ->get();
+            $vendors = $vendors->groupBy("name");  
 
-    	    $vendors = $vendors->groupBy("name");   
+            $skutypes = Item::select(
+                        DB::raw("items.*, product_types.*,
+                                ROUND(items.total_price - (invoices.discount_value / invoices.subtotal * items.total_price), 2) as total_price_after_discount"))
+                        ->leftJoin("invoices", "invoice_id", "=", "invoices.id")
+                        ->leftJoin("product_types", "product_types.id", "=", "product_type_id")
+                        ->whereIn('invoice_id', $invoices)
+                        ->whereNotNull('product_type_id')
+                        ->get();
+            $skutypes = $skutypes->groupBy("name");
 
             $vendors_sum = $vendors->sum(function($vendor)
             {
@@ -88,22 +97,28 @@ class ReportController extends Controller
 
             $branch_products = ['products' => $products, 'branch' => $b];
             $branch_vendors = ['vendors' => $vendors, 'branch' => $b];
+            $branch_skutypes = ['skutypes' => $skutypes, 'branch' => $b];
             $branch_items = ['items' => $items];
-            $detail = ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $b, 'vendors_sum' => $vendors_sum, 'total_sales' => $total_sales];           
+            $detail = ['vendors' => $vendors, 'products' => $products, 'items' => $items, 'branch' => $b, 
+                        'vendors_sum' => $vendors_sum, 'total_sales' => $total_sales
+                    ,'skutypes' => $skutypes, 'skutypes_sum' => $vendors_sum
+                ];           
 
             if(!request()->exportall) // exportall only true when click download inside the all branches sales report, when download in dialog, excel are generated branch per branch
             {
                 $all_branches_products = collect([]);
                 $all_branches_vendors = collect([]);
+                $all_branches_skutypes = collect([]);
                 $all_branches_items = collect([]);
             }
             $all_branches_products->push($branch_products);
             $all_branches_vendors->push($branch_vendors);
+            $all_branches_skutypes->push($branch_skutypes);
             $all_branches_items->push($branch_items);
 
             if(request()->export)   
             {                
-                $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items);
+                $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items, $all_branches_skutypes);
             }
 
             $report_detail->push($detail);
@@ -112,7 +127,7 @@ class ReportController extends Controller
         
         if(request()->exportall)
         {
-           $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items, $report_detail);      
+           $this->export_sales_report($vendors, $products, $items, $b, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items, $all_branches_skutypes, $report_detail);      
         }
 
         if(request()->export || request()->exportall)
@@ -124,7 +139,7 @@ class ReportController extends Controller
         //return view('reports.sales', ['report_detail' => $report_detail] );
     }
 
-    public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items, $report_detail = null) 
+    public function export_sales_report($vendors, $products, $items, $branch, $from, $to, $folder_name, $all_branches_products, $all_branches_vendors, $all_branches_items, $all_branches_skutypes, $report_detail = null) 
     {
         $filename = "Sales Report (" . $from . " - " .  $to->toDateString() . ')';
 
@@ -144,7 +159,7 @@ class ReportController extends Controller
             } 
         }
 
-        return Excel::create($filename, function($excel) use ($vendors, $products, $items, $report_detail, $all_branches_products, $all_branches_vendors, $all_branches_items){ 
+        return Excel::create($filename, function($excel) use ($vendors, $products, $items, $report_detail, $all_branches_products, $all_branches_vendors, $all_branches_skutypes, $all_branches_items){ 
             if($report_detail) {
                 $excel->sheet('Sales by outlet', function($sheet) use ($report_detail) {
                     $sheet->loadView('reports.sheets.total_sales_by_outlet', ['report_details' => $report_detail]);
@@ -157,6 +172,10 @@ class ReportController extends Controller
 
             $excel->sheet('Vendor sale', function($sheet) use ($all_branches_vendors){
                 $sheet->loadView('reports.sheets.vendor', ['all_branches_vendors' => $all_branches_vendors]);
+            });
+
+            $excel->sheet('SKU types sale', function($sheet) use ($all_branches_skutypes){
+                $sheet->loadView('reports.sheets.skutype', ['all_branches_skutypes' => $all_branches_skutypes]);
             });
 
             $excel->sheet('Detailed sales', function($sheet) use ($all_branches_items){

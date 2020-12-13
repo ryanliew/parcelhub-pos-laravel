@@ -10,6 +10,9 @@ use App\PaymentInvoice;
 use App\Product;
 use App\Tax;
 use App\User;
+use App\ProductType;
+use App\Vendor;
+use App\Stock;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,6 +22,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
+use Maatwebsite\Excel\Facades\Excel as Excel;
 
 class InvoiceController extends Controller
 {
@@ -277,6 +281,25 @@ class InvoiceController extends Controller
                 'tax_type' => $item->tax_type,
                 'zone_type_id' => empty($item->zone_type_id) ? $product->zone_type_id : $item->zone_type_id,
             ]);
+            
+            // create stock
+            if($product){
+                foreach($product->inventory_products as $inventory_product){
+                    $stock = Stock::create(['date' => Carbon::now()->toDateTimeString(),
+                    'quantity' =>  $item->unit,
+                    'type' => 'Out',
+                    'active' => true,
+                    'invoice_no' => $invoice_no,
+                    'inventory_id' => $inventory_product->inventory->id ]);
+                }             
+            }            
+        }
+
+        //update customer outstanding amount        
+        $customer = Customer::find(request()->customer_id);
+        if($customer){
+            $outstanding_amount = $customer->outstanding_amount;
+            $customer->update(['outstanding_amount' => $outstanding_amount + (request()->has('total') ? request()->total : 0.00)]);
         }
 
         $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
@@ -498,5 +521,188 @@ class InvoiceController extends Controller
 
         return json_encode(['error' => $message, 'message' => "Unable to cancel invoice"]);
     }
+   
+    public function import()
+	{
+		request()->validate([
+            "file" => "required"
+        ]);
+        $excelRows = Excel::load(request()->file('file'))->noHeading()->formatDates(false)->toArray(); //skipRows(1)->toArray();
+        $invoice_detail = [];
+        $items = collect([]);
+        $stop = false;
+        $customer = null;
+        $invoice_total = 0.00;
 
+        foreach($excelRows as $row_index => $excelRow) {      
+            $detail = [];
+            $count = 0;
+        
+            // invoice section
+            if($row_index == 9){
+                if(!is_null($excelRow[10])){
+                    $invoice_detail['invoice_no'] = $excelRow[10];
+                }
+                else{
+                    $error = "Invoice no. mandatory";         
+                    return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                }
+                if(!is_null($excelRow[0])){
+                    $customer = Customer::where('name', $excelRow[0])->first();
+                    if($customer){
+                        $invoice_detail['invoice_customer_name'] = $excelRow[0];
+                    }
+                    else{
+                        $error = "Customer no found";         
+                        return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                    }                   
+                }
+            }
+            if($row_index == 10){
+                if(!is_null($excelRow[10])){
+                    $invoice_detail['invoice_create_at'] = Carbon::createFromFormat('d/m/Y', $excelRow[10]) ;
+                }
+                else{
+                    $invoice_detail['invoice_create_at'] = Carbon::now()->toDateTimeString();
+                }
+            }
+            if($row_index == 11){
+                if(!is_null($excelRow[10])){
+                    $invoice_detail['invoice_payment_type'] = $excelRow[10];
+                }
+                else{
+                    $error = "Invoice payment type mandatory";         
+                    return $this->returnValidationErrorResponse([['something' => 'something']], $error);
+                }
+            } 
+            // items section
+            if($row_index > 16 && !$stop){
+                // to stop the loop till footer
+                if(is_null($excelRow[0])){
+                    $stop = true;
+                }
+                else{               
+                    // validate mandatory cannot be null - productType, ZoneType, Courier, TrackingCode
+                    if(is_null($excelRow[3])){
+                        $error = "Tracking code mandatory";         
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
+                    }
+                    else if(is_null($excelRow[2])){
+                        $error = "Product type mandatory";         
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
+                    }
+                    else if(is_null($excelRow[4])){
+                        $error = "Zone type mandatory";         
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
+                    }
+                    else if(is_null($excelRow[5])){
+                        $error = "Courier mandatory";         
+                        return $this->returnValidationErrorResponse(['file' => [$error]]);
+                    }
+                    else{   
+                        $detail['posting_date'] = $excelRow[0];
+                        $detail['pl9'] = $excelRow[1];
+                        $detail['product_type_name'] = $excelRow[2];
+                        $detail['tracking_code'] = $excelRow[3];
+                        $detail['zone_type_id'] = $excelRow[4] == "I" ? 2 : ( $excelRow[4] == "D" ? 1: $excelRow[4] );
+                        $detail['courier_name'] = $excelRow[5];                        
+                        $detail['weight'] = $excelRow[6];
+                        $detail['zone'] = $excelRow[7];
+                        $detail['charges'] = $excelRow[10];     
+                        $items->push($detail);
+                    }        
+                }        
+            }
+        }
+        // create invoice and items from excel record
+        $user = auth()->user();// User::find(request()->created_by);
+        $branch = auth()->user()->current;
+        $invoice_total = $items? $items->sum('charges') : 0.00;
+
+        $invoice = Invoice::create([
+            'subtotal' => $invoice_total,
+            'total' => $invoice_total,
+            'tax' => 0.00,
+            'paid' => 0.00,
+            'type' => $customer? $customer->type : "Corporate",
+            'payment_type' => $invoice_detail['invoice_payment_type'],
+            'branch_id' => $user->current_branch,
+            'terminal_no' => $user->current_terminal,
+            'created_by' => $user->id,
+            'discount_value' =>0.00,
+            'discount_mode' => "%",
+            'discount' => 0.00,
+            'remarks' => "",
+            'customer_id' => $customer? $customer->id : "",
+            'invoice_no' => $invoice_detail['invoice_no'],
+            'created_at' => $invoice_detail['invoice_create_at'],
+        ]);
+
+        $tax = Tax::where('code', 'SR')->first();
+        foreach($items as $item)
+        { 
+            $courier = Vendor::where('name', $item['courier_name'])->first(); 
+            $courier_id = $courier? $courier->id : 0;
+            $product_type = ProductType::where('name', $item['product_type_name'])->first(); 
+            $product_type_id = $product_type? $product_type->id : 0;
+            $products = Product::with('vendor', 'product_type')
+            ->where('product_type_id', $product_type_id)
+            //->where('zone', $item['zone'])
+            ->where('vendor_id',  $courier_id)
+            ->where('zone_type_id', $item['zone_type_id'])
+            ->where('weight_start', "<=",  $item['weight'])
+            ->where('weight_end', ">=",  $item['weight']);
+
+            if($item['zone'] == 0){
+                $products->whereNull('zone');
+            }
+            else{
+                $products->where('zone', $item['zone']);
+            }
+            $product = $products->first();
+            
+            $invoice->items()->create([
+                'tracking_code' => $item['tracking_code'],
+                'description' => $product? $product->description : "", //$item['description'] != "" ? $item['description'] : ( $product? $product->description : "" ),
+                'zone' => $item['zone'], 
+                'weight' => $item['weight'] ? $item['weight'] : 0,
+                'dimension_weight' => 0,
+                'height' => 0,
+                'length' => 0,
+                'width' => 0,
+                'sku' => $product? $product->sku: "",
+                'tax' => 0.00,
+                'price' => $item['charges']? $item['charges'] : 0,
+                'courier_id' => $courier_id,
+                'product_id' => $product? $product->id: 0,
+                'product_type_id' => $product_type_id,
+                'total_price' => $item['charges']? $item['charges'] : 0,
+                'unit' => 1,
+                'is_custom_pricing' => false,
+                'tax_rate' => $tax? $tax->percentage : 0.00,
+                'tax_type' => 'SR', //$tax? $tax->code,
+                'zone_type_id' => $item['zone_type_id']? $item['zone_type_id'] : ( $product? $product->zone_type_id : 0 ),
+            ]);
+
+            // create stock
+            if($product){
+                foreach($product->inventory_products as $inventory_product){
+                    $stock = Stock::create(['date' => Carbon::now()->toDateTimeString(),
+                    'quantity' =>  1,
+                    'type' => 'Out',
+                    'active' => true,
+                    'invoice_no' => $invoice_detail['invoice_no'],
+                    'inventory_id' => $inventory_product->inventory->id ]);
+                }             
+            }
+        }
+
+        //update customer outstanding amount        
+        if($customer){
+            $outstanding_amount = $customer->outstanding_amount;
+            $customer->update(['outstanding_amount' => ( $outstanding_amount + $invoice_total )]);
+        }
+
+        return ["message" => "Invoice and items created", "invoice_id" => $invoice->id];
+	}
 }

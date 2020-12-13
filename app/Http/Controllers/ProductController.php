@@ -7,6 +7,7 @@ use App\ProductType;
 use App\Tax;
 use App\Vendor;
 use App\ZoneType;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel as Excel;
 
@@ -49,6 +50,12 @@ class ProductController extends Controller
                         })
                         ->addColumn('tax_code', function(Product $product){
                             return $product->tax->code;
+                        })
+                        ->addColumn('quantity', function(Product $product){
+                            return $product->stock_count;
+                        })
+                        ->addColumn('quantity_on_date', function(Product $product){
+                            return $product->get_stock_count_on_date(Carbon::now()->endOfDay());
                         })
                         ->toJson();	
     }

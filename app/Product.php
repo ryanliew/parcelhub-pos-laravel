@@ -43,6 +43,11 @@ class Product extends Model
   		return $this->hasMany('App\Item');
   	}
 
+    public function inventory_products()
+  	{
+  		return $this->hasMany('App\InventoryProduct', 'product_id');
+  	}
+
     public function branches()
     {
         return $this->belongsToMany("App\Branch")
@@ -77,4 +82,16 @@ class Product extends Model
 
         $this->customer_groups()->attach($details);
     }
+
+    public function getStockCountAttribute()
+	{
+        return $this->inventory_products()? $this->inventory_products->min('max_quantity') : 0;    
+    }
+    
+    public function get_stock_count_on_date($date)
+	{
+        return $this->inventory_products()? 
+        $this->inventory_products->min(function($ip) use ($date){ return $ip->get_max_quantity_on_date($date); }) 
+        : 0;    
+	}
 }

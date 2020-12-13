@@ -87,8 +87,33 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('taxes.page') }}">Taxes</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('users.page') }}">Users</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('permissions.page') }}">Permissions</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="{{ route('product-types.page') }}">SKU types</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('products.page') }}">SKU</a></li> -->
+
+                        <li class="nav-item dropdown">
+                            <a id="settings-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                SKU <span class="caret"></span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="invoice-dropdown">
+                                <a class="dropdown-item" href="{{ route('products.page') }}">
+                                    SKUs
+                                </a>
+                                <a class="dropdown-item" href="{{ route('product-types.page') }}">
+                                    SKU types
+                                </a>
+                                <a class="dropdown-item" href="{{ route('inventory.page') }}">
+                                    Inventories
+                                </a>
+                                <a class="dropdown-item" href="{{ route('inventory-products.page') }}">
+                                    Inventory products
+                                </a>
+                                <a class="dropdown-item" href="{{ route('stocks.page') }}">
+                                    Stocks
+                                </a>
+                            </div>
+                        </li>
+
                         <li class="nav-item"><a class="nav-link" href="{{ route('reports.page') }}">Reports</a></li>
                         @if(auth()->user()->is_admin)<li class="nav-item"><a class="nav-link" href="{{ route('items.page') }}">CN Search</a></li>@endif
                         <li class="nav-item"><a class="nav-link" href="{{ route('profit-and-loss.page') }}">Profit & Loss</a></li>

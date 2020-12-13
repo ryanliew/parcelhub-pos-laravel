@@ -50,7 +50,7 @@ Vue.component('checkbox-input', require('./components/CheckboxInput.vue'));
 Vue.component('file-input', require('./components/FileInput.vue'));
 Vue.component('modal', require('./components/Modal.vue'));
 Vue.component('confirmation', require("./components/Confirmation.vue"));
-
+Vue.component('calendar-input', require('./components/TextInput.vue'));
 
 
 Vue.component('branches-dialog', require('./components/branches/Dialog.vue'));
@@ -72,9 +72,14 @@ Vue.component('taxes-dialog', require('./components/taxes/Dialog.vue'));
 Vue.component('products-dialog', require('./components/products/Dialog.vue'));
 Vue.component('products-importer', require('./components/products/Importer.vue'));
 
+Vue.component('inventory-dialog', require('./components/inventory/InventoryDialog.vue'));
+Vue.component('inventory-product-dialog', require('./components/inventory/InventoryProductDialog.vue'));
+Vue.component('stocks-dialog', require('./components/inventory/StockDialog.vue'));
+
 // Vue.component('invoices-create', require('./components/invoices/Form.vue'));
 Vue.component('invoices-create', require('./components/invoices/Form-Fast.vue'));
 Vue.component('cancel-dialog', require("./components/invoices/Cancel-Dialog.vue"));
+Vue.component('import-dialog', require("./components/invoices/Import-Dialog.vue"));
 
 Vue.component('customers-dialog', require('./components/customers/Dialog.vue'));
 Vue.component('statement-dialog', require('./components/customers/Statement.vue'));

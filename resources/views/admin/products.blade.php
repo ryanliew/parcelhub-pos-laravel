@@ -32,6 +32,8 @@
 							<th>Tax</th>
 							<th>Tax inclusive</th>
 							<th>Description</th>
+							<th>Quantity</th>	
+							<th>Quantity on Date</th>	
 						</tr>
 					</thead>
 				</table>
@@ -151,8 +153,23 @@
 							return data;
 						}
 					},
-					{data: 'description'}
-					
+					{data: 'description'},
+					{data: 'quantity', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data? parseFloat(data).toFixed(2) : 0;
+							}
+
+							return data;
+						}, "searchable": false
+					},
+					{data: 'quantity_on_date', render: function(data, type, row){
+							if(type === 'display' || type === 'filter') {
+								return data? parseFloat(data).toFixed(2) : 0;
+							}
+
+							return data;
+						}, "searchable": false
+					},					
 				]
 			});
 
