@@ -162,16 +162,21 @@ class CashupController extends Controller
             'status' => 'confirmed'
         ]);
 
-        $terminal = auth()->user()->terminal;
-    	$invoices = $terminal->invoices()->cashupRequired()->active()->latest()->get();
-        $payments = $terminal->payments()->cashupRequired()->with('payments.invoice')->latest()->get();
-        if($invoices->count() > 0) {
-            $terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true]);
-        }
+        // Should only update invoices and payments to cashed that belongs to this cashup
+        $cashup->invoices()->update(['cashed' => true]);
+        $cashup->payments()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
 
-        if($payments->count() > 0) {                
-            $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
-        }
+        // $terminal = auth()->user()->terminal;
+
+    	// $invoices = $terminal->invoices()->cashupRequired()->active()->latest()->get();
+     //    $payments = $terminal->payments()->cashupRequired()->with('payments.invoice')->latest()->get();
+     //    if($invoices->count() > 0) {
+     //        $terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true]);
+     //    }
+
+     //    if($payments->count() > 0) {                
+     //        $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
+     //    }
 
         return json_encode(['message' => "Cashup complete"]);
     }
