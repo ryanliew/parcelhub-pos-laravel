@@ -163,10 +163,13 @@ class CashupController extends Controller
         ]);
 
         // Should only update invoices and payments to cashed that belongs to this cashup
-        $cashup->invoices()->update(['cashed' => true]);
-        $cashup->payments()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
+        $invoices = $cashup->invoices->pluck("id");
+        $payments = $cashup->payments->pluck("id");
 
-        // $terminal = auth()->user()->terminal;
+        $terminal = auth()->user()->terminal;
+        $terminal->invoices()->whereIn("id", $invoices)->update(['cashed' => true]);
+        $terminal->payments()->whereIn("id", $payments)->update(['cashed' => true, 'cashup_id' => $cashup->id]);
+
 
     	// $invoices = $terminal->invoices()->cashupRequired()->active()->latest()->get();
      //    $payments = $terminal->payments()->cashupRequired()->with('payments.invoice')->latest()->get();
