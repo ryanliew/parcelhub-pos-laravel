@@ -911,10 +911,14 @@
 					if(newVal.value !== 'Customer') {
 						this.payment_types = [
 							{label: 'Cash', value: 'Cash'},
-							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Cheque', value: 'Cheque'},
 							{label: 'GrabPay', value: 'GrabPay'},
 							{label: 'IBG', value: 'IBG'},
+							{label: 'Touch n Go', value: 'Touch n Go'},
+							{label: 'Boost', value: 'Boost'},
+							{label: 'iPay88', value: 'iPay88'},
+							{label: 'Debit Card', value: 'Debit Card'},
+							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Others', value: 'Others'}
 						];
 						this.selectedCustomer = '';
@@ -923,10 +927,14 @@
 						this.payment_types = [
 							{label: 'Account', value: 'Account'},
 							{label: 'Cash', value: 'Cash'},
-							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Cheque', value: 'Cheque'},
 							{label: 'GrabPay', value: 'GrabPay'},
 							{label: 'IBG', value: 'IBG'},
+							{label: 'Touch n Go', value: 'Touch n Go'},
+							{label: 'Boost', value: 'Boost'},
+							{label: 'iPay88', value: 'iPay88'},
+							{label: 'Debit Card', value: 'Debit Card'},
+							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Others', value: 'Others'}
 						];
 
