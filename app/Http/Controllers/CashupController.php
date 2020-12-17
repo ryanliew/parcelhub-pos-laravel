@@ -6,6 +6,7 @@ use App\Cashup;
 use App\Terminal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Log;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
@@ -62,6 +63,11 @@ class CashupController extends Controller
             if($lastCashup){
                 $lastCashup->update([
                     'status' => 'canceled'
+                ]);
+
+                $lastCashup->payments()->update([
+                    'cashed' => false,
+                    'cashup_id' => null
                 ]);
             }            
 
@@ -221,6 +227,10 @@ class CashupController extends Controller
         // $invoices = collect();
 
         foreach($payments as $payment) {
+
+            //Set the cash id to the payment 
+            $payment->update(['cashup_id' => $cashup->id]);
+
             foreach($payment->payments as $payment_invoice) {
                 $payment_invoice->invoice->total = $payment_invoice->total;
                 $payment_invoice->invoice->paid = $payment_invoice->total;
