@@ -326,7 +326,7 @@ class CashupController extends Controller
          
     }
 
-    public function patchDuplicateData()
+    public function setCashedToTrue()
     {
         $cashups = Cashup::whereDate("created_at", ">=", "2020-12-16")->get();
 
