@@ -325,4 +325,12 @@ class CashupController extends Controller
         }
          
     }
+
+    public function patchDuplicateData()
+    {
+        $cashups = Cashup::whereDate("created_at", ">=", "2020-12-16")->get();
+
+        foreach($cashups as $cashup)
+            $cashup->payments()->update(["cashed" => true]);
+    }
 }
