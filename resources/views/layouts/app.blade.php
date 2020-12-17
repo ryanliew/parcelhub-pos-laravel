@@ -23,6 +23,7 @@
 </head>
 <body>
     <div id="app">
+        <div style="background:red; color: white; width: 100%; text-align: center;">There is an issue with the cashup system and we are working on resolving it. The module is disabled for the time being.</div>
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
