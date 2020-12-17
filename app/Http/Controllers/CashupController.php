@@ -48,11 +48,12 @@ class CashupController extends Controller
 
             $last_id = $invoices->last()->invoice_no;
             $first_id = $invoices->first()->invoice_no;
-          
+            
+            // No longer needed
             // use mindate(invoice date, payment date)
-            $earliest_invoice_date = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
-            $earliest_payment_date = $payments->count() > 0 ? $payments->last()->created_at : $invoices->last()->created_at;
-            $session_start = $earliest_invoice_date < $earliest_payment_date ? $earliest_invoice_date : $earliest_payment_date;
+            // $earliest_invoice_date = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
+            // $earliest_payment_date = $payments->count() > 0 ? $payments->last()->created_at : $invoices->last()->created_at;
+            // $session_start = $earliest_invoice_date < $earliest_payment_date ? $earliest_invoice_date : $earliest_payment_date;
 
             //$session_start = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
 
@@ -69,7 +70,7 @@ class CashupController extends Controller
 	    		'invoice_from' => $last_id,
 	    		'invoice_to' => $first_id,
 	    		'total' => $invoices->sum(function($invoice){ return $invoice->total; }) + $terminal->float,
-	    		'session_start' => $session_start,
+	    		'session_start' => now(),
 	    		'created_by' => auth()->id(),
 	    		'branch_id' => $terminal->branch_id,
                 'float_value' => $terminal->float
