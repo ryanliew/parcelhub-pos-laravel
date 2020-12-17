@@ -23,7 +23,7 @@ class CashupController extends Controller
         $terminal = auth()->user()->terminal;
 
     	return datatables()
-			->of($terminal->cashups()->with('terminal')->latest())
+			->of($terminal->cashups()->with('terminal')->where('status', "!=", "canceled")->latest())
 			->addColumn('terminal_name', function(Cashup $cashup) {
 				return $cashup->terminal->name;
 			})
