@@ -266,4 +266,62 @@ class CashupController extends Controller
 
         return response()->file($path);
     }
+
+    public function patchDuplicateData()
+    {
+        $cashups = Cashup::whereDate("created_at", ">=", "2020-12-17")->get();
+
+        CashupDetail::whereIn("cashup_id", $cashups->pluck("id"))->delete();
+
+
+        foreach($cashups as $cashup) {
+            $invoices = $cashup->invoices()->orderBy('invoice_no')->get();
+
+            $cashup->update([
+                'invoice_from' => $invoices->first()->invoice_no,
+                'invoice_to' => $invoices->last()->invoice_no,
+                'total' => $invoices->sum(function($invoice){ return $invoice->pivot->total; }) + $terminal->float
+            ]);
+
+            // Create cashup details before hand
+            foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records) {
+                $amount = $records->sum(function($invoice){ return $invoice->pivot->total; });
+                $legend = "00";
+
+                switch($type) {
+                    case 'IBG':
+                        $legend = "17";
+                        break;
+                    case 'Cash':
+                        $legend = "01";
+                        break;
+                    case 'Credit card':
+                        $legend = "02";
+                        break;
+                    case "Cheque":
+                        $legend = "05";
+                        break;
+                }
+
+                $cashup->details()->create([
+                    'expected_amount' => $amount,
+                    'actual_amount' => $amount,
+                    'legend' => $legend,
+                    'type' => $type,
+                    'percentage' => $amount / $cashup->total * 100,
+                    'count' => $records->count()
+                ]);
+            }
+
+            if($cashup->total > 0)
+                $cashup->details()->create([
+                    'expected_amount' => $cashup->float_value,
+                    'actual_amount' => $cashup->float_value,
+                    'legend' => "00",
+                    'type' => "Float",
+                    'percentage' => $cashup->float_value / $cashup->total * 100,
+                ]);
+        }
+         
+    }
 }
