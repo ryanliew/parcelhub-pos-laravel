@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Cashup;
+use App\CashupDetail;
 use App\Terminal;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
