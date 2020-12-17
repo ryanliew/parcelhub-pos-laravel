@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Cashup;
 use App\CashupDetail;
+use App\Payment;
 use App\Terminal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -330,7 +331,9 @@ class CashupController extends Controller
     {
         $cashups = Cashup::whereDate("created_at", ">=", "2020-12-14")->where('status', 'confirmed')->get();
 
-        foreach($cashups as $cashup)
-            $cashup->payments()->update(["cashed" => true]);
+        foreach($cashups as $cashup) {
+            $payments = $cashup->invoices()->where('payment_id', ">", 0)->get()->pluck("payment_id");
+            Payment::whereIn("id", $payments)->update(["cashed" => true, "cashup_id" => $cashup->id]);
+        }
     }
 }
