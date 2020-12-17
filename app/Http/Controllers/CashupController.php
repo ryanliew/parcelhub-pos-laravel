@@ -330,9 +330,9 @@ class CashupController extends Controller
     public function setCashedToTrue()
     {
         $cashups = Cashup::whereDate("created_at", ">=", "2020-12-14")->where('status', 'confirmed')->get();
-
+        
         foreach($cashups as $cashup) {
-            $payments = $cashup->invoices()->where('payment_id', ">", 0)->get()->pluck("payment_id");
+            $payments = $cashup->invoices->where('pivot.payment_id', ">", 0)->pluck("pivot.payment_id");
             Payment::whereIn("id", $payments)->update(["cashed" => true, "cashup_id" => $cashup->id]);
         }
     }
