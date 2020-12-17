@@ -328,9 +328,9 @@ class CashupController extends Controller
 
     public function setCashedToTrue()
     {
-        $cashups = Cashup::whereDate("created_at", ">=", "2020-12-14")->where('status', 'draft')->get();
+        $cashups = Cashup::whereDate("created_at", ">=", "2020-12-14")->where('status', 'confirmed')->get();
 
         foreach($cashups as $cashup)
-            $cashup->payments()->update(["cashed" => false]);
+            $cashup->payments()->update(["cashed" => true]);
     }
 }
