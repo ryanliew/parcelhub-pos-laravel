@@ -281,7 +281,7 @@ class CashupController extends Controller
             $cashup->update([
                 'invoice_from' => $invoices->first()->invoice_no,
                 'invoice_to' => $invoices->last()->invoice_no,
-                'total' => $invoices->sum(function($invoice){ return $invoice->pivot->total; }) + $terminal->float
+                'total' => $invoices->sum(function($invoice){ return $invoice->pivot->total; }) + $cashup->terminal->float
             ]);
 
             // Create cashup details before hand
