@@ -196,6 +196,7 @@ class CashupController extends Controller
 
     public function delete(Cashup $cashup)
     {
+        // We do not need to set the cashup payments / invoices to false as only draft cashup can be deleted
         // $cashup->payments()->update([
         //     'cashed' => false,
         //     'cashup_id' => null
