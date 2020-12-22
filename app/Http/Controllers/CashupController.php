@@ -196,14 +196,14 @@ class CashupController extends Controller
 
     public function delete(Cashup $cashup)
     {
-        $cashup->payments()->update([
-            'cashed' => false,
-            'cashup_id' => null
-        ]);
+        // $cashup->payments()->update([
+        //     'cashed' => false,
+        //     'cashup_id' => null
+        // ]);
 
-        foreach($cashup->invoices as $invoice) {
-            $invoice->update(['cashed' => false]);
-        }
+        // foreach($cashup->invoices as $invoice) {
+        //     $invoice->update(['cashed' => false]);
+        // }
 
         $cashup->invoices()->detach();
 
