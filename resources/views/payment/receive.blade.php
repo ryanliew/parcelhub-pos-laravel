@@ -285,6 +285,8 @@
 
 	  		$("#btnPayment").click(function() {
 
+	  			jQuery(this).prop("disabled", true);
+
 	  			var row = table.rows({ filter : 'applied'});
 	  			var amount_paid = sumTotalAmt();
 
@@ -298,6 +300,8 @@
 		    		search.reportValidity();
 
 		    		flash("No invoices selected",'danger');
+
+	  				jQuery(this).prop("disabled", false);
 	  			}
 	  			/*else if( amount_paid == 0)
 	  			{
