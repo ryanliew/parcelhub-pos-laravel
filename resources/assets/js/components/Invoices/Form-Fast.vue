@@ -958,6 +958,8 @@
 			selectedCustomer(newVal, oldVal) {
 				if(newVal)
 					this.form.customer_id = newVal.value;
+				else
+					this.form.customer_id = "";
 				
 				if(this.canEdit)
 					this.getPriceForItems();
