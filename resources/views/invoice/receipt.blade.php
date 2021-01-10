@@ -230,7 +230,7 @@
 			<tr>
 				<td>{{ $tax->code }} @ {{ $tax->percentage }}%</td>
 				<?php $filtered = $invoice->items->filter(function($item) use ($tax){ return $item->tax_type == $tax->code; }) ?>
-				<td>{{ number_format( $filtered->sum('price'), 2, '.', ',') }}</td>
+				<td>{{ number_format( $filtered->sum('total_price'), 2, '.', ',') }}</td>
 				<td>{{ number_format( $filtered->sum('tax'), 2, '.', ',') }}</td>
 			</tr>
 			@endforeach

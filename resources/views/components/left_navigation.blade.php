@@ -17,6 +17,20 @@
                 </a>
             </div>
         </li>
+        <li class="nav-item dropdown">
+            <a id="invoice-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                Dropoffs <span class="caret"></span>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="invoice-dropdown">
+                <a class="dropdown-item" href="{{ route('dropoff.page') }}">
+                    View dropoffs
+                </a>
+                <a class="dropdown-item" href="{{ route('dropoff.create') }}">
+                    Create dropoffs (F7)
+                </a>
+            </div>
+        </li>
         <!-- <li class="nav-item"><a class="nav-link" href="{{ route('customers.page') }}">Customers</a></li> -->
         <li class="nav-item dropdown">
             <a id="customer-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

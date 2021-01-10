@@ -94,6 +94,11 @@
 				  								<option value="Credit card">Credit card</option>
 				  								<option value="GrabPay">GrabPay</option>
 				  								<option value="IBG">IBG</option>
+				  								<option value="Touch n Go">Touch n Go</option>
+				  								<option value="iPay88">iPay88</option>
+				  								<option value="Boost">Boost</option>
+				  								<option value="Debit Card">Debit Card</option>
+				  								<option value="Credit Card">Credit Card</option>
 				  								<option value="Others">Others</option>
 										</select>
 										<span style="min-width: 20px;"></span>
@@ -281,6 +286,8 @@
 
 	  		$("#btnPayment").click(function() {
 
+	  			jQuery(this).prop("disabled", true);
+
 	  			var row = table.rows({ filter : 'applied'});
 	  			var amount_paid = sumTotalAmt();
 
@@ -294,6 +301,8 @@
 		    		search.reportValidity();
 
 		    		flash("No invoices selected",'danger');
+
+	  				jQuery(this).prop("disabled", false);
 	  			}
 	  			/*else if( amount_paid == 0)
 	  			{

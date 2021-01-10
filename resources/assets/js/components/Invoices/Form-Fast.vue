@@ -141,6 +141,10 @@
 							<a v-if="invoice" target="_blank" :href="'/invoices/preview/' + invoice" type="button" class="btn btn-success mr-2">Print invoice</a>
 							<button type="button" class="btn btn-primary" :disabled="!canSubmit || !canEdit" :title="editTooltip" @click="submit">Confirm (F7)</button>
 						</div>
+						<small class="d-flex text-danger" v-if="editTooltip">
+							<div class="invoice-label"></div>
+							<small>{{ editTooltip }}</small>
+						</small>
 					</div>
 				</div>
 			</div>
@@ -391,8 +395,7 @@
 					customer_id: '',
 					type: 'Cash',
 					payment_type: 'Cash',
-					type: 'Cash',
-					discount_value: 0, 
+					discount_value: 0
 				}),
 
 				product_types: [],
@@ -409,6 +412,11 @@
 						{label: 'Cheque', value: 'Cheque'},
 						{label: 'GrabPay', value: 'GrabPay'},
 						{label: 'IBG', value: 'IBG'},
+						{label: 'Touch n Go', value: 'Touch n Go'},
+						{label: 'Boost', value: 'Boost'},
+						{label: 'iPay88', value: 'iPay88'},
+						{label: 'Debit Card', value: 'Debit Card'},
+						{label: 'Credit Card', value: 'Credit Card'},
 						{label: 'Others', value: 'Others'}
 						],
 				modes: [
@@ -720,6 +728,11 @@
 				console.log("Success");
 				window.open(response.redirect_url, '_blank');
 
+				console.log(response.invoice_url);
+				if(response.invoice_url) {
+					window.open(response.invoice_url, '_blank');
+				}
+
 				setInterval(function(){
 					window.location.href = "/invoices/create";
 				}, 3000);
@@ -955,10 +968,14 @@
 					if(newVal.value !== 'Customer') {
 						this.payment_types = [
 							{label: 'Cash', value: 'Cash'},
-							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Cheque', value: 'Cheque'},
 							{label: 'GrabPay', value: 'GrabPay'},
 							{label: 'IBG', value: 'IBG'},
+							{label: 'Touch n Go', value: 'Touch n Go'},
+							{label: 'Boost', value: 'Boost'},
+							{label: 'iPay88', value: 'iPay88'},
+							{label: 'Debit Card', value: 'Debit Card'},
+							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Others', value: 'Others'}
 						];
 						this.selectedCustomer = '';
@@ -967,10 +984,14 @@
 						this.payment_types = [
 							{label: 'Account', value: 'Account'},
 							{label: 'Cash', value: 'Cash'},
-							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Cheque', value: 'Cheque'},
 							{label: 'GrabPay', value: 'GrabPay'},
 							{label: 'IBG', value: 'IBG'},
+							{label: 'Touch n Go', value: 'Touch n Go'},
+							{label: 'Boost', value: 'Boost'},
+							{label: 'iPay88', value: 'iPay88'},
+							{label: 'Debit Card', value: 'Debit Card'},
+							{label: 'Credit Card', value: 'Credit Card'},
 							{label: 'Others', value: 'Others'}
 						];
 
@@ -994,6 +1015,8 @@
 			selectedCustomer(newVal, oldVal) {
 				if(newVal)
 					this.form.customer_id = newVal.value;
+				else
+					this.form.customer_id = "";
 				
 				if(this.canEdit)
 					this.getPriceForItems();

@@ -30506,7 +30506,7 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(141);
-module.exports = __webpack_require__(294);
+module.exports = __webpack_require__(300);
 
 
 /***/ }),
@@ -30623,6 +30623,9 @@ Vue.component('sales-reports-dialog', __webpack_require__(285));
 Vue.component('profit-and-loss-import', __webpack_require__(288));
 Vue.component('parcels-check-in', __webpack_require__(291));
 
+Vue.component("dropoff-form", __webpack_require__(294));
+Vue.component("pickup-form", __webpack_require__(297));
+
 var app = new Vue({
   el: '#app',
 
@@ -30630,6 +30633,11 @@ var app = new Vue({
     window.addEventListener('keyup', function (event) {
       if (event.key == "F9") {
         window.open("/invoices/create", "_blank");
+      }
+
+      if (event.key == "F7") {
+        event.preventDefault();
+        window.open("/dropoffs/create", "_blank");
       }
     });
   }
@@ -77480,8 +77488,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ItemRow_vue__ = __webpack_require__(241);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ItemRow_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ItemRow_vue__);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+//
+//
+//
+//
 //
 //
 //
@@ -77859,10 +77869,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 	components: { ItemRow: __WEBPACK_IMPORTED_MODULE_2__ItemRow_vue___default.a },
 
 	data: function data() {
-		var _ref;
-
 		return {
-			form: new Form((_ref = {
+			form: new Form({
 				items: [],
 				remarks: '',
 				subtotal: '',
@@ -77874,15 +77882,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 				created_by: this.created_by,
 				customer_id: '',
 				type: 'Cash',
-				payment_type: 'Cash'
-			}, _defineProperty(_ref, "type", 'Cash'), _defineProperty(_ref, "discount_value", 0), _ref)),
+				payment_type: 'Cash',
+				discount_value: 0
+			}),
 
 			product_types: [],
 			zone_types: [],
 			couriers: [],
 			products: [],
 			types: [{ label: 'Customer', value: 'Customer' }, { label: 'Cash', value: 'Cash' }],
-			payment_types: [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'GrabPay', value: 'GrabPay' }, { label: 'IBG', value: 'IBG' }, { label: 'Others', value: 'Others' }],
+			payment_types: [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'GrabPay', value: 'GrabPay' }, { label: 'IBG', value: 'IBG' }, { label: 'Touch n Go', value: 'Touch n Go' }, { label: 'Boost', value: 'Boost' }, { label: 'iPay88', value: 'iPay88' }, { label: 'Debit Card', value: 'Debit Card' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Others', value: 'Others' }],
 			modes: [{ label: "%", value: "%" }, { label: "RM", value: "RM" }],
 			customers: [],
 
@@ -78187,6 +78196,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			console.log("Success");
 			window.open(response.redirect_url, '_blank');
 
+			console.log(response.invoice_url);
+			if (response.invoice_url) {
+				window.open(response.invoice_url, '_blank');
+			}
+
 			setInterval(function () {
 				window.location.href = "/invoices/create";
 			}, 3000);
@@ -78390,11 +78404,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 			if (!this.is_edit) {
 				if (newVal.value !== 'Customer') {
-					this.payment_types = [{ label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'GrabPay', value: 'GrabPay' }, { label: 'IBG', value: 'IBG' }, { label: 'Others', value: 'Others' }];
+					this.payment_types = [{ label: 'Cash', value: 'Cash' }, { label: 'Cheque', value: 'Cheque' }, { label: 'GrabPay', value: 'GrabPay' }, { label: 'IBG', value: 'IBG' }, { label: 'Touch n Go', value: 'Touch n Go' }, { label: 'Boost', value: 'Boost' }, { label: 'iPay88', value: 'iPay88' }, { label: 'Debit Card', value: 'Debit Card' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Others', value: 'Others' }];
 					this.selectedCustomer = '';
 					this.selectedPaymentType = { value: 'Cash', label: 'Cash' };
 				} else {
-					this.payment_types = [{ label: 'Account', value: 'Account' }, { label: 'Cash', value: 'Cash' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Cheque', value: 'Cheque' }, { label: 'GrabPay', value: 'GrabPay' }, { label: 'IBG', value: 'IBG' }, { label: 'Others', value: 'Others' }];
+					this.payment_types = [{ label: 'Account', value: 'Account' }, { label: 'Cash', value: 'Cash' }, { label: 'Cheque', value: 'Cheque' }, { label: 'GrabPay', value: 'GrabPay' }, { label: 'IBG', value: 'IBG' }, { label: 'Touch n Go', value: 'Touch n Go' }, { label: 'Boost', value: 'Boost' }, { label: 'iPay88', value: 'iPay88' }, { label: 'Debit Card', value: 'Debit Card' }, { label: 'Credit Card', value: 'Credit Card' }, { label: 'Others', value: 'Others' }];
 
 					this.selectedPaymentType = { value: 'Account', label: 'Account' };
 				}
@@ -78410,7 +78424,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 			if (newVal.value == 'Account') this.form.paid = 0;
 		},
 		selectedCustomer: function selectedCustomer(newVal, oldVal) {
-			if (newVal) this.form.customer_id = newVal.value;
+			if (newVal) this.form.customer_id = newVal.value;else this.form.customer_id = "";
 
 			if (this.canEdit) this.getPriceForItems();
 		}
@@ -79101,7 +79115,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "No error";
 
 			// console.log(error);
-			axios.get("/data/trackings/check?code=" + this.tracking_no).then(function (response) {
+			axios.get("/data/trackings/check?code=" + this.tracking_no.trim()).then(function (response) {
 				return _this7.setTrackingNoResult(response);
 			}).catch(function (error) {
 				return _this7.checkTrackingNo(error);
@@ -79114,7 +79128,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 			if (!response.data.result) {
 				this.tracking_no_repeating = _.filter(this.items, function (item) {
-					return item.tracking_code && item.tracking_code == this.tracking_no;
+					return item.tracking_code && item.tracking_code.trim() == this.tracking_no.trim();
 				}.bind(this)).length > 1;
 			}
 		}
@@ -80094,7 +80108,15 @@ var render = function() {
                   },
                   [_vm._v("Confirm (F7)")]
                 )
-              ])
+              ]),
+              _vm._v(" "),
+              _vm.editTooltip
+                ? _c("small", { staticClass: "d-flex text-danger" }, [
+                    _c("div", { staticClass: "invoice-label" }),
+                    _vm._v(" "),
+                    _c("small", [_vm._v(_vm._s(_vm.editTooltip))])
+                  ])
+                : _vm._e()
             ])
           ])
         ])
@@ -88124,6 +88146,938 @@ if (false) {
 
 /***/ }),
 /* 294 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(295)
+/* template */
+var __vue_template__ = __webpack_require__(296)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\dropoffs\\Dialog.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-18b642ec", Component.options)
+  } else {
+    hotAPI.reload("data-v-18b642ec", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 295 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['auth_user', 'dropoff'],
+
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
+
+  data: function data() {
+    return {
+      barcode: "",
+      barcodes: [],
+      customers: [],
+      couriers: [],
+      selectedCourier: "",
+      selectedCustomer: "",
+      currentTime: '',
+      form: new Form({
+        barcodes: "",
+        customer_id: "",
+        vendor_id: "",
+        remarks: ""
+      })
+    };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    this.getCustomers();
+
+    if (!this.dropoff) {
+      this.currentTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()().format('LL LTS');
+      setInterval(function () {
+        return _this.updateCurrentTime();
+      }, 1000);
+    }
+
+    window.addEventListener('keydown', function (event) {
+      if (event.key == "F7") {
+        if (this.canSubmit) this.submit();
+      }
+    }.bind(this));
+  },
+
+
+  methods: {
+    updateCurrentTime: function updateCurrentTime() {
+      this.currentTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()().format('LL LTS');
+    },
+    getCustomers: function getCustomers() {
+      var _this2 = this;
+
+      var error = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'No error';
+
+      // console.log(error);
+      axios.get("/customers/list").then(function (response) {
+        return _this2.setCustomers(response);
+      }).catch(function (error) {
+        return _this2.getCustomers(error);
+      });
+    },
+    setCustomers: function setCustomers(response) {
+      this.customers = response.data.map(function (customer) {
+        var obj = {};
+
+        obj['value'] = customer.id;
+        obj['label'] = customer.name;
+        obj['type'] = customer.type;
+        obj['customer_group_id'] = customer.customer_group_id;
+
+        return obj;
+      });
+
+      this.getCourier();
+    },
+    getCourier: function getCourier() {
+      var _this3 = this;
+
+      axios.get("/data/vendors").then(function (response) {
+        return _this3.setCourier(response);
+      }).catch(function (error) {
+        return _this3.getCourier();
+      });
+    },
+    setCourier: function setCourier(response) {
+      this.couriers = response.data.map(function (type) {
+        var obj = {};
+
+        obj['label'] = type.name;
+        obj['value'] = type.id;
+        obj['formula'] = type.formula;
+
+        return obj;
+      });
+    },
+    addBarcode: function addBarcode() {
+      var code = this.barcode.trim();
+      if (code && !this.barcodes.includes(code)) {
+        this.barcodes.push(code);
+      }
+      this.barcode = "";
+    },
+    removeBarcode: function removeBarcode(index) {
+      this.barcodes.splice(index, 1);
+    },
+    confirmSubmit: function confirmSubmit() {
+      var _this4 = this;
+
+      this.form.barcodes = this.barcodes;
+      this.form.customer_id = this.selectedCustomer.value;
+      this.form.vendor_id = this.selectedCourier.value;
+
+      this.form.post("/dropoffs/create").then(function (response) {
+        return _this4.onSuccess(response);
+      }).catch(function (error) {
+        return _this4.onError(error);
+      });
+    },
+    onSuccess: function onSuccess(response) {
+      if (response.redirect_url) {
+        window.open(response.redirect_url, "_blank");
+
+        window.open(response.admin_redirect_url, "_blank");
+
+        setInterval(function () {
+          window.location.href = "/dropoffs/create";
+        }, 3000);
+      }
+    },
+    onError: function onError(error) {},
+    submit: function submit() {
+      this.secondary_message = "Confirm creating dropoff record for " + this.barcodes.length + " package?";
+      this.isConfirming = true;
+    },
+    createCustomer: function createCustomer() {
+      window.events.$emit('createCustomer');
+    },
+    addCustomer: function addCustomer(e) {
+      var customer = {};
+
+      customer['value'] = e.customer.id;
+      customer['label'] = e.customer.name;
+      customer['type'] = e.customer.type;
+
+      this.customers.push(customer);
+
+      this.selectedCustomer = customer;
+    }
+  },
+
+  computed: {
+    title: function title() {
+      return "New drop off";
+    },
+    canSubmit: function canSubmit() {
+      return this.barcodes.length > 0 && this.selectedCustomer;
+    }
+  }
+});
+
+/***/ }),
+/* 296 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    _c(
+      "div",
+      {
+        staticClass: "card",
+        attrs: { id: "dropoff-header", tabindex: "-1", role: "dialog" }
+      },
+      [
+        _c("div", { staticClass: "card-body" }, [
+          _c("h2", [_vm._v(_vm._s(_vm.title))]),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.submit($event)
+                },
+                keydown: function($event) {
+                  _vm.form.errors.clear($event.target.name)
+                },
+                input: function($event) {
+                  _vm.form.errors.clear($event.target.name)
+                }
+              }
+            },
+            [
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c("p", [
+                      !_vm.dropoff
+                        ? _c("b", [_vm._v("Current time")])
+                        : _c("b", [_vm._v("Created time")]),
+                      _vm._v(": " + _vm._s(_vm.currentTime))
+                    ]),
+                    _vm._v(" "),
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.barcode,
+                        required: false,
+                        type: "text",
+                        label: "Scan barcode",
+                        editable: true,
+                        focus: true,
+                        hideLabel: false
+                      },
+                      on: { enter: _vm.addBarcode },
+                      model: {
+                        value: _vm.barcode,
+                        callback: function($$v) {
+                          _vm.barcode = $$v
+                        },
+                        expression: "barcode"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.customers,
+                        defaultData: _vm.selectedCustomer,
+                        placeholder: "Select customer",
+                        required: true,
+                        label: "Customer",
+                        name: "customer_id",
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("customer_id"),
+                        isHorizontal: true,
+                        addonTooltip: "Create new customer",
+                        addon: "createCustomer"
+                      },
+                      on: { createCustomer: _vm.createCustomer },
+                      model: {
+                        value: _vm.selectedCustomer,
+                        callback: function($$v) {
+                          _vm.selectedCustomer = $$v
+                        },
+                        expression: "selectedCustomer"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("selector-input", {
+                      attrs: {
+                        potentialData: _vm.couriers,
+                        defaultData: _vm.selectedCourier,
+                        placeholder: "Select vendor",
+                        required: true,
+                        label: "Vendor",
+                        name: "vendor_id",
+                        focus: false,
+                        hideLabel: false,
+                        error: _vm.form.errors.get("vendor_id"),
+                        isHorizontal: true
+                      },
+                      model: {
+                        value: _vm.selectedCourier,
+                        callback: function($$v) {
+                          _vm.selectedCourier = $$v
+                        },
+                        expression: "selectedCourier"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("textarea-input", {
+                      attrs: {
+                        defaultValue: _vm.form.remarks,
+                        required: false,
+                        type: "text",
+                        label: "Remarks",
+                        name: "remarks",
+                        editable: true,
+                        focus: false,
+                        hideLabel: false,
+                        isHorizontal: true,
+                        error: _vm.form.errors.get("remarks")
+                      },
+                      model: {
+                        value: _vm.form.remarks,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "remarks", $$v)
+                        },
+                        expression: "form.remarks"
+                      }
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "col" }, [
+                  _c("h4", [_vm._v("Scanned consignment notes")]),
+                  _vm._v(" "),
+                  _c(
+                    "ul",
+                    _vm._l(_vm.barcodes, function(barcode, index) {
+                      return _c("li", { staticClass: "mt-1" }, [
+                        _vm._v("\n                " + _vm._s(barcode) + " "),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-small btn-danger ml-2",
+                            attrs: { type: "button" },
+                            on: {
+                              click: function($event) {
+                                _vm.removeBarcode(index)
+                              }
+                            }
+                          },
+                          [_c("i", { staticClass: "fa fa-times" })]
+                        )
+                      ])
+                    })
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "submit", disabled: !_vm.canSubmit }
+                    },
+                    [_vm._v("Submit (F7)")]
+                  )
+                ])
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("customers-dialog", {
+          attrs: { data: _vm.auth_user },
+          on: { customerCreated: _vm.addCustomer }
+        }),
+        _vm._v(" "),
+        _c("confirmation", {
+          attrs: {
+            message: _vm.confirm_message,
+            secondary: _vm.secondary_message,
+            confirming: _vm.isConfirming
+          },
+          on: {
+            cancel: function($event) {
+              _vm.isConfirming = false
+            },
+            confirm: _vm.confirmSubmit
+          }
+        })
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-18b642ec", module.exports)
+  }
+}
+
+/***/ }),
+/* 297 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(298)
+/* template */
+var __vue_template__ = __webpack_require__(299)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\dropoffs\\Pickup.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0cae31be", Component.options)
+  } else {
+    hotAPI.reload("data-v-0cae31be", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 298 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['authuser', 'dropoff'],
+
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__["a" /* default */]],
+
+  data: function data() {
+    return {
+      barcode: "",
+      barcodes: [],
+      customers: [],
+      couriers: [],
+      selectedCourier: "",
+      selectedCustomer: "",
+      currentTime: '',
+      form: new Form({
+        picked_up_by: "",
+        vehicle_no: "",
+        picked_up_on: ""
+      })
+    };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    this.currentTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()().format('LL LTS');
+    setInterval(function () {
+      return _this.updateCurrentTime();
+    }, 1000);
+    this.setForm();
+  },
+
+
+  methods: {
+    setForm: function setForm() {
+      if (this.dropoff) {
+        this.form.picked_up_on = this.dropoff.picked_up_on;
+        this.form.picked_up_by = this.dropoff.picked_up_by;
+        this.form.vehicle_no = this.dropoff.vehicle_no;
+      }
+    },
+    updateCurrentTime: function updateCurrentTime() {
+      this.currentTime = __WEBPACK_IMPORTED_MODULE_1_moment___default()().format('LL LTS');
+    },
+    confirmSubmit: function confirmSubmit() {
+      var _this2 = this;
+
+      this.form.barcodes = this.barcodes;
+      this.form.customer_id = this.selectedCustomer.value;
+      this.form.vendor_id = this.selectedCourier.value;
+
+      var url = this.authuser ? "/dropoffs/update/" : "dropoffs/pickup/";
+      url += this.dropoff.id;
+
+      this.form.post(url).then(function (response) {
+        return _this2.onSuccess(response);
+      }).catch(function (error) {
+        return _this2.onError(error);
+      });
+    },
+    onSuccess: function onSuccess(response) {
+      this.$swal({
+        title: "Pickup success",
+        type: 'success',
+        showCancelButton: false
+      }).then(function (response) {
+        window.location.reload();
+      });
+    },
+    onError: function onError(error) {},
+    submit: function submit() {
+      this.secondary_message = "Confirm pickup for dropoff " + this.dropoff.dropoff_no + "?";
+      this.isConfirming = true;
+    }
+  },
+
+  computed: {
+    title: function title() {
+      return "Dropoff - " + this.dropoff.dropoff_no;
+    },
+    canSubmit: function canSubmit() {
+      return true;
+    }
+  }
+});
+
+/***/ }),
+/* 299 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    _c(
+      "div",
+      {
+        staticClass: "card",
+        attrs: { id: "dropoff-header", tabindex: "-1", role: "dialog" }
+      },
+      [
+        _c("div", { staticClass: "card-body" }, [
+          _c("h2", [_vm._v(_vm._s(_vm.title))]),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.submit($event)
+                },
+                keydown: function($event) {
+                  _vm.form.errors.clear($event.target.name)
+                },
+                input: function($event) {
+                  _vm.form.errors.clear($event.target.name)
+                }
+              }
+            },
+            [
+              _c("div", { staticClass: "row" }, [
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c("p", [
+                      _c("b", [_vm._v("Current time")]),
+                      _vm._v(": " + _vm._s(_vm.currentTime))
+                    ]),
+                    _vm._v(" "),
+                    _c("h4", [_vm._v("Consignment notes")]),
+                    _vm._v(" "),
+                    _c(
+                      "ul",
+                      _vm._l(_vm.dropoff.items, function(barcode, index) {
+                        return _c("li", { staticClass: "mt-1" }, [
+                          _vm._v(
+                            "\n                " +
+                              _vm._s(barcode.consignment_note) +
+                              "\n              "
+                          )
+                        ])
+                      })
+                    ),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("b", [_vm._v("Service:")]),
+                      _vm._v(" " + _vm._s(_vm.dropoff.vendor.name))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("b", [_vm._v("Remark:")]),
+                      _vm._v(" " + _vm._s(_vm.dropoff.remarks))
+                    ]),
+                    _vm._v(" "),
+                    _c("p", [
+                      _c("b", [_vm._v("Status:")]),
+                      _vm._v(" " + _vm._s(_vm.dropoff.status))
+                    ]),
+                    _vm._v(" "),
+                    _vm.dropoff.picked_up_on && !_vm.authuser
+                      ? _c("p", { staticClass: "text-danger text-center" }, [
+                          _vm._v(
+                            "This dropoff has already been picked up. Please search for assistant from our staff."
+                          )
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.form.picked_up_by,
+                        required: false,
+                        type: "text",
+                        label: "Driver name:",
+                        editable: !_vm.form.picked_up_by || _vm.authuser,
+                        focus: true,
+                        hideLabel: false
+                      },
+                      model: {
+                        value: _vm.form.picked_up_by,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "picked_up_by", $$v)
+                        },
+                        expression: "form.picked_up_by"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("text-input", {
+                      attrs: {
+                        defaultValue: _vm.form.vehicle_no,
+                        required: false,
+                        type: "text",
+                        label: "Vehicle no.:",
+                        editable: !_vm.form.vehicle_no || _vm.authuser,
+                        focus: false,
+                        hideLabel: false
+                      },
+                      model: {
+                        value: _vm.form.vehicle_no,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "vehicle_no", $$v)
+                        },
+                        expression: "form.vehicle_no"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.authuser || _vm.form.picked_up_on
+                      ? _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.picked_up_on,
+                            required: false,
+                            type: "datetime-local",
+                            label: "Pick up time (eg: 2021-01-01 01:00:00):",
+                            editable: _vm.authuser,
+                            focus: false,
+                            hideLabel: false
+                          },
+                          model: {
+                            value: _vm.form.picked_up_on,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "picked_up_on", $$v)
+                            },
+                            expression: "form.picked_up_on"
+                          }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "submit", disabled: !_vm.canSubmit }
+                    },
+                    [_vm._v("Confirm pickup")]
+                  ),
+                  _vm._v(" "),
+                  _vm.authuser
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-secondary",
+                          attrs: { href: "/dropoffs" }
+                        },
+                        [_vm._v("Back")]
+                      )
+                    : _vm._e()
+                ])
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("confirmation", {
+          attrs: {
+            message: _vm.confirm_message,
+            secondary: _vm.secondary_message,
+            confirming: _vm.isConfirming
+          },
+          on: {
+            cancel: function($event) {
+              _vm.isConfirming = false
+            },
+            confirm: _vm.confirmSubmit
+          }
+        })
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-0cae31be", module.exports)
+  }
+}
+
+/***/ }),
+/* 300 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

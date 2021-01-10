@@ -34,8 +34,8 @@ class ScriptController extends Controller
     {
 		foreach(Customer::all() as $customer) {
 
-			$outstanding_amount = ( $customer->invoices? $customer->invoices->sum('total') : 0 ) - 
-								( $customer->payments? $customer->payments->sum('total') : 0 );
+			$outstanding_amount = ( $customer->invoices()->count() > 0 ? $customer->invoices()->sum('total') : 0 ) - 
+								( $customer->payments()->count() > 0 ? $customer->payments()->sum('total') : 0 );
     		$customer->update(["outstanding_amount" => $outstanding_amount]);
     	}
     }

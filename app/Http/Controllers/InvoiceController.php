@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\Invoice;
 use App\Item;
+use App\Payment;
+use App\PaymentInvoice;
 use App\Product;
 use App\Tax;
 use App\User;
@@ -302,7 +305,6 @@ class InvoiceController extends Controller
                 }             
             }            
         }
-        //$invoice->items()->create($items);
 
         //update customer outstanding amount        
         $customer = Customer::find(request()->customer_id);
@@ -311,7 +313,50 @@ class InvoiceController extends Controller
             $customer->update(['outstanding_amount' => $outstanding_amount + (request()->has('total') ? request()->total : 0.00)]);
         }
 
-        return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url]);
+        $url = $invoice->payment_type !== "Account" ? "/invoices/receipt/" . $invoice->id : "/invoices/preview/" . $invoice->id;
+        
+        $invoice_url = self::checkForCustomerPayment($invoice);
+        //$invoice->items()->create($items);
+
+
+        return json_encode(['message' => "Invoice created successfully, redirecting to invoice list page", "id" => $invoice->id, "redirect_url" => $url, "invoice_url" => $invoice_url]);
+    }
+
+    public function checkForCustomerPayment($invoice)
+    {
+        $url = "";
+
+        if($invoice->customer_id && $invoice->paid != 0) {
+            Log::info("Creating payment by : " . auth()->user()->name);
+            Log::info($invoice);
+
+            $payment = Payment::create([
+                'customer_id'   => $invoice->customer_id,
+                'branch_id'     => $invoice->branch_id,
+                'terminal_no'   => $invoice->terminal_no,
+                'total'         =>  min($invoice->total, $invoice->paid),
+                'payment_method' => $invoice->payment_type,
+                'created_by'    => $invoice->created_by,
+            ]);
+
+            $receipt = PaymentInvoice::create([
+                'payment_id'    => $payment->id,
+                'invoice_no'    => $invoice->invoice_no,
+                'total'         => $invoice->total,
+                'invoice_total' => $invoice->total,
+                'outstanding'   => max($invoice->paid - $invoice->total, 0),
+                'paid'          => $invoice->paid
+            ]);
+
+            $invoice->remarks = $invoice->remarks . "SYSTEM: " . $invoice->payment_type . " payment received";
+            $invoice->payment_type = "Account";
+            $invoice->paid = 0;
+            $invoice->save();
+
+            $url = "/payments/receipt/" . $payment->id;
+        }
+
+        return $url;
     }
 
     public function createVMBTransations($items)
@@ -463,7 +508,7 @@ class InvoiceController extends Controller
 
     public function validateTracking()
     {
-        $tracking = request()->code;
+        $tracking = trim(request()->code);
 
         return ['result' => Item::where('tracking_code', $tracking)
                         ->join('invoices', 'invoice_id' , '=' , 'invoices.id')

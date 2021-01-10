@@ -26,6 +26,10 @@ class Item extends Model
 		{
 			return 0;
 		}
+		else if($this->total_price <= 0)
+		{
+			return $this->total_price;
+		}
 		else
 		{
 			$total = round( $this->total_price - ((($this->invoice->discount_value) / ($this->invoice->subtotal)) *  $this->total_price ), 2);

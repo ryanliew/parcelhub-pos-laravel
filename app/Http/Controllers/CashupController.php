@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Cashup;
+use App\CashupDetail;
+use App\Payment;
 use App\Terminal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
@@ -23,7 +26,7 @@ class CashupController extends Controller
         $terminal = auth()->user()->terminal;
 
     	return datatables()
-			->of($terminal->cashups()->with('terminal')->latest())
+			->of($terminal->cashups()->with('terminal')->where('status', "!=", "canceled")->latest())
 			->addColumn('terminal_name', function(Cashup $cashup) {
 				return $cashup->terminal->name;
 			})
@@ -48,11 +51,13 @@ class CashupController extends Controller
 
             $last_id = $invoices->last()->invoice_no;
             $first_id = $invoices->first()->invoice_no;
-          
+            
+            // No longer needed
+            // We will need the earliest invoice date as session start (21/12/2020)
             // use mindate(invoice date, payment date)
             $earliest_invoice_date = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
-            $earliest_payment_date = $payments->count() > 0 ? $payments->last()->created_at : $invoices->last()->created_at;
-            $session_start = $earliest_invoice_date < $earliest_payment_date ? $earliest_invoice_date : $earliest_payment_date;
+            // $earliest_payment_date = $payments->count() > 0 ? $payments->last()->created_at : $invoices->last()->created_at;
+            $session_start = $earliest_invoice_date;
 
             //$session_start = $invoices->count() > 0 ? $invoices->last()->created_at : $payments->last()->created_at;
 
@@ -61,6 +66,11 @@ class CashupController extends Controller
             if($lastCashup){
                 $lastCashup->update([
                     'status' => 'canceled'
+                ]);
+
+                $lastCashup->payments()->update([
+                    'cashed' => false,
+                    'cashup_id' => null
                 ]);
             }            
 
@@ -162,30 +172,39 @@ class CashupController extends Controller
             'status' => 'confirmed'
         ]);
 
-        $terminal = auth()->user()->terminal;
-    	$invoices = $terminal->invoices()->cashupRequired()->active()->latest()->get();
-        $payments = $terminal->payments()->cashupRequired()->with('payments.invoice')->latest()->get();
-        if($invoices->count() > 0) {
-            $terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true]);
-        }
+        // Should only update invoices and payments to cashed that belongs to this cashup
+        $invoices = $cashup->invoices->pluck("id");
+        $payments = $cashup->payments->pluck("id");
 
-        if($payments->count() > 0) {                
-            $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
-        }
+        $terminal = auth()->user()->terminal;
+        $terminal->invoices()->whereIn("id", $invoices)->update(['cashed' => true]);
+        $terminal->payments()->whereIn("id", $payments)->update(['cashed' => true, 'cashup_id' => $cashup->id]);
+
+
+    	// $invoices = $terminal->invoices()->cashupRequired()->active()->latest()->get();
+     //    $payments = $terminal->payments()->cashupRequired()->with('payments.invoice')->latest()->get();
+     //    if($invoices->count() > 0) {
+     //        $terminal->invoices()->cashupRequired()->latest()->update(['cashed' => true]);
+     //    }
+
+     //    if($payments->count() > 0) {                
+     //        $terminal->payments()->cashupRequired()->latest()->update(['cashed' => true, 'cashup_id' => $cashup->id]);
+     //    }
 
         return json_encode(['message' => "Cashup complete"]);
     }
 
     public function delete(Cashup $cashup)
     {
-        $cashup->payments()->update([
-            'cashed' => false,
-            'cashup_id' => null
-        ]);
+        // We do not need to set the cashup payments / invoices to false as only draft cashup can be deleted
+        // $cashup->payments()->update([
+        //     'cashed' => false,
+        //     'cashup_id' => null
+        // ]);
 
-        foreach($cashup->invoices as $invoice) {
-            $invoice->update(['cashed' => false]);
-        }
+        // foreach($cashup->invoices as $invoice) {
+        //     $invoice->update(['cashed' => false]);
+        // }
 
         $cashup->invoices()->detach();
 
@@ -212,6 +231,10 @@ class CashupController extends Controller
         // $invoices = collect();
 
         foreach($payments as $payment) {
+
+            //Set the cash id to the payment 
+            $payment->update(['cashup_id' => $cashup->id]);
+
             foreach($payment->payments as $payment_invoice) {
                 $payment_invoice->invoice->total = $payment_invoice->total;
                 $payment_invoice->invoice->paid = $payment_invoice->total;
@@ -246,5 +269,73 @@ class CashupController extends Controller
         $newPDF->Output($path, Destination::FILE);
 
         return response()->file($path);
+    }
+
+    public function patchDuplicateData()
+    {
+        $cashups = Cashup::whereDate("created_at", ">=", "2020-12-17")->get();
+
+        CashupDetail::whereIn("cashup_id", $cashups->pluck("id"))->delete();
+
+
+        foreach($cashups as $cashup) {
+            $invoices = $cashup->invoices()->orderBy('invoice_no')->get();
+
+            $cashup->update([
+                'invoice_from' => $invoices->first()->invoice_no,
+                'invoice_to' => $invoices->last()->invoice_no,
+                'total' => $invoices->sum(function($invoice){ return $invoice->pivot->total; }) + $cashup->terminal->float
+            ]);
+
+            // Create cashup details before hand
+            foreach($invoices->groupBy(function($item){ return $item->pivot->payment_method; }) as $type => $records) {
+                $amount = $records->sum(function($invoice){ return $invoice->pivot->total; });
+                $legend = "00";
+
+                switch($type) {
+                    case 'IBG':
+                        $legend = "17";
+                        break;
+                    case 'Cash':
+                        $legend = "01";
+                        break;
+                    case 'Credit card':
+                        $legend = "02";
+                        break;
+                    case "Cheque":
+                        $legend = "05";
+                        break;
+                }
+
+                $cashup->details()->create([
+                    'expected_amount' => $amount,
+                    'actual_amount' => $amount,
+                    'legend' => $legend,
+                    'type' => $type,
+                    'percentage' => $amount / $cashup->total * 100,
+                    'count' => $records->count()
+                ]);
+            }
+
+            if($cashup->total > 0)
+                $cashup->details()->create([
+                    'expected_amount' => $cashup->float_value,
+                    'actual_amount' => $cashup->float_value,
+                    'legend' => "00",
+                    'type' => "Float",
+                    'percentage' => $cashup->float_value / $cashup->total * 100,
+                ]);
+        }
+         
+    }
+
+    public function setCashedToTrue()
+    {
+        $cashups = Cashup::whereDate("created_at", ">=", "2020-12-14")->where('status', 'confirmed')->get();
+        
+        foreach($cashups as $cashup) {
+            $payments = $cashup->invoices->where('pivot.payment_id', ">", 0)->pluck("pivot.payment_id");
+            Payment::whereIn("id", $payments)->update(["cashed" => true, "cashup_id" => $cashup->id]);
+        }
     }
 }
