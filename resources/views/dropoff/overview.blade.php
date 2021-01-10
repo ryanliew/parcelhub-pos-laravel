@@ -55,7 +55,7 @@
                 dom: 'Blftip',
                 buttons: [
                     {
-                        text: 'Create (F7)',
+                        text: 'Create (F4)',
                         // text: 'Edit',
                         action: function( e, dt, node, config ) {
                             var loc = "/dropoffs/create";

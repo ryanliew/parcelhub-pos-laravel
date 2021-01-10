@@ -114,7 +114,7 @@ const app = new Vue({
     			window.open("/invoices/create", "_blank");
     		}
 
-			if(event.key == "F7") {
+			if(event.key == "F4") {
 				event.preventDefault();
 				window.open("/dropoffs/create", "_blank");
 			}
