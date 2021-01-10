@@ -116,7 +116,7 @@ class DropoffController extends Controller
     {
         $html = View::make("dropoff.preview", ["dropoff" => $dropoff])->render();
 
-        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF = new mPDF(['tempDir' => storage_path('mpdf'), 'format' => 'Legal']);
         $newPDF->WriteHTML($html);
         $newPDF->setFooter('{PAGENO}/{nbpg}');
 
@@ -130,7 +130,7 @@ class DropoffController extends Controller
     {
         $html = View::make("dropoff.preview", ["dropoff" => $dropoff, "admin" => true])->render();
 
-        $newPDF = new mPDF(['format' => 'Legal']);
+        $newPDF = new mPDF(['tempDir' => storage_path('mpdf'), 'format' => 'Legal']);
         $newPDF->WriteHTML($html);
         $newPDF->setFooter('{PAGENO}/{nbpg}');
 
