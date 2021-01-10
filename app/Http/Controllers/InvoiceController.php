@@ -13,7 +13,6 @@ use App\User;
 use App\ProductType;
 use App\Vendor;
 use App\Stock;
-use App\Customer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
