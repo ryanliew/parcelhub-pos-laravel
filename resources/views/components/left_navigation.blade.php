@@ -27,7 +27,7 @@
                     View dropoffs
                 </a>
                 <a class="dropdown-item" href="{{ route('dropoff.create') }}">
-                    Create dropoffs (F7)
+                    Create dropoffs (F4)
                 </a>
             </div>
         </li>
