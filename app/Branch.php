@@ -66,6 +66,11 @@ class Branch extends Model
     {
         return $this->belongsTo("App\ProductType", 'product_type_id');
     }
+
+    public function dropoffs()
+    {
+        return $this->hasMany("App\Dropoff");
+    }
     
     public function create_default_user($terminal)
     {

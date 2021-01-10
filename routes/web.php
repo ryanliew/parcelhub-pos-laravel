@@ -68,6 +68,8 @@ Route::get("/testscript", function() {
 Route::get("/admin/move/invoices", "ScriptController@move_invoices");
 Route::get("/script/updatecustomeroutstandingamount", "ScriptController@update_customers_outstanding_amount");
 
+Route::get("/pickup/{dropoff}", "DropoffController@pickup")->name("dropoff.pickup");
+Route::post("/pickup/{dropoff}", "DropoffController@pickedUp")->name("dropoff.pickup");
 Auth::routes();
 
 Route::get('/home', function() {
@@ -315,4 +317,16 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/index", "ProfitAndLossController@index")->name('profit-and-loss.index');
 	});
 
+	Route::group(['prefix' => "dropoffs"], function() {
+	    Route::get("/", "DropoffController@page")->name("dropoff.page");
+	    Route::get("/index", "DropoffController@index")->name("dropoff.index");
+	    Route::get("/create", "DropoffController@create")->name("dropoff.create");
+	    Route::post("/create", "DropoffController@store")->name("dropoff.store");
+	    Route::get("/details/{dropoff}", "DropoffController@view")->name("dropoff.view");
+	    Route::post("/update/{dropoff}", "DropoffController@update")->name("dropoff.update");
+	    Route::get("/receipt/{dropoff}", "DropoffController@receipt")->name("dropoff.receipt");
+        Route::get("/admin/{dropoff}", "DropoffController@admin")->name("dropoff.admin");
+    });
+
 });
+

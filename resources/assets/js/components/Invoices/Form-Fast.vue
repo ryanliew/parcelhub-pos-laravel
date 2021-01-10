@@ -381,7 +381,6 @@
 					customer_id: '',
 					type: 'Cash',
 					payment_type: 'Cash',
-					type: 'Cash',
 					discount_value: 0
 				}),
 

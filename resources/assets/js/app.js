@@ -101,6 +101,9 @@ Vue.component('sales-reports-dialog', require('./components/reports/SalesReportD
 
 Vue.component('profit-and-loss-import', require('./components/profit-and-loss/Import.vue'));
 
+Vue.component("dropoff-form", require("./components/dropoffs/Dialog.vue"));
+Vue.component("pickup-form", require("./components/dropoffs/Pickup.vue"));
+
 const app = new Vue({
     el: '#app',
 
@@ -109,6 +112,11 @@ const app = new Vue({
     		if(event.key == "F9") {
     			window.open("/invoices/create", "_blank");
     		}
+
+			if(event.key == "F7") {
+				event.preventDefault();
+				window.open("/dropoffs/create", "_blank");
+			}
     	});
     }
 
