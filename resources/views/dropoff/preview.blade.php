@@ -120,7 +120,7 @@
         <table cellpadding="3">
             <tbody>
             <tr>
-                <td class="meta-head">Dropoff #</td>
+                <td class="meta-head">Dropoff Receipt No. #</td>
                 <td><textarea>{{$dropoff->dropoff_no}}</textarea></td>
             </tr>
             <tr>
@@ -196,6 +196,10 @@
             <tr class="item-row">
                 <td class="meta-detail">Attendant</td>
                 <td><textarea>{{$dropoff->user->name}}</textarea></td>
+            </tr>
+            <tr class="item-row">
+                <td class="meta-detail">Registration / IC Number</td>
+                <td><textarea>{{$dropoff->customer->registration_no}}</textarea></td>
             </tr>
             </tbody>
         </table>

@@ -68569,6 +68569,7 @@ var render = function() {
                         ) {
                           return null
                         }
+                        $event.preventDefault()
                         _vm.$emit("enter")
                       },
                       function($event) {
@@ -69094,10 +69095,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true }, addon: String, addonTooltip: String, disabled: { default: false }, isHorizontal: { default: false } },
+	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true }, addon: String, addonTooltip: String, editaddon: String, editaddonTooltip: String, disabled: { default: false }, isHorizontal: { default: false } },
 
 	components: { vSelect: __WEBPACK_IMPORTED_MODULE_0_vue_select___default.a },
 
@@ -69190,6 +69199,31 @@ var render = function() {
                             })
                           ]
                         )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.editaddon
+                      ? _c(
+                          "span",
+                          {
+                            staticClass: "fa-stack pointer text-info ml-2",
+                            attrs: { title: _vm.editaddonTooltip },
+                            on: {
+                              click: function($event) {
+                                _vm.$emit(_vm.editaddon)
+                              }
+                            }
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fas fa-circle fa-stack-2x"
+                            }),
+                            _vm._v(" "),
+                            _c("i", {
+                              staticClass:
+                                "fas fa-edit fa-stack-1x fa-inverse text-white"
+                            })
+                          ]
+                        )
                       : _vm._e()
                   ])
                 ]
@@ -69223,7 +69257,9 @@ var render = function() {
                 1
               )
             : _c("div", [
-                _vm._v("\n\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t")
+                _vm._v(
+                  "\n\t\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t\t"
+                )
               ]),
           _vm._v(" "),
           _vm.error
@@ -69279,6 +69315,31 @@ var render = function() {
                               })
                             ]
                           )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.editaddon
+                        ? _c(
+                            "span",
+                            {
+                              staticClass: "fa-stack pointer text-info ml-2",
+                              attrs: { title: _vm.editaddonTooltip },
+                              on: {
+                                click: function($event) {
+                                  _vm.$emit(_vm.editaddon)
+                                }
+                              }
+                            },
+                            [
+                              _c("i", {
+                                staticClass: "fas fa-circle fa-stack-2x"
+                              }),
+                              _vm._v(" "),
+                              _c("i", {
+                                staticClass:
+                                  "fas fa-edit fa-stack-1x fa-inverse text-white"
+                              })
+                            ]
+                          )
                         : _vm._e()
                     ]
                   )
@@ -69322,7 +69383,9 @@ var render = function() {
                 1
               )
             : _c("div", [
-                _vm._v("\n\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t")
+                _vm._v(
+                  "\n\t\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t\t"
+                )
               ])
         ])
   ])
@@ -81671,6 +81734,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.openDialog();
 		},
 		editCustomer: function editCustomer(evt) {
+			console.log(evt);
 			this.selectedCustomer = evt[0];
 			this.isEdit = true;
 			this.setForm();
@@ -88284,6 +88348,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -88355,6 +88423,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         obj['label'] = customer.name;
         obj['type'] = customer.type;
         obj['customer_group_id'] = customer.customer_group_id;
+        obj["registration_no"] = customer.registration_no;
+        obj["original_customer"] = customer;
 
         return obj;
       });
@@ -88423,12 +88493,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     createCustomer: function createCustomer() {
       window.events.$emit('createCustomer');
     },
+    editCustomer: function editCustomer() {
+      window.events.$emit("editCustomer", [this.selectedCustomer.original_customer]);
+    },
     addCustomer: function addCustomer(e) {
       var customer = {};
-
+      console.log(e);
       customer['value'] = e.customer.id;
       customer['label'] = e.customer.name;
       customer['type'] = e.customer.type;
+      customer['registration_no'] = e.customer.registration_no;
+      customer['original_customer'] = e.customer;
 
       this.customers.push(customer);
 
@@ -88441,7 +88516,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       return "New drop off";
     },
     canSubmit: function canSubmit() {
-      return this.barcodes.length > 0 && this.selectedCustomer;
+      return this.barcodes.length > 0 && this.selectedCustomer && this.selectedCustomer.registration_no && this.selectedCourier;
+    },
+    currentCustomer: function currentCustomer() {
+      return this.selectedCustomer ? "editCustomer" : "";
     }
   }
 });
@@ -88527,9 +88605,14 @@ var render = function() {
                         error: _vm.form.errors.get("customer_id"),
                         isHorizontal: true,
                         addonTooltip: "Create new customer",
-                        addon: "createCustomer"
+                        addon: "createCustomer",
+                        editaddon: _vm.currentCustomer,
+                        editaddonTooltip: "Edit customer"
                       },
-                      on: { createCustomer: _vm.createCustomer },
+                      on: {
+                        createCustomer: _vm.createCustomer,
+                        editCustomer: _vm.editCustomer
+                      },
                       model: {
                         value: _vm.selectedCustomer,
                         callback: function($$v) {
@@ -88538,6 +88621,19 @@ var render = function() {
                         expression: "selectedCustomer"
                       }
                     }),
+                    _vm._v(" "),
+                    _vm.selectedCustomer
+                      ? _c("i", { staticClass: "mb-5" }, [
+                          _vm._v(
+                            "Registration / IC No.: " +
+                              _vm._s(
+                                _vm.selectedCustomer.registration_no
+                                  ? _vm.selectedCustomer.registration_no
+                                  : "Registration number or IC is required to submit"
+                              )
+                          )
+                        ])
+                      : _vm._e(),
                     _vm._v(" "),
                     _c("selector-input", {
                       attrs: {

@@ -276,6 +276,7 @@
 			},
 
 			editCustomer(evt) {
+			  console.log(evt);
 				this.selectedCustomer = evt[0];
 				this.isEdit = true;
 				this.setForm();

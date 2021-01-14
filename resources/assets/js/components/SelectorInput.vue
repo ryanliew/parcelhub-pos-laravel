@@ -9,6 +9,10 @@
 						<i class="fas fa-circle fa-stack-2x"></i>
 						<i class="fas fa-plus fa-stack-1x fa-inverse text-white"></i>
 					</span>
+          <span class="fa-stack pointer text-info ml-2" :title="editaddonTooltip" @click="$emit(editaddon)" v-if="editaddon">
+						<i class="fas fa-circle fa-stack-2x"></i>
+						<i class="fas fa-edit fa-stack-1x fa-inverse text-white"></i>
+					</span>
 				</div>
 			</label>
 			<div class="control" :class="canClearCss" v-if="editable">
@@ -30,6 +34,10 @@
 						<i class="fas fa-circle fa-stack-2x"></i>
 						<i class="fas fa-plus fa-stack-1x fa-inverse text-white"></i>
 					</span>
+          <span class="fa-stack pointer text-info ml-2" :title="editaddonTooltip" @click="$emit(editaddon)" v-if="editaddon">
+						<i class="fas fa-circle fa-stack-2x"></i>
+						<i class="fas fa-edit fa-stack-1x fa-inverse text-white"></i>
+					</span>
 				</div>
 			</label>
 			<b class="invoice-label text-right" v-else>{{ label }}: </b>
@@ -50,7 +58,7 @@
 <script>
 	import vSelect from 'vue-select';
 	export default {
-		props: { potentialData: Array, label: String, defaultData: {default: ''}, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}, addon: String, addonTooltip: String, disabled: {default: false}, isHorizontal: {default: false}},
+		props: { potentialData: Array, label: String, defaultData: {default: ''}, error: String, name: String, placeholder: String, required: {default: false}, multiple: {default: false}, unclearable: {default: false}, hideLabel: {default: false}, editable: {default: true}, addon: String, addonTooltip: String, editaddon: String, editaddonTooltip: String, disabled: {default: false}, isHorizontal: {default: false}},
 
 		components: { vSelect },
 
@@ -65,15 +73,15 @@
 				this.$emit('input', value);
 				if(value && value.value)
 					this.data = value.value;
-				
+
 				this.$emit('next');
-			}, 
+			},
 
 			focus() {
 				this.$refs.selector.open = true;
 				this.$refs.selector.$refs.search.focus();
 			}
-		},	
+		},
 
 		computed: {
 			canClearCss() {

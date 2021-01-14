@@ -32,8 +32,12 @@
                               :isHorizontal="true"
                               addonTooltip="Create new customer"
                               addon="createCustomer"
-                              @createCustomer="createCustomer">
+                              :editaddon="currentCustomer"
+                              editaddonTooltip="Edit customer"
+                              @createCustomer="createCustomer"
+                              @editCustomer="editCustomer">
               </selector-input>
+              <i class="mb-5" v-if="selectedCustomer">Registration / IC No.: {{ selectedCustomer.registration_no ? selectedCustomer.registration_no : "Registration number or IC is required to submit" }}</i>
               <selector-input :potentialData="couriers"
                               v-model="selectedCourier"
                               :defaultData="selectedCourier"
@@ -146,6 +150,8 @@ export default {
         obj['label'] = customer.name;
         obj['type'] = customer.type;
         obj['customer_group_id'] = customer.customer_group_id;
+        obj["registration_no"] = customer.registration_no;
+        obj["original_customer"] = customer;
 
         return obj;
       });
@@ -219,12 +225,18 @@ export default {
       window.events.$emit('createCustomer');
     },
 
+    editCustomer() {
+      window.events.$emit("editCustomer", [this.selectedCustomer.original_customer]);
+    },
+
     addCustomer(e) {
       let customer = {};
-
+      console.log(e);
       customer['value'] = e.customer.id;
       customer['label'] = e.customer.name;
       customer['type'] = e.customer.type;
+      customer['registration_no'] = e.customer.registration_no;
+      customer['original_customer'] = e.customer;
 
       this.customers.push(customer);
 
@@ -238,7 +250,11 @@ export default {
     },
 
     canSubmit() {
-      return this.barcodes.length > 0 && this.selectedCustomer;
+      return this.barcodes.length > 0 && this.selectedCustomer && this.selectedCustomer.registration_no && this.selectedCourier;
+    },
+
+    currentCustomer() {
+      return this.selectedCustomer ? "editCustomer" : "";
     }
   },
 }
