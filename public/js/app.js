@@ -30506,7 +30506,7 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(141);
-module.exports = __webpack_require__(300);
+module.exports = __webpack_require__(297);
 
 
 /***/ }),
@@ -30622,8 +30622,8 @@ Vue.component('sales-reports-dialog', __webpack_require__(285));
 
 Vue.component('profit-and-loss-import', __webpack_require__(288));
 
-Vue.component("dropoff-form", __webpack_require__(294));
-Vue.component("pickup-form", __webpack_require__(297));
+Vue.component("dropoff-form", __webpack_require__(291));
+Vue.component("pickup-form", __webpack_require__(294));
 
 var app = new Vue({
   el: '#app',
@@ -68568,6 +68568,7 @@ var render = function() {
                         ) {
                           return null
                         }
+                        $event.preventDefault()
                         _vm.$emit("enter")
                       },
                       function($event) {
@@ -69093,10 +69094,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true }, addon: String, addonTooltip: String, disabled: { default: false }, isHorizontal: { default: false } },
+	props: { potentialData: Array, label: String, defaultData: { default: '' }, error: String, name: String, placeholder: String, required: { default: false }, multiple: { default: false }, unclearable: { default: false }, hideLabel: { default: false }, editable: { default: true }, addon: String, addonTooltip: String, editaddon: String, editaddonTooltip: String, disabled: { default: false }, isHorizontal: { default: false } },
 
 	components: { vSelect: __WEBPACK_IMPORTED_MODULE_0_vue_select___default.a },
 
@@ -69189,6 +69198,31 @@ var render = function() {
                             })
                           ]
                         )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.editaddon
+                      ? _c(
+                          "span",
+                          {
+                            staticClass: "fa-stack pointer text-info ml-2",
+                            attrs: { title: _vm.editaddonTooltip },
+                            on: {
+                              click: function($event) {
+                                _vm.$emit(_vm.editaddon)
+                              }
+                            }
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fas fa-circle fa-stack-2x"
+                            }),
+                            _vm._v(" "),
+                            _c("i", {
+                              staticClass:
+                                "fas fa-edit fa-stack-1x fa-inverse text-white"
+                            })
+                          ]
+                        )
                       : _vm._e()
                   ])
                 ]
@@ -69222,7 +69256,9 @@ var render = function() {
                 1
               )
             : _c("div", [
-                _vm._v("\n\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t")
+                _vm._v(
+                  "\n\t\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t\t"
+                )
               ]),
           _vm._v(" "),
           _vm.error
@@ -69278,6 +69314,31 @@ var render = function() {
                               })
                             ]
                           )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.editaddon
+                        ? _c(
+                            "span",
+                            {
+                              staticClass: "fa-stack pointer text-info ml-2",
+                              attrs: { title: _vm.editaddonTooltip },
+                              on: {
+                                click: function($event) {
+                                  _vm.$emit(_vm.editaddon)
+                                }
+                              }
+                            },
+                            [
+                              _c("i", {
+                                staticClass: "fas fa-circle fa-stack-2x"
+                              }),
+                              _vm._v(" "),
+                              _c("i", {
+                                staticClass:
+                                  "fas fa-edit fa-stack-1x fa-inverse text-white"
+                              })
+                            ]
+                          )
                         : _vm._e()
                     ]
                   )
@@ -69321,7 +69382,9 @@ var render = function() {
                 1
               )
             : _c("div", [
-                _vm._v("\n\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t")
+                _vm._v(
+                  "\n\t\t\t\t" + _vm._s(_vm.defaultData.label) + "\n\t\t\t"
+                )
               ])
         ])
   ])
@@ -81500,6 +81563,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.openDialog();
 		},
 		editCustomer: function editCustomer(evt) {
+			console.log(evt);
 			this.selectedCustomer = evt[0];
 			this.isEdit = true;
 			this.setForm();
@@ -87712,18 +87776,15 @@ if (false) {
 }
 
 /***/ }),
-/* 291 */,
-/* 292 */,
-/* 293 */,
-/* 294 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(295)
+var __vue_script__ = __webpack_require__(292)
 /* template */
-var __vue_template__ = __webpack_require__(296)
+var __vue_template__ = __webpack_require__(293)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -87762,7 +87823,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 295 */
+/* 292 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -87770,6 +87831,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_ConfirmationMixin_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_moment__);
+//
+//
+//
+//
 //
 //
 //
@@ -87925,6 +87990,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         obj['label'] = customer.name;
         obj['type'] = customer.type;
         obj['customer_group_id'] = customer.customer_group_id;
+        obj["registration_no"] = customer.registration_no;
+        obj["original_customer"] = customer;
 
         return obj;
       });
@@ -87993,12 +88060,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     createCustomer: function createCustomer() {
       window.events.$emit('createCustomer');
     },
+    editCustomer: function editCustomer() {
+      window.events.$emit("editCustomer", [this.selectedCustomer.original_customer]);
+    },
     addCustomer: function addCustomer(e) {
       var customer = {};
-
+      console.log(e);
       customer['value'] = e.customer.id;
       customer['label'] = e.customer.name;
       customer['type'] = e.customer.type;
+      customer['registration_no'] = e.customer.registration_no;
+      customer['original_customer'] = e.customer;
 
       this.customers.push(customer);
 
@@ -88011,13 +88083,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       return "New drop off";
     },
     canSubmit: function canSubmit() {
-      return this.barcodes.length > 0 && this.selectedCustomer;
+      return this.barcodes.length > 0 && this.selectedCustomer && this.selectedCustomer.registration_no && this.selectedCourier;
+    },
+    currentCustomer: function currentCustomer() {
+      return this.selectedCustomer ? "editCustomer" : "";
     }
   }
 });
 
 /***/ }),
-/* 296 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -88097,9 +88172,14 @@ var render = function() {
                         error: _vm.form.errors.get("customer_id"),
                         isHorizontal: true,
                         addonTooltip: "Create new customer",
-                        addon: "createCustomer"
+                        addon: "createCustomer",
+                        editaddon: _vm.currentCustomer,
+                        editaddonTooltip: "Edit customer"
                       },
-                      on: { createCustomer: _vm.createCustomer },
+                      on: {
+                        createCustomer: _vm.createCustomer,
+                        editCustomer: _vm.editCustomer
+                      },
                       model: {
                         value: _vm.selectedCustomer,
                         callback: function($$v) {
@@ -88108,6 +88188,19 @@ var render = function() {
                         expression: "selectedCustomer"
                       }
                     }),
+                    _vm._v(" "),
+                    _vm.selectedCustomer
+                      ? _c("i", { staticClass: "mb-5" }, [
+                          _vm._v(
+                            "Registration / IC No.: " +
+                              _vm._s(
+                                _vm.selectedCustomer.registration_no
+                                  ? _vm.selectedCustomer.registration_no
+                                  : "Registration number or IC is required to submit"
+                              )
+                          )
+                        ])
+                      : _vm._e(),
                     _vm._v(" "),
                     _c("selector-input", {
                       attrs: {
@@ -88233,15 +88326,15 @@ if (false) {
 }
 
 /***/ }),
-/* 297 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(298)
+var __vue_script__ = __webpack_require__(295)
 /* template */
-var __vue_template__ = __webpack_require__(299)
+var __vue_template__ = __webpack_require__(296)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -88280,7 +88373,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 298 */
+/* 295 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -88445,7 +88538,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 299 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -88647,7 +88740,7 @@ if (false) {
 }
 
 /***/ }),
-/* 300 */
+/* 297 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

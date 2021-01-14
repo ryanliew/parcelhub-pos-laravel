@@ -13,7 +13,7 @@
 					:step="step ? step : 0.001"
 					:placeholder="placeholder"
 					:disabled="disabled"
-					@keydown.enter="$emit('enter')"
+					@keydown.enter.prevent="$emit('enter')"
 					@keydown.tab="$emit('tab')"
 					@dblclick="$emit('dblclick')" />
 				<div class="input-group-append" v-if="addon">

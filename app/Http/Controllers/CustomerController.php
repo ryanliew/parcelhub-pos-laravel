@@ -23,7 +23,7 @@ class CustomerController extends Controller
 
         $branch = Branch::findOrFail($branch_id);
 
-        $query = $branch->customers();
+        $query = $branch->customers()->with('branch');
         
         if(request()->has('groups'))
             $query->whereNull('customer_group_id');
@@ -107,7 +107,7 @@ class CustomerController extends Controller
         if(!request()->has('customer_group_id'))
             $customer->update(['customer_group_id' => null]);
         
-        return json_encode(['message' => "Customer updated"]);
+        return json_encode(['message' => "Customer updated", 'customer' => $customer]);
     }
 
     public function get($customer)
