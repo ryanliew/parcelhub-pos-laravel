@@ -25,7 +25,7 @@
                           :required="false"
                           type="text"
                           label="Driver name:"
-                          :editable="!form.picked_up_by || authuser"
+                          :editable="!dropoff.picked_up_by || authuser"
                           :focus="true"
                           :hideLabel="false">
               </text-input>
@@ -34,7 +34,7 @@
                           :required="false"
                           type="text"
                           label="Vehicle no.:"
-                          :editable="!form.vehicle_no || authuser"
+                          :editable="!dropoff.vehicle_no || authuser"
                           :focus="false"
                           :hideLabel="false">
               </text-input>
@@ -46,7 +46,7 @@
                           :editable="authuser"
                           :focus="false"
                           :hideLabel="false"
-                          v-if="authuser || form.picked_up_on">
+                          v-if="authuser || dropoff.picked_up_on">
               </text-input>
             </div>
           </div>
