@@ -115,7 +115,7 @@ export default {
       this.form.customer_id = this.selectedCustomer.value;
       this.form.vendor_id = this.selectedCourier.value;
 
-      let url = this.authuser ? "/dropoffs/update/" : "dropoffs/pickup/";
+      let url = this.authuser ? "/dropoffs/update/" : "/dropoffs/pickup/";
       url += this.dropoff.id;
 
       this.form.post(url)

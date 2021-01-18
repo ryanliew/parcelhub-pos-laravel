@@ -30506,7 +30506,7 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(141);
-module.exports = __webpack_require__(300);
+module.exports = __webpack_require__(297);
 
 
 /***/ }),
@@ -30622,8 +30622,8 @@ Vue.component('sales-reports-dialog', __webpack_require__(285));
 
 Vue.component('profit-and-loss-import', __webpack_require__(288));
 
-Vue.component("dropoff-form", __webpack_require__(294));
-Vue.component("pickup-form", __webpack_require__(297));
+Vue.component("dropoff-form", __webpack_require__(291));
+Vue.component("pickup-form", __webpack_require__(294));
 
 var app = new Vue({
   el: '#app',
@@ -87776,18 +87776,15 @@ if (false) {
 }
 
 /***/ }),
-/* 291 */,
-/* 292 */,
-/* 293 */,
-/* 294 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(295)
+var __vue_script__ = __webpack_require__(292)
 /* template */
-var __vue_template__ = __webpack_require__(296)
+var __vue_template__ = __webpack_require__(293)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -87826,7 +87823,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 295 */
+/* 292 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -88095,7 +88092,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 296 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -88329,15 +88326,15 @@ if (false) {
 }
 
 /***/ }),
-/* 297 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(298)
+var __vue_script__ = __webpack_require__(295)
 /* template */
-var __vue_template__ = __webpack_require__(299)
+var __vue_template__ = __webpack_require__(296)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -88376,7 +88373,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 298 */
+/* 295 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -88505,7 +88502,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.form.customer_id = this.selectedCustomer.value;
       this.form.vendor_id = this.selectedCourier.value;
 
-      var url = this.authuser ? "/dropoffs/update/" : "dropoffs/pickup/";
+      var url = this.authuser ? "/dropoffs/update/" : "/dropoffs/pickup/";
       url += this.dropoff.id;
 
       this.form.post(url).then(function (response) {
@@ -88541,7 +88538,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 299 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -88743,7 +88740,7 @@ if (false) {
 }
 
 /***/ }),
-/* 300 */
+/* 297 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
