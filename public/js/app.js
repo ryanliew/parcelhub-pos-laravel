@@ -87958,15 +87958,18 @@ if (false) {
 }
 
 /***/ }),
-/* 291 */
+/* 291 */,
+/* 292 */,
+/* 293 */,
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(292)
+var __vue_script__ = __webpack_require__(295)
 /* template */
-var __vue_template__ = __webpack_require__(293)
+var __vue_template__ = __webpack_require__(296)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -89060,7 +89063,7 @@ var render = function() {
                         required: false,
                         type: "text",
                         label: "Driver name:",
-                        editable: !_vm.form.picked_up_by || _vm.authuser,
+                        editable: !_vm.dropoff.picked_up_by || _vm.authuser,
                         focus: true,
                         hideLabel: false
                       },
@@ -89079,7 +89082,7 @@ var render = function() {
                         required: false,
                         type: "text",
                         label: "Vehicle no.:",
-                        editable: !_vm.form.vehicle_no || _vm.authuser,
+                        editable: !_vm.dropoff.vehicle_no || _vm.authuser,
                         focus: false,
                         hideLabel: false
                       },
@@ -89092,7 +89095,7 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _vm.authuser || _vm.form.picked_up_on
+                    _vm.authuser || _vm.dropoff.picked_up_on
                       ? _c("text-input", {
                           attrs: {
                             defaultValue: _vm.form.picked_up_on,
