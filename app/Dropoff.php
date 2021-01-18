@@ -52,6 +52,6 @@ class Dropoff extends Model
 
     public function getPickupUrlAttribute()
     {
-        return route("dropoff.view", ["dropoff" => $this->id]);
+        return route("dropoff.pickup", ["dropoff" => $this->id]);
     }
 }
