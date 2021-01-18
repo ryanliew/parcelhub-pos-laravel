@@ -88935,7 +88935,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.form.customer_id = this.selectedCustomer.value;
       this.form.vendor_id = this.selectedCourier.value;
 
-      var url = this.authuser ? "/dropoffs/update/" : "dropoffs/pickup/";
+      var url = this.authuser ? "/dropoffs/update/" : "/dropoffs/pickup/";
       url += this.dropoff.id;
 
       this.form.post(url).then(function (response) {
