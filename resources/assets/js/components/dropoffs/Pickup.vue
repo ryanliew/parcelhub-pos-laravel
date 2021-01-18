@@ -134,7 +134,7 @@ export default {
     },
 
     onError(error) {
-
+      alert(error);
     },
 
     submit() {

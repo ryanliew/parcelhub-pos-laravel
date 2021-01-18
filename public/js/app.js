@@ -88953,7 +88953,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         window.location.reload();
       });
     },
-    onError: function onError(error) {},
+    onError: function onError(error) {
+      alert(error);
+    },
     submit: function submit() {
       this.secondary_message = "Confirm pickup for dropoff " + this.dropoff.dropoff_no + "?";
       this.isConfirming = true;
