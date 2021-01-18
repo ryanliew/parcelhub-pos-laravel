@@ -5,5 +5,5 @@
 @endsection
 
 @section('content')
-    <pickup-form :dropoff="{{ $dropoff }}" :authuser="{{ auth()->user() }}"></pickup-form>
+    <pickup-form :dropoff="{{ $dropoff }}" @auth :authuser="{{ auth()->user() }}" @endauth></pickup-form>
 @endsection
