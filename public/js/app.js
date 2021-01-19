@@ -88880,6 +88880,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -89120,27 +89126,64 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "submit", disabled: !_vm.canSubmit }
-                    },
-                    [_vm._v("Confirm pickup")]
-                  ),
-                  _vm._v(" "),
-                  _vm.authuser
-                    ? _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-secondary",
-                          attrs: { href: "/dropoffs" }
-                        },
-                        [_vm._v("Back")]
-                      )
-                    : _vm._e()
-                ])
+                _c(
+                  "div",
+                  { staticClass: "col" },
+                  [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit", disabled: !_vm.canSubmit }
+                      },
+                      [_vm._v("Confirm pickup")]
+                    ),
+                    _vm._v(" "),
+                    _vm.authuser
+                      ? [
+                          _vm.dropoff
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "btn btn-primary",
+                                  attrs: {
+                                    href: "/dropoffs/receipt/" + _vm.dropoff.id,
+                                    target: "_blank"
+                                  }
+                                },
+                                [_vm._v("Print customer slip")]
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.dropoff
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "btn btn-primary",
+                                  attrs: {
+                                    href: "/dropoffs/admin/" + _vm.dropoff.id,
+                                    target: "_blank"
+                                  }
+                                },
+                                [_vm._v("Print driver slip")]
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.authuser
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "btn btn-secondary",
+                                  attrs: { href: "/dropoffs" }
+                                },
+                                [_vm._v("Back")]
+                              )
+                            : _vm._e()
+                        ]
+                      : _vm._e()
+                  ],
+                  2
+                )
               ])
             ]
           )
