@@ -54,7 +54,13 @@
             <div class="col">
 
               <button class="btn btn-primary" type="submit" :disabled="!canSubmit">Confirm pickup</button>
-              <a href="/dropoffs" v-if="authuser" class="btn btn-secondary">Back</a>
+              <template v-if="authuser">
+                <a :href="'/dropoffs/receipt/' + dropoff.id" target="_blank" class="btn btn-primary" v-if="dropoff">Print customer slip</a>
+                <a :href="'/dropoffs/admin/' + dropoff.id" target="_blank" class="btn btn-primary" v-if="dropoff">Print driver slip</a>
+
+
+                <a href="/dropoffs" v-if="authuser" class="btn btn-secondary">Back</a>
+              </template>
             </div>
           </div>
         </form>
