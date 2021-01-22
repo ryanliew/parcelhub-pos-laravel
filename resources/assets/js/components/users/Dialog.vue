@@ -155,6 +155,7 @@
 					password_confirmation: '',
 					current_terminal: '',
 					current_branch: '',
+          is_suspended: false,
 				})
 			};
 		},
