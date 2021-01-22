@@ -198,6 +198,10 @@ class InvoiceController extends Controller
 
     public function store()
     {
+        if(auth()->user()->is_suspended) {
+            auth()->logout();
+            return response()->json(['message' => "Your account has been suspended. Please contact HQ for assistant."],400);
+        }
         $items = json_decode(request()->items);
 
         // dd($items);

@@ -109,6 +109,14 @@
 									:error="form.errors.get('current_terminal')">
 								</selector-input>
 							</div>
+              <div class="col">
+                <checkbox-input v-model="form.is_suspended"
+                                :defaultChecked="form.is_suspended"
+                                label="Suspended"
+                                name="is_suspended"
+                                :editable="true">
+                </checkbox-input>
+              </div>
 						</div>
 					</form>
 	      		</div>
@@ -238,6 +246,7 @@
 				this.form.username = this.selectedUser.username;
 				this.form.current_branch = this.selectedUser.current.id;
 				this.form.current_terminal = this.selectedUser.current_terminal;
+				this.form.is_suspended = this.selectedUser.is_suspended;
 
 				if(this.branches.length > 0) {
 					this.selectedBranch = _.filter(this.branches, function(branch){ return this.form.current_branch == branch.value; }.bind(this))[0];
