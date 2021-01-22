@@ -315,4 +315,10 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get("/index", "ProfitAndLossController@index")->name('profit-and-loss.index');
 	});
 
+	Route::group(["prefix" => "billings"], function(){
+	    Route::get("/", "BillingImportsController@page")->name("billings.page");
+	    Route::post("/import", "BillingImportsController@import");
+	    Route::get("/index", "BillingImportsController@index")->name("billings.index");
+	    Route::get("/detail/{billing}", "BillingImportsController@view")->name("billings.view");
+    });
 });
