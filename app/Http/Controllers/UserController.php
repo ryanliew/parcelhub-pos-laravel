@@ -105,7 +105,7 @@ class UserController extends Controller
             "current_terminal" => request()->has('current_terminal') 
                                 ? request()->current_terminal 
                                 : Branch::find(request()->current_branch)->terminals()->first()->id,
-            "is_suspended" => request()->is_suspended,
+            "is_suspended" => request()->has("is_suspended") ? true : false,
         ];
 
         $user = User::create($store);
@@ -125,7 +125,7 @@ class UserController extends Controller
         	"email" => request()->email,
         	"current_branch" => request()->current_branch,
         	"current_terminal" => request()->current_terminal,
-            "is_suspended" => request()->is_suspended,
+            "is_suspended" => request()->has("is_suspended") ? true : false,
         ];
 
         if(request()->has('password'))
