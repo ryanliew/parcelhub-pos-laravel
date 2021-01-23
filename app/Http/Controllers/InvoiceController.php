@@ -233,6 +233,11 @@ class InvoiceController extends Controller
             return $this->returnValidationErrorResponse([['something' => 'something']], $error);
         }
 
+        // We need to calculate the amount ourselves instead of relying on frontend
+        $subtotal = collect($items)->sum("total_price");
+        $discount_value = request()->has('discount_value') ? request()->discount_value : 0.00;
+        $total = $subtotal - $discount_value;
+
         $user = User::find(request()->created_by);
 
         $branch = auth()->user()->current;
@@ -240,8 +245,8 @@ class InvoiceController extends Controller
         $invoice_no = $branch->code . sprintf("%05d", ++$branch->sequence->last_id);
 
         $invoice = Invoice::create([
-            'subtotal' => request()->has('subtotal') ? request()->subtotal : 0.00,
-            'total' =>  request()->has('total') ? request()->total : 0.00,
+            'subtotal' => $subtotal,
+            'total' =>  $total,
             'tax' => request()->has('tax') ? request()->tax : 0.00,
             'paid' => request()->has('paid') ? request()->paid : 0.00,
             'type' => request()->type,
@@ -249,7 +254,7 @@ class InvoiceController extends Controller
             'branch_id' => $user->current_branch,
             'terminal_no' => $user->current_terminal,
             'created_by' => $user->id,
-            'discount_value' => request()->has('discount_value') ? request()->discount_value : 0.00,
+            'discount_value' => $discount_value,
             'discount_mode' => request()->discount_mode,
             'discount' => request()->has('discount') ? request()->discount : 0.00,
             'remarks' => request()->remarks,
