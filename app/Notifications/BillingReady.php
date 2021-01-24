@@ -44,10 +44,16 @@ class BillingReady extends Notification implements ShouldQueue
         return (new MailMessage)
                     ->subject("Invoice #" . $this->billing->invoice_no)
                     ->greeting("Hello!")
-                    ->line('The invoice for this month is ready, you can download it through the links below.')
-                    ->action('Excel', $this->billing->excel_path)
-                    ->action("PDF", $this->billing->pdf_path)
-                    ->line('Thank you!');
+                    ->line('The invoice for this month is ready and is attached in PDF and Excel format in the email. Please refer to the attachments.')
+                    ->line('Thank you!')
+                    ->attach(storage_path("app/public/billing/" . $this->billing->branch_id . "/" . $this->billing->file_name . ".pdf"), [
+                        "as" => $this->billing->file_name . ".pdf",
+                        "mime" => "application/pdf",
+                    ])
+                    ->attach(storage_path("app/public/billing/" . $this->billing->branch_id . "/" . $this->billing->file_name . ".xls"), [
+                        "as" => $this->billing->file_name . ".xls",
+                        "mime" => "application/vnd.ms-excel",
+                    ]);
     }
 
     /**
