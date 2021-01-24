@@ -13,16 +13,17 @@ class ProcessBillingGroup implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $group, $key;
+    protected $group, $key, $last;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($key, $group)
+    public function __construct($key, $group, $last)
     {
         $this->key = $key;
         $this->group = $group;
+        $this->last = $last;
     }
 
     /**
@@ -32,6 +33,10 @@ class ProcessBillingGroup implements ShouldQueue
      */
     public function handle()
     {
-        BillingImport::processBillingGroup($key, $group);
+        BillingImport::processBillingGroup($this->key, $this->group);
+
+        if($this->key == $this->last) {
+            BillingImport::query()->update(["status" => BillingImport::STATUS_COMPLETE]);
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\BillingRecord;
 use App\Imports\BillingImport;
 use App\BillingImport as BillingImportClass;
+use App\Jobs\ProcessBillingImports;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -51,20 +52,21 @@ class BillingImportsController extends Controller
                     "amount" => $result->amount,
                     "lc_marking" => $result->lc_marking,
                     "invoice_no_self" => $result->inv_no,
-                    "base_amount" => $result->base_amount,
+                    "base_amount" => round($result->base_amount, 2),
                     "surcharge" => $result->surcharge,
-                    "total_bill_amount" => $result->total_bill_amount,
+                    "total_bill_amount" => round($result->total_bill_amount, 2),
                 ]);
             }
 
             $billing_import->progress += $results->count();
             if($billing_import->progress >= $billing_import->total) {
                 $billing_import->status = BillingImportClass::STATUS_PROCESSING;
-                // Dispatch the processing job here
 
             }
             $billing_import->save();
         });
+
+        dispatch(new ProcessBillingImports($billing_import));
 
         return json_encode(['message' => "Billing file has been imported and it is being processed."]);
     }
