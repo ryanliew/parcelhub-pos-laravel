@@ -105,6 +105,8 @@ Vue.component('parcels-check-in', require('./components/parcels/ParcelsCheckIn.v
 Vue.component("dropoff-form", require("./components/dropoffs/Dialog.vue"));
 Vue.component("pickup-form", require("./components/dropoffs/Pickup.vue"));
 
+Vue.component('billing-import', require('./components/billings/Import.vue'));
+
 const app = new Vue({
     el: '#app',
 

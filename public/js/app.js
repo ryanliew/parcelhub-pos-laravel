@@ -30506,7 +30506,7 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(141);
-module.exports = __webpack_require__(297);
+module.exports = __webpack_require__(303);
 
 
 /***/ }),
@@ -30621,10 +30621,12 @@ Vue.component('cashup-details', __webpack_require__(282));
 Vue.component('sales-reports-dialog', __webpack_require__(285));
 
 Vue.component('profit-and-loss-import', __webpack_require__(288));
-Vue.component('parcels-check-in', __webpack_require__(300));
+Vue.component('parcels-check-in', __webpack_require__(291));
 
-Vue.component("dropoff-form", __webpack_require__(291));
-Vue.component("pickup-form", __webpack_require__(294));
+Vue.component("dropoff-form", __webpack_require__(294));
+Vue.component("pickup-form", __webpack_require__(297));
+
+Vue.component('billing-import', __webpack_require__(300));
 
 var app = new Vue({
   el: '#app',
@@ -87983,6 +87985,257 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
+Component.options.__file = "resources\\assets\\js\\components\\parcels\\ParcelsCheckIn.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4cf0a4a8", Component.options)
+  } else {
+    hotAPI.reload("data-v-4cf0a4a8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 292 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ["created_by"],
+	data: function data() {
+		return {
+			form: new Form({
+				//recipient_name: this.created_by,
+				phone: "",
+				tracking_code: ""
+			})
+		};
+	},
+	mounted: function mounted() {},
+
+
+	methods: {
+		checkInParcels: function checkInParcels() {
+			var _this = this;
+
+			var url = "parcels/checkin";
+			this.form.post(url).then(function (response) {
+				return _this.onSuccess(response);
+			}).catch(function (error) {
+				return _this.onError(error);
+			});
+		},
+		onSuccess: function onSuccess(response) {
+			console.log("Success");
+			window.events.$emit("reload-table");
+		},
+		onError: function onError(error) {}
+	}
+});
+
+/***/ }),
+/* 293 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c("div", { staticClass: "card", attrs: { id: "import-header" } }, [
+      _c("div", { staticClass: "card-body" }, [
+        _c("div", { staticClass: "row" }, [
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.phone,
+                  required: true,
+                  type: "text",
+                  label: "Phone number",
+                  name: "phone",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  isHorizontal: false,
+                  error: _vm.form.errors.get("phone")
+                },
+                model: {
+                  value: _vm.form.phone,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "phone", $$v)
+                  },
+                  expression: "form.phone"
+                }
+              })
+            ],
+            1
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "row" }, [
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.tracking_code,
+                  required: true,
+                  type: "text",
+                  label: "Tracking code",
+                  name: "tracking_code",
+                  editable: true,
+                  focus: false,
+                  hideLabel: false,
+                  isHorizontal: false,
+                  error: _vm.form.errors.get("tracking_code")
+                },
+                model: {
+                  value: _vm.form.tracking_code,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "tracking_code", $$v)
+                  },
+                  expression: "form.tracking_code"
+                }
+              })
+            ],
+            1
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "row", staticStyle: { float: "right" } }, [
+          _c("div", { staticClass: "col" }, [
+            _c(
+              "button",
+              {
+                on: {
+                  click: function($event) {
+                    _vm.checkInParcels()
+                  }
+                }
+              },
+              [_vm._v("Check in")]
+            )
+          ])
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4cf0a4a8", module.exports)
+  }
+}
+
+/***/ }),
+/* 294 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(295)
+/* template */
+var __vue_template__ = __webpack_require__(296)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
 Component.options.__file = "resources\\assets\\js\\components\\dropoffs\\Dialog.vue"
 
 /* hot reload */
@@ -88005,7 +88258,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 292 */
+/* 295 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -88274,7 +88527,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 293 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -88508,15 +88761,15 @@ if (false) {
 }
 
 /***/ }),
-/* 294 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(295)
+var __vue_script__ = __webpack_require__(298)
 /* template */
-var __vue_template__ = __webpack_require__(296)
+var __vue_template__ = __webpack_require__(299)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -88555,7 +88808,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 295 */
+/* 298 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -88728,7 +88981,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 296 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -88967,14 +89220,6 @@ if (false) {
 }
 
 /***/ }),
-/* 297 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 298 */,
-/* 299 */,
 /* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -89000,7 +89245,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\js\\components\\parcels\\ParcelsCheckIn.vue"
+Component.options.__file = "resources\\assets\\js\\components\\billings\\Import.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -89009,9 +89254,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4cf0a4a8", Component.options)
+    hotAPI.createRecord("data-v-ab1c277c", Component.options)
   } else {
-    hotAPI.reload("data-v-4cf0a4a8", Component.options)
+    hotAPI.reload("data-v-ab1c277c", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -89042,85 +89287,47 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ["created_by"],
-	data: function data() {
-		return {
-			form: new Form({
-				//recipient_name: this.created_by,
-				phone: "",
-				tracking_code: ""
-			})
-		};
-	},
-	mounted: function mounted() {},
+  props: ["created_by"],
+  data: function data() {
+    return {
+      form: new Form({
+        created_by: this.created_by,
+        fileName: "",
+        file: ""
+
+      }),
+      processing: false
+    };
+  },
+  mounted: function mounted() {},
 
 
-	methods: {
-		checkInParcels: function checkInParcels() {
-			var _this = this;
+  methods: {
+    fileUploaded: function fileUploaded() {
+      this.form.file = this.$refs.file.files[0];
+    },
+    importFromExcel: function importFromExcel() {
+      var _this = this;
 
-			var url = "parcels/checkin";
-			this.form.post(url).then(function (response) {
-				return _this.onSuccess(response);
-			}).catch(function (error) {
-				return _this.onError(error);
-			});
-		},
-		onSuccess: function onSuccess(response) {
-			console.log("Success");
-			window.events.$emit("reload-table");
-		},
-		onError: function onError(error) {}
-	}
+      this.processing = true;
+      var url = "billings/import";
+      this.form.post(url).then(function (response) {
+        return _this.onSuccess(response);
+      }).catch(function (error) {
+        return _this.onError(error);
+      });
+    },
+    onSuccess: function onSuccess(response) {
+      console.log("Success");
+      this.processing = false;
+      window.events.$emit("reload-table");
+    },
+    onError: function onError(error) {
+      this.processing = false;
+    }
+  }
 });
 
 /***/ }),
@@ -89134,96 +89341,68 @@ var render = function() {
   return _c("div", [
     _c("div", { staticClass: "card", attrs: { id: "import-header" } }, [
       _c("div", { staticClass: "card-body" }, [
-        _c("div", { staticClass: "row" }, [
-          _c(
-            "div",
-            { staticClass: "col" },
-            [
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.form.phone,
-                  required: true,
-                  type: "text",
-                  label: "Phone number",
-                  name: "phone",
-                  editable: true,
-                  focus: false,
-                  hideLabel: false,
-                  isHorizontal: false,
-                  error: _vm.form.errors.get("phone")
-                },
-                model: {
-                  value: _vm.form.phone,
-                  callback: function($$v) {
-                    _vm.$set(_vm.form, "phone", $$v)
-                  },
-                  expression: "form.phone"
-                }
-              })
-            ],
-            1
-          )
-        ]),
+        _c("input", {
+          ref: "file",
+          staticClass: "file-input",
+          attrs: { type: "file", name: "file" },
+          on: { change: _vm.fileUploaded }
+        }),
         _vm._v(" "),
-        _c("div", { staticClass: "row" }, [
-          _c(
-            "div",
-            { staticClass: "col" },
-            [
-              _c("text-input", {
-                attrs: {
-                  defaultValue: _vm.form.tracking_code,
-                  required: true,
-                  type: "text",
-                  label: "Tracking code",
-                  name: "tracking_code",
-                  editable: true,
-                  focus: false,
-                  hideLabel: false,
-                  isHorizontal: false,
-                  error: _vm.form.errors.get("tracking_code")
-                },
-                model: {
-                  value: _vm.form.tracking_code,
-                  callback: function($$v) {
-                    _vm.$set(_vm.form, "tracking_code", $$v)
-                  },
-                  expression: "form.tracking_code"
-                }
-              })
-            ],
-            1
-          )
-        ]),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary",
+            attrs: { disabled: !_vm.form.file },
+            on: {
+              click: function($event) {
+                _vm.importFromExcel()
+              }
+            }
+          },
+          [_vm._v("Import")]
+        ),
         _vm._v(" "),
-        _c("div", { staticClass: "row", staticStyle: { float: "right" } }, [
-          _c("div", { staticClass: "col" }, [
-            _c(
-              "button",
-              {
-                on: {
-                  click: function($event) {
-                    _vm.checkInParcels()
-                  }
-                }
-              },
-              [_vm._v("Check in")]
-            )
-          ])
-        ])
+        _vm.processing
+          ? _c("i", { staticClass: "fa fa-spinner fa-spin fa-2x fa-fw" })
+          : _vm._e(),
+        _vm._v(" "),
+        _vm._m(0)
       ])
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("a", { attrs: { href: "/billing.xlsx", target: "_blank" } }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          staticStyle: { float: "right" },
+          attrs: { title: "Download sample excel" }
+        },
+        [_vm._v("Download Template")]
+      )
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-4cf0a4a8", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-ab1c277c", module.exports)
   }
 }
+
+/***/ }),
+/* 303 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);
