@@ -3,11 +3,18 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 class Billing extends Model
 {
     protected $guarded = [];
+
+    protected $dates = ["billing_start", "billing_end"];
 
     public function items()
     {
@@ -19,9 +26,24 @@ class Billing extends Model
         return $this->belongsTo("App\Branch");
     }
 
+    public function getFileNameAttribute()
+    {
+        return "INV_" . $this->invoice_no . "_" . $this->branch->code;
+    }
+
+    public function getExcelPathAttribute()
+    {
+        return url("storage/billing/" . $this->branch_id . "/" . $this->file_name . ".xls");
+    }
+
+    public function getPdfPathAttribute()
+    {
+        return url("storage/billing/" . $this->branch_id . "/" . $this->file_name . ".pdf");
+    }
+
     public function exportAndStoreExcel()
     {
-        $name = now()->toDateString() . "_" . $this->branch->code . "_billing";
+        $name = $this->file_name;
 
         $billing_id = $this->id;
 
@@ -32,5 +54,22 @@ class Billing extends Model
                 $sheet->loadView("billing.table", ["billing" => $billing]);
             });
         })->store("xls", storage_path("app/public/billing/" . $this->branch_id));
+    }
+
+    public function exportAndStorePDF()
+    {
+        $html = View::make('billing.export', ["billing" => $this])->render();
+
+        $newPDF = $this->initializePDFObject();
+        $newPDF->WriteHTML($html);
+        $newPDF->setFooter('{PAGENO}/{nbpg}');
+
+        $path = storage_path('app/public/billing/'. $this->branch_id . "/" . $this->file_name . '.pdf');
+        $newPDF->Output($path, Destination::FILE);
+    }
+
+    public function initializePDFObject()
+    {
+        return new mPDF(['format' => 'Legal']);
     }
 }

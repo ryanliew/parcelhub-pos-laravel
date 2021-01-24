@@ -3,8 +3,10 @@
 namespace App;
 
 use App\Jobs\ProcessBillingGroup;
+use App\Notifications\BillingReady;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Notification;
 use Maatwebsite\Excel\Facades\Excel;
 
 class BillingImport extends Model
@@ -58,12 +60,15 @@ class BillingImport extends Model
                     // Mark record as processed
                     $record->is_processed = true;
                     $record->save();
+
+                    // Dispatch mail sending for billing PDF and Excel
+                    // Export Excel file and store
+                    $billing->exportAndStoreExcel();
+                    $billing->exportAndStorePDF();
+
+                    Notification::route("mail", $billing->branch->contact_emails)->notify(new BillingReady($billing));
                 }
             }
-
-            // Dispatch mail sending for billing PDF and Excel
-            // Export Excel file and store
-            $billing->exportAndStoreExcel();
 
         } else {
             info("Processing for billing import failed. LC Code: " . $key . " not found.");
