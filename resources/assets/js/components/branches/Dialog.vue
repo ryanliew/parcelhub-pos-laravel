@@ -142,16 +142,16 @@
 						</div>
             <div class="row">
               <div class="col">
-                <text-input v-model="form.lc_marking"
-                            :defaultValue="form.lc_marking"
+                <text-input v-model="form.lc_code"
+                            :defaultValue="form.lc_code"
                             :required="false"
                             type="text"
                             label="LC Marking"
-                            name="lc_marking"
+                            name="lc_code"
                             :editable="true"
                             :focus="false"
                             :hideLabel="false"
-                            :error="form.errors.get('lc_marking')">
+                            :error="form.errors.get('lc_code')">
                 </text-input>
               </div>
               <div class="col">
@@ -300,7 +300,7 @@
 					default_product_type: '',
 					product_type_id: '',
 					registered_company_name: '',
-          lc_marking: '',
+          lc_code: '',
           contact_emails: '',
 				})
 			};
@@ -381,7 +381,7 @@
 				this.form.product_type_id = this.selectedBranch.product_type_id;
 				this.form.registered_company_name = this.selectedBranch.registered_company_name;
         this.form.contact_emails = this.selectedBranch.contact_emails;
-        this.form.lc_marking = this.selectedBranch.lc_marking;
+        this.form.lc_code = this.selectedBranch.lc_code;
 
 				this.selectedType = _.filter(this.types, function(type){ return this.form.product_type_id == type.value; }.bind(this))[0];
 			},
