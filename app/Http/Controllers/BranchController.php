@@ -28,7 +28,7 @@ class BranchController extends Controller
             "address" => "required",
             "product_type_id" => "required",
             "registered_company_name" => "required",
-            "lc_marking" => "required",
+            "lc_code" => "required",
             "contact_emails" => "required",
         ]);
 	}
