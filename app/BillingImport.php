@@ -60,15 +60,15 @@ class BillingImport extends Model
                     // Mark record as processed
                     $record->is_processed = true;
                     $record->save();
-
-                    // Dispatch mail sending for billing PDF and Excel
-                    // Export Excel file and store
-                    $billing->exportAndStoreExcel();
-                    $billing->exportAndStorePDF();
-
-                    Notification::route("mail", $billing->branch->contact_emails)->notify(new BillingReady($billing));
                 }
             }
+
+            // Dispatch mail sending for billing PDF and Excel
+            // Export Excel file and store
+            $billing->exportAndStoreExcel();
+            $billing->exportAndStorePDF();
+
+            Notification::route("mail", $billing->branch->contact_emails)->notify(new BillingReady($billing));
 
         } else {
             info("Processing for billing import failed. LC Code: " . $key . " not found.");
