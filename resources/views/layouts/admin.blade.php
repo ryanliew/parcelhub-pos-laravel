@@ -115,7 +115,19 @@
                         </li>
 
                         <li class="nav-item"><a class="nav-link" href="{{ route('reports.page') }}">Reports</a></li>
-                        @if(auth()->user()->is_admin)<li class="nav-item"><a class="nav-link" href="{{ route('items.page') }}">CN Search</a></li>@endif
+                        @if(auth()->user()->is_admin)
+                            <li class="nav-item dropdown">
+                                <a id="settings-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    Extras <span class="caret"></span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-left" aria-labelledby="invoice-dropdown">
+                                    <a class="dropdown-item" href="{{ route('items.page') }}">CN Search</a>
+                                    <a class="dropdown-item" href="{{ route("billings.page") }}">
+                                        Billings
+                                    </a>
+                                </div>
+                            </li>
+                        @endif
                         <li class="nav-item"><a class="nav-link" href="{{ route('profit-and-loss.page') }}">Profit & Loss</a></li>
                         <li class="nav-item dropdown">
                             <a id="settings-dropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -124,12 +136,13 @@
 
                             <div class="dropdown-menu dropdown-menu-left" aria-labelledby="invoice-dropdown">
                                 @if(auth()->user()->is_admin)
-                                <a class="dropdown-item" href="{{ route('settings') }}">
-                                    Global settings
-                                </a>
-                                <a class="dropdown-item" href="{{ route('branch-knowledge.page') }}">
-                                    Branch settings
-                                </a>
+                                    <a class="dropdown-item" href="{{ route('settings') }}">
+                                        Global settings
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('branch-knowledge.page') }}">
+                                        Branch settings
+                                    </a>
+
                                 @endif
                             </div>
                         </li>
