@@ -70291,6 +70291,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -70322,7 +70350,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				address: '',
 				default_product_type: '',
 				product_type_id: '',
-				registered_company_name: ''
+				registered_company_name: '',
+				lc_marking: '',
+				contact_emails: ''
 			})
 		};
 	},
@@ -70404,6 +70434,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.form.address = this.selectedBranch.address;
 			this.form.product_type_id = this.selectedBranch.product_type_id;
 			this.form.registered_company_name = this.selectedBranch.registered_company_name;
+			this.form.contact_emails = this.selectedBranch.contact_emails;
+			this.form.lc_marking = this.selectedBranch.lc_marking;
 
 			this.selectedType = _.filter(this.types, function (type) {
 				return this.form.product_type_id == type.value;
@@ -70755,6 +70787,64 @@ var render = function() {
                               _vm.selectedType = $$v
                             },
                             expression: "selectedType"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.lc_marking,
+                            required: false,
+                            type: "text",
+                            label: "LC Marking",
+                            name: "lc_marking",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("lc_marking")
+                          },
+                          model: {
+                            value: _vm.form.lc_marking,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "lc_marking", $$v)
+                            },
+                            expression: "form.lc_marking"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col" },
+                      [
+                        _c("text-input", {
+                          attrs: {
+                            defaultValue: _vm.form.contact_emails,
+                            required: false,
+                            type: "text",
+                            label: "Contact Email",
+                            name: "contact_emails",
+                            editable: true,
+                            focus: false,
+                            hideLabel: false,
+                            error: _vm.form.errors.get("contact_emails")
+                          },
+                          model: {
+                            value: _vm.form.contact_emails,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "contact_emails", $$v)
+                            },
+                            expression: "form.contact_emails"
                           }
                         })
                       ],
