@@ -188,6 +188,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
 		Route::get('/', "ItemController@page")->name('items.page');
 		Route::get("/index", "ItemController@index")->name('items.index');
 	});
+
+    Route::group(["prefix" => "billings"], function(){
+        Route::get("/", "BillingImportsController@page")->name("billings.page");
+        Route::post("/import", "BillingImportsController@import");
+        Route::get("/index", "BillingImportsController@index")->name("billings.index");
+        Route::get("/detail/{billing}", "BillingImportsController@view")->name("billings.view");
+    });
 });
 
 // Users route
@@ -314,11 +321,4 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post("/import", "ProfitAndLossController@import");
 		Route::get("/index", "ProfitAndLossController@index")->name('profit-and-loss.index');
 	});
-
-	Route::group(["prefix" => "billings"], function(){
-	    Route::get("/", "BillingImportsController@page")->name("billings.page");
-	    Route::post("/import", "BillingImportsController@import");
-	    Route::get("/index", "BillingImportsController@index")->name("billings.index");
-	    Route::get("/detail/{billing}", "BillingImportsController@view")->name("billings.view");
-    });
 });
