@@ -6,7 +6,10 @@ use App\BillingRecord;
 use App\Imports\BillingImport;
 use App\BillingImport as BillingImportClass;
 use App\Jobs\ProcessBillingImports;
+use App\Notifications\BillingReady;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class BillingImportsController extends Controller
@@ -73,7 +76,7 @@ class BillingImportsController extends Controller
 
     public function index()
     {
-        $query = BillingImportClass::with([])->select('billing_imports.*');
+        $query = BillingImportClass::with([])->select('billing_imports.*')->latest();
 
         return datatables()->of($query)
             ->toJson();
@@ -82,5 +85,44 @@ class BillingImportsController extends Controller
     public function view(BillingImportClass $billing)
     {
         return view("billing.detail", ["billing" => $billing]);
+    }
+
+    public function download(BillingImportClass $import)
+    {
+        // Pack the files into a zip and send out
+        $fileName = "billing_import_" . $import->created_at->toDateString() . ".zip";
+        $zipFile = storage_path($fileName);
+
+        $zip = new \ZipArchive;
+
+        if($zip->open($zipFile, \ZipArchive::CREATE) === TRUE) {
+            foreach($import->bills as $bill) {
+                $pdf_url = storage_path("app/public/billing/" . $bill->branch_id . "/" . $bill->file_name . ".pdf");
+                $zip->addFromString($bill->file_name . ".pdf", file_get_contents($pdf_url));
+
+                $excel_url = storage_path("app/public/billing/" . $bill->branch_id . "/" . $bill->file_name . ".xls");
+                $zip->addFromString($bill->file_name . ".xls", file_get_contents($excel_url));
+            }
+            $zip->close();
+        }
+        else {
+            dd($zip->open($zipFile, \ZipArchive::CREATE));
+        }
+
+        Storage::disk("public")->put("billing/$fileName", file_get_contents($zipFile));
+
+        return redirect(Storage::disk("public")->url("billing/$fileName"));
+    }
+
+    public function send(BillingImportClass $import)
+    {
+        // Trigger sending the emails to branches
+        foreach($import->bills as $bill) {
+            if($bill->branch->contact_emails) Notification::route("mail", $bill->branch->contact_emails)->notify(new BillingReady($bill));
+        }
+
+        return response()->json([
+            "message" => "Billing has been sent"
+        ]);
     }
 }
