@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('page')
     ProfitAndLoss
@@ -53,7 +53,33 @@
                 },
                 dom: 'Blftip',
                 buttons: [
+                    {
+                        text: 'Download bills',
+                        // text: 'Edit',
+                        action: function( e, dt, node, config ) {
+                            var loc = "/admin/billings/download/" + table.rows({selected: true}).data().toArray()[0].id;
 
+                            window.open(loc, '_blank');
+                        },
+                        enabled: false
+                    },
+                    {
+                        text: 'Send',
+                        // text: 'Edit',
+                        action: function( e, dt, node, config ) {
+
+                            var loc = "/admin/billings/send/" + table.rows({selected: true}).data().toArray()[0].id;
+
+                            axios.get(loc)
+                                .then(response => {
+                                    flash(response.data.message);
+                                })
+                                .catch(error => {
+                                    flash(error);
+                                });
+                        },
+                        enabled: false
+                    },
                     {
                         extend: 'excel',
                         text: function ( dt, button, config ) {
@@ -85,15 +111,11 @@
                 }
             });
 
-            // table.on( 'select deselect', function () {
-            //     var selectedRows = table.rows( { selected: true } ).count();
-            // 	@if(auth()->user()->hasPermission(auth()->user()->current_branch, 'write'))
-            //         table.button( 1 ).enable( selectedRows === 1 );
-            //         table.button( 2 ).enable( selectedRows > 0 );
-            //     @else
-            //     		table.button( 0 ).enable( selectedRows > 0 );
-            //     @endif
-            // });
+             table.on( 'select deselect', function () {
+                 var selectedRows = table.rows( { selected: true } ).count();
+                 table.button( 0 ).enable( selectedRows === 1 );
+                 table.button( 1 ).enable( selectedRows === 1 );
+            });
 
             window.events.$on("reload-table", function(){
                 table.ajax.reload();
