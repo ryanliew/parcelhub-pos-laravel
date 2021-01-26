@@ -16,7 +16,8 @@ class BillingImport extends \Maatwebsite\Excel\Files\ExcelFile
     {
         $filename = request()->file("file")->store("imports");
 
-        $billing_import = BillingImportClass::create([
+        BillingImportClass::create([
+            "file_name" => request()->file("file")->getClientOriginalName(),
             "name" => $filename,
             "status" => BillingImportClass::STATUS_IMPORTING,
             "progress" => 0,
