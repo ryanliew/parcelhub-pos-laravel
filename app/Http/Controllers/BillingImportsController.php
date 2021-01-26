@@ -96,7 +96,6 @@ class BillingImportsController extends Controller
         $zip = new \ZipArchive;
 
         if($zip->open($zipFile, \ZipArchive::CREATE) === TRUE) {
-            dd($zip);
             foreach($import->bills as $bill) {
                 $pdf_url = storage_path("app/public/billing/" . $bill->branch_id . "/" . $bill->file_name . ".pdf");
                 $zip->addFromString($bill->file_name . ".pdf", file_get_contents($pdf_url));
@@ -105,6 +104,7 @@ class BillingImportsController extends Controller
                 $zip->addFromString($bill->file_name . ".xls", file_get_contents($excel_url));
             }
             $zip->close();
+            dd($zip);
         }
         else {
             dd($zip->open($zipFile, \ZipArchive::CREATE));
