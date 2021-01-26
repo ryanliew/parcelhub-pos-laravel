@@ -22,7 +22,6 @@
                     <table class="table table-bordered" id="billings-table">
                         <thead>
                         <tr>
-                            <th>File name</th>
                             <th>Import date</th>
                             <th>Status</th>
                             <th>Progress</th>
@@ -91,7 +90,6 @@
                 ],
                 ajax: '{!! route("billings.index") !!}',
                 columns: [
-                    {data: 'file_name'},
                     {data: 'created_at'},
                     {data: 'status'},
                     {data: 'progress'},

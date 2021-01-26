@@ -39,8 +39,7 @@ class BillingImport extends Model
     public static function processBillingGroup($key, $records, $import_id)
     {
         $branch = Branch::where("lc_code", $key)->first();
-        $has_dates_records = $records->filter(function($record){ return $record->pickup_date; });
-        $month = Carbon::parse($has_dates_records->min("pickup_date"));
+        $month = Carbon::createFromFormat("d-M-y", $records->min("pickup_date"));
         if($branch) {
             try{
                 DB::beginTransaction();
