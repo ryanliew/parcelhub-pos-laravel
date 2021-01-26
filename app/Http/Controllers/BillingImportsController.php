@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use PHPExcel_Shared_Date;
 
 class BillingImportsController extends Controller
 {
@@ -40,7 +41,7 @@ class BillingImportsController extends Controller
                     "sub_account" => $result->sub_account,
                     "invoice_no_ext" => $result->invoice_no,
                     "hawb" => $result->hawb,
-                    "pickup_date" => $result->pick_up_date,
+                    "pickup_date" => date("Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($result->pick_up_date)),
                     "ref" => $result->ref,
                     "shipper_origin" => $result->shipper_origin,
                     "special_zone" => $result->special_zone,
