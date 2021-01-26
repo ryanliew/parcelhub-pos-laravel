@@ -90,7 +90,7 @@ class BillingImportsController extends Controller
     public function download(BillingImportClass $import)
     {
         // Pack the files into a zip and send out
-        $fileName = "billing_import_" . $import->created_at->toDateString() . ".zip";
+        $fileName = "app/public/billing/billing_import_" . $import->created_at->toDateString() . ".zip";
         $zipFile = storage_path($fileName);
 
         $zip = new \ZipArchive;
@@ -104,7 +104,6 @@ class BillingImportsController extends Controller
                 $zip->addFromString($bill->file_name . ".xls", file_get_contents($excel_url));
             }
             $zip->close();
-            dd($zip);
         }
         else {
             dd($zip->open($zipFile, \ZipArchive::CREATE));
