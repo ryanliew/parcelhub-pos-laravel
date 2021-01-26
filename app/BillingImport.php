@@ -43,30 +43,30 @@ class BillingImport extends Model
         if($branch) {
             try{
                 DB::beginTransaction();
-                $billing = Billing::create([
+                $billing = Billing::updateOrCreate([
+                    "invoice_no" => $records->min("invoice_no_self"),
+                    "billing_import_id" => $import_id,
+                ], [
                     "branch_id" => $branch->id,
                     "billing_start" => $month->startOfMonth(),
                     "billing_end" => $month->endOfMonth(),
-                    "invoice_no" => $records->min("invoice_no_self"),
-                    "billing_import_id" => $import_id,
                 ]);
 
                 foreach ($records->sortBy("pickup_date") as $record) {
-                    if(!$record->is_processed) {
-                        BillingItem::create([
-                            "billing_id" => $billing->id,
-                            "consignment_no" => $record->hawb,
-                            "weight" => $record->weight,
-                            "zone" => $record->destination,
-                            "charges" => $record->total_bill_amount,
-                            "subaccount" => $record->subaccount,
-                            "posting_date" => $record->pickup_date
-                        ]);
+                    BillingItem::updateOrCreate([
+                        "billing_id" => $billing->id,
+                        "consignment_no" => $record->hawb,
+                    ], [
+                        "weight" => $record->weight,
+                        "zone" => $record->destination,
+                        "charges" => $record->total_bill_amount,
+                        "subaccount" => $record->subaccount,
+                        "posting_date" => $record->pickup_date
+                    ]);
 
-                        // Mark record as processed
-                        $record->is_processed = true;
-                        $record->save();
-                    }
+                    // Mark record as processed
+                    $record->is_processed = true;
+                    $record->save();
                 }
 
                 // Dispatch mail sending for billing PDF and Excel

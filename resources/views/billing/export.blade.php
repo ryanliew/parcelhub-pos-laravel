@@ -3,14 +3,17 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <style type="text/css">
-
-        * { margin: 0; padding: 0; }
-        body { font: 10px/1.4 Georgia, serif; }
+        @font-face {
+            font-family: 'arial';
+            src: url("{{ storage_path('fonts\Arial.ttf') }}") format("truetype");
+        }
+        * { margin: 0; padding: 0; font-family: 'arial'; }
+        body { font: 10px/1.4 'arial', serif; }
         #page-wrap { width: 800px; margin: 0 auto; }
 
         .large-font { font-size: 18px; }
         .medium-font { font-size: 12px; }
-        textarea { border: 0; font: 14px Georgia, Serif; text-align: center; }
+        textarea { border: 0; font: 14px 'arial', Serif; text-align: center; }
         table { border-collapse: collapse; }
         table th { border: 1px solid black;  }
 
@@ -56,28 +59,32 @@
         <table cellpadding="3" width="100%">
             <tbody>
             <tr>
-                <td colspan="3"><b class="medium-font">Invoice</b></td>
+                <td colspan="4"><b class="medium-font">Invoice</b></td>
             </tr>
             <tr>
                 <td>Account No</td>
                 <td>:</td>
                 <td></td>
+                <td width="80px"></td>
             </tr>
             <tr>
                 <td>Invoice No</td>
                 <td>:</td>
                 <td>{{ $billing->invoice_no }}</td>
+                <td width="80px"></td>
             </tr>
             <tr>
                 <td>Invoice Date</td>
                 <td>:</td>
                 <td>{{ $billing->billing_end->toDateString() }}</td>
+                <td width="80px"></td>
             </tr>
-            <tr style="border: 1px solid black">
-                <td colspan="3" style="text-align: center">
+            <tr>
+                <td colspan="3" style="text-align: center;border: 1px solid black;">
                     Billing Period<br>
                     <b>{{ $billing->billing_start->toDateString() }} - {{ $billing->billing_end->toDateString() }}</b>
                 </td>
+                <td width="80px"></td>
             </tr>
             </tbody>
         </table>

@@ -18,7 +18,7 @@ class Billing extends Model
 
     public function items()
     {
-        return $this->hasMany("App\BillingItem");
+        return $this->hasMany("App\BillingItem", "billing_id");
     }
 
     public function branch()
@@ -46,11 +46,10 @@ class Billing extends Model
         $name = $this->file_name;
 
         $billing_id = $this->id;
-
         Excel::create($name, function($excel) use ($billing_id){
             $excel->sheet("Billing", function($sheet) use ($billing_id) {
 
-                $billing = Billing::find($billing_id);
+                $billing = self::find($billing_id);
                 $sheet->loadView("billing.table", ["billing" => $billing]);
             });
         })->store("xls", storage_path("app/public/billing/" . $this->branch_id));
@@ -70,6 +69,20 @@ class Billing extends Model
 
     public function initializePDFObject()
     {
-        return new mPDF(['format' => 'Legal']);
+        $defaultConfig = (new ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        return new mPDF(['format' => 'Legal',
+            "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
+            "fontdata" => $fontData + [
+                'arial' => [
+                    'R' => 'Arial.ttf'
+                ]
+            ],
+            'default_font' => 'arial'
+        ]);
     }
 }
