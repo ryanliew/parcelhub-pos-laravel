@@ -35,6 +35,8 @@ class BillingImportsController extends Controller
 
         $import->chunk(251, function($results) use ($billing_import)
         {
+            $billing_import = BillingImportClass::latest()->first();
+
             foreach($results as $result) {
                 BillingRecord::create([
                     "billing_imports_id" => $billing_import->id,
@@ -66,8 +68,8 @@ class BillingImportsController extends Controller
             $billing_import->progress += $results->count();
             if($billing_import->progress >= $billing_import->total) {
                 $billing_import->status = BillingImportClass::STATUS_PROCESSING;
-
             }
+            
             $billing_import->save();
         });
 
@@ -92,13 +94,13 @@ class BillingImportsController extends Controller
     public function download(BillingImportClass $import)
     {
         // Pack the files into a zip and send out
-        $fileName = "billing_import_" . $import->id . "_" . $import->vendor . "_" . $import->created_at->toDateString() . ".zip";
+        $fileName = "billing_import_" . $import->id . "_" . $import->vendor_name . "_" . $import->created_at->toDateString() . ".zip";
 
         $zipFile = storage_path($fileName);
 
         $zip = new \ZipArchive;
 
-        if($zip->open($zipFile, \ZipArchive::CREATE) === TRUE) {
+        if($zip->open($zipFile, \ZipArchive::CREATE) === TRUE && $import->bills->count() > 0) {
             foreach($import->bills as $bill) {
                 $pdf_url = storage_path("app/public/billing/" . $bill->branch_id . "/" . $bill->file_name . ".pdf");
                 $zip->addFromString($bill->file_name . ".pdf", file_get_contents($pdf_url));
@@ -109,7 +111,7 @@ class BillingImportsController extends Controller
             $zip->close();
         }
         else {
-            dd($zip->open($zipFile, \ZipArchive::CREATE));
+            return response()->json("There is no billing available due to missing LC Marking. Please create the respective branches with the correct LC Marking.");
         }
 
         Storage::disk("public")->put("billing/$fileName", file_get_contents($zipFile));
