@@ -19,7 +19,7 @@
                 <td>{{ number_format((float)$item->weight,2,'.','') }}</td>
                 <td>{{ $item->zone }}</td>
                 <td style="text-align: right;">{{ number_format((float)$item->charges,2,'.','') }}</td>
-                <td width="80">{{ isset($summary) ? substr($item->subaccount, 0, 12) : $item->subaccount }}</td>
+                <td width="80">{{ isset($summary) ? substr($item->subaccount, 0, 10) : $item->subaccount }}</td>
             </tr>
         @endforeach
 
