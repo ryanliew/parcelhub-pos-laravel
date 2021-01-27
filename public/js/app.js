@@ -89420,6 +89420,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["created_by"],
@@ -89455,7 +89466,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       });
     },
     onSuccess: function onSuccess(response) {
-      console.log("Success");
       this.processing = false;
       window.events.$emit("reload-table");
     },
@@ -89478,12 +89488,16 @@ var render = function() {
       _c("div", { staticClass: "card-body" }, [
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col" }, [
-            _c("input", {
-              ref: "file",
-              staticClass: "file-input",
-              attrs: { type: "file", name: "file" },
-              on: { change: _vm.fileUploaded }
-            })
+            _c("div", { staticClass: "form-group" }, [
+              _c("label", [_vm._v("Excel file")]),
+              _vm._v(" "),
+              _c("input", {
+                ref: "file",
+                staticClass: "file-input form-control",
+                attrs: { type: "file", name: "file" },
+                on: { change: _vm.fileUploaded }
+              })
+            ])
           ]),
           _vm._v(" "),
           _c(
@@ -89571,47 +89585,47 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-primary",
-            attrs: { disabled: !_vm.form.file },
-            on: {
-              click: function($event) {
-                _vm.importFromExcel()
-              }
-            }
-          },
-          [_vm._v("Import")]
-        ),
-        _vm._v(" "),
         _vm.processing
           ? _c("i", { staticClass: "fa fa-spinner fa-spin fa-2x fa-fw" })
           : _vm._e(),
         _vm._v(" "),
-        _vm._m(0)
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-8" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "col" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary float-right ml-2",
+                attrs: { disabled: !_vm.form.file },
+                on: {
+                  click: function($event) {
+                    _vm.importFromExcel()
+                  }
+                }
+              },
+              [_vm._v("Import")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "btn btn-secondary float-right",
+                attrs: {
+                  title: "Download sample excel",
+                  href: "/billing.xlsx",
+                  target: "_blank"
+                }
+              },
+              [_vm._v("\n            Download Template\n          ")]
+            )
+          ])
+        ])
       ])
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("a", { attrs: { href: "/billing.xlsx", target: "_blank" } }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-primary",
-          staticStyle: { float: "right" },
-          attrs: { title: "Download sample excel" }
-        },
-        [_vm._v("Download Template")]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {

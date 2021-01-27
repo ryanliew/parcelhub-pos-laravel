@@ -4,7 +4,10 @@
       <div class="card-body">
         <div class="row">
           <div class="col">
-            <input class="file-input" type="file" ref="file" name="file" @change="fileUploaded">
+            <div class="form-group">
+              <label>Excel file</label>
+              <input class="file-input form-control" type="file" ref="file" name="file" @change="fileUploaded">
+            </div>
           </div>
           <div class="col">
             <text-input v-model="form.invoice_date"
@@ -46,11 +49,19 @@
             </text-input>
           </div>
         </div>
-        <button class="btn btn-primary" @click="importFromExcel()" :disabled="!form.file">Import</button>
         <i v-if="processing" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
-        <a href="/billing.xlsx" target="_blank">
-          <button class="btn btn-primary" style="float: right;" title="Download sample excel">Download Template</button>
-        </a>
+        <div class="row">
+          <div class="col-8"></div>
+          <div class="col">
+            <button class="btn btn-primary float-right ml-2" @click="importFromExcel()" :disabled="!form.file">Import</button>
+            <a class="btn btn-secondary float-right" title="Download sample excel" href="/billing.xlsx" target="_blank">
+              Download Template
+            </a>
+
+            </div>
+        </div>
+
+
       </div>
     </div>
   </div>
@@ -91,7 +102,6 @@ export default {
     },
 
     onSuccess(response) {
-      console.log("Success");
       this.processing = false;
       window.events.$emit("reload-table");
     },

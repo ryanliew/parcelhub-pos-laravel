@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page')
-    ProfitAndLoss
+    Billing Converter
 @endsection
 
 @section('styles')
@@ -12,7 +12,7 @@
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <b>Profit and Loss</b>
+                <b>Billing Converter</b>
             </div>
             <div class="card-body">
                 <div class="container-fluid">
