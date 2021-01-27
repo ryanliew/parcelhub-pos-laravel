@@ -2,7 +2,7 @@
     <thead>
         <tr>
             <th>Job Date</th>
-            <th>PL 9.</th>
+            <th>Job Type</th>
             <th>Consignment No.</th>
             <th>Weight</th>
             <th>Zone</th>

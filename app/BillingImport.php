@@ -13,6 +13,7 @@ class BillingImport extends Model
     public const STATUS_PROCESSING = "processing";
     public const STATUS_SENDING = "sending";
     public const STATUS_COMPLETE = "complete";
+    public const STATUS_SENT = "sent";
 
     protected $guarded = [];
 
@@ -46,6 +47,7 @@ class BillingImport extends Model
                 $billing = Billing::updateOrCreate([
                     "invoice_no" => $records->min("invoice_no_self"),
                     "billing_import_id" => $import_id,
+                    "vendor_name" => $billing_import->vendor_name,
                 ], [
                     "branch_id" => $branch->id,
                     "billing_start" => $billing_import->billing_start,
@@ -62,7 +64,8 @@ class BillingImport extends Model
                         "zone" => $record->destination,
                         "charges" => $record->total_bill_amount,
                         "subaccount" => $record->sub_account,
-                        "posting_date" => $record->pickup_date
+                        "posting_date" => $record->pickup_date,
+                        "pl_9" => $record->job_type,
                     ]);
 
                     // Mark record as processed

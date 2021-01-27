@@ -87920,6 +87920,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["created_by"],
@@ -87931,7 +87948,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         file: "",
         invoice_date: "",
         billing_start: '',
-        billing_end: ""
+        billing_end: "",
+        vendor_name: ""
       }),
       processing: false
     };
@@ -87989,6 +88007,40 @@ var render = function() {
             ])
           ]),
           _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.vendor_name,
+                  required: true,
+                  type: "text",
+                  label: "Vendor name",
+                  name: "vendor_name",
+                  editable: true,
+                  focus: true,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("vendor_name")
+                },
+                model: {
+                  value: _vm.form.vendor_name,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "vendor_name", $$v)
+                  },
+                  expression: "form.vendor_name"
+                }
+              })
+            ],
+            1
+          )
+        ]),
+        _vm._v(" "),
+        _vm.processing
+          ? _c("i", { staticClass: "fa fa-spinner fa-spin fa-2x fa-fw" })
+          : _vm._e(),
+        _vm._v(" "),
+        _c("div", { staticClass: "row" }, [
           _c(
             "div",
             { staticClass: "col" },
@@ -88073,10 +88125,6 @@ var render = function() {
             1
           )
         ]),
-        _vm._v(" "),
-        _vm.processing
-          ? _c("i", { staticClass: "fa fa-spinner fa-spin fa-2x fa-fw" })
-          : _vm._e(),
         _vm._v(" "),
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col-8" }),

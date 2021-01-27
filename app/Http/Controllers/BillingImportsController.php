@@ -7,10 +7,8 @@ use App\Imports\BillingImport;
 use App\BillingImport as BillingImportClass;
 use App\Jobs\ProcessBillingImports;
 use App\Notifications\BillingReady;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Shared_Date;
 
 class BillingImportsController extends Controller
@@ -27,6 +25,7 @@ class BillingImportsController extends Controller
             "invoice_date" => "required|date",
             "billing_start" => 'required|date',
             "billing_end" => "required|date",
+            "vendor_name" => "required",
         ]);
 
         $billing_import = BillingImportClass::latest()->first();
@@ -36,8 +35,6 @@ class BillingImportsController extends Controller
 
         $import->chunk(251, function($results) use ($billing_import)
         {
-            $billing_import = BillingImportClass::latest()->first();
-
             foreach($results as $result) {
                 BillingRecord::create([
                     "billing_imports_id" => $billing_import->id,
@@ -46,6 +43,7 @@ class BillingImportsController extends Controller
                     "hawb" => $result->hawb,
                     "pickup_date" => date("Y-m-d", PHPExcel_Shared_Date::ExcelToPHP($result->pick_up_date)),
                     "ref" => $result->ref,
+                    "job_type" => $result->job_type,
                     "shipper_origin" => $result->shipper_origin,
                     "special_zone" => $result->special_zone,
                     "destination" => $result->destination,
@@ -94,7 +92,7 @@ class BillingImportsController extends Controller
     public function download(BillingImportClass $import)
     {
         // Pack the files into a zip and send out
-        $fileName = "billing_import_" . $import->created_at->toDateString() . ".zip";
+        $fileName = "billing_import_" . $import->id . "_" . $import->vendor . "_" . $import->created_at->toDateString() . ".zip";
         $zipFile = storage_path($fileName);
 
         $zip = new \ZipArchive;
@@ -125,8 +123,29 @@ class BillingImportsController extends Controller
             if($bill->branch->contact_emails) Notification::route("mail", $bill->branch->contact_emails)->notify(new BillingReady($bill));
         }
 
+        $import->update([
+            "status" => BillingImport::STATUS_SENT,
+        ]);
+
         return response()->json([
             "message" => "Billing has been sent"
+        ]);
+    }
+
+    public function delete(BillingImportClass $import)
+    {
+        $import->records()->delete();
+
+        foreach($import->bills as $bill)
+        {
+            $bill->items()->delete();
+        }
+
+        $import->bills()->delete();
+        $import->delete();
+
+        return response()->json([
+            "message" => "Billing has been deleted"
         ]);
     }
 }

@@ -22,6 +22,7 @@
                     <table class="table table-bordered" id="billings-table">
                         <thead>
                         <tr>
+                            <th>Vendor</th>
                             <th>File name</th>
                             <th>Import date</th>
                             <th>Invoice date</th>
@@ -85,6 +86,28 @@
                         enabled: false
                     },
                     {
+                        text: 'Delete',
+                        // text: 'Edit',
+                        action: function( e, dt, node, config ) {
+
+                            var loc = "/admin/billings/delete/" + table.rows({selected: true}).data().toArray()[0].id;
+
+                            axios.get(loc)
+                                .then(response => {
+                                    flash(response.data.message);
+                                    window.events.$emit("reload-table");
+                                })
+                                .catch(error => {
+                                    flash(error);
+                                });
+
+                            table.button( 0 ).enable( selectedRows === 1 );
+                            table.button( 1 ).enable( selectedRows === 1 );
+                            table.button( 2 ).enable( selectedRows === 1 );
+                        },
+                        enabled: false
+                    },
+                    {
                         extend: 'excel',
                         text: function ( dt, button, config ) {
                             return dt.i18n( 'buttons.excel', 'Generate excel' );
@@ -94,6 +117,7 @@
                 ],
                 ajax: '{!! route("billings.index") !!}',
                 columns: [
+                    {data: 'vendor_name'},
                     {data: 'file_name'},
                     {data: 'created_at'},
                     {data: 'invoice_date'},
@@ -123,6 +147,7 @@
                  var selectedRows = table.rows( { selected: true } ).count();
                  table.button( 0 ).enable( selectedRows === 1 );
                  table.button( 1 ).enable( selectedRows === 1 );
+                 table.button( 2 ).enable( selectedRows === 1 );
             });
 
             window.events.$on("reload-table", function(){
