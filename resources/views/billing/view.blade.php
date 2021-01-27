@@ -24,6 +24,9 @@
                         <tr>
                             <th>File name</th>
                             <th>Import date</th>
+                            <th>Invoice date</th>
+                            <th>Billing start date</th>
+                            <th>Billing end date</th>
                             <th>Status</th>
                             <th>Progress</th>
                             <th>Total</th>
@@ -93,6 +96,9 @@
                 columns: [
                     {data: 'file_name'},
                     {data: 'created_at'},
+                    {data: 'invoice_date'},
+                    {data: 'billing_start'},
+                    {data: 'billing_end'},
                     {data: 'status'},
                     {data: 'progress'},
                     {data: 'total'},

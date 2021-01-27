@@ -23,6 +23,9 @@ class BillingImport extends \Maatwebsite\Excel\Files\ExcelFile
             "progress" => 0,
             "total" => 0,
             "user_id" => auth()->id(),
+            "invoice_date" => request()->invoice_date,
+            "billing_start" => request()->billing_start,
+            "billing_end" => request()->billing_end,
         ]);
 
         return storage_path("app/" . $filename);

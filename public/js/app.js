@@ -87866,6 +87866,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["created_by"],
@@ -87874,8 +87917,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       form: new Form({
         created_by: this.created_by,
         fileName: "",
-        file: ""
-
+        file: "",
+        invoice_date: "",
+        billing_start: '',
+        billing_end: ""
       }),
       processing: false
     };
@@ -87920,12 +87965,100 @@ var render = function() {
   return _c("div", [
     _c("div", { staticClass: "card", attrs: { id: "import-header" } }, [
       _c("div", { staticClass: "card-body" }, [
-        _c("input", {
-          ref: "file",
-          staticClass: "file-input",
-          attrs: { type: "file", name: "file" },
-          on: { change: _vm.fileUploaded }
-        }),
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col" }, [
+            _c("input", {
+              ref: "file",
+              staticClass: "file-input",
+              attrs: { type: "file", name: "file" },
+              on: { change: _vm.fileUploaded }
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.invoice_date,
+                  required: true,
+                  type: "date",
+                  label: "Invoice date",
+                  name: "invoice_date",
+                  editable: true,
+                  focus: true,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("invoice_date")
+                },
+                model: {
+                  value: _vm.form.invoice_date,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "invoice_date", $$v)
+                  },
+                  expression: "form.invoice_date"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.billing_start,
+                  required: true,
+                  type: "date",
+                  label: "Billing start",
+                  name: "billing_start",
+                  editable: true,
+                  focus: true,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("billing_start")
+                },
+                model: {
+                  value: _vm.form.billing_start,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "billing_start", $$v)
+                  },
+                  expression: "form.billing_start"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.billing_end,
+                  required: true,
+                  type: "date",
+                  label: "Billing end",
+                  name: "billing_end",
+                  editable: true,
+                  focus: true,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("billing_end")
+                },
+                model: {
+                  value: _vm.form.billing_end,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "billing_end", $$v)
+                  },
+                  expression: "form.billing_end"
+                }
+              })
+            ],
+            1
+          )
+        ]),
         _vm._v(" "),
         _c(
           "button",

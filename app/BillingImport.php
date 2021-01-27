@@ -39,8 +39,7 @@ class BillingImport extends Model
     public static function processBillingGroup($key, $records, $import_id)
     {
         $branch = Branch::where("lc_code", $key)->first();
-        $has_dates_records = $records->filter(function($record){ return $record->pickup_date; });
-        $month = Carbon::parse($has_dates_records->min("pickup_date"));
+        $billing_import = BillingImport::find($import_id);
         if($branch) {
             try{
                 DB::beginTransaction();
@@ -49,8 +48,9 @@ class BillingImport extends Model
                     "billing_import_id" => $import_id,
                 ], [
                     "branch_id" => $branch->id,
-                    "billing_start" => $month->startOfMonth(),
-                    "billing_end" => $month->endOfMonth(),
+                    "billing_start" => $billing_import->billing_start,
+                    "billing_end" => $billing_import->billing_end,
+                    "invoice_date" => $billing_import->invoice_date,
                 ]);
 
                 foreach ($records->sortBy("pickup_date") as $record) {
@@ -61,7 +61,7 @@ class BillingImport extends Model
                         "weight" => $record->weight,
                         "zone" => $record->destination,
                         "charges" => $record->total_bill_amount,
-                        "subaccount" => $record->subaccount,
+                        "subaccount" => $record->sub_account,
                         "posting_date" => $record->pickup_date
                     ]);
 

@@ -23,7 +23,10 @@ class BillingImportsController extends Controller
     public function import(BillingImport $import)
     {
         request()->validate([
-            "file" => "required"
+            "file" => "required",
+            "invoice_date" => "required|date",
+            "billing_start" => 'required|date',
+            "billing_end" => "required|date",
         ]);
 
         $billing_import = BillingImportClass::latest()->first();

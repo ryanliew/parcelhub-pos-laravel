@@ -76,7 +76,7 @@
             <tr>
                 <td>Invoice Date</td>
                 <td>:</td>
-                <td>{{ $billing->billing_end->toDateString() }}</td>
+                <td>{{ $billing->invoice_date->toDateString() }}</td>
                 <td width="80px"></td>
             </tr>
             <tr>
