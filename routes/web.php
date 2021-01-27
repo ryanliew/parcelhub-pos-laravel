@@ -198,6 +198,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'can:admin'], function(){
         Route::get("/detail/{billing}", "BillingImportsController@view")->name("billings.view");
         Route::get("/download/{import}", "BillingImportsController@download")->name("billings.download");
         Route::get("/send/{import}", "BillingImportsController@send")->name("billings.send");
+        Route::get("/delete/{import}", "BillingImportsController@delete")->name("billings.delete");
     });
 });
 

@@ -10,6 +10,22 @@
             </div>
           </div>
           <div class="col">
+            <text-input v-model="form.vendor_name"
+                        :defaultValue="form.vendor_name"
+                        :required="true"
+                        type="text"
+                        label="Vendor name"
+                        name="vendor_name"
+                        :editable="true"
+                        :focus="true"
+                        :hideLabel="false"
+                        :error="form.errors.get('vendor_name')">
+            </text-input>
+          </div>
+        </div>
+        <i v-if="processing" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
+        <div class="row">
+          <div class="col">
             <text-input v-model="form.invoice_date"
                         :defaultValue="form.invoice_date"
                         :required="true"
@@ -49,9 +65,10 @@
             </text-input>
           </div>
         </div>
-        <i v-if="processing" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
         <div class="row">
-          <div class="col-8"></div>
+          <div class="col-8">
+
+          </div>
           <div class="col">
             <button class="btn btn-primary float-right ml-2" @click="importFromExcel()" :disabled="!form.file">Import</button>
             <a class="btn btn-secondary float-right" title="Download sample excel" href="/billing.xlsx" target="_blank">
@@ -79,6 +96,7 @@ export default {
         invoice_date: "",
         billing_start: '',
         billing_end: "",
+        vendor_name: "",
       }),
       processing: false,
     };
