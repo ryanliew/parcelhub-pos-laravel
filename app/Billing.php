@@ -14,7 +14,7 @@ class Billing extends Model
 {
     protected $guarded = [];
 
-    protected $dates = ["billing_start", "billing_end"];
+    protected $dates = ["billing_start", "billing_end", "invoice_date"];
 
     public function items()
     {
