@@ -41,42 +41,46 @@ class BillingImport extends Model
     {
         $branch = Branch::where("lc_code", $key)->first();
         $billing_import = BillingImport::find($import_id);
+        $grouped_records = $records->groupBy("invoice_no_self");
+
         if($branch) {
             try{
                 DB::beginTransaction();
-                $billing = Billing::updateOrCreate([
-                    "invoice_no" => $records->min("invoice_no_self"),
-                    "billing_import_id" => $import_id,
-                    "vendor_name" => $billing_import->vendor_name,
-                ], [
-                    "branch_id" => $branch->id,
-                    "billing_start" => $billing_import->billing_start,
-                    "billing_end" => $billing_import->billing_end,
-                    "invoice_date" => $billing_import->invoice_date,
-                ]);
+                    foreach($grouped_records as $invoice => $records) {
+                        $billing = Billing::updateOrCreate([
+                            "invoice_no" => $invoice,
+                            "billing_import_id" => $import_id,
+                            "vendor_name" => $billing_import->vendor_name,
+                        ], [
+                            "branch_id" => $branch->id,
+                            "billing_start" => $billing_import->billing_start,
+                            "billing_end" => $billing_import->billing_end,
+                            "invoice_date" => $billing_import->invoice_date,
+                        ]);
 
-                foreach ($records->sortBy("pickup_date") as $record) {
-                    BillingItem::updateOrCreate([
-                        "billing_id" => $billing->id,
-                        "consignment_no" => $record->hawb,
-                    ], [
-                        "weight" => $record->weight,
-                        "zone" => $record->destination,
-                        "charges" => $record->total_bill_amount,
-                        "subaccount" => $record->sub_account,
-                        "posting_date" => $record->pickup_date,
-                        "pl_9" => $record->job_type,
-                    ]);
+                        foreach ($records->sortBy("pickup_date") as $record) {
+                            BillingItem::updateOrCreate([
+                                "billing_id" => $billing->id,
+                                "consignment_no" => $record->hawb,
+                            ], [
+                                "weight" => $record->weight,
+                                "zone" => $record->destination,
+                                "charges" => $record->total_bill_amount,
+                                "subaccount" => $record->sub_account,
+                                "posting_date" => $record->pickup_date,
+                                "pl_9" => $record->job_type,
+                            ]);
 
-                    // Mark record as processed
-                    $record->is_processed = true;
-                    $record->save();
-                }
+                            // Mark record as processed
+                            $record->is_processed = true;
+                            $record->save();
+                        }
 
-                // Dispatch mail sending for billing PDF and Excel
-                // Export Excel file and store
-                $billing->exportAndStoreExcel();
-                $billing->exportAndStorePDF();
+                        // Dispatch mail sending for billing PDF and Excel
+                        // Export Excel file and store
+                        $billing->exportAndStoreExcel();
+                        $billing->exportAndStorePDF();
+                    }
                 DB::commit();
 
             } catch (Exception $ex) {
