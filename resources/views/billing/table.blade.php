@@ -39,7 +39,7 @@
             </tr>
             <tr class="summary-row"><td style="height: 15px"></td></tr>
             <tr class="summary-row" style="border-top: 1px solid black">
-                <td style="text-align: left;">Total Item</td>
+                <td style="text-align: left;"><b>Total Item</b></td>
                 <td style="text-align: left;">{{ $billing->items->count() }}</td>
                 <td colspan="3" style="text-align: right">Courier Charges - Domestic</td>
                 <td>{{ number_format((float)$billing->items->sum("charges"),2,'.','') }}</td>
@@ -51,7 +51,7 @@
                 <td></td>
             </tr>
             <tr class="summary-row" style="border-top: 1px solid black">
-                <td colspan="5" style="text-align: right">Subtotal</td>
+                <td colspan="5" style="text-align: right">Grand Total</td>
                 <td style="border-top: 1px solid black; border-bottom: 1px solid black;"><b>{{ number_format((float)$billing->items->sum("charges"),2,'.','') }}</b></td>
                 <td></td>
             </tr>
@@ -61,40 +61,40 @@
                 <td style="border-top: 1px solid black;"></td>
                 <td></td>
             </tr>
-            <tr class="summary-row"><td style="height: 15px"></td></tr>
-            <tr class="summary-row">
-                <td colspan="5" style="text-align: right">Courier Charges - International</td>
-                <td>0.00</td>
-                <td></td>
-            </tr>
-            <tr class="summary-row">
-                <td colspan="5" style="text-align: right">GST 0% (SR)</td>
-                <td>0.00</td>
-                <td></td>
-            </tr>
-            <tr class="summary-row">
-                <td colspan="5" style="text-align: right">Subtotal</td>
-                <td style="border-top: 1px solid black; border-bottom: 1px solid black;"><b>0.00</b></td>
-                <td></td>
-            </tr>
-            <tr class="summary-row"><td style="height: 0px"></td></tr>
-            <tr class="summary-row">
-                <td colspan="5"></td>
-                <td style="border-top: 1px solid black;"></td>
-                <td></td>
-            </tr>
-            <tr class="summary-row"><td style="height: 15px"></td></tr>
-            <tr class="summary-row">
-                <td colspan="5" style="text-align: right">Grand Total</td>
-                <td style="border-top: 1px solid black; border-bottom: 1px solid black"><b>{{ number_format((float)$billing->items->sum("charges"),2,'.','') }}</b></td>
-                <td></td>
-            </tr>
-            <tr class="summary-row"><td style="height: 0px"></td></tr>
-            <tr class="summary-row">
-                <td colspan="5"></td>
-                <td style="border-top: 1px solid black;"></td>
-                <td></td>
-            </tr>
+{{--            <tr class="summary-row"><td style="height: 15px"></td></tr>--}}
+{{--            <tr class="summary-row">--}}
+{{--                <td colspan="5" style="text-align: right">Courier Charges - International</td>--}}
+{{--                <td>0.00</td>--}}
+{{--                <td></td>--}}
+{{--            </tr>--}}
+{{--            <tr class="summary-row">--}}
+{{--                <td colspan="5" style="text-align: right">GST 0% (SR)</td>--}}
+{{--                <td>0.00</td>--}}
+{{--                <td></td>--}}
+{{--            </tr>--}}
+{{--            <tr class="summary-row">--}}
+{{--                <td colspan="5" style="text-align: right">Subtotal</td>--}}
+{{--                <td style="border-top: 1px solid black; border-bottom: 1px solid black;"><b>0.00</b></td>--}}
+{{--                <td></td>--}}
+{{--            </tr>--}}
+{{--            <tr class="summary-row"><td style="height: 0px"></td></tr>--}}
+{{--            <tr class="summary-row">--}}
+{{--                <td colspan="5"></td>--}}
+{{--                <td style="border-top: 1px solid black;"></td>--}}
+{{--                <td></td>--}}
+{{--            </tr>--}}
+{{--            <tr class="summary-row"><td style="height: 15px"></td></tr>--}}
+{{--            <tr class="summary-row">--}}
+{{--                <td colspan="5" style="text-align: right">Grand Total</td>--}}
+{{--                <td style="border-top: 1px solid black; border-bottom: 1px solid black"><b>{{ number_format((float)$billing->items->sum("charges"),2,'.','') }}</b></td>--}}
+{{--                <td></td>--}}
+{{--            </tr>--}}
+{{--            <tr class="summary-row"><td style="height: 0px"></td></tr>--}}
+{{--            <tr class="summary-row">--}}
+{{--                <td colspan="5"></td>--}}
+{{--                <td style="border-top: 1px solid black;"></td>--}}
+{{--                <td></td>--}}
+{{--            </tr>--}}
         @endif
     </tbody>
 </table>

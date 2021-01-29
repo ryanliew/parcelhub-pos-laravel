@@ -59,10 +59,9 @@ class BillingImport extends Model
                         ]);
 
                         foreach ($records->sortBy("pickup_date") as $record) {
-                            BillingItem::updateOrCreate([
+                            BillingItem::create([
                                 "billing_id" => $billing->id,
                                 "consignment_no" => $record->hawb,
-                            ], [
                                 "weight" => $record->weight,
                                 "zone" => $record->destination,
                                 "charges" => $record->total_bill_amount,
