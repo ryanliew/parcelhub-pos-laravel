@@ -59,7 +59,7 @@
         <table cellpadding="3" width="100%">
             <tbody>
             <tr>
-                <td colspan="4"><b class="medium-font">Invoice</b></td>
+                <td colspan="4"><b class="large-font">Invoice</b></td>
             </tr>
             <tr>
                 <td>Account No</td>

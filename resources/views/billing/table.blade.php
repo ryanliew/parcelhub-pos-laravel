@@ -2,11 +2,11 @@
     <thead>
         <tr>
             <th>Job Date</th>
-            <th>Job Type</th>
+            <th width="150">Job Type</th>
             <th>Consignment No.</th>
             <th>Weight</th>
             <th>Zone</th>
-            <th>Charges (RM)</th>
+            <th width="80">Charges (RM)</th>
             <th width="80" style="border:0;">{{ isset($summary) ? "" : "Ref" }}</th>
         </tr>
     </thead>
@@ -14,11 +14,11 @@
         @foreach($billing->items as $item)
             <tr class="item-row">
                 <td>{{ $item->posting_date }}</td>
-                <td>{{ $item->pl_9 }}</td>
+                <td width="150">{{ $item->pl_9 }}</td>
                 <td>{{ $item->consignment_no }}</td>
                 <td>{{ number_format((float)$item->weight,2,'.','') }}</td>
                 <td>{{ $item->zone }}</td>
-                <td style="text-align: right;">{{ number_format((float)$item->charges,2,'.','') }}</td>
+                <td style="text-align: right;" width="80">{{ number_format((float)$item->charges,2,'.','') }}</td>
                 <td width="80">{{ isset($summary) ? substr($item->subaccount, 0, 10) : $item->subaccount }}</td>
             </tr>
         @endforeach
