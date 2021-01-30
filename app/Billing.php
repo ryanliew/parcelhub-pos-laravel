@@ -78,11 +78,11 @@ class Billing extends Model
         return new mPDF(['format' => 'Legal',
             "fontDir" => array_merge($fontDirs, [storage_path('fonts/')]),
             "fontdata" => $fontData + [
-                'arial' => [
-                    'R' => 'Arial.ttf'
+                'yaqihei' => [
+                    'R' => 'MicrosoftYaqiHei-2.ttf'
                 ]
             ],
-            'default_font' => 'arial'
+            'default_font' => 'yaqihei'
         ]);
     }
 }
