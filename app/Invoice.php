@@ -76,7 +76,7 @@ class Invoice extends Model
 
     public function getRoundingAttribute()
     {
-        return $this->total - ( $this->subtotal - $this->discount_value ); 
+        return - ($this->total - ( $this->subtotal - $this->discount_value ));
     }
 
     public function getDisplayTextAttribute()

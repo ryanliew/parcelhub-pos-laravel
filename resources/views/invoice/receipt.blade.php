@@ -215,7 +215,7 @@
 				<tr>
 					<td class="pl-5 text-left" colspan="2"><b>Change:</b></td>
 					<td>RM</td>
-					<td class="text-right">{{ number_format( max($invoice->paid - $invoice->total - $invoice->rounding, 0.00), 2, '.', ',') }}</td>
+					<td class="text-right">{{ number_format( max($invoice->paid - $invoice->total + $invoice->rounding, 0.00), 2, '.', ',') }}</td>
 				</tr>
 			</tbody>
 		</table>
