@@ -782,7 +782,7 @@
 			total() {
 				// console.log(this.subtotal);
 				// console.log(this.tax);
-				return parseFloat(this.subtotal) - parseFloat(this.discount_value);
+				return parseFloat(this.subtotal) - parseFloat(this.discount_value.toFixed(2));
 			},
 
 			rounded_total() {
