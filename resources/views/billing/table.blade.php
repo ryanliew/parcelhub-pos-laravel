@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach($billing->items as $item)
+        @foreach($billing->items->sortBy([["subaccount", "asc"],["posting_date", "asc"]]) as $item)
             <tr class="item-row">
                 <td>{{ $item->posting_date }}</td>
                 <td width="150">{{ $item->pl_9 }}</td>
