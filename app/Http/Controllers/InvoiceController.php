@@ -376,6 +376,7 @@ class InvoiceController extends Controller
         $response->getStatusCode(); 
         $response->getBody();
         $data = json_decode( $response->getBody()->getContents() );
+        Log::info("Create VMB transaction: " . $data);
     }
 
     public function update(Invoice $invoice)
