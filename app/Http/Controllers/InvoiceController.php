@@ -372,10 +372,8 @@ class InvoiceController extends Controller
                     'pos_user_branch_code' => auth()->user()->current->code 
                 ]
         ]);
-      
-        $response->getStatusCode(); 
-        $response->getBody();
         $data = $response->getBody()->getContents();
+
         Log::info("Create VMB transaction: " . $data);
     }
 
