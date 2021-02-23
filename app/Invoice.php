@@ -78,11 +78,11 @@ class Invoice extends Model
     {
         $actual_total =  $this->subtotal - $this->discount_value;
 
-        $total = $this->total - $actual_total;
-        if($this->total > $actual_total)
-            return $total;
+        $rounding_value = $this->total - $actual_total;
+        if($this->total + $this->discount_value > $actual_total)
+            return $rounding_value;
 
-        return -$total;
+        return -$rounding_value;
     }
 
     public function getDisplayTextAttribute()

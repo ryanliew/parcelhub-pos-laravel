@@ -236,7 +236,7 @@ class InvoiceController extends Controller
         // We need to calculate the amount ourselves instead of relying on frontend
         $subtotal = collect($items)->sum("total_price");
         $discount_value = request()->has('discount_value') ? request()->discount_value : 0.00;
-        $total = $subtotal - $discount_value;
+        $total = request()->total;
 
         $user = User::find(request()->created_by);
 
