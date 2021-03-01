@@ -42,7 +42,7 @@ class BillingReady extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject("Invoice #" . $this->billing->invoice_no)
+                    ->subject($this->billing->vendor_name . "Invoice of " . $this->billing->billing_start->toDateString() . " - " . $this->billing->billing_end->toDateString())
                     ->greeting("Hi,")
                     ->line('Here is the ' . $this->billing->vendor_name . " invoice of " . $this->billing->billing_start->toDateString() . " - " . $this->billing->billing_end->toDateString())
                     ->line('Kindly check.')
