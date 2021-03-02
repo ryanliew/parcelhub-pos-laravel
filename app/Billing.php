@@ -51,6 +51,9 @@ class Billing extends Model
 
                 $billing = self::find($billing_id);
                 $sheet->loadView("billing.table", ["billing" => $billing]);
+                $sheet->setColumnFormat(array(
+                    'C' => "0"
+                ));
             });
         })->store("xls", storage_path("app/public/billing/" . $this->branch_id));
     }
