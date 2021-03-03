@@ -27,6 +27,7 @@ class BillingImport extends \Maatwebsite\Excel\Files\ExcelFile
             "billing_start" => request()->billing_start,
             "billing_end" => request()->billing_end,
             "vendor_name" => request()->vendor_name,
+            "payment_term" => request()->payment_term,
         ]);
 
         return storage_path("app/" . $filename);

@@ -87937,6 +87937,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["created_by"],
@@ -87949,7 +87962,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         invoice_date: "",
         billing_start: '',
         billing_end: "",
-        vendor_name: ""
+        vendor_name: "",
+        payment_term: ""
       }),
       processing: false
     };
@@ -88029,6 +88043,34 @@ var render = function() {
                     _vm.$set(_vm.form, "vendor_name", $$v)
                   },
                   expression: "form.vendor_name"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "col" },
+            [
+              _c("text-input", {
+                attrs: {
+                  defaultValue: _vm.form.payment_term,
+                  required: false,
+                  type: "number",
+                  label: "Payment terms (days)",
+                  name: "payment_term",
+                  editable: true,
+                  focus: true,
+                  hideLabel: false,
+                  error: _vm.form.errors.get("payment_term")
+                },
+                model: {
+                  value: _vm.form.payment_term,
+                  callback: function($$v) {
+                    _vm.$set(_vm.form, "payment_term", $$v)
+                  },
+                  expression: "form.payment_term"
                 }
               })
             ],
