@@ -28,6 +28,7 @@
                             <th>Invoice date</th>
                             <th>Billing start date</th>
                             <th>Billing end date</th>
+                            <th>Payment term</th>
                             <th>Status</th>
                             <th>Progress</th>
                             <th>Total</th>
@@ -123,6 +124,7 @@
                     {data: 'invoice_date'},
                     {data: 'billing_start'},
                     {data: 'billing_end'},
+                    {data: 'payment_term'},
                     {data: 'status'},
                     {data: 'progress'},
                     {data: 'total'},

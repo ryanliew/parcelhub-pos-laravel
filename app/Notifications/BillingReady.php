@@ -41,11 +41,17 @@ class BillingReady extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+        $checkText = "Kindly check.";
+        if($this->billing->payment_term) {
+            $checkText = "Kindly check and revert the payment within " . $this->billing->payment_term . " working days after receiving this email.";
+        }
         return (new MailMessage)
-                    ->subject($this->billing->vendor_name . "Invoice of " . $this->billing->billing_start->toDateString() . " - " . $this->billing->billing_end->toDateString())
+                    ->subject($this->billing->vendor_name . " Invoice of " . $this->billing->billing_start->toDateString() . " - " . $this->billing->billing_end->toDateString())
                     ->greeting("Hi,")
                     ->line('Here is the ' . $this->billing->vendor_name . " invoice of " . $this->billing->billing_start->toDateString() . " - " . $this->billing->billing_end->toDateString())
-                    ->line('Kindly check.')
+                    ->line($checkText)
+                    ->line("Any payment remittance or billing issue please reply to this email and our team will assist you as soon as possible.")
+                    ->line("Please do not hesitate to contact us if any inquiry.")
                     ->attach(storage_path("app/public/billing/" . $this->billing->branch_id . "/" . $this->billing->file_name . ".pdf"), [
                         "as" => $this->billing->file_name . ".pdf",
                         "mime" => "application/pdf",
@@ -53,7 +59,8 @@ class BillingReady extends Notification implements ShouldQueue
                     ->attach(storage_path("app/public/billing/" . $this->billing->branch_id . "/" . $this->billing->file_name . ".xls"), [
                         "as" => $this->billing->file_name . ".xls",
                         "mime" => "application/vnd.ms-excel",
-                    ]);
+                    ])
+                    ->salutation("Account & Billing Department<br>018-906 6544<br>PPS GLOBAL NETWORK SDN BHD [201401044898 (1121080-K)]");
     }
 
     /**

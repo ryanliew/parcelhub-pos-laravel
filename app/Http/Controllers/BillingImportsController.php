@@ -127,7 +127,7 @@ class BillingImportsController extends Controller
         }
 
         $import->update([
-            "status" => BillingImport::STATUS_SENT,
+            "status" => BillingImportClass::STATUS_SENT,
         ]);
 
         return response()->json([

@@ -22,6 +22,19 @@
                         :error="form.errors.get('vendor_name')">
             </text-input>
           </div>
+          <div class="col">
+            <text-input v-model="form.payment_term"
+                        :defaultValue="form.payment_term"
+                        :required="false"
+                        type="number"
+                        label="Payment terms (days)"
+                        name="payment_term"
+                        :editable="true"
+                        :focus="true"
+                        :hideLabel="false"
+                        :error="form.errors.get('payment_term')">
+            </text-input>
+          </div>
         </div>
         <i v-if="processing" class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
         <div class="row">
@@ -97,6 +110,7 @@ export default {
         billing_start: '',
         billing_end: "",
         vendor_name: "",
+        payment_term: "",
       }),
       processing: false,
     };

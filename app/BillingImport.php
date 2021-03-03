@@ -56,6 +56,7 @@ class BillingImport extends Model
                             "billing_start" => $billing_import->billing_start,
                             "billing_end" => $billing_import->billing_end,
                             "invoice_date" => $billing_import->invoice_date,
+                            "payment_term" => $billing_import->payment_term,
                         ]);
 
                         foreach ($records->sortBy("pickup_date") as $record) {
