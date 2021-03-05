@@ -75,6 +75,7 @@
 			  	<tbody>
 				  	<tr>
 				   		<th>Invoice no</th>
+              <th>Date</th>
 					    <th>Payment Type</th>
 				      	<th>Expected RM</th>
 				      	<th>%</th>
@@ -82,6 +83,7 @@
 				  	</tr>
 				  	<tr class="item-row" v-for="invoice in cashup.invoices">		
 				  		<td>{{ invoice.invoice_no }}</td>
+              <td>{{ invoice.created_at | date }}</td>
 				  		<td>{{ invoice.pivot.payment_method }}</td>
 				  		<td>{{ invoice.pivot.total | price }}</td>
 				  		<td>{{ cashup.total > 0 ? ( invoice.pivot.total / cashup.total * 100 ) : 0.00 | price }}</td>
@@ -91,6 +93,7 @@
 				<tfoot>
 					<tr>
 						<td></td>
+            <td></td>
 						<td><b>Total</b></td>
 						<td><b>{{ cashup.total > 0 ? cashup.total - cashup.float_value : 0.00 | price }}</b></td>
 						<td></td>

@@ -191,7 +191,7 @@
 			  	<tbody>
 				  	<tr>
 				   		<th>Invoice no</th>
-						<th>Invoice date</th>
+						<th>Date</th>
 					    <th>Payment Type</th>
 				      	<th>Expected RM</th>
 				      	<th>%</th>
@@ -212,6 +212,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
+						<td></td>
 						<td></td>
 						<td class="text-right"><b>Total</b></td>
 						<td class="text-center"><b>{{ $cashup->total > 0 ? number_format($cashup->total - $cashup->float_value, 2, ".", ",") : 0.00 }}</b></td>
