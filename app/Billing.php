@@ -64,6 +64,7 @@ class Billing extends Model
 
         $newPDF = $this->initializePDFObject();
         $chunks = explode("chunk", $html);
+        dd($chunks);
         foreach($chunks as $val) {
             $newPDF->WriteHTML($val);
         }
