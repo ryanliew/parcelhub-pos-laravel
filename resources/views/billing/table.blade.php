@@ -11,7 +11,10 @@
         </tr>
     </thead>
     <tbody>
-        @foreach($billing->items()->orderBy("subaccount")->orderBy("posting_date")->get() as $item)
+        @foreach($billing->items()->orderBy("subaccount")->orderBy("posting_date")->get() as $key => $item)
+            @if(!isset($summary) && $key % 20 == 0)
+                chunk
+            @endif
             <tr class="item-row">
                 <td>{{ $item->posting_date }}</td>
                 <td width="150">{{ $item->pl_9 }}</td>
