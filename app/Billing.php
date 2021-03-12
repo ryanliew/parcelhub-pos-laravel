@@ -63,7 +63,10 @@ class Billing extends Model
         $html = View::make('billing.export', ["billing" => $this])->render();
 
         $newPDF = $this->initializePDFObject();
-        $newPDF->WriteHTML($html);
+        $chunks = explode("chunk", $html);
+        foreach($chunks as $val) {
+            $newPDF->WriteHTML($val);
+        }
         $newPDF->setFooter('{PAGENO}/{nbpg}');
 
         $path = storage_path('app/public/billing/'. $this->branch_id . "/" . $this->file_name . '.pdf');
