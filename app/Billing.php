@@ -61,7 +61,8 @@ class Billing extends Model
     public function exportAndStorePDF()
     {
         $html = View::make('billing.export', ["billing" => $this])->render();
-
+        ini_set('max_execution_time', '300');
+        ini_set("pcre.backtrack_limit", "5000000");
         $newPDF = $this->initializePDFObject();
         $chunks = explode("chunk", $html);
         foreach($chunks as $val) {
