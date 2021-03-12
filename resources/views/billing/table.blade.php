@@ -12,7 +12,7 @@
     </thead>
     <tbody>
         @foreach($billing->items()->orderBy("subaccount")->orderBy("posting_date")->get() as $key => $item)
-            @if(!isset($summary) && $key % 20 == 0)
+            @if(!isset($summary) && $key % 10 == 0)
                 chunk
             @endif
             <tr class="item-row">
