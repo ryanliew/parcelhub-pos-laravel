@@ -50,10 +50,10 @@
 						<!-- Customer <input class='form-control' id='customer_name' type="text"><br> -->
 					</div>
 					<div class="col-2">
-						Date from <input class='form-control' id='min' type="date" value="<?php echo date('Y-m-01');?>"><br>
+						Date from <input class='form-control' id='min' data-toggle="datepicker"><br>
 					</div>
 					<div class="col-2">
-						Date to <input class='form-control' id= 'max' type="date" value="<?php echo date("Y-m-t");?>">
+						Date to <input class='form-control' id='max' data-toggle="datepicker">
 					</div>
 					<div class="col-2">
 						Options <br>
@@ -119,7 +119,11 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-colvis-1.5.1/b-flash-1.5.2/b-html5-1.5.2/b-print-1.5.2/cr-1.5.0/r-2.2.2/sl-1.2.6/datatables.min.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.19/api/sum().js"></script>
 	<script type="text/javascript" src="https://momentjs.com/downloads/moment.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css" integrity="sha512-YdYyWQf8AS4WSB0WWdc3FbQ3Ypdm0QCWD2k4hgfqbQbRCJBEgX0iAegkl2S1Evma5ImaVXLBeUkIlP6hQ1eYKQ==" crossorigin="anonymous" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.js" integrity="sha512-RCgrAvvoLpP7KVgTkTctrUdv7C6t7Un3p1iaoPr1++3pybCyCsCZZN7QEHMZTcJTmcJ7jzexTO+eFpHk4OCFAg==" crossorigin="anonymous"></script>
 	<script>
+		$('#min').datepicker({autoPick: true, date: "{{  date('Y/m/01') }}", format: 'yyyy-mm-dd'});
+		$('#max').datepicker({autoPick: true, date: "{{  date('Y/m/d') }}", format: 'yyyy-mm-dd'});
 		$(function(){
 			var totalAMT = 0.0;
 			var table = $("#payments-table").DataTable({
@@ -224,8 +228,10 @@
 	  		$.fn.dataTable.ext.search.push(
 			    function( settings, data, dataIndex ) {
 			    	var value = false;
-			    	var min  = $('#min').val();
-			        var max  = $('#max').val();
+			    	var min  = $('#min').datepicker('getDate', true);
+			        var max  = $('#max').datepicker('getDate', true);
+
+			        console.log(min);
 			        // Include invoices from that day as well
 			        max = moment(max).add(1, "days").format("YYYY-MM-DD");
 
@@ -251,9 +257,9 @@
 			);
 
 			$("#btnSearch").click(function() {
-		    	
-				var min  = $('#min').val();
-		        var max  = $('#max').val();
+
+				var min  = $('#min').datepicker('getDate', true);
+				var max  = $('#max').datepicker('getDate', true);
 		        // Include invoices from that day as well
 		        max = moment(max).add(1, "days").format("YYYY-MM-DD");
 
