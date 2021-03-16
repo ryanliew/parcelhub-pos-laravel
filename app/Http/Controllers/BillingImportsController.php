@@ -123,7 +123,11 @@ class BillingImportsController extends Controller
     {
         // Trigger sending the emails to branches
         foreach($import->bills as $bill) {
-            if($bill->branch->contact_emails) Notification::route("mail", $bill->branch->contact_emails)->notify(new BillingReady($bill));
+            if($bill->branch->contact_emails) {
+                $emails = explode(";", $bill->branch->contact_emails);
+
+                foreach($emails as $mail) Notification::route("mail", $mail)->notify(new BillingReady($bill));
+            }
         }
 
         $import->update([
