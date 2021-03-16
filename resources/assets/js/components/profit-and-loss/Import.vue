@@ -37,7 +37,7 @@
 				this.form.file = this.$refs.file.files[0];
 			},
 
-            importFromExcel() {		
+      importFromExcel() {
 				this.processing = true;
 				let url = "profit_and_loss/import";
 				this.form.post(url)

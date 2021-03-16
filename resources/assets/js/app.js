@@ -101,6 +101,8 @@ Vue.component('sales-reports-dialog', require('./components/reports/SalesReportD
 
 Vue.component('profit-and-loss-import', require('./components/profit-and-loss/Import.vue'));
 
+Vue.component('billing-import', require('./components/billings/Import.vue'));
+
 const app = new Vue({
     el: '#app',
 

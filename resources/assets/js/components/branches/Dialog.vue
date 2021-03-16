@@ -140,6 +140,34 @@
 								</selector-input>
 							</div>
 						</div>
+            <div class="row">
+              <div class="col">
+                <text-input v-model="form.lc_code"
+                            :defaultValue="form.lc_code"
+                            :required="false"
+                            type="text"
+                            label="LC Marking"
+                            name="lc_code"
+                            :editable="true"
+                            :focus="false"
+                            :hideLabel="false"
+                            :error="form.errors.get('lc_code')">
+                </text-input>
+              </div>
+              <div class="col">
+                <text-input v-model="form.contact_emails"
+                            :defaultValue="form.contact_emails"
+                            :required="false"
+                            type="text"
+                            label="Contact Email"
+                            name="contact_emails"
+                            :editable="true"
+                            :focus="false"
+                            :hideLabel="false"
+                            :error="form.errors.get('contact_emails')">
+                </text-input>
+              </div>
+            </div>
 						<hr>
 						<h5>Owner information</h5>
 						<div class="row">
@@ -271,7 +299,9 @@
 					address: '',
 					default_product_type: '',
 					product_type_id: '',
-					registered_company_name: ''
+					registered_company_name: '',
+          lc_code: '',
+          contact_emails: '',
 				})
 			};
 		},
@@ -350,6 +380,8 @@
 				this.form.address = this.selectedBranch.address;
 				this.form.product_type_id = this.selectedBranch.product_type_id;
 				this.form.registered_company_name = this.selectedBranch.registered_company_name;
+        this.form.contact_emails = this.selectedBranch.contact_emails;
+        this.form.lc_code = this.selectedBranch.lc_code;
 
 				this.selectedType = _.filter(this.types, function(type){ return this.form.product_type_id == type.value; }.bind(this))[0];
 			},
